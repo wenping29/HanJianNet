@@ -86,8 +86,9 @@ public static class DbSeeder
             new() { Key = "traitors", Path = "/traitors", Label = "名录管理", Order = 1, Roles = "admin,superadmin" },
             new() { Key = "reviews", Path = "/reviews", Label = "待审队列", Order = 2, Roles = "manager,admin,superadmin" },
             new() { Key = "users", Path = "/users", Label = "用户管理", Order = 3, Roles = "admin,superadmin" },
-            new() { Key = "menus", Path = "/menus", Label = "菜单管理", Order = 4, Roles = "admin,superadmin" },
-            new() { Key = "profile", Path = "/profile", Label = "个人信息", Order = 5, Roles = "manager,admin,superadmin" },
+            new() { Key = "roles", Path = "/roles", Label = "角色管理", Order = 4, Roles = "admin,superadmin" },
+            new() { Key = "menus", Path = "/menus", Label = "菜单管理", Order = 5, Roles = "admin,superadmin" },
+            new() { Key = "profile", Path = "/profile", Label = "个人信息", Order = 6, Roles = "manager,admin,superadmin" },
         ];
 
         foreach (var item in defaults)

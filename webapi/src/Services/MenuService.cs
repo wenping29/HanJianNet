@@ -106,7 +106,7 @@ public partial class MenuService(AppDbContext db)
         return (key, path, label, roles);
     }
 
-    private static string[] ParseRoles(string roles) =>
+    internal static string[] ParseRoles(string roles) =>
         roles.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     private static MenuItemAdminDto ToAdminDto(MenuItem m) => new()

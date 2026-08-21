@@ -8,6 +8,7 @@ import type {
   ReviewStatus,
   Revision,
   Role,
+  RoleMenuConfig,
   TraitorDetail,
   TraitorInput,
   TraitorSnapshot,
@@ -75,6 +76,14 @@ export const api = {
 
   updateMenu: (id: string, body: { key: string; path: string; label: string; order: number; roles: Role[] }) =>
     request<{ item: AdminMenuItem }>(`/admin/menus/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+
+  roleMenus: () => request<{ items: RoleMenuConfig[] }>('/admin/roles'),
+
+  updateRoleMenus: (role: Role, menuKeys: string[]) =>
+    request<{ items: RoleMenuConfig[] }>(`/admin/roles/${role}/menus`, {
+      method: 'PUT',
+      body: JSON.stringify({ menuKeys }),
+    }),
 
   adminRevisions: (status?: ReviewStatus) =>
     request<{ items: Revision[] }>(`/admin/revisions${status ? `?status=${status}` : ''}`),

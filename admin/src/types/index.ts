@@ -20,6 +20,12 @@ export interface AdminMenuItem extends MenuItem {
   roles: Role[]
 }
 
+export interface RoleMenuConfig {
+  role: Role
+  userCount: number
+  menuKeys: string[]
+}
+
 export interface User {
   id: string
   username: string

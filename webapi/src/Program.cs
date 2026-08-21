@@ -63,6 +63,7 @@ builder.Services.AddScoped<RevisionService>();
 builder.Services.AddScoped<UploadService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<MenuService>();
+builder.Services.AddScoped<RoleService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

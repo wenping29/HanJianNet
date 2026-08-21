@@ -6,6 +6,7 @@ import NotFound from './pages/NotFound'
 import Profile from './pages/Profile'
 import ReviewDetail from './pages/ReviewDetail'
 import Reviews from './pages/Reviews'
+import Roles from './pages/Roles'
 import Users from './pages/Users'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/reviews/:rid" element={<ReviewDetail />} />
           <Route path="/users" element={<Users />} />
+          <Route path="/roles" element={<Roles />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Route>
