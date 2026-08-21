@@ -8,6 +8,5 @@ public class Permission
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string Key { get; set; } = "";
-    public string Label { get; set; } = "";
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public string Name { get; set; } = "";
 }

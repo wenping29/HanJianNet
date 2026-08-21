@@ -89,13 +89,14 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    // 先播种角色/菜单/权限，避免 SeedAdminAsync 走提升路径提前返回时漏种。
+    await DbSeeder.SeedRolesAsync(db);
+    await DbSeeder.SeedMenusAsync(db);
+    await DbSeeder.SeedPermissionsAsync(db);
     await DbSeeder.SeedAdminAsync(db,
         builder.Configuration["Seed:AdminUsername"] ?? "admin",
         builder.Configuration["Seed:AdminEmail"] ?? "admin@hanjiannet.local",
         builder.Configuration["Seed:AdminPassword"] ?? "admin123456");
-    await DbSeeder.SeedRolesAsync(db);
-    await DbSeeder.SeedMenusAsync(db);
-    await DbSeeder.SeedPermissionsAsync(db);
     if (builder.Configuration.GetValue<bool>("Seed:TestUsers"))
     {
         await DbSeeder.SeedTestUsersAsync(db);

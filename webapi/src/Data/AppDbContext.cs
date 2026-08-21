@@ -49,11 +49,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<RolePermission>(e =>
         {
-            e.HasIndex(rp => new { rp.RoleId, rp.PermissionId }).IsUnique();
-            e.HasOne(rp => rp.Role).WithMany()
-                .HasForeignKey(rp => rp.RoleId).OnDelete(DeleteBehavior.Cascade);
-            e.HasOne(rp => rp.Permission).WithMany()
-                .HasForeignKey(rp => rp.PermissionId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(rp => new { rp.RoleKey, rp.MenuKey }).IsUnique();
         });
 
         modelBuilder.Entity<Spouse>()

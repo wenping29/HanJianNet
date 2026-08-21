@@ -167,34 +167,32 @@ public static class DbSeeder
             CREATE TABLE IF NOT EXISTS "Permissions" (
                 "Id" TEXT NOT NULL CONSTRAINT "PK_Permissions" PRIMARY KEY,
                 "Key" TEXT NOT NULL,
-                "Label" TEXT NOT NULL,
-                "CreatedAt" TEXT NOT NULL
+                "Name" TEXT NOT NULL
             );
             CREATE UNIQUE INDEX IF NOT EXISTS "IX_Permissions_Key" ON "Permissions" ("Key");
 
             CREATE TABLE IF NOT EXISTS "RolePermissions" (
                 "Id" TEXT NOT NULL CONSTRAINT "PK_RolePermissions" PRIMARY KEY,
-                "RoleId" TEXT NOT NULL,
-                "PermissionId" TEXT NOT NULL,
-                "CreatedAt" TEXT NOT NULL,
-                CONSTRAINT "FK_RolePermissions_AppRoles_RoleId" FOREIGN KEY ("RoleId") REFERENCES "AppRoles" ("Id") ON DELETE CASCADE,
-                CONSTRAINT "FK_RolePermissions_Permissions_PermissionId" FOREIGN KEY ("PermissionId") REFERENCES "Permissions" ("Id") ON DELETE CASCADE
+                "RoleKey" TEXT NOT NULL,
+                "MenuKey" TEXT NOT NULL
             );
-            CREATE UNIQUE INDEX IF NOT EXISTS "IX_RolePermissions_RoleId_PermissionId" ON "RolePermissions" ("RoleId", "PermissionId");
-            CREATE INDEX IF NOT EXISTS "IX_RolePermissions_PermissionId" ON "RolePermissions" ("PermissionId");
+            CREATE UNIQUE INDEX IF NOT EXISTS "IX_RolePermissions_RoleKey_MenuKey" ON "RolePermissions" ("RoleKey", "MenuKey");
+
+            DROP INDEX IF EXISTS "IX_RolePermissions_RoleId_PermissionId";
+            DROP INDEX IF EXISTS "IX_RolePermissions_PermissionId";
             """);
 
-        // 1) 权限与菜单同步：缺则补、名同改
+        // 1) 权限与菜单同步：缺则补、名变则改
         var menus = await db.MenuItems.ToListAsync();
         var permByKey = (await db.Permissions.ToListAsync()).ToDictionary(p => p.Key);
         foreach (var menu in menus)
         {
             if (permByKey.TryGetValue(menu.Key, out var existing))
             {
-                if (existing.Label != menu.Label) existing.Label = menu.Label;
+                if (existing.Name != menu.Label) existing.Name = menu.Label;
                 continue;
             }
-            var perm = new Permission { Key = menu.Key, Label = menu.Label };
+            var perm = new Permission { Key = menu.Key, Name = menu.Label };
             db.Permissions.Add(perm);
             permByKey[menu.Key] = perm;
         }
@@ -203,14 +201,11 @@ public static class DbSeeder
         // 2) 首次初始化：按菜单可见角色列回填角色-权限关联
         if (!await db.RolePermissions.AnyAsync())
         {
-            var roleIds = (await db.Roles.ToListAsync()).ToDictionary(r => r.Key, r => r.Id);
             foreach (var menu in menus)
             {
-                if (!permByKey.TryGetValue(menu.Key, out var perm)) continue;
                 foreach (var roleKey in menu.Roles.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                 {
-                    if (!roleIds.TryGetValue(roleKey, out var roleId)) continue;
-                    db.RolePermissions.Add(new RolePermission { RoleId = roleId, PermissionId = perm.Id });
+                    db.RolePermissions.Add(new RolePermission { RoleKey = roleKey, MenuKey = menu.Key });
                 }
             }
             await db.SaveChangesAsync();
