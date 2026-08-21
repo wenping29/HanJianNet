@@ -13,7 +13,13 @@ import type {
   User,
 } from '../types'
 
-const BASE = '/api'
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/+$/, '')
+
+export function resolveAssetUrl(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : `${API_ORIGIN}${url}`
+}
+
+const BASE = `${API_ORIGIN}/api`
 
 export class ApiError extends Error {
   status: number

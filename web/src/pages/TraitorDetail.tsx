@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Lightbox from '../components/Lightbox'
-import { api } from '../lib/api'
+import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan, formatYear } from '../lib/format'
 import { useAuth } from '../stores/auth'
 import type { Traitor, TraitorSummary } from '../types'
@@ -63,6 +63,7 @@ export default function TraitorDetail() {
 
   const photos = traitor.attachments.filter((a) => a.kind === 'photo')
   const evidences = traitor.attachments.filter((a) => a.kind === 'evidence')
+  const photoUrl = (a: { url: string }) => resolveAssetUrl(a.url)
 
   return (
     <div className="container-page py-10">
@@ -70,7 +71,7 @@ export default function TraitorDetail() {
       <header className="card animate-fade-up flex flex-col gap-6 p-6 md:flex-row md:p-8">
         <div className="flex h-56 w-full shrink-0 items-center justify-center overflow-hidden rounded-sm border border-paperedge/15 bg-inksoft md:w-44">
           {photos[0] ? (
-            <img src={photos[0].url} alt={traitor.name} className="h-full w-full object-cover" />
+            <img src={photoUrl(photos[0])} alt={traitor.name} className="h-full w-full object-cover" />
           ) : (
             <span className="font-song text-7xl font-bold text-paperedge/20">{traitor.name.slice(0, 1)}</span>
           )}
@@ -254,10 +255,10 @@ export default function TraitorDetail() {
               <button
                 key={p.id}
                 type="button"
-                onClick={() => setLightbox(p.url)}
+                onClick={() => setLightbox(photoUrl(p))}
                 className="group block overflow-hidden rounded-sm border border-paperedge/15"
               >
-                <img src={p.url} alt={p.caption ?? ''} className="aspect-square w-full object-cover transition group-hover:scale-105" />
+                <img src={photoUrl(p)} alt={p.caption ?? ''} className="aspect-square w-full object-cover transition group-hover:scale-105" />
                 {p.caption && <span className="block truncate bg-inkcard px-2 py-1.5 text-xs text-paperdim">{p.caption}</span>}
               </button>
             ))}
@@ -272,7 +273,7 @@ export default function TraitorDetail() {
             {evidences.map((ev) => (
               <li key={ev.id} className="card flex items-center gap-4 p-4">
                 {ev.fileType.startsWith('image') ? (
-                  <img src={ev.url} alt="" className="h-14 w-14 shrink-0 rounded-sm object-cover" />
+                  <img src={photoUrl(ev)} alt="" className="h-14 w-14 shrink-0 rounded-sm object-cover" />
                 ) : (
                   <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-sm border border-paperedge/20 font-garamond text-xl text-bronzelight">
                     文
@@ -282,7 +283,7 @@ export default function TraitorDetail() {
                   <p className="truncate text-sm text-paper">{ev.caption || '罪证材料'}</p>
                   <p className="mt-0.5 font-garamond text-xs text-paperdim/70">{ev.fileType}</p>
                 </div>
-                <a href={ev.url} target="_blank" rel="noreferrer" className="btn-ghost !px-3 !py-1.5 text-xs">
+                <a href={photoUrl(ev)} target="_blank" rel="noreferrer" className="btn-ghost !px-3 !py-1.5 text-xs">
                   查看
                 </a>
               </li>

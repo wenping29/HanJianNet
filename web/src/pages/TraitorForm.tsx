@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { api } from '../lib/api'
+import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList } from '../lib/format'
 import type {
   Attachment,
@@ -460,7 +460,7 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
               <ul className="mt-3 space-y-2">
                 {attachments.filter((a) => a.kind === 'photo').map((a) => (
                   <li key={a.id} className="flex items-center gap-3 rounded-sm border border-paperedge/15 p-2">
-                    <img src={a.url} alt="" className="h-12 w-12 shrink-0 rounded-sm object-cover" />
+                    <img src={resolveAssetUrl(a.url)} alt="" className="h-12 w-12 shrink-0 rounded-sm object-cover" />
                     <input
                       className="input !py-1.5 text-xs"
                       placeholder="图片说明"

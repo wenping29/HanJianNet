@@ -1,7 +1,9 @@
 import { useAuth } from '../stores/auth'
 import type { AuthPayload, ReviewStatus, Revision, TraitorSnapshot, User } from '../types'
 
-const BASE = '/api'
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/+$/, '')
+
+const BASE = `${API_ORIGIN}/api`
 
 export class ApiError extends Error {
   status: number
