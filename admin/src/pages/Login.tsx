@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
+import { canAccessConsole } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 
 export default function Login() {
@@ -18,8 +19,8 @@ export default function Login() {
     setBusy(true)
     try {
       const data = await api.login({ account, password })
-      if (data.user.role !== 'admin') {
-        setError('该账号不是管理员，无法进入后台。')
+      if (!canAccessConsole(data.user.role)) {
+        setError('该账号不具备后台权限，无法进入。')
         return
       }
       setAuth(data.token, data.user)

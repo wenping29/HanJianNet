@@ -12,11 +12,12 @@ public class UserService(AppDbContext db)
 
     public async Task<List<UserDto>> ListAsync()
     {
-        var users = await db.Users
+        var users = await db.Users.ToListAsync();
+        return users
             .OrderByDescending(u => Roles.Rank(u.Role))
             .ThenBy(u => u.CreatedAt)
-            .ToListAsync();
-        return users.Select(u => u.ToDto()).ToList();
+            .Select(u => u.ToDto())
+            .ToList();
     }
 
     public async Task<UserDto> CreateAsync(string actorId, CreateUserRequest req)

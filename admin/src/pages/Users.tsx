@@ -49,6 +49,30 @@ export default function Users() {
     }
   }, [reload])
 
+  useEffect(() => {
+    if (!showCreate) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowCreate(false)
+    }
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [showCreate])
+
+  const openCreate = () => {
+    setCreateForm(EMPTY_CREATE)
+    setError('')
+    setShowCreate(true)
+  }
+
+  const closeCreate = () => {
+    if (creating) return
+    setShowCreate(false)
+  }
+
   const flash = (msg: string) => {
     setNotice(msg)
     window.setTimeout(() => setNotice(''), 2500)
@@ -127,8 +151,8 @@ export default function Users() {
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">User Management</p>
         </div>
         {manageable && (
-          <button type="button" className="btn-primary" onClick={() => setShowCreate((v) => !v)}>
-            {showCreate ? '收起新增' : '新增用户'}
+          <button type="button" className="btn-primary" onClick={openCreate}>
+            新增用户
           </button>
         )}
       </header>
@@ -141,53 +165,79 @@ export default function Users() {
       )}
 
       {showCreate && manageable && (
-        <div className="card animate-fade-up mt-6 p-6">
-          <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">新增用户</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-              用户名
-              <input
-                className="input"
-                value={createForm.username}
-                onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
-                placeholder="至少 2 个字符"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-              邮箱
-              <input
-                className="input"
-                value={createForm.email}
-                onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                placeholder="name@example.com"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-              初始密码
-              <input
-                className="input"
-                type="password"
-                value={createForm.password}
-                onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
-                placeholder="至少 8 位"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-              角色
-              <select
-                className="input"
-                value={createForm.role}
-                onChange={(e) => setCreateForm({ ...createForm, role: e.target.value as Role })}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/90 p-6" onClick={closeCreate}>
+          <div
+            className="card animate-fade-up w-full max-w-lg p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="新增用户"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">新增用户</h2>
+              <button
+                type="button"
+                aria-label="关闭"
+                className="flex h-8 w-8 items-center justify-center rounded-sm border border-paperedge/40 text-paperdim transition hover:border-cinnabar hover:text-cinnabarlight"
+                onClick={closeCreate}
               >
-                {ROLE_OPTIONS.filter((r) => roleRank(r) < roleRank(me.role)).map((r) => (
-                  <option key={r} value={r}>
-                    {ROLE_LABELS[r]}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="flex items-end">
-              <button type="button" className="btn-primary w-full" disabled={creating} onClick={handleCreate}>
+                ✕
+              </button>
+            </div>
+            <div className="mt-5 grid gap-4">
+              <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
+                用户名
+                <input
+                  className="input"
+                  value={createForm.username}
+                  onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
+                  placeholder="至少 2 个字符"
+                />
+              </label>
+              <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
+                邮箱
+                <input
+                  className="input"
+                  value={createForm.email}
+                  onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                  placeholder="name@example.com"
+                />
+              </label>
+              <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
+                初始密码
+                <input
+                  className="input"
+                  type="password"
+                  value={createForm.password}
+                  onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                  placeholder="至少 8 位"
+                />
+              </label>
+              <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
+                角色
+                <select
+                  className="input"
+                  value={createForm.role}
+                  onChange={(e) => setCreateForm({ ...createForm, role: e.target.value as Role })}
+                >
+                  {ROLE_OPTIONS.filter((r) => roleRank(r) < roleRank(me.role)).map((r) => (
+                    <option key={r} value={r}>
+                      {ROLE_LABELS[r]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            {error && (
+              <p className="mt-4 rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-3 py-2 text-sm text-cinnabarlight">
+                {error}
+              </p>
+            )}
+            <div className="mt-6 flex justify-end gap-3">
+              <button type="button" className="btn-ghost" disabled={creating} onClick={closeCreate}>
+                取消
+              </button>
+              <button type="button" className="btn-primary" disabled={creating} onClick={handleCreate}>
                 {creating ? '创建中…' : '创建'}
               </button>
             </div>
