@@ -98,8 +98,9 @@ public static class DbSeeder
     }
 
     /// <summary>
-    /// 菜单表为后期新增：旧库由 EnsureCreated 建库时不会补建，这里先兜底建表。
-    /// 默认菜单按 Key 逐项补种，保证升级后能拿到新增入口；后台暂不支持删除，不会与用户数据冲突。
+    /// 菜单表为后期新增：旧库由 EnsureCreated 建库时不会补建，这里先兜底建表/补列。
+    /// 默认菜单按 Key 逐项补种；二级菜单上线后对内置项回填 Parent 与排序，
+    /// 不覆盖用户已修改的名称、路径与可见角色。
     /// </summary>
     public static async Task SeedMenusAsync(AppDbContext db)
     {
@@ -110,26 +111,47 @@ public static class DbSeeder
                 "Path" TEXT NOT NULL,
                 "Label" TEXT NOT NULL,
                 "Order" INTEGER NOT NULL,
-                "Roles" TEXT NOT NULL
+                "Roles" TEXT NOT NULL,
+                "Parent" TEXT
             );
             CREATE UNIQUE INDEX IF NOT EXISTS "IX_MenuItems_Key" ON "MenuItems" ("Key");
             CREATE UNIQUE INDEX IF NOT EXISTS "IX_MenuItems_Path" ON "MenuItems" ("Path");
             """);
 
+        var conn = db.Database.GetDbConnection();
+        if (conn.State != System.Data.ConnectionState.Open) await conn.OpenAsync();
+        await using (var cmd = conn.CreateCommand())
+        {
+            cmd.CommandText = "SELECT COUNT(*) FROM pragma_table_info('MenuItems') WHERE name = 'Parent'";
+            var hasColumn = Convert.ToInt64(await cmd.ExecuteScalarAsync()) > 0;
+            if (!hasColumn)
+                await db.Database.ExecuteSqlRawAsync("""ALTER TABLE "MenuItems" ADD COLUMN "Parent" TEXT;""");
+        }
+
         MenuItem[] defaults =
         [
             new() { Key = "traitors", Path = "/traitors", Label = "名录管理", Order = 1, Roles = "admin,superadmin" },
             new() { Key = "reviews", Path = "/reviews", Label = "待审队列", Order = 2, Roles = "manager,admin,superadmin" },
-            new() { Key = "users", Path = "/users", Label = "用户管理", Order = 3, Roles = "admin,superadmin" },
-            new() { Key = "roles", Path = "/roles", Label = "角色管理", Order = 4, Roles = "admin,superadmin" },
-            new() { Key = "menus", Path = "/menus", Label = "菜单管理", Order = 5, Roles = "admin,superadmin" },
-            new() { Key = "profile", Path = "/profile", Label = "个人信息", Order = 6, Roles = "manager,admin,superadmin" },
+            new() { Key = "system", Path = "/system", Label = "系统管理", Order = 3, Roles = "manager,admin,superadmin" },
+            new() { Key = "users", Path = "/users", Label = "用户管理", Order = 1, Roles = "admin,superadmin", Parent = "system" },
+            new() { Key = "roles", Path = "/roles", Label = "角色管理", Order = 2, Roles = "admin,superadmin", Parent = "system" },
+            new() { Key = "menus", Path = "/menus", Label = "菜单管理", Order = 3, Roles = "admin,superadmin", Parent = "system" },
+            new() { Key = "profile", Path = "/profile", Label = "个人信息", Order = 4, Roles = "manager,admin,superadmin", Parent = "system" },
         ];
 
         foreach (var item in defaults)
         {
-            if (await db.MenuItems.AnyAsync(m => m.Key == item.Key)) continue;
-            db.MenuItems.Add(item);
+            var existing = await db.MenuItems.FirstOrDefaultAsync(m => m.Key == item.Key);
+            if (existing is null)
+            {
+                db.MenuItems.Add(item);
+                continue;
+            }
+            if (existing.Parent != item.Parent || existing.Order != item.Order)
+            {
+                existing.Parent = item.Parent;
+                existing.Order = item.Order;
+            }
         }
         await db.SaveChangesAsync();
     }

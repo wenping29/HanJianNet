@@ -10,9 +10,17 @@ interface MenuForm {
   label: string
   order: number
   roles: Role[]
+  parent: string | null
 }
 
-const EMPTY_FORM: MenuForm = { key: '', path: '', label: '', order: 0, roles: ['manager', 'admin', 'superadmin'] }
+const EMPTY_FORM: MenuForm = {
+  key: '',
+  path: '',
+  label: '',
+  order: 0,
+  roles: ['manager', 'admin', 'superadmin'],
+  parent: null,
+}
 
 export default function Menus() {
   const me = useAuth((s) => s.user)!
@@ -75,7 +83,7 @@ export default function Menus() {
 
   const openEdit = (m: AdminMenuItem) => {
     setEditing(m)
-    setForm({ key: m.key, path: m.path, label: m.label, order: m.order, roles: [...m.roles] })
+    setForm({ key: m.key, path: m.path, label: m.label, order: m.order, roles: [...m.roles], parent: m.parent ?? null })
     setError('')
     setShowForm(true)
   }
@@ -113,6 +121,8 @@ export default function Menus() {
   }
 
   const manageable = canManageUsers(me.role)
+  const parentLabel = (key?: string | null) => (key ? items.find((i) => i.key === key)?.label ?? key : '')
+  const groupCandidates = items.filter((i) => !i.parent && i.id !== editing?.id)
 
   return (
     <div className="container-page py-10">
@@ -143,11 +153,12 @@ export default function Menus() {
         </div>
       ) : (
         <div className="card animate-fade-up mt-6 overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[820px] text-left text-sm">
             <thead>
               <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
                 <th className="px-5 py-3 font-medium">标识</th>
                 <th className="px-5 py-3 font-medium">名称</th>
+                <th className="px-5 py-3 font-medium">分组</th>
                 <th className="px-5 py-3 font-medium">路径</th>
                 <th className="px-5 py-3 font-medium">排序</th>
                 <th className="px-5 py-3 font-medium">可见角色</th>
@@ -158,7 +169,11 @@ export default function Menus() {
               {items.map((m) => (
                 <tr key={m.id} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
                   <td className="px-5 py-3 font-garamond tracking-wider text-paperdim/80">{m.key}</td>
-                  <td className="px-5 py-3 font-medium tracking-wider text-paper">{m.label}</td>
+                  <td className="px-5 py-3 font-medium tracking-wider text-paper">
+                    {m.parent && <span className="mr-1.5 text-paperdim/50">└</span>}
+                    {m.label}
+                  </td>
+                  <td className="px-5 py-3 text-paperdim">{parentLabel(m.parent) || '—'}</td>
                   <td className="px-5 py-3 font-garamond text-paperdim">{m.path}</td>
                   <td className="px-5 py-3 text-paperdim">{m.order}</td>
                   <td className="px-5 py-3">
@@ -245,6 +260,21 @@ export default function Menus() {
                   value={form.order}
                   onChange={(e) => setForm({ ...form, order: Number(e.target.value) || 0 })}
                 />
+              </label>
+              <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
+                所属分组
+                <select
+                  className="input"
+                  value={form.parent ?? ''}
+                  onChange={(e) => setForm({ ...form, parent: e.target.value || null })}
+                >
+                  <option value="">顶级菜单</option>
+                  {groupCandidates.map((t) => (
+                    <option key={t.id} value={t.key}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
               </label>
               <div className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
                 可见角色

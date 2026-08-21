@@ -13,11 +13,13 @@ export interface MenuItem {
   path: string
   label: string
   order: number
+  children?: MenuItem[]
 }
 
 export interface AdminMenuItem extends MenuItem {
   id: string
   roles: Role[]
+  parent?: string | null
 }
 
 export interface RoleMenuConfig {

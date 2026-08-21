@@ -32,6 +32,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasIndex(m => m.Key).IsUnique();
             e.HasIndex(m => m.Path).IsUnique();
+            e.HasIndex(m => m.Parent);
         });
 
         modelBuilder.Entity<AppRole>(e =>

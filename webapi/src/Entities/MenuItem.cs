@@ -1,7 +1,8 @@
 namespace HanJianNet.WebApi.Entities;
 
 /// <summary>
-/// 后台导航菜单项，Roles 为逗号分隔的可见角色列表。
+/// 后台导航菜单项，Roles 为逗号分隔的可见角色列表；
+/// Parent 为上级菜单 Key（空表示顶级），最多支持两级。
 /// </summary>
 public class MenuItem
 {
@@ -11,4 +12,5 @@ public class MenuItem
     public string Label { get; set; } = "";
     public int Order { get; set; }
     public string Roles { get; set; } = "";
+    public string? Parent { get; set; }
 }

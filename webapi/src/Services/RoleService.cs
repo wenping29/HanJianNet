@@ -13,20 +13,21 @@ public class RoleService(AppDbContext db)
 {
     public async Task<List<RoleMenuDto>> ListAsync()
     {
-        var roles = await db.Roles.OrderByDescending(r => r.Rank).ThenBy(r => r.Key).ToListAsync();
         var menus = await db.MenuItems.OrderBy(m => m.Order).ThenBy(m => m.Key).ToListAsync();
+        // 分组的可见性由子菜单自动推导，权限矩阵仅配置叶子菜单。
+        var leafMenus = menus.Where(m => !menus.Any(c => c.Parent == m.Key)).ToList();
         var counts = await db.Users.GroupBy(u => u.Role)
             .ToDictionaryAsync(g => g.Key, g => g.Count());
 
         var items = new List<RoleMenuDto>();
-        foreach (var role in roles)
+        foreach (var role in await db.Roles.OrderByDescending(r => r.Rank).ThenBy(r => r.Key).ToListAsync())
         {
             items.Add(new RoleMenuDto
             {
                 Role = role.Key,
                 Label = role.Label,
                 UserCount = counts.GetValueOrDefault(role.Key),
-                MenuKeys = menus
+                MenuKeys = leafMenus
                     .Where(m => MenuService.ParseRoles(m.Roles).Contains(role.Key))
                     .Select(m => m.Key)
                     .ToArray(),

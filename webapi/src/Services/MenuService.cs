@@ -17,17 +17,36 @@ public partial class MenuService(AppDbContext db)
 
     public async Task<List<MenuItemDto>> GetMenusForRoleAsync(string role)
     {
-        var items = await db.MenuItems.OrderBy(m => m.Order).ToListAsync();
-        return items
-            .Where(m => ParseRoles(m.Roles).Contains(role))
-            .Select(m => new MenuItemDto
-            {
-                Key = m.Key,
-                Path = m.Path,
-                Label = m.Label,
-                Order = m.Order,
-            })
-            .ToList();
+        var items = await db.MenuItems.OrderBy(m => m.Order).ThenBy(m => m.Key).ToListAsync();
+        var visible = items.Where(m => ParseRoles(m.Roles).Contains(role)).ToList();
+
+        // 子菜单按自身角色过滤后挂到父级；父级只要存在可见子菜单即视为可见。
+        var childrenByParent = visible
+            .Where(m => !string.IsNullOrEmpty(m.Parent))
+            .GroupBy(m => m.Parent!)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        var result = new List<MenuItemDto>();
+        var consumedParents = new HashSet<string>();
+
+        foreach (var top in visible.Where(m => string.IsNullOrEmpty(m.Parent)))
+        {
+            childrenByParent.TryGetValue(top.Key, out var kids);
+            result.Add(ToDto(top, kids));
+            if (kids is not null) consumedParents.Add(top.Key);
+        }
+
+        foreach (var (parentKey, kids) in childrenByParent)
+        {
+            if (consumedParents.Contains(parentKey)) continue;
+            var parent = items.FirstOrDefault(m => m.Key == parentKey);
+            if (parent is not null)
+                result.Add(ToDto(parent, kids));
+            else
+                result.AddRange(kids.Select(k => ToDto(k))); // 父级已删除：孤儿子菜单提升为顶级
+        }
+
+        return result.OrderBy(m => m.Order).ThenBy(m => m.Key).ToList();
     }
 
     public async Task<List<MenuItemAdminDto>> ListAsync()
@@ -38,7 +57,7 @@ public partial class MenuService(AppDbContext db)
 
     public async Task<MenuItemAdminDto> CreateAsync(SaveMenuRequest req)
     {
-        var (key, path, label, roles) = await NormalizeAsync(req);
+        var (key, path, label, roles, parent) = await NormalizeAsync(req);
 
         if (await db.MenuItems.AnyAsync(m => m.Key == key))
             throw new ApiException(409, $"菜单标识「{key}」已存在");
@@ -52,6 +71,7 @@ public partial class MenuService(AppDbContext db)
             Label = label,
             Order = req.Order,
             Roles = string.Join(',', roles),
+            Parent = parent,
         };
         db.MenuItems.Add(item);
         await db.SaveChangesAsync();
@@ -63,25 +83,34 @@ public partial class MenuService(AppDbContext db)
         var item = await db.MenuItems.FindAsync(id)
                    ?? throw new ApiException(404, "菜单不存在");
 
-        var (key, path, label, roles) = await NormalizeAsync(req);
+        var (key, path, label, roles, parent) = await NormalizeAsync(req);
 
         if (await db.MenuItems.AnyAsync(m => m.Key == key && m.Id != id))
             throw new ApiException(409, $"菜单标识「{key}」已存在");
         if (await db.MenuItems.AnyAsync(m => m.Path == path && m.Id != id))
             throw new ApiException(409, $"菜单路径「{path}」已存在");
+        if (!string.IsNullOrEmpty(parent) && await db.MenuItems.AnyAsync(m => m.Parent == item.Key))
+            throw new ApiException(400, "该菜单包含子菜单，不能移入其他分组");
 
-        item.Key = key;
+        if (item.Key != key)
+        {
+            // 分组改 Key 时同步子菜单的 Parent 引用，避免孤儿节点。
+            var children = await db.MenuItems.Where(m => m.Parent == item.Key).ToListAsync();
+            foreach (var child in children) child.Parent = key;
+            item.Key = key;
+        }
         item.Path = path;
         item.Label = label;
         item.Order = req.Order;
         item.Roles = string.Join(',', roles);
+        item.Parent = parent;
         await db.SaveChangesAsync();
         return ToAdminDto(item);
     }
 
     // ---------- 内部 ----------
 
-    private async Task<(string Key, string Path, string Label, string[] Roles)> NormalizeAsync(SaveMenuRequest req)
+    private async Task<(string Key, string Path, string Label, string[] Roles, string? Parent)> NormalizeAsync(SaveMenuRequest req)
     {
         var key = req.Key.Trim().ToLowerInvariant();
         var path = req.Path.Trim();
@@ -105,11 +134,31 @@ public partial class MenuService(AppDbContext db)
             if (!validRoles.Contains(role)) throw new ApiException(400, $"未知角色：{role}");
         }
 
-        return (key, path, label, roles);
+        string? parent = null;
+        if (!string.IsNullOrWhiteSpace(req.Parent))
+        {
+            parent = req.Parent.Trim();
+            if (parent == key) throw new ApiException(400, "不能将菜单设为自身的子菜单");
+            var parentItem = await db.MenuItems.FirstOrDefaultAsync(m => m.Key == parent)
+                             ?? throw new ApiException(400, $"上级菜单不存在：{parent}");
+            if (!string.IsNullOrEmpty(parentItem.Parent))
+                throw new ApiException(400, "仅支持两级菜单，不能选择二级菜单作为上级");
+        }
+
+        return (key, path, label, roles, parent);
     }
 
     internal static string[] ParseRoles(string roles) =>
         roles.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    private static MenuItemDto ToDto(MenuItem m, List<MenuItem>? children = null) => new()
+    {
+        Key = m.Key,
+        Path = m.Path,
+        Label = m.Label,
+        Order = m.Order,
+        Children = (children ?? []).Select(c => ToDto(c)).ToList(),
+    };
 
     private static MenuItemAdminDto ToAdminDto(MenuItem m) => new()
     {
@@ -119,5 +168,6 @@ public partial class MenuService(AppDbContext db)
         Label = m.Label,
         Order = m.Order,
         Roles = ParseRoles(m.Roles),
+        Parent = m.Parent,
     };
 }

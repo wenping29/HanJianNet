@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { ROLE_LABELS } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -8,6 +8,7 @@ import type { MenuItem } from '../types'
 export default function Layout() {
   const { user, clear } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [menus, setMenus] = useState<MenuItem[]>([])
 
   useEffect(() => {
@@ -30,6 +31,9 @@ export default function Layout() {
       isActive ? 'text-cinnabarlight' : 'text-paperdim'
     }`
 
+  const groupActive = (m: MenuItem) =>
+    m.children?.some((c) => location.pathname === c.path || location.pathname.startsWith(`${c.path}/`)) ?? false
+
   return (
     <div className="paper-texture flex min-h-screen flex-col bg-ink">
       <header className="sticky top-0 z-40 border-b border-paperedge/15 bg-ink/85 backdrop-blur">
@@ -45,11 +49,44 @@ export default function Layout() {
             </span>
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
-            {menus.map((m) => (
-              <NavLink key={m.key} to={m.path} className={navCls}>
-                {m.label}
-              </NavLink>
-            ))}
+            {menus.map((m) =>
+              m.children && m.children.length > 0 ? (
+                <div key={m.key} className="group relative">
+                  <button
+                    type="button"
+                    className={`flex items-center gap-1 px-1 py-2 text-sm tracking-[0.25em] transition hover:text-paper ${
+                      groupActive(m) ? 'text-cinnabarlight' : 'text-paperdim'
+                    }`}
+                  >
+                    {m.label}
+                    <span aria-hidden="true" className="text-[10px] leading-none">
+                      ▾
+                    </span>
+                  </button>
+                  <div className="invisible absolute left-0 top-full pt-1 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
+                    <div className="card min-w-[150px] py-2 shadow-seal">
+                      {m.children.map((c) => (
+                        <NavLink
+                          key={c.key}
+                          to={c.path}
+                          className={({ isActive }) =>
+                            `block px-4 py-2 text-sm tracking-[0.2em] transition hover:bg-bronze/15 hover:text-paper ${
+                              isActive ? 'text-cinnabarlight' : 'text-paperdim'
+                            }`
+                          }
+                        >
+                          {c.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <NavLink key={m.key} to={m.path} className={navCls}>
+                  {m.label}
+                </NavLink>
+              ),
+            )}
           </nav>
           <div className="flex items-center gap-3">
             {user && (

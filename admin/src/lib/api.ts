@@ -71,10 +71,10 @@ export const api = {
 
   allMenus: () => request<{ items: AdminMenuItem[] }>('/admin/menus/manage'),
 
-  createMenu: (body: { key: string; path: string; label: string; order: number; roles: Role[] }) =>
+  createMenu: (body: { key: string; path: string; label: string; order: number; roles: Role[]; parent?: string | null }) =>
     request<{ item: AdminMenuItem }>('/admin/menus', { method: 'POST', body: JSON.stringify(body) }),
 
-  updateMenu: (id: string, body: { key: string; path: string; label: string; order: number; roles: Role[] }) =>
+  updateMenu: (id: string, body: { key: string; path: string; label: string; order: number; roles: Role[]; parent?: string | null }) =>
     request<{ item: AdminMenuItem }>(`/admin/menus/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
 
   roleMenus: () => request<{ items: RoleMenuConfig[] }>('/admin/roles'),
