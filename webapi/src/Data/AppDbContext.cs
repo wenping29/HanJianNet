@@ -17,6 +17,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<LifeEvent> LifeEvents => Set<LifeEvent>();
     public DbSet<MenuItem> MenuItems => Set<MenuItem>();
     public DbSet<AppRole> Roles => Set<AppRole>();
+    public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,6 +40,20 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<AppRole>(e =>
         {
             e.HasIndex(r => r.Key).IsUnique();
+        });
+
+        modelBuilder.Entity<Permission>(e =>
+        {
+            e.HasIndex(p => p.Key).IsUnique();
+        });
+
+        modelBuilder.Entity<RolePermission>(e =>
+        {
+            e.HasIndex(rp => new { rp.RoleId, rp.PermissionId }).IsUnique();
+            e.HasOne(rp => rp.Role).WithMany()
+                .HasForeignKey(rp => rp.RoleId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(rp => rp.Permission).WithMany()
+                .HasForeignKey(rp => rp.PermissionId).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Spouse>()
