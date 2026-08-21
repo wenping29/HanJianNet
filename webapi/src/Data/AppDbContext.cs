@@ -15,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<SourceRef> Sources => Set<SourceRef>();
     public DbSet<LifeEvent> LifeEvents => Set<LifeEvent>();
+    public DbSet<MenuItem> MenuItems => Set<MenuItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,6 +25,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasIndex(u => u.Username).IsUnique();
             e.HasIndex(u => u.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<MenuItem>(e =>
+        {
+            e.HasIndex(m => m.Key).IsUnique();
+            e.HasIndex(m => m.Path).IsUnique();
         });
 
         modelBuilder.Entity<Spouse>()

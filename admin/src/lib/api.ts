@@ -1,5 +1,5 @@
 import { useAuth } from '../stores/auth'
-import type { AuthPayload, MenuItem, ReviewStatus, Revision, Role, TraitorSnapshot, User } from '../types'
+import type { AdminMenuItem, AuthPayload, MenuItem, ReviewStatus, Revision, Role, TraitorSnapshot, User } from '../types'
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/+$/, '')
 
@@ -49,6 +49,14 @@ export const api = {
   me: () => request<{ user: User }>('/auth/me'),
 
   menus: () => request<{ items: MenuItem[] }>('/admin/menus'),
+
+  allMenus: () => request<{ items: AdminMenuItem[] }>('/admin/menus/manage'),
+
+  createMenu: (body: { key: string; path: string; label: string; order: number; roles: Role[] }) =>
+    request<{ item: AdminMenuItem }>('/admin/menus', { method: 'POST', body: JSON.stringify(body) }),
+
+  updateMenu: (id: string, body: { key: string; path: string; label: string; order: number; roles: Role[] }) =>
+    request<{ item: AdminMenuItem }>(`/admin/menus/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
 
   adminRevisions: (status?: ReviewStatus) =>
     request<{ items: Revision[] }>(`/admin/revisions${status ? `?status=${status}` : ''}`),

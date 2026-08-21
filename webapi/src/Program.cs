@@ -62,7 +62,7 @@ builder.Services.AddScoped<TraitorService>();
 builder.Services.AddScoped<RevisionService>();
 builder.Services.AddScoped<UploadService>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddSingleton<MenuService>();
+builder.Services.AddScoped<MenuService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -92,6 +92,11 @@ using (var scope = app.Services.CreateScope())
         builder.Configuration["Seed:AdminUsername"] ?? "admin",
         builder.Configuration["Seed:AdminEmail"] ?? "admin@hanjiannet.local",
         builder.Configuration["Seed:AdminPassword"] ?? "admin123456");
+    await DbSeeder.SeedMenusAsync(db);
+    if (builder.Configuration.GetValue<bool>("Seed:TestUsers"))
+    {
+        await DbSeeder.SeedTestUsersAsync(db);
+    }
 }
 
 app.Run();

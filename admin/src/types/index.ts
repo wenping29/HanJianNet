@@ -11,6 +11,11 @@ export interface MenuItem {
   order: number
 }
 
+export interface AdminMenuItem extends MenuItem {
+  id: string
+  roles: Role[]
+}
+
 export interface User {
   id: string
   username: string

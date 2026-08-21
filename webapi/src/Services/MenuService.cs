@@ -1,36 +1,121 @@
+using System.Text.RegularExpressions;
 using HanJianNet.WebApi.Common;
+using HanJianNet.WebApi.Data;
+using HanJianNet.WebApi.Dtos;
+using HanJianNet.WebApi.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HanJianNet.WebApi.Services;
 
-public class MenuItemDto
-{
-    public string Key { get; set; } = "";
-    public string Path { get; set; } = "";
-    public string Label { get; set; } = "";
-    public int Order { get; set; }
-}
-
 /// <summary>
-/// 菜单集中配置：每个菜单项声明可见角色，接口按当前用户角色过滤返回。
+/// 菜单管理：菜单项存于数据库，每个菜单项声明可见角色，接口按当前用户角色过滤返回。
 /// </summary>
-public class MenuService
+public partial class MenuService(AppDbContext db)
 {
-    private static readonly (MenuItemDto Item, string[] Roles)[] AllMenus =
-    [
-        (new MenuItemDto { Key = "reviews", Path = "/reviews", Label = "待审队列", Order = 1 },
-            [Roles.Manager, Roles.Admin, Roles.SuperAdmin]),
-        (new MenuItemDto { Key = "users", Path = "/users", Label = "用户管理", Order = 2 },
-            [Roles.Admin, Roles.SuperAdmin]),
-        (new MenuItemDto { Key = "profile", Path = "/profile", Label = "个人信息", Order = 3 },
-            [Roles.Manager, Roles.Admin, Roles.SuperAdmin]),
-    ];
+    [GeneratedRegex("^[a-z][a-z0-9-]*$")]
+    private static partial Regex KeyRegex();
 
-    public List<MenuItemDto> GetMenusForRole(string role)
+    public async Task<List<MenuItemDto>> GetMenusForRoleAsync(string role)
     {
-        return AllMenus
-            .Where(m => m.Roles.Contains(role))
-            .OrderBy(m => m.Item.Order)
-            .Select(m => m.Item)
+        var items = await db.MenuItems.OrderBy(m => m.Order).ToListAsync();
+        return items
+            .Where(m => ParseRoles(m.Roles).Contains(role))
+            .Select(m => new MenuItemDto
+            {
+                Key = m.Key,
+                Path = m.Path,
+                Label = m.Label,
+                Order = m.Order,
+            })
             .ToList();
     }
+
+    public async Task<List<MenuItemAdminDto>> ListAsync()
+    {
+        var items = await db.MenuItems.OrderBy(m => m.Order).ThenBy(m => m.Key).ToListAsync();
+        return items.Select(ToAdminDto).ToList();
+    }
+
+    public async Task<MenuItemAdminDto> CreateAsync(SaveMenuRequest req)
+    {
+        var (key, path, label, roles) = Normalize(req);
+
+        if (await db.MenuItems.AnyAsync(m => m.Key == key))
+            throw new ApiException(409, $"菜单标识「{key}」已存在");
+        if (await db.MenuItems.AnyAsync(m => m.Path == path))
+            throw new ApiException(409, $"菜单路径「{path}」已存在");
+
+        var item = new MenuItem
+        {
+            Key = key,
+            Path = path,
+            Label = label,
+            Order = req.Order,
+            Roles = string.Join(',', roles),
+        };
+        db.MenuItems.Add(item);
+        await db.SaveChangesAsync();
+        return ToAdminDto(item);
+    }
+
+    public async Task<MenuItemAdminDto> UpdateAsync(string id, SaveMenuRequest req)
+    {
+        var item = await db.MenuItems.FindAsync(id)
+                   ?? throw new ApiException(404, "菜单不存在");
+
+        var (key, path, label, roles) = Normalize(req);
+
+        if (await db.MenuItems.AnyAsync(m => m.Key == key && m.Id != id))
+            throw new ApiException(409, $"菜单标识「{key}」已存在");
+        if (await db.MenuItems.AnyAsync(m => m.Path == path && m.Id != id))
+            throw new ApiException(409, $"菜单路径「{path}」已存在");
+
+        item.Key = key;
+        item.Path = path;
+        item.Label = label;
+        item.Order = req.Order;
+        item.Roles = string.Join(',', roles);
+        await db.SaveChangesAsync();
+        return ToAdminDto(item);
+    }
+
+    // ---------- 内部 ----------
+
+    private static (string Key, string Path, string Label, string[] Roles) Normalize(SaveMenuRequest req)
+    {
+        var key = req.Key.Trim().ToLowerInvariant();
+        var path = req.Path.Trim();
+        var label = req.Label.Trim();
+        var roles = req.Roles
+            .Where(r => !string.IsNullOrWhiteSpace(r))
+            .Select(r => r.Trim().ToLowerInvariant())
+            .Distinct()
+            .ToArray();
+
+        if (key.Length < 2) throw new ApiException(400, "菜单标识至少 2 个字符");
+        if (!KeyRegex().IsMatch(key)) throw new ApiException(400, "菜单标识仅限小写字母、数字和中划线，且以字母开头");
+        if (!path.StartsWith('/')) throw new ApiException(400, "菜单路径必须以 / 开头");
+        if (label.Length < 2) throw new ApiException(400, "菜单名称至少 2 个字符");
+        if (req.Order < 0) throw new ApiException(400, "排序值不能为负数");
+        if (roles.Length == 0) throw new ApiException(400, "至少选择一个可见角色");
+        foreach (var role in roles)
+        {
+            if (!Roles.IsValid(role)) throw new ApiException(400, $"未知角色：{role}");
+        }
+
+        return (key, path, label, roles);
+    }
+
+    private static string[] ParseRoles(string roles) =>
+        roles.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    private static MenuItemAdminDto ToAdminDto(MenuItem m) => new()
+    {
+        Id = m.Id,
+        Key = m.Key,
+        Path = m.Path,
+        Label = m.Label,
+        Order = m.Order,
+        Roles = ParseRoles(m.Roles),
+    };
 }
