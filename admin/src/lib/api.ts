@@ -1,7 +1,25 @@
 import { useAuth } from '../stores/auth'
-import type { AdminMenuItem, AuthPayload, MenuItem, ReviewStatus, Revision, Role, TraitorSnapshot, User } from '../types'
+import type {
+  AdminMenuItem,
+  Attachment,
+  AttachmentKind,
+  AuthPayload,
+  MenuItem,
+  ReviewStatus,
+  Revision,
+  Role,
+  TraitorDetail,
+  TraitorInput,
+  TraitorSnapshot,
+  TraitorSummary,
+  User,
+} from '../types'
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/+$/, '')
+
+export function resolveAssetUrl(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : `${API_ORIGIN}${url}`
+}
 
 const BASE = `${API_ORIGIN}/api`
 
@@ -70,6 +88,27 @@ export const api = {
     }),
 
   getTraitor: (id: string) => request<{ traitor: TraitorSnapshot }>(`/traitors/${id}`),
+
+  adminTraitors: (name?: string) =>
+    request<{ items: TraitorSummary[] }>(`/admin/traitors${name ? `?name=${encodeURIComponent(name)}` : ''}`),
+
+  adminTraitor: (id: string) => request<{ traitor: TraitorDetail }>(`/admin/traitors/${id}`),
+
+  createTraitorDirect: (input: TraitorInput) =>
+    request<{ traitor: TraitorDetail }>('/admin/traitors', { method: 'POST', body: JSON.stringify(input) }),
+
+  updateTraitorDirect: (id: string, input: TraitorInput) =>
+    request<{ traitor: TraitorDetail }>(`/admin/traitors/${id}`, { method: 'PUT', body: JSON.stringify(input) }),
+
+  upload: async (file: File, kind: AttachmentKind): Promise<Attachment> => {
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('kind', kind)
+    const res = await fetch(`${BASE}/uploads`, { method: 'POST', headers: authHeader(), body: fd })
+    if (!res.ok) throw new ApiError(res.status, '上传失败')
+    const data = (await res.json()) as { id: string; url: string; kind: AttachmentKind; fileType: string }
+    return { ...data, caption: '' }
+  },
 
   users: () => request<{ items: User[] }>('/admin/users'),
 

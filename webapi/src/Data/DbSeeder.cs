@@ -63,7 +63,8 @@ public static class DbSeeder
     }
 
     /// <summary>
-    /// 菜单表为后期新增：旧库由 EnsureCreated 建库时不会补建，这里先兜底建表再写入默认菜单。
+    /// 菜单表为后期新增：旧库由 EnsureCreated 建库时不会补建，这里先兜底建表。
+    /// 默认菜单按 Key 逐项补种，保证升级后能拿到新增入口；后台暂不支持删除，不会与用户数据冲突。
     /// </summary>
     public static async Task SeedMenusAsync(AppDbContext db)
     {
@@ -80,13 +81,20 @@ public static class DbSeeder
             CREATE UNIQUE INDEX IF NOT EXISTS "IX_MenuItems_Path" ON "MenuItems" ("Path");
             """);
 
-        if (await db.MenuItems.AnyAsync()) return;
+        MenuItem[] defaults =
+        [
+            new() { Key = "traitors", Path = "/traitors", Label = "名录管理", Order = 1, Roles = "admin,superadmin" },
+            new() { Key = "reviews", Path = "/reviews", Label = "待审队列", Order = 2, Roles = "manager,admin,superadmin" },
+            new() { Key = "users", Path = "/users", Label = "用户管理", Order = 3, Roles = "admin,superadmin" },
+            new() { Key = "menus", Path = "/menus", Label = "菜单管理", Order = 4, Roles = "admin,superadmin" },
+            new() { Key = "profile", Path = "/profile", Label = "个人信息", Order = 5, Roles = "manager,admin,superadmin" },
+        ];
 
-        db.MenuItems.AddRange(
-            new MenuItem { Key = "reviews", Path = "/reviews", Label = "待审队列", Order = 1, Roles = "manager,admin,superadmin" },
-            new MenuItem { Key = "users", Path = "/users", Label = "用户管理", Order = 2, Roles = "admin,superadmin" },
-            new MenuItem { Key = "menus", Path = "/menus", Label = "菜单管理", Order = 3, Roles = "admin,superadmin" },
-            new MenuItem { Key = "profile", Path = "/profile", Label = "个人信息", Order = 4, Roles = "manager,admin,superadmin" });
+        foreach (var item in defaults)
+        {
+            if (await db.MenuItems.AnyAsync(m => m.Key == item.Key)) continue;
+            db.MenuItems.Add(item);
+        }
         await db.SaveChangesAsync();
     }
 }

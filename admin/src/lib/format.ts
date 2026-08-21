@@ -1,5 +1,14 @@
 import type { YearType } from '../types'
 
+export const PERIODS = ['宋末', '明末', '清末', '民国', '其他'] as const
+
+export function splitList(text: string): string[] {
+  return text
+    .split(/[,，、;；]/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
 export function formatYear(year: number | null, type: YearType): string {
   if (type === 'unknown' || year === null || Number.isNaN(year)) return '不详'
   const prefix = type === 'approx' ? '约' : ''

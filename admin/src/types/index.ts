@@ -2,6 +2,10 @@ export type ReviewStatus = 'pending' | 'approved' | 'rejected'
 
 export type YearType = 'exact' | 'approx' | 'before' | 'after' | 'unknown'
 
+export type Period = '宋末' | '明末' | '清末' | '民国' | '其他'
+
+export type AttachmentKind = 'photo' | 'evidence'
+
 export type Role = 'superadmin' | 'admin' | 'manager' | 'user' | 'guest'
 
 export interface MenuItem {
@@ -113,4 +117,45 @@ export interface Revision {
 export interface AuthPayload {
   token: string
   user: User
+}
+
+export interface TraitorSummary {
+  id: string
+  name: string
+  period: Period
+  faction: string
+  birthYear: number | null
+  deathYear: number | null
+  birthYearType: YearType
+  deathYearType: YearType
+  identityTags: string[]
+  photoUrl?: string | null
+}
+
+export interface TraitorDetail extends TraitorSnapshot {
+  id: string
+}
+
+export interface TraitorInput {
+  name: string
+  courtesyName?: string
+  pseudonym?: string
+  birthYear: number | null
+  deathYear: number | null
+  birthYearType: YearType
+  deathYearType: YearType
+  nativePlace: string
+  aliases: string[]
+  identityTags: string[]
+  period: Period
+  faction: string
+  summary: string
+  spouses: Array<{ name: string; remark?: string }>
+  children: Array<{ name: string; gender?: string; whereabouts?: string; remark?: string }>
+  residences: Array<{ place: string; period?: string; remark?: string }>
+  crimeRecords: Array<{ year: number | null; title: string; process?: string; harm?: string; sourceRef?: string }>
+  lifeEvents: Array<{ year: number | null; event: string; sourceRef?: string }>
+  sources: Array<{ citation: string; credibility?: number }>
+  relatedIds: string[]
+  attachments: Array<Pick<Attachment, 'id' | 'url' | 'kind' | 'fileType' | 'caption'>>
 }

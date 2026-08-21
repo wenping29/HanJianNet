@@ -91,55 +91,7 @@ public class RevisionService(AppDbContext db)
                       ?? throw new ApiException(404, "原档案已被删除，无法通过该修订");
         }
 
-        snapshot.ApplyTo(traitor);
-
-        traitor.Spouses.Clear();
-        traitor.Children.Clear();
-        traitor.Residences.Clear();
-        traitor.CrimeRecords.Clear();
-        traitor.Attachments.Clear();
-        traitor.Sources.Clear();
-        traitor.LifeEvents.Clear();
-
-        foreach (var s in snapshot.Spouses)
-            traitor.Spouses.Add(new Spouse { Name = s.Name, Remark = s.Remark });
-        foreach (var c in snapshot.Children)
-            traitor.Children.Add(new Child
-            {
-                Name = c.Name,
-                Gender = c.Gender,
-                Whereabouts = c.Whereabouts,
-                Remark = c.Remark,
-            });
-        foreach (var r in snapshot.Residences)
-            traitor.Residences.Add(new Residence { Place = r.Place, Period = r.Period, Remark = r.Remark });
-        foreach (var c in snapshot.CrimeRecords)
-            traitor.CrimeRecords.Add(new CrimeRecord
-            {
-                Year = c.Year,
-                Title = c.Title,
-                Process = c.Process,
-                Harm = c.Harm,
-                SourceRef = c.SourceRef,
-            });
-        foreach (var a in snapshot.Attachments)
-            traitor.Attachments.Add(new Attachment
-            {
-                Id = string.IsNullOrWhiteSpace(a.Id) ? Guid.NewGuid().ToString("N") : a.Id,
-                Url = a.Url,
-                Kind = a.Kind,
-                FileType = a.FileType,
-                Caption = a.Caption,
-            });
-        foreach (var s in snapshot.Sources)
-            traitor.Sources.Add(new SourceRef { Citation = s.Citation, Credibility = s.Credibility });
-        foreach (var l in snapshot.LifeEvents)
-            traitor.LifeEvents.Add(new LifeEvent
-            {
-                Year = l.Year,
-                Event = l.Event,
-                SourceRef = l.SourceRef,
-            });
+        TraitorService.ApplySnapshot(snapshot, traitor);
     }
 
     private Task<Revision?> FindWithUsers(string id) =>
