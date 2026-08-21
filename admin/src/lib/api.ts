@@ -19,9 +19,14 @@ function authHeader(): Record<string, string> {
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    ...authHeader(),
+    ...(init.headers as Record<string, string> | undefined),
+  }
+  if (init.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json'
   const res = await fetch(BASE + path, {
     ...init,
-    headers: { ...authHeader(), ...(init.headers ?? {}) },
+    headers,
   })
   if (!res.ok) {
     let message = `请求失败（${res.status}）`
