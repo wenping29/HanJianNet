@@ -2,11 +2,20 @@ export type ReviewStatus = 'pending' | 'approved' | 'rejected'
 
 export type YearType = 'exact' | 'approx' | 'before' | 'after' | 'unknown'
 
+export type Role = 'superadmin' | 'admin' | 'manager' | 'user' | 'guest'
+
+export interface MenuItem {
+  key: string
+  path: string
+  label: string
+  order: number
+}
+
 export interface User {
   id: string
   username: string
   email: string
-  role: 'user' | 'admin'
+  role: Role
   createdAt: string
 }
 

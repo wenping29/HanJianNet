@@ -1,5 +1,5 @@
 import { useAuth } from '../stores/auth'
-import type { AuthPayload, ReviewStatus, Revision, TraitorSnapshot, User } from '../types'
+import type { AuthPayload, MenuItem, ReviewStatus, Revision, Role, TraitorSnapshot, User } from '../types'
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/+$/, '')
 
@@ -48,6 +48,8 @@ export const api = {
 
   me: () => request<{ user: User }>('/auth/me'),
 
+  menus: () => request<{ items: MenuItem[] }>('/admin/menus'),
+
   adminRevisions: (status?: ReviewStatus) =>
     request<{ items: Revision[] }>(`/admin/revisions${status ? `?status=${status}` : ''}`),
 
@@ -60,4 +62,23 @@ export const api = {
     }),
 
   getTraitor: (id: string) => request<{ traitor: TraitorSnapshot }>(`/traitors/${id}`),
+
+  users: () => request<{ items: User[] }>('/admin/users'),
+
+  createUser: (body: { username: string; email: string; password: string; role: Role }) =>
+    request<{ user: User }>('/admin/users', { method: 'POST', body: JSON.stringify(body) }),
+
+  updateUser: (id: string, body: { username: string; email: string; password?: string }) =>
+    request<{ user: User }>(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+
+  changeRole: (id: string, role: Role) =>
+    request<{ user: User }>(`/admin/users/${id}/role`, { method: 'PUT', body: JSON.stringify({ role }) }),
+
+  deleteUser: (id: string) => request<{ message: string }>(`/admin/users/${id}`, { method: 'DELETE' }),
+
+  updateProfile: (body: { username: string; email: string }) =>
+    request<{ user: User }>('/me/profile', { method: 'PUT', body: JSON.stringify(body) }),
+
+  changePassword: (body: { currentPassword: string; newPassword: string }) =>
+    request<{ message: string }>('/me/password', { method: 'PUT', body: JSON.stringify(body) }),
 }

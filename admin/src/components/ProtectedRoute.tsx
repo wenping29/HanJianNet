@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { canAccessConsole } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 
 export default function ProtectedRoute() {
@@ -8,12 +9,12 @@ export default function ProtectedRoute() {
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }
-  if (user.role !== 'admin') {
+  if (!canAccessConsole(user.role)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-ink px-4">
         <div className="card max-w-md p-8 text-center">
           <h1 className="text-xl font-bold tracking-[0.3em] text-cinnabarlight">无权访问</h1>
-          <p className="mt-3 text-sm leading-relaxed text-paperdim">此后台仅限管理员使用，当前账号不具备管理员权限。</p>
+          <p className="mt-3 text-sm leading-relaxed text-paperdim">此后台仅限管理人员使用，当前账号不具备后台权限。</p>
           <button type="button" className="btn-ghost mt-6" onClick={() => useAuth.getState().clear()}>
             切换账号
           </button>

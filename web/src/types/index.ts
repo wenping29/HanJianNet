@@ -6,11 +6,13 @@ export type ReviewStatus = 'pending' | 'approved' | 'rejected'
 
 export type AttachmentKind = 'photo' | 'evidence'
 
+export type Role = 'superadmin' | 'admin' | 'manager' | 'user' | 'guest'
+
 export interface User {
   id: string
   username: string
   email: string
-  role: 'user' | 'admin'
+  role: Role
   createdAt: string
 }
 
@@ -57,9 +59,7 @@ export interface Attachment {
   kind: AttachmentKind
   fileType: string
   caption?: string
-}
-
-export interface SourceRef {
+}export interface SourceRef {
   id?: string
   citation: string
   credibility?: number
