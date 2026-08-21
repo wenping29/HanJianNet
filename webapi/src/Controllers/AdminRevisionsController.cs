@@ -7,7 +7,7 @@ namespace HanJianNet.WebApi.Controllers;
 
 [ApiController]
 [Route("api/admin/revisions")]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = "manager,admin,superadmin")]
 public class AdminRevisionsController(RevisionService revisions) : ControllerBase
 {
     [HttpGet]

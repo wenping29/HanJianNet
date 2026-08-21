@@ -43,7 +43,7 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
         return Ok(new { items });
     }
 
-    [Authorize]
+    [Authorize(Roles = "user,manager,admin,superadmin")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] TraitorInputDto input)
     {
@@ -51,7 +51,7 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
         return Ok(new { revisionId });
     }
 
-    [Authorize]
+    [Authorize(Roles = "user,manager,admin,superadmin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] TraitorInputDto input)
     {
