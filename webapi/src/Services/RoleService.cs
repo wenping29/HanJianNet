@@ -6,26 +6,28 @@ using Microsoft.EntityFrameworkCore;
 namespace HanJianNet.WebApi.Services;
 
 /// <summary>
-/// 角色管理：角色为系统内置，页面按「角色 × 菜单」矩阵配置各角色的菜单可见性。
+/// 角色管理：角色存于数据库（AppRoles），页面按「角色 × 菜单」矩阵配置各角色的菜单可见性。
 /// 可见性数据仍存储于 MenuItem.Roles（逗号分隔），本服务做双向同步。
 /// </summary>
 public class RoleService(AppDbContext db)
 {
     public async Task<List<RoleMenuDto>> ListAsync()
     {
+        var roles = await db.Roles.OrderByDescending(r => r.Rank).ThenBy(r => r.Key).ToListAsync();
         var menus = await db.MenuItems.OrderBy(m => m.Order).ThenBy(m => m.Key).ToListAsync();
         var counts = await db.Users.GroupBy(u => u.Role)
             .ToDictionaryAsync(g => g.Key, g => g.Count());
 
         var items = new List<RoleMenuDto>();
-        foreach (var role in Roles.All)
+        foreach (var role in roles)
         {
             items.Add(new RoleMenuDto
             {
-                Role = role,
-                UserCount = counts.GetValueOrDefault(role),
+                Role = role.Key,
+                Label = role.Label,
+                UserCount = counts.GetValueOrDefault(role.Key),
                 MenuKeys = menus
-                    .Where(m => MenuService.ParseRoles(m.Roles).Contains(role))
+                    .Where(m => MenuService.ParseRoles(m.Roles).Contains(role.Key))
                     .Select(m => m.Key)
                     .ToArray(),
             });
@@ -36,7 +38,8 @@ public class RoleService(AppDbContext db)
     public async Task<List<RoleMenuDto>> SetMenusAsync(string role, string[] menuKeys)
     {
         role = role.Trim().ToLowerInvariant();
-        if (!Roles.IsValid(role)) throw new ApiException(400, $"未知角色：{role}");
+        _ = await db.Roles.FirstOrDefaultAsync(r => r.Key == role)
+            ?? throw new ApiException(400, $"未知角色：{role}");
         if (role == Roles.SuperAdmin) throw new ApiException(400, "超级管理员默认可见所有菜单，无需配置");
 
         var keys = menuKeys

@@ -4,6 +4,7 @@ namespace HanJianNet.WebApi.Dtos;
 public class RoleMenuDto
 {
     public string Role { get; set; } = "";
+    public string Label { get; set; } = "";
     public int UserCount { get; set; }
     public string[] MenuKeys { get; set; } = [];
 }

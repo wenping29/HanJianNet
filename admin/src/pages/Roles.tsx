@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../lib/api'
-import { ROLE_LABELS, ROLE_OPTIONS } from '../lib/roles'
+import { ROLE_LABELS } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 import type { AdminMenuItem, RoleMenuConfig } from '../types'
 
@@ -50,15 +50,13 @@ export default function Roles() {
     try {
       const data = await api.updateRoleMenus(cfg.role, next)
       setItems(data.items)
-      flash(`已更新「${ROLE_LABELS[cfg.role]}」的菜单权限`)
+      flash(`已更新「${cfg.label || ROLE_LABELS[cfg.role]}」的菜单权限`)
     } catch (e) {
       setError(e instanceof Error ? e.message : '保存失败')
     } finally {
       setSavingRole(null)
     }
   }
-
-  const byRole = new Map(items.map((i) => [i.role, i]))
 
   return (
     <div className="container-page py-10">
@@ -81,6 +79,10 @@ export default function Roles() {
 
       {loading ? (
         <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+      ) : items.length === 0 ? (
+        <div className="card mt-6 p-12 text-center">
+          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无角色数据</p>
+        </div>
       ) : menus.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
           <p className="font-song text-lg tracking-widest text-paperdim/70">暂无菜单</p>
@@ -101,28 +103,28 @@ export default function Roles() {
               </tr>
             </thead>
             <tbody>
-              {ROLE_OPTIONS.map((r) => {
-                const cfg = byRole.get(r)
-                const locked = r === 'superadmin'
-                const busy = savingRole === r
+              {items.map((cfg) => {
+                const locked = cfg.role === 'superadmin'
+                const busy = savingRole === cfg.role
+                const label = cfg.label || ROLE_LABELS[cfg.role]
                 return (
-                  <tr key={r} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
+                  <tr key={cfg.role} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
                     <td className="whitespace-nowrap px-5 py-3">
-                      <span className="badge border-bronze/60 bg-bronze/15 text-bronzelight">{ROLE_LABELS[r]}</span>
+                      <span className="badge border-bronze/60 bg-bronze/15 text-bronzelight">{label}</span>
                       {locked && <span className="ml-2 text-xs text-paperdim/50">默认全部可见</span>}
                     </td>
-                    <td className="px-5 py-3 font-garamond text-paperdim">{cfg?.userCount ?? 0}</td>
+                    <td className="px-5 py-3 font-garamond text-paperdim">{cfg.userCount}</td>
                     {menus.map((m) => {
-                      const checked = locked || (cfg?.menuKeys.includes(m.key) ?? false)
+                      const checked = locked || cfg.menuKeys.includes(m.key)
                       return (
                         <td key={m.id} className="px-5 py-3 text-center">
                           <input
                             type="checkbox"
                             className="accent-cinnabar"
-                            aria-label={`${ROLE_LABELS[r]} 可见 ${m.label}`}
+                            aria-label={`${label} 可见 ${m.label}`}
                             checked={checked}
                             disabled={locked || busy}
-                            onChange={() => cfg && handleToggle(cfg, m.key)}
+                            onChange={() => handleToggle(cfg, m.key)}
                           />
                         </td>
                       )

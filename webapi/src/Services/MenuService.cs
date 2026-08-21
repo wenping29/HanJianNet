@@ -38,7 +38,7 @@ public partial class MenuService(AppDbContext db)
 
     public async Task<MenuItemAdminDto> CreateAsync(SaveMenuRequest req)
     {
-        var (key, path, label, roles) = Normalize(req);
+        var (key, path, label, roles) = await NormalizeAsync(req);
 
         if (await db.MenuItems.AnyAsync(m => m.Key == key))
             throw new ApiException(409, $"菜单标识「{key}」已存在");
@@ -63,7 +63,7 @@ public partial class MenuService(AppDbContext db)
         var item = await db.MenuItems.FindAsync(id)
                    ?? throw new ApiException(404, "菜单不存在");
 
-        var (key, path, label, roles) = Normalize(req);
+        var (key, path, label, roles) = await NormalizeAsync(req);
 
         if (await db.MenuItems.AnyAsync(m => m.Key == key && m.Id != id))
             throw new ApiException(409, $"菜单标识「{key}」已存在");
@@ -81,7 +81,7 @@ public partial class MenuService(AppDbContext db)
 
     // ---------- 内部 ----------
 
-    private static (string Key, string Path, string Label, string[] Roles) Normalize(SaveMenuRequest req)
+    private async Task<(string Key, string Path, string Label, string[] Roles)> NormalizeAsync(SaveMenuRequest req)
     {
         var key = req.Key.Trim().ToLowerInvariant();
         var path = req.Path.Trim();
@@ -98,9 +98,11 @@ public partial class MenuService(AppDbContext db)
         if (label.Length < 2) throw new ApiException(400, "菜单名称至少 2 个字符");
         if (req.Order < 0) throw new ApiException(400, "排序值不能为负数");
         if (roles.Length == 0) throw new ApiException(400, "至少选择一个可见角色");
+
+        var validRoles = (await db.Roles.Select(r => r.Key).ToListAsync()).ToHashSet();
         foreach (var role in roles)
         {
-            if (!Roles.IsValid(role)) throw new ApiException(400, $"未知角色：{role}");
+            if (!validRoles.Contains(role)) throw new ApiException(400, $"未知角色：{role}");
         }
 
         return (key, path, label, roles);

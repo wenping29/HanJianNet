@@ -22,6 +22,7 @@ export interface AdminMenuItem extends MenuItem {
 
 export interface RoleMenuConfig {
   role: Role
+  label: string
   userCount: number
   menuKeys: string[]
 }

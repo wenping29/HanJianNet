@@ -63,6 +63,41 @@ public static class DbSeeder
     }
 
     /// <summary>
+    /// 角色表为后期新增：旧库由 EnsureCreated 建库时不会补建，这里先兜底建表。
+    /// 内置角色按 Key 逐项补种；后台暂不支持删除角色，不会与用户数据冲突。
+    /// </summary>
+    public static async Task SeedRolesAsync(AppDbContext db)
+    {
+        await db.Database.ExecuteSqlRawAsync("""
+            CREATE TABLE IF NOT EXISTS "AppRoles" (
+                "Id" TEXT NOT NULL CONSTRAINT "PK_AppRoles" PRIMARY KEY,
+                "Key" TEXT NOT NULL,
+                "Label" TEXT NOT NULL,
+                "Rank" INTEGER NOT NULL,
+                "IsBuiltIn" INTEGER NOT NULL,
+                "CreatedAt" TEXT NOT NULL
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS "IX_AppRoles_Key" ON "AppRoles" ("Key");
+            """);
+
+        AppRole[] defaults =
+        [
+            new() { Key = Roles.SuperAdmin, Label = "超级管理员", Rank = 4, IsBuiltIn = true },
+            new() { Key = Roles.Admin, Label = "管理员", Rank = 3, IsBuiltIn = true },
+            new() { Key = Roles.Manager, Label = "管理", Rank = 2, IsBuiltIn = true },
+            new() { Key = Roles.User, Label = "普通用户", Rank = 1, IsBuiltIn = true },
+            new() { Key = Roles.Guest, Label = "游客", Rank = 0, IsBuiltIn = true },
+        ];
+
+        foreach (var role in defaults)
+        {
+            if (await db.Roles.AnyAsync(r => r.Key == role.Key)) continue;
+            db.Roles.Add(role);
+        }
+        await db.SaveChangesAsync();
+    }
+
+    /// <summary>
     /// 菜单表为后期新增：旧库由 EnsureCreated 建库时不会补建，这里先兜底建表。
     /// 默认菜单按 Key 逐项补种，保证升级后能拿到新增入口；后台暂不支持删除，不会与用户数据冲突。
     /// </summary>

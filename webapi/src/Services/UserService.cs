@@ -26,7 +26,7 @@ public class UserService(AppDbContext db)
         var email = req.Email.Trim().ToLowerInvariant();
 
         ValidateAccount(username, email, req.Password);
-        if (!Roles.IsValid(req.Role)) throw new ApiException(400, $"未知角色：{req.Role}");
+        if (!await db.Roles.AnyAsync(r => r.Key == req.Role)) throw new ApiException(400, $"未知角色：{req.Role}");
 
         var actor = await db.Users.FindAsync(actorId)
                     ?? throw new ApiException(401, "无法识别当前用户");
@@ -80,7 +80,7 @@ public class UserService(AppDbContext db)
 
     public async Task<UserDto> ChangeRoleAsync(string actorId, string targetId, string role)
     {
-        if (!Roles.IsValid(role)) throw new ApiException(400, $"未知角色：{role}");
+        if (!await db.Roles.AnyAsync(r => r.Key == role)) throw new ApiException(400, $"未知角色：{role}");
 
         var actor = await db.Users.FindAsync(actorId)
                     ?? throw new ApiException(401, "无法识别当前用户");

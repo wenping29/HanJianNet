@@ -93,6 +93,7 @@ using (var scope = app.Services.CreateScope())
         builder.Configuration["Seed:AdminUsername"] ?? "admin",
         builder.Configuration["Seed:AdminEmail"] ?? "admin@hanjiannet.local",
         builder.Configuration["Seed:AdminPassword"] ?? "admin123456");
+    await DbSeeder.SeedRolesAsync(db);
     await DbSeeder.SeedMenusAsync(db);
     if (builder.Configuration.GetValue<bool>("Seed:TestUsers"))
     {

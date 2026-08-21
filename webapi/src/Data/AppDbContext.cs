@@ -16,6 +16,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<SourceRef> Sources => Set<SourceRef>();
     public DbSet<LifeEvent> LifeEvents => Set<LifeEvent>();
     public DbSet<MenuItem> MenuItems => Set<MenuItem>();
+    public DbSet<AppRole> Roles => Set<AppRole>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +32,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasIndex(m => m.Key).IsUnique();
             e.HasIndex(m => m.Path).IsUnique();
+        });
+
+        modelBuilder.Entity<AppRole>(e =>
+        {
+            e.HasIndex(r => r.Key).IsUnique();
         });
 
         modelBuilder.Entity<Spouse>()
