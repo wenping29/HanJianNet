@@ -5,7 +5,7 @@ import TraitorCard from '../components/TraitorCard'
 import { api } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
 import { PERIODS, PERIOD_META } from '../lib/format'
-import type { TimelineNode, TraitorStats, TraitorSummary } from '../types'
+import type { TraitorStats, TraitorSummary } from '../types'
 
 function useCountUp(target: number, duration = 1200): number {
   const [value, setValue] = useState(0)
@@ -46,7 +46,6 @@ export default function Home() {
   const [stats, setStats] = useState<TraitorStats | null>(null)
   const [filters, setFilters] = useState<TraitorFilters>(EMPTY_FILTERS)
   const [items, setItems] = useState<TraitorSummary[]>([])
-  const [timeline, setTimeline] = useState<TimelineNode[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const wallRef = useRef<HTMLDivElement>(null)
@@ -68,7 +67,6 @@ export default function Home() {
   useEffect(() => {
     loadList(EMPTY_FILTERS)
     api.getStats().then(setStats).catch(() => setStats(null))
-    api.getTimeline().then((d) => setTimeline(d.items)).catch(() => setTimeline([]))
   }, [loadList])
 
   function submitSearch(e: React.FormEvent) {
@@ -224,44 +222,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-
-      {/* 事件时间线 */}
-      {timeline.length > 0 && (
-        <section className="border-t border-paperedge/10 bg-inksoft/40 py-16">
-          <div className="container-page">
-            <h2 className="section-title">
-              <span className="text-xl font-semibold tracking-[0.25em] text-paper">重大事件时间线</span>
-              <span className="font-garamond text-xs italic text-bronzelight">TIMELINE OF EVENTS</span>
-            </h2>
-            <div className="relative mt-10">
-              <div className="absolute left-4 top-0 h-full w-px bg-cinnabar/40 md:left-1/2" />
-              <ul className="space-y-10">
-                {timeline.map((node, i) => (
-                  <li key={node.id} className={`relative pl-12 md:w-1/2 md:pl-0 ${i % 2 === 0 ? 'md:pr-12' : 'md:ml-auto md:pl-12'}`}>
-                    <span
-                      className={`absolute top-1.5 h-3 w-3 rounded-full border-2 border-cinnabar bg-ink left-2.5 ${
-                        i % 2 === 0 ? 'md:-right-1.5 md:left-auto' : 'md:-left-1.5'
-                      }`}
-                    />
-                    <div className="card animate-fade-up p-5">
-                      <p className="font-garamond text-lg font-semibold text-cinnabarlight">{node.year ?? '不详'}</p>
-                      <p className="mt-1.5 text-sm leading-relaxed text-paper/90">{node.event}</p>
-                      {node.traitorId && (
-                        <Link
-                          to={`/traitor/${node.traitorId}`}
-                          className="mt-2 inline-block text-xs tracking-widest text-bronzelight underline underline-offset-4 hover:text-paper"
-                        >
-                          {node.traitorName ?? '查看档案'} →
-                        </Link>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-      )}
 
       <DefinitionDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </div>

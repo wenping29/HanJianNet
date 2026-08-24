@@ -45,6 +45,9 @@ export default function Layout() {
             <NavLink to="/" end className={navCls}>
               首页
             </NavLink>
+            <NavLink to="/timeline" className={navCls}>
+              事件时光轴
+            </NavLink>
             <NavLink to="/about" className={navCls}>
               关于
             </NavLink>
