@@ -90,7 +90,7 @@ export default function TraitorMap() {
                 type: 'map',
                 map: 'china',
                 roam: true,
-                zoom: 0.9,
+                zoom: 1.2,
                 top: 50,
                 bottom: 20,
                 label: {
@@ -135,29 +135,53 @@ export default function TraitorMap() {
   }, [])
 
   return (
-    <div>
-      <section style={containerPageStyle} className="py-12">
-        {/* ECharts 地图容器 — 始终渲染，overlay 覆盖加载/错误状态 */}
-        <div className="card relative overflow-hidden p-2">
-          <div>
-              {/* 页面标题区 */}
-            <section className="ink-hero relative overflow-hidden border-b border-paperedge/10">
-              <div style={containerPageStyle} className="animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
-                <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TRAITOR MAP</p>
-                <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
-                  汉奸地图
-                </h1>
-                <p className="mt-6 max-w-2xl leading-loose text-paperdim">
-                  按省份统计在册汉奸数量，昭示各省流毒分布——
-                  {total > 0 && (
-                    <span className="text-cinnabarlight">当前共录入 {total} 人</span>
-                  )}
-                </p>
-              </div>
-            </section>
-            <div ref={chartRef} className="h-[700px] w-[800px]  w-full" />
+    <section style={containerPageStyle} className="py-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
+        {/* 左栏：标题 + 描述 + 省份排名 */}
+        <div className="flex flex-col gap-6">
+          {/* 标题区 */}
+          <div className="card flex flex-col p-6">
+            <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TRAITOR MAP</p>
+            <h1 className="mt-3 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl">
+              汉奸地图
+            </h1>
+            <p className="mt-4 leading-loose text-paperdim">
+              按省份统计在册汉奸数量，昭示各省流毒分布
+            </p>
+            {total > 0 && (
+              <p className="mt-2 text-sm text-cinnabarlight">当前共录入 {total} 人</p>
+            )}
           </div>
-          
+
+          {/* 省份排名 */}
+          {!loading && !error && stats.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <h2 className="section-title">
+                <span className="text-base font-semibold tracking-widest text-paper">各省统计</span>
+                <span className="font-garamond text-xs italic text-bronzelight">RANKING</span>
+              </h2>
+              <div className="flex flex-col gap-2">
+                {stats.map((s, i) => (
+                  <Link
+                    key={s.province}
+                    to={`/roster`}
+                    className="card flex items-center justify-between px-3 py-2.5 transition-colors hover:border-cinnabar/40"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="font-garamond text-xs text-bronzelight/70">{i + 1}</span>
+                      <span className="text-sm text-paper">{s.province}</span>
+                    </span>
+                    <span className="font-garamond text-lg font-bold text-cinnabarlight">{s.count}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 右栏：地图 */}
+        <div className="card relative min-h-[700px] overflow-hidden p-2">
+          <div ref={chartRef} className="h-[700px] w-full" />
 
           {/* 加载遮罩 */}
           {loading && (
@@ -176,32 +200,7 @@ export default function TraitorMap() {
             </div>
           )}
         </div>
-
-        {/* 省份统计列表 */}
-        {!loading && !error && stats.length > 0 && (
-          <div className="mt-8">
-            <h2 className="section-title mb-4">
-              <span className="text-lg font-semibold tracking-widest text-paper">各省统计</span>
-              <span className="font-garamond text-xs italic text-bronzelight">PROVINCE RANKING</span>
-            </h2>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-              {stats.map((s, i) => (
-                <Link
-                  key={s.province}
-                  to={`/roster`}
-                  className="card flex items-center justify-between px-3 py-2.5 transition-colors hover:border-cinnabar/40"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="font-garamond text-xs text-bronzelight/70">{i + 1}</span>
-                    <span className="text-sm text-paper">{s.province}</span>
-                  </span>
-                  <span className="font-garamond text-lg font-bold text-cinnabarlight">{s.count}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
-    </div>
+      </div>
+    </section>
   )
 }
