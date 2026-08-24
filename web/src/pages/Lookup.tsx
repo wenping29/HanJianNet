@@ -2,6 +2,7 @@ import { useState } from 'react'
 import TraitorCard from '../components/TraitorCard'
 import { api } from '../lib/api'
 import type { TraitorSummary } from '../types'
+import { containerPageStyle } from "../style"
 
 type ResultState = 'idle' | 'loading' | 'done'
 
@@ -45,7 +46,7 @@ export default function Lookup() {
     <div>
       {/* 页面标题区 */}
       <section className="ink-hero relative overflow-hidden border-b border-paperedge/10">
-        <div className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
+        <div style={containerPageStyle} className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TRAITOR LOOKUP</p>
           <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
             汉奸查询
