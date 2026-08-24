@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink text-paper font-song antialiased;
+  }
+  ::selection {
+    @apply bg-cinnabar/70 text-paper;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+  .card {
+    @apply rounded-sm border border-paperedge/15 bg-inkcard shadow-card;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-sm px-5 py-2.5 text-sm tracking-widest transition
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-bronze disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn border border-cinnabar bg-cinnabar/90 text-paper hover:bg-cinnabar hover:shadow-seal;
+  }
+  .btn-ghost {
+    @apply btn border border-paperedge/30 text-paperdim hover:border-bronzelight hover:text-paper;
+  }
+  .btn-bronze {
+    @apply btn border border-bronze bg-bronze/20 text-bronzelight hover:bg-bronze/35 hover:text-paper;
+  }
+  .input {
+    @apply w-full rounded-sm border border-paperedge/25 bg-ink px-3 py-2.5 text-sm text-paper placeholder:text-paperdim/50
+      focus:border-bronzelight focus:outline-none focus:ring-1 focus:ring-bronze;
+  }
+  .label {
+    @apply mb-1.5 block text-xs tracking-widest text-paperdim;
+  }
+  .section-title {
+    @apply flex items-baseline gap-3 border-l-[3px] border-cinnabar pl-3;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-sm border px-2 py-0.5 text-xs tracking-wider;
+  }
+  .table-old {
+    @apply w-full border-collapse text-sm;
+  }
+  .table-old th {
+    @apply border-b border-cinnabar/60 bg-cinnabar/10 px-3 py-2 text-left font-medium tracking-widest text-cinnabarlight;
+  }
+  .table-old td {
+    @apply border-b border-paperedge/10 px-3 py-2 align-top text-paper/90;
+  }
+}
+
+@layer utilities {
+  .ink-hero {
+    background:
+      radial-gradient(1100px 480px at 82% -10%, rgba(242, 234, 216, 0.09), transparent 60%),
+      radial-gradient(900px 420px at 8% 112%, rgba(155, 43, 43, 0.16), transparent 62%),
+      radial-gradient(720px 400px at 48% 46%, rgba(62, 84, 74, 0.14), transparent 65%),
+      #0e0b08;
+  }
+  .paper-texture {
+    background-image:
+      repeating-linear-gradient(0deg, rgba(217, 203, 168, 0.028) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgba(217, 203, 168, 0.02) 0 1px, transparent 1px 4px);
+  }
+  .animate-fade-up {
+    animation: fadeUp 0.7s ease both;
+  }
+  .animate-ink-in {
+    animation: inkIn 0.9s ease both;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes inkIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}

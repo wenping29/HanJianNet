@@ -1,0 +1,63 @@
+# ================================
+# Admin (Vite + React + TS) 专属 .gitignore
+# ================================
+
+# ---- 依赖 ----
+node_modules
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnpm-store
+node_modules/
+
+# ---- 构建产物 ----
+dist
+dist-ssr
+build
+out
+.output
+.nitro
+
+# ---- Vite / TS / 缓存 ----
+.vite
+*.tsbuildinfo
+.cache
+.parcel-cache
+.eslintcache
+.stylelintcache
+.turbo
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_types/
+
+# ---- 本地环境（根目录已有 .env 兜底，这里再补一层） ----
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
+# ---- 调试 / 测试覆盖率 ----
+coverage
+*.lcov
+.nyc_output
+coverage/
+.coverage
+.coverage.*
+
+# ---- Storybook ----
+storybook-static
+
+# ---- 系统 / 编辑器（大部分已在根目录兜底，保留核心项以防单仓库单独使用） ----
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+.idea/
+.vscode/
