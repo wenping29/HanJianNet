@@ -27,13 +27,13 @@ export default function App() {
         <Route path="/timeline" element={<EventTimeline />} />
         <Route path="/roster" element={<Roster />} />
         <Route path="/events" element={<HistoryEvents />} />
-        <Route path="/events/new" element={<HistoryEventForm />} />
         <Route path="/events/:id" element={<HistoryEventDetail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/submit" element={<TraitorForm mode="create" />} />
+          <Route path="/events/new" element={<HistoryEventForm />} />
           <Route path="/traitor/:id/edit" element={<TraitorForm mode="edit" />} />
         </Route>
         <Route path="*" element={<NotFound />} />

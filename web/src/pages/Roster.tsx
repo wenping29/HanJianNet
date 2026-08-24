@@ -5,6 +5,7 @@ import type { TraitorFilters } from '../lib/api'
 import { PERIODS } from '../lib/format'
 import { formatLifeSpan } from '../lib/format'
 import type { TraitorSummary } from '../types'
+import { containerPageStyle } from '../style'
 
 const EMPTY_FILTERS: TraitorFilters = { name: '', period: undefined }
 
@@ -46,8 +47,8 @@ export default function Roster() {
   return (
     <div>
       {/* 页面标题区 */}
-      {/* <section className="ink-hero relative overflow-hidden border-b border-paperedge/10">
-        <div className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
+      <section className="ink-hero relative overflow-hidden border-b border-paperedge/10">
+        <div  style={containerPageStyle}  className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TRAITOR ROSTER</p>
           <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
             名录档案
@@ -56,7 +57,7 @@ export default function Roster() {
             以名册形式胪列全部在册变节者，可按姓名、时期检索——录其名，存其档。
           </p>
         </div>
-      </section> */}
+      </section>
 
       <section className="container-page py-16">
         {/* 检索栏 */}
