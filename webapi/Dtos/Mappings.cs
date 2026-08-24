@@ -31,6 +31,7 @@ public static class Mappings
         DeathYear = t.DeathYear,
         BirthYearType = t.BirthYearType,
         DeathYearType = t.DeathYearType,
+        NativePlace = t.NativePlace,
         IdentityTags = DeserializeList(t.IdentityTagsJson),
         PhotoUrl = t.Attachments.FirstOrDefault(a => a.Kind == "photo")?.Url,
     };

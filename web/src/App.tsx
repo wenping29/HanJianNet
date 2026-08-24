@@ -8,6 +8,7 @@ import HistoryEventForm from './pages/HistoryEventForm'
 import HistoryEvents from './pages/HistoryEvents'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import Lookup from './pages/Lookup'
 import NotFound from './pages/NotFound'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/timeline" element={<EventTimeline />} />
         <Route path="/roster" element={<Roster />} />
+        <Route path="/lookup" element={<Lookup />} />
         <Route path="/events" element={<HistoryEvents />} />
         <Route path="/events/:id" element={<HistoryEventDetail />} />
         <Route path="/login" element={<Login />} />

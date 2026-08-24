@@ -92,7 +92,7 @@ export interface Traitor {
 
 export type TraitorSummary = Pick<
   Traitor,
-  'id' | 'name' | 'period' | 'faction' | 'birthYear' | 'deathYear' | 'birthYearType' | 'deathYearType' | 'identityTags'
+  'id' | 'name' | 'period' | 'faction' | 'birthYear' | 'deathYear' | 'birthYearType' | 'deathYearType' | 'nativePlace' | 'identityTags'
 > & {
   photoUrl?: string | null
 }

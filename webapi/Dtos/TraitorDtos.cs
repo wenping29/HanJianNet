@@ -62,6 +62,7 @@ public class TraitorSummaryDto
     public int? DeathYear { get; set; }
     public string BirthYearType { get; set; } = "";
     public string DeathYearType { get; set; } = "";
+    public string NativePlace { get; set; } = "";
     public List<string> IdentityTags { get; set; } = [];
     public string? PhotoUrl { get; set; }
 }

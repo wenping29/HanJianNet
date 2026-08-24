@@ -73,6 +73,7 @@ export interface TraitorFilters {
   yearTo?: number
   event?: string
   period?: Period
+  nativePlace?: string
 }
 
 export const api = {
@@ -92,6 +93,7 @@ export const api = {
         yearTo: filters.yearTo,
         event: filters.event,
         period: filters.period,
+        nativePlace: filters.nativePlace,
       })}`,
     ),
 

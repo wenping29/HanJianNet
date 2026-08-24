@@ -20,8 +20,9 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
         [FromQuery] int? yearFrom,
         [FromQuery] int? yearTo,
         [FromQuery] string? @event,
-        [FromQuery] string? period)
-        => Ok(new { items = await traitors.ListAsync(name, yearFrom, yearTo, @event, period) });
+        [FromQuery] string? period,
+        [FromQuery] string? nativePlace)
+        => Ok(new { items = await traitors.ListAsync(name, yearFrom, yearTo, @event, period, nativePlace) });
 
     [HttpGet("api/traitors/{id}")]
     public async Task<IActionResult> Get(string id)

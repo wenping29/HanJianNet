@@ -9,7 +9,7 @@ namespace HanJianNet.WebApi.Services;
 
 public class TraitorService(AppDbContext db)
 {
-    public async Task<List<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period)
+    public async Task<List<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? nativePlace)
     {
         var q = db.Traitors.Include(t => t.LifeEvents).AsQueryable();
 
@@ -17,6 +17,11 @@ public class TraitorService(AppDbContext db)
         {
             var n = name!;
             q = q.Where(t => t.Name.Contains(n));
+        }
+        if (!string.IsNullOrWhiteSpace(nativePlace))
+        {
+            var np = nativePlace!;
+            q = q.Where(t => t.NativePlace.Contains(np));
         }
         if (yearFrom is int yf)
             q = q.Where(t => (t.BirthYear != null && t.BirthYear >= yf) || (t.DeathYear != null && t.DeathYear >= yf));
