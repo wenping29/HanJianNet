@@ -4,8 +4,14 @@
     paddingBottom: "1rem"
   }
 
+  const headerMenuItemStyle = {
+    width: '100%',
+    minWidth: '80px',
+  }
+
 
 
   export {
-    containerPageStyle
+    containerPageStyle,
+    headerMenuItemStyle
   }

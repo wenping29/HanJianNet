@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
 import type { Revision } from '../types'
+import { headerMenuItemStyle } from '../style'
 
 function SealLogo() {
   return (
@@ -82,16 +83,19 @@ export default function Layout() {
             <SealLogo />
           </div>
           <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
-            <NavLink to="/" end className={navCls}>
+            <NavLink style={headerMenuItemStyle} to="/" end className={navCls}>
               首页
             </NavLink>
-            <NavLink to="/timeline" className={navCls}>
-              事件时光轴
+            <NavLink style={headerMenuItemStyle} to="/timeline" className={navCls}>
+              时光轴
             </NavLink>
-            <NavLink to="/events" className={navCls}>
-              历史事件
+            <NavLink style={headerMenuItemStyle} to="/roster" className={navCls}>
+              名录
             </NavLink>
-            <NavLink to="/about" className={navCls}>
+            <NavLink style={headerMenuItemStyle} to="/events" className={navCls}>
+              事件
+            </NavLink>
+            <NavLink style={headerMenuItemStyle} to="/about" className={navCls}>
               关于
             </NavLink>
           </nav>

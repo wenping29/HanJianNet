@@ -10,6 +10,7 @@ import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Profile from './pages/Profile'
 import Register from './pages/Register'
+import Roster from './pages/Roster'
 import TraitorDetail from './pages/TraitorDetail'
 import TraitorForm from './pages/TraitorForm'
 import TraitorHistory from './pages/TraitorHistory'
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/traitor/:id/history" element={<TraitorHistory />} />
         <Route path="/about" element={<About />} />
         <Route path="/timeline" element={<EventTimeline />} />
+        <Route path="/roster" element={<Roster />} />
         <Route path="/events" element={<HistoryEvents />} />
         <Route path="/events/:id" element={<HistoryEventDetail />} />
         <Route path="/login" element={<Login />} />
