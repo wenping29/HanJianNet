@@ -110,17 +110,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* 统计看板 */}
-      <section className="container-page -mt-1 py-14">
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard label="汉奸总数" value={stats?.total ?? 0} />
-          <StatCard label="被判刑总数" value={stats?.sentenced ?? 0} />
-          <StatCard label="子女信息数" value={stats?.childrenInfo ?? 0} />
-          <StatCard label="后代现状数" value={stats?.descendantsStatus ?? 0} />
-        </div>
-      </section>
-
       {/* 综合检索 + 卡片墙 */}
       <section ref={wallRef} className="container-page pb-16">
         <form onSubmit={submitSearch} className="card mb-8 grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-5">
@@ -226,6 +215,16 @@ export default function Home() {
           {items.map((t) => (
             <TraitorCard key={t.id} traitor={t} />
           ))}
+        </div>
+      </section>
+
+            {/* 统计看板 */}
+      <section className="container-page -mt-1 py-14">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <StatCard label="汉奸总数" value={stats?.total ?? 0} />
+          <StatCard label="被判刑总数" value={stats?.sentenced ?? 0} />
+          <StatCard label="子女信息数" value={stats?.childrenInfo ?? 0} />
+          <StatCard label="后代现状数" value={stats?.descendantsStatus ?? 0} />
         </div>
       </section>
 
