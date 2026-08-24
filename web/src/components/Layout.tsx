@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
 import type { Revision } from '../types'
-import { headerMenuItemStyle } from '../style'
+import { headerMenuItemStyle,footerContainerPageStyle } from '../style'
 
 function SealLogo() {
   return (
@@ -185,7 +185,7 @@ export default function Layout() {
       </main>
 
       <footer className="border-t border-paperedge/15 bg-inksoft/60">
-        <div className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs tracking-wider text-paperdim/70 sm:flex-row">
+        <div style={footerContainerPageStyle} className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs tracking-wider text-paperdim/70 sm:flex-row">
           <span>汉奸档案 · HanJianNet — 以史为鉴，勿忘国耻</span>
           <span className="font-garamond italic">Editorial Archive · Est. 2026</span>
         </div>

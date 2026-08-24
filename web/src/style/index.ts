@@ -9,9 +9,14 @@
     minWidth: '80px',
   }
 
+  const footerContainerPageStyle = {
+   padding: '0.5rem'
+  }
+
 
 
   export {
     containerPageStyle,
-    headerMenuItemStyle
+    headerMenuItemStyle,
+    footerContainerPageStyle
   }
