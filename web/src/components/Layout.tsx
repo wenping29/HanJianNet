@@ -89,6 +89,9 @@ export default function Layout() {
             <NavLink style={headerMenuItemStyle} to="/lookup" className={navCls}>
               查询
             </NavLink>
+            <NavLink style={headerMenuItemStyle} to="/map" className={navCls}>
+              汉奸地图
+            </NavLink>
             <NavLink style={headerMenuItemStyle} to="/timeline" className={navCls}>
               时光轴
             </NavLink>

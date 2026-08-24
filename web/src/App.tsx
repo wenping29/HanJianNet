@@ -16,6 +16,7 @@ import Roster from './pages/Roster'
 import TraitorDetail from './pages/TraitorDetail'
 import TraitorForm from './pages/TraitorForm'
 import TraitorHistory from './pages/TraitorHistory'
+import TraitorMap from './pages/TraitorMap'
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/timeline" element={<EventTimeline />} />
         <Route path="/roster" element={<Roster />} />
         <Route path="/lookup" element={<Lookup />} />
+        <Route path="/map" element={<TraitorMap />} />
         <Route path="/events" element={<HistoryEvents />} />
         <Route path="/events/:id" element={<HistoryEventDetail />} />
         <Route path="/login" element={<Login />} />
