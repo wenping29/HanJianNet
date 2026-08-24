@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { TimelineNode } from '../types'
+import { containerPageStyle } from '../style'
+
+
 
 interface EraDef {
   label: string
@@ -61,7 +64,7 @@ export default function EventTimeline() {
     <div>
       {/* 页面标题区 */}
       <section className="ink-hero relative overflow-hidden border-b border-paperedge/10">
-        <div className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
+        <div style={containerPageStyle} className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TIMELINE OF EVENTS</p>
           <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
             事件时光轴

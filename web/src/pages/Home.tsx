@@ -7,6 +7,10 @@ import type { TraitorFilters } from '../lib/api'
 import { PERIODS, PERIOD_META } from '../lib/format'
 import type { TraitorStats, TraitorSummary } from '../types'
 
+import { containerPageStyle } from '../style'
+
+
+
 function useCountUp(target: number, duration = 1200): number {
   const [value, setValue] = useState(0)
   const prevRef = useRef(0)
@@ -81,11 +85,13 @@ export default function Home() {
     loadList(next)
   }
 
+ 
+
   return (
     <div>
       {/* 英雄区 */}
       <section className="ink-hero relative overflow-hidden border-b border-paperedge/10">
-        <div className="container-page animate-ink-in flex flex-col items-center py-24 text-center md:py-32">
+        <div style={containerPageStyle} className="container-page animate-ink-in flex flex-col items-center py-24 text-center md:py-32">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">HANJIAN HISTORICAL ARCHIVES</p>
           <h1 className="mt-5 max-w-3xl font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
             青史为鉴<span className="mx-3 text-cinnabar">·</span>汉奸档案
