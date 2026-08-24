@@ -126,16 +126,3 @@ appsettings.*.json
 # *.db
 # *.sqlite
 # *.sqlite3
-./webapi/obj/Debug/net8.0/refint/HanJianNet.WebApi.dll
-./webapi/obj/Debug/net8.0/ref/HanJianNet.WebApi.dll
-./webapi/obj/Debug/net8.0/rjsmrazor.dswa.cache.json
-./webapi/obj/Debug/net8.0/rjsmcshtml.dswa.cache.json
-./webapi/obj/Debug/net8.0/HanJianNet.WebApi.sourcelink.json
-./webapi/obj/Debug/net8.0/HanJianNet.WebApi.pdb
-./webapi/obj/Debug/net8.0/HanJianNet.WebApi.dll
-./webapi/obj/Debug/net8.0/HanJianNet.WebApi.AssemblyInfoInputs.cache
-./webapi/obj/Debug/net8.0/HanJianNet.WebApi.AssemblyInfo.cs
-./webapi/obj/Debug/net8.0/apphost.exe
-./webapi/bin/Debug/net8.0/HanJianNet.WebApi.pdb
-./webapi/bin/Debug/net8.0/HanJianNet.WebApi.exe
-./webapi/bin/Debug/net8.0/HanJianNet.WebApi.dll
