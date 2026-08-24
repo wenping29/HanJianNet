@@ -103,6 +103,54 @@ export const HISTORY_EVENTS: HistoryEvent[] = [
 
 export const HISTORY_ERAS = ['全部', '宋末', '明末', '清末', '抗日'] as const
 
+/** 时期 → 数据模型 Period 映射 */
+export const ERA_PERIOD_MAP: Record<HistoryEvent['era'], Period> = {
+  宋末: '宋末',
+  明末: '明末',
+  清末: '清末',
+  抗日: '民国',
+}
+
+const STORAGE_KEY = 'hanjian-custom-events'
+
+/** 读取 localStorage 中的自定义事件 */
+export function loadCustomEvents(): HistoryEvent[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return []
+    const arr = JSON.parse(raw) as HistoryEvent[]
+    return Array.isArray(arr) ? arr : []
+  } catch {
+    return []
+  }
+}
+
+/** 保存自定义事件到 localStorage */
+function saveCustomEvents(events: HistoryEvent[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(events))
+  } catch {
+    /* ignore */
+  }
+}
+
+/** 新增一条自定义事件 */
+export function addCustomEvent(input: Omit<HistoryEvent, 'id'>): HistoryEvent {
+  const event: HistoryEvent = {
+    ...input,
+    id: `custom-${Date.now()}`,
+  }
+  const all = loadCustomEvents()
+  all.push(event)
+  saveCustomEvents(all)
+  return event
+}
+
+/** 合并静态事件与自定义事件，按年份升序排列 */
+export function getAllHistoryEvents(): HistoryEvent[] {
+  return [...HISTORY_EVENTS, ...loadCustomEvents()].sort((a, b) => a.year - b.year)
+}
+
 export function findHistoryEvent(id: string): HistoryEvent | undefined {
-  return HISTORY_EVENTS.find((e) => e.id === id)
+  return getAllHistoryEvents().find((e) => e.id === id)
 }

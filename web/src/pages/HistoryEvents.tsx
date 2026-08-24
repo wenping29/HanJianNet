@@ -1,15 +1,18 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { HISTORY_ERAS, HISTORY_EVENTS } from '../lib/historyEvents'
+import { getAllHistoryEvents, HISTORY_ERAS } from '../lib/historyEvents'
 import { containerPageStyle } from '../style'
 
 export default function HistoryEvents() {
   const [activeEra, setActiveEra] = useState<string>('全部')
+  const [refreshKey, setRefreshKey] = useState(0)
 
   const items = useMemo(() => {
-    if (activeEra === '全部') return HISTORY_EVENTS
-    return HISTORY_EVENTS.filter((e) => e.era === activeEra)
-  }, [activeEra])
+    const all = getAllHistoryEvents()
+    if (activeEra === '全部') return all
+    return all.filter((e) => e.era === activeEra)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeEra, refreshKey])
 
   return (
     <div>
@@ -45,7 +48,12 @@ export default function HistoryEvents() {
               </button>
             ))}
           </div>
-          <span className="text-xs tracking-wider text-paperdim/70">共 {items.length} 条事件</span>
+          <div className="flex items-center gap-3">
+            <Link to="/events/new" className="btn-bronze !px-4 !py-1.5 text-xs">
+              + 新增事件
+            </Link>
+            <span className="text-xs tracking-wider text-paperdim/70">共 {items.length} 条事件</span>
+          </div>
         </div>
 
         {/* 事件卡片 */}

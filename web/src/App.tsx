@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import About from './pages/About'
 import EventTimeline from './pages/EventTimeline'
 import HistoryEventDetail from './pages/HistoryEventDetail'
+import HistoryEventForm from './pages/HistoryEventForm'
 import HistoryEvents from './pages/HistoryEvents'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/timeline" element={<EventTimeline />} />
         <Route path="/roster" element={<Roster />} />
         <Route path="/events" element={<HistoryEvents />} />
+        <Route path="/events/new" element={<HistoryEventForm />} />
         <Route path="/events/:id" element={<HistoryEventDetail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
