@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
+import type { Revision } from '../types'
 
 function SealLogo() {
   return (
@@ -20,15 +22,51 @@ function SealLogo() {
 export default function Layout() {
   const { user, clear } = useAuth()
   const navigate = useNavigate()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const [hoverOpen, setHoverOpen] = useState(false)
+  const [notifCount, setNotifCount] = useState(0)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 获取通知数量：已审核（approved/rejected）的提交记录数
+  useEffect(() => {
+    if (!user) {
+      setNotifCount(0)
+      return
+    }
+    let cancelled = false
+    api
+      .mySubmissions()
+      .then((r) => {
+        if (cancelled) return
+        const reviewed = r.items.filter(
+          (rev: Revision) => rev.status === 'approved' || rev.status === 'rejected',
+        )
+        setNotifCount(reviewed.length)
+      })
+      .catch(() => {
+        if (!cancelled) setNotifCount(0)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
+
+  function openMenu() {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
+    setHoverOpen(true)
+  }
+
+  function scheduleClose() {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    closeTimer.current = setTimeout(() => setHoverOpen(false), 150)
+  }
 
   useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current)
     }
-    document.addEventListener('mousedown', onClick)
-    return () => document.removeEventListener('mousedown', onClick)
   }, [])
 
   const navCls = ({ isActive }: { isActive: boolean }) =>
@@ -59,32 +97,59 @@ export default function Layout() {
           </nav>
           <div className="flex flex-1 items-center justify-end gap-3">
             {user ? (
-              <div className="relative" ref={menuRef}>
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen((v) => !v)}
-                  className="btn-ghost !px-3 !py-2"
-                >
-                  <span className="inline-block h-2 w-2 rounded-full bg-bamboolight" />
-                  {user.username}
+              <div
+                className="relative"
+                onMouseEnter={openMenu}
+                onMouseLeave={scheduleClose}
+              >
+                <button type="button" className="flex items-center gap-2.5 rounded-sm py-1.5 pl-1.5 pr-3 transition hover:bg-paperedge/10">
+                  {/* 头像 */}
+                  <span className="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-cinnabar/60 bg-cinnabar/20 font-song text-sm font-bold text-cinnabarlight">
+                    {user.username.slice(0, 1).toUpperCase()}
+                    {/* 通知数量徽标 */}
+                    {notifCount > 0 && (
+                      <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-ink bg-cinnabar px-1 font-garamond text-[10px] font-bold leading-none text-paper">
+                        {notifCount > 99 ? '99+' : notifCount}
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-sm tracking-wider text-paperdim transition hover:text-paper">
+                    {user.username}
+                  </span>
                 </button>
-                {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-44 overflow-hidden rounded-sm border border-paperedge/20 bg-inkcard shadow-card">
+
+                {/* 悬浮弹框 */}
+                {hoverOpen && (
+                  <div className="absolute right-0 top-full w-48 overflow-hidden rounded-sm border border-paperedge/20 bg-inkcard pt-1 shadow-card">
+                    {/* 通知条 */}
+                    <div className="flex items-center justify-between border-b border-paperedge/10 px-4 py-2.5">
+                      <span className="text-xs tracking-widest text-paperdim">审核通知</span>
+                      <span className="font-garamond text-xs font-bold text-cinnabarlight">
+                        {notifCount > 0 ? `${notifCount} 条未读` : '无新通知'}
+                      </span>
+                    </div>
                     <Link
                       to="/profile"
-                      onClick={() => setMenuOpen(false)}
-                      className="block px-4 py-2.5 text-sm text-paperdim hover:bg-cinnabar/15 hover:text-paper"
+                      onClick={() => setHoverOpen(false)}
+                      className="block px-4 py-2.5 text-sm text-paperdim transition hover:bg-cinnabar/15 hover:text-paper"
                     >
                       个人中心
+                    </Link>
+                    <Link
+                      to="/profile"
+                      onClick={() => setHoverOpen(false)}
+                      className="block px-4 py-2.5 text-sm text-paperdim transition hover:bg-cinnabar/15 hover:text-paper"
+                    >
+                      我的提交
                     </Link>
                     <button
                       type="button"
                       onClick={() => {
                         clear()
-                        setMenuOpen(false)
+                        setHoverOpen(false)
                         navigate('/')
                       }}
-                      className="block w-full px-4 py-2.5 text-left text-sm text-paperdim hover:bg-cinnabar/15 hover:text-paper"
+                      className="block w-full border-t border-paperedge/10 px-4 py-2.5 text-left text-sm text-paperdim transition hover:bg-cinnabar/15 hover:text-paper"
                     >
                       退出登录
                     </button>
