@@ -74,6 +74,9 @@ export default function Roster() {
           <button type="submit" className="btn-primary !px-6 !py-2.5">
             检 索
           </button>
+          <Link to="/submit" className="btn-bronze !px-6 !py-2.5">
+            + 新增汉奸
+          </Link>
         </form>
 
         {/* 时期切换 */}
