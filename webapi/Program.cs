@@ -83,6 +83,11 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads",
 });
 
+ 
+// builder.Services.AddSwaggerGen();  
+// app.UseSwagger();  
+// app.UseSwaggerUI();
+
 app.UseCors("frontend");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -94,5 +99,10 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
     await DbSeeder.SeedAsync(db, builder.Configuration);
 }
-
+// logger.LogInformation("This is an informational message");  
+// app.Use(async (context, next) =>
+// {
+//     logger.LogError("This is an error message before the next middleware");
+//     await next.Invoke();
+// });
 app.Run();
