@@ -5,6 +5,7 @@ import type {
   AttachmentKind,
   AuthPayload,
   MenuItem,
+  Paginated,
   ReviewStatus,
   Revision,
   RevisionStatusStats,
@@ -21,12 +22,13 @@ import type {
 // Admin 控制台始终通过 Vite 代理访问 API 与上传资源，
 // 避免 VITE_API_URL 误配置导致请求到错误端口。
 // 代理规则见 vite.config.ts：/api → localhost:5219, /uploads → localhost:5219
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/+$/, '')
+
 export function resolveAssetUrl(url: string): string {
-  return /^https?:\/\//i.test(url) ? url : url
+  return /^https?:\/\//i.test(url) ? url : `${API_ORIGIN}${url}`
 }
 
-const BASE = '/api'
-
+const BASE = `${API_ORIGIN}/api`
 export class ApiError extends Error {
   status: number
   constructor(status: number, message: string) {
@@ -45,6 +47,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     ...authHeader(),
     ...(init.headers as Record<string, string> | undefined),
   }
+  console.log('request', BASE , path)
   if (init.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json'
   const res = await fetch(BASE + path, {
     ...init,
