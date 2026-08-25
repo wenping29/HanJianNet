@@ -94,7 +94,7 @@ pnpm-debug.log*
 *.cache
 
 # ---- 环境变量与本地配置 ----
-.env
+
 .env.local
 .env.development.local
 .env.test.local

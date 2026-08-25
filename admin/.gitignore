@@ -36,7 +36,7 @@ out
 .rts2_cache_types/
 
 # ---- 本地环境（根目录已有 .env 兜底，这里再补一层） ----
-.env
+
 .env.local
 .env.development.local
 .env.test.local
