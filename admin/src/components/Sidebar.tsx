@@ -85,7 +85,7 @@ export default function Sidebar({ menus, collapsed, onToggleCollapse }: SidebarP
                   <MenuIcon label={m.label} />
                   {!collapsed && (
                     <>
-                      <span className="flex-1 truncate tracking-[0.2em]">{m.label}</span>
+                      <span style={{ display: 'inline-flex' }} className="flex-1 truncate tracking-[0.2em]">{m.label}</span>
                       <span
                         className={`text-[10px] leading-none text-paperdim/60 transition-transform duration-200 ${
                           groupOpen ? 'rotate-90' : ''
@@ -165,7 +165,7 @@ export default function Sidebar({ menus, collapsed, onToggleCollapse }: SidebarP
               } ${active ? 'bg-cinnabar/15 text-cinnabarlight' : 'text-paperdim hover:bg-bronze/10 hover:text-paper'}`}
             >
               <MenuIcon label={m.label} />
-              {!collapsed && <span className="flex-1 truncate tracking-[0.2em]">{m.label}</span>}
+              {!collapsed && <span style={{ display: 'inline-flex' }} className="flex-1 truncate tracking-[0.2em]">{m.label}</span>}
             </button>
           )
         })}
