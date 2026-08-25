@@ -10,6 +10,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<MenuItem> MenuItems => Set<MenuItem>();
+    public DbSet<WebMenu> WebMenus => Set<WebMenu>();
     public DbSet<Traitor> Traitors => Set<Traitor>();
     public DbSet<Spouse> Spouses => Set<Spouse>();
     public DbSet<Child> Children => Set<Child>();
@@ -54,6 +55,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(m => m.Path).IsUnique();
             e.HasIndex(m => m.Parent);
             e.HasIndex(m => m.Sort);
+        });
+
+        modelBuilder.Entity<WebMenu>(e =>
+        {
+            e.HasIndex(m => m.Key).IsUnique();
+            e.HasIndex(m => m.Path).IsUnique();
+            e.HasIndex(m => m.Sort);
+            e.HasIndex(m => m.IsEnabled);
         });
 
         modelBuilder.Entity<Spouse>()

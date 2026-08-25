@@ -11,6 +11,7 @@ import type {
   TraitorStats,
   TraitorSummary,
   User,
+  WebMenu,
 } from '../types'
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/+$/, '')
@@ -104,6 +105,8 @@ export const api = {
   getStats: () => request<TraitorStats>('/traitors/stats'),
 
   getTimeline: () => request<{ items: TimelineNode[] }>('/traitors/timeline'),
+
+  listWebMenus: () => request<{ items: WebMenu[] }>('/web-menus'),
 
   createTraitor: (input: TraitorInput & { changeSummary: string }) =>
     request<{ revisionId: string }>('/traitors', { method: 'POST', body: JSON.stringify(input) }),

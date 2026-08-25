@@ -64,6 +64,18 @@ CREATE TABLE "MenuItems" (
     "CreatedAt" TEXT NOT NULL
 );
 
+-- ---------------- WebMenus ----------------
+CREATE TABLE "WebMenus" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_WebMenus" PRIMARY KEY,
+    "Key" TEXT NOT NULL,
+    "Path" TEXT NOT NULL,
+    "Label" TEXT NOT NULL,
+    "Sort" INTEGER NOT NULL,
+    "IsEnabled" INTEGER NOT NULL,
+    "CreatedAt" TEXT NOT NULL,
+    "UpdatedAt" TEXT NULL
+);
+
 -- ---------------- Permissions ----------------
 CREATE TABLE "Permissions" (
     "Id" TEXT NOT NULL CONSTRAINT "PK_Permissions" PRIMARY KEY,
@@ -192,5 +204,9 @@ CREATE INDEX "IX_Sources_TraitorId" ON "Sources" ("TraitorId");
 CREATE INDEX "IX_Spouses_TraitorId" ON "Spouses" ("TraitorId");
 CREATE UNIQUE INDEX "IX_Users_Email" ON "Users" ("Email");
 CREATE UNIQUE INDEX "IX_Users_Username" ON "Users" ("Username");
+CREATE UNIQUE INDEX "IX_WebMenus_Key" ON "WebMenus" ("Key");
+CREATE INDEX "IX_WebMenus_IsEnabled" ON "WebMenus" ("IsEnabled");
+CREATE UNIQUE INDEX "IX_WebMenus_Path" ON "WebMenus" ("Path");
+CREATE INDEX "IX_WebMenus_Sort" ON "WebMenus" ("Sort");
 
 PRAGMA foreign_keys = ON;

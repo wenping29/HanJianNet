@@ -133,6 +133,15 @@ export interface AuthPayload {
   user: User
 }
 
+export interface WebMenu {
+  id: string
+  key: string
+  path: string
+  label: string
+  sort: number
+  isEnabled: boolean
+}
+
 export interface TraitorInput {
   name: string
   courtesyName?: string

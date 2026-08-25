@@ -2,8 +2,19 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
-import type { Revision } from '../types'
+import type { Revision, WebMenu } from '../types'
 import { headerMenuItemStyle,footerContainerPageStyle } from '../style'
+
+/** 后端不可用时的兜底菜单 */
+const FALLBACK_MENUS: WebMenu[] = [
+  { id: 'fb1', key: 'home', path: '/', label: '首页', sort: 1, isEnabled: true },
+  { id: 'fb2', key: 'lookup', path: '/lookup', label: '查询', sort: 2, isEnabled: true },
+  { id: 'fb3', key: 'map', path: '/map', label: '汉奸地图', sort: 3, isEnabled: true },
+  { id: 'fb4', key: 'timeline', path: '/timeline', label: '时光轴', sort: 4, isEnabled: true },
+  { id: 'fb5', key: 'roster', path: '/roster', label: '名录', sort: 5, isEnabled: true },
+  { id: 'fb6', key: 'events', path: '/events', label: '事件', sort: 6, isEnabled: true },
+  { id: 'fb7', key: 'about', path: '/about', label: '关于', sort: 7, isEnabled: true },
+]
 
 function SealLogo() {
   return (
@@ -25,7 +36,25 @@ export default function Layout() {
   const navigate = useNavigate()
   const [hoverOpen, setHoverOpen] = useState(false)
   const [notifCount, setNotifCount] = useState(0)
+  const [menus, setMenus] = useState<WebMenu[]>(FALLBACK_MENUS)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 加载前台菜单
+  useEffect(() => {
+    let cancelled = false
+    api
+      .listWebMenus()
+      .then((r) => {
+        if (cancelled) return
+        if (r.items.length > 0) setMenus(r.items)
+      })
+      .catch(() => {
+        // 后端不可用时保留兜底菜单
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // 获取通知数量：已审核（approved/rejected）的提交记录数
   useEffect(() => {
@@ -83,27 +112,17 @@ export default function Layout() {
             <SealLogo />
           </div>
           <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
-            <NavLink style={headerMenuItemStyle} to="/" end className={navCls}>
-              首页
-            </NavLink>
-            <NavLink style={headerMenuItemStyle} to="/lookup" className={navCls}>
-              查询
-            </NavLink>
-            <NavLink style={headerMenuItemStyle} to="/map" className={navCls}>
-              汉奸地图
-            </NavLink>
-            <NavLink style={headerMenuItemStyle} to="/timeline" className={navCls}>
-              时光轴
-            </NavLink>
-            <NavLink style={headerMenuItemStyle} to="/roster" className={navCls}>
-              名录
-            </NavLink>
-            <NavLink style={headerMenuItemStyle} to="/events" className={navCls}>
-              事件
-            </NavLink>
-            <NavLink style={headerMenuItemStyle} to="/about" className={navCls}>
-              关于
-            </NavLink>
+            {menus.map((m) => (
+              <NavLink
+                key={m.id}
+                style={headerMenuItemStyle}
+                to={m.path}
+                end={m.path === '/'}
+                className={navCls}
+              >
+                {m.label}
+              </NavLink>
+            ))}
           </nav>
           <div className="flex flex-1 items-center justify-end gap-3">
             {user ? (

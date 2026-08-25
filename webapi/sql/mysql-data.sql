@@ -67,6 +67,15 @@ INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VA
 INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('cc61debe4d014585b7e5b5591adbf0fb', 'manager', 'reviews', '2026-08-23 11:24:42.700739');
 INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('00869330caa343488fdde7af6af5a6c1', 'user', 'profile', '2026-08-23 12:11:27.260145');
 
+-- WebMenus (7 行)
+INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm01', 'home', '/', '首页', 1, 1, '2026-08-25 00:00:00.000000', NULL);
+INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm02', 'lookup', '/lookup', '查询', 2, 1, '2026-08-25 00:00:00.000000', NULL);
+INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm03', 'map', '/map', '汉奸地图', 3, 1, '2026-08-25 00:00:00.000000', NULL);
+INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm04', 'timeline', '/timeline', '时光轴', 4, 1, '2026-08-25 00:00:00.000000', NULL);
+INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm05', 'roster', '/roster', '名录', 5, 1, '2026-08-25 00:00:00.000000', NULL);
+INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm06', 'events', '/events', '事件', 6, 1, '2026-08-25 00:00:00.000000', NULL);
+INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm07', 'about', '/about', '关于', 7, 1, '2026-08-25 00:00:00.000000', NULL);
+
 -- MenuItems (7 行)
 INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('0cbdafbe2d214dff89f33bf6e873504e', 'roles', '/roles', '角色管理', NULL, 2, 'system', '2026-08-23 11:24:42.624454');
 INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('39862e515a2749a39408b583f7b6740a', 'reviews', '/reviews', '待审队列', NULL, 2, NULL, '2026-08-23 11:24:42.623541');

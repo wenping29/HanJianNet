@@ -27,6 +27,19 @@ CREATE TABLE `MenuItems` (
 ) CHARACTER SET=utf8mb4;
 
 
+CREATE TABLE `WebMenus` (
+    `Id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    `Key` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    `Path` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    `Label` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `Sort` int NOT NULL,
+    `IsEnabled` tinyint(1) NOT NULL,
+    `CreatedAt` datetime(6) NOT NULL,
+    `UpdatedAt` datetime(6) NULL,
+    CONSTRAINT `PK_WebMenus` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
+
 CREATE TABLE `Permissions` (
     `Id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
     `Key` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
@@ -253,5 +266,9 @@ CREATE UNIQUE INDEX `IX_Users_Email` ON `Users` (`Email`);
 
 
 CREATE UNIQUE INDEX `IX_Users_Username` ON `Users` (`Username`);
+CREATE UNIQUE INDEX `IX_WebMenus_Key` ON `WebMenus` (`Key`);
+CREATE INDEX `IX_WebMenus_IsEnabled` ON `WebMenus` (`IsEnabled`);
+CREATE UNIQUE INDEX `IX_WebMenus_Path` ON `WebMenus` (`Path`);
+CREATE INDEX `IX_WebMenus_Sort` ON `WebMenus` (`Sort`);
 
 SET FOREIGN_KEY_CHECKS = 1;

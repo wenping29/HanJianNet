@@ -14,6 +14,7 @@ public static class DbSeeder
     {
         await SeedRolesAsync(db);
         await SeedMenusAndPermissionsAsync(db);
+        await SeedWebMenusAsync(db);
         await SeedAdminAsync(db,
             config["Seed:AdminUsername"] ?? "admin",
             config["Seed:AdminEmail"] ?? "admin@hanjiannet.local",
@@ -169,6 +170,38 @@ public static class DbSeeder
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
                 Role = role,
             });
+        }
+        await db.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// 种子前台导航菜单：缺则补，存在则修正 Sort/IsEnabled（不改 Label/Path，尊重用户修改）。
+    /// </summary>
+    private static async Task SeedWebMenusAsync(AppDbContext db)
+    {
+        var defaults = new[]
+        {
+            new WebMenu { Key = "home",     Path = "/",          Label = "首页",     Sort = 1, IsEnabled = true },
+            new WebMenu { Key = "lookup",   Path = "/lookup",    Label = "查询",     Sort = 2, IsEnabled = true },
+            new WebMenu { Key = "map",      Path = "/map",       Label = "汉奸地图", Sort = 3, IsEnabled = true },
+            new WebMenu { Key = "timeline", Path = "/timeline",  Label = "时光轴",   Sort = 4, IsEnabled = true },
+            new WebMenu { Key = "roster",   Path = "/roster",    Label = "名录",     Sort = 5, IsEnabled = true },
+            new WebMenu { Key = "events",   Path = "/events",    Label = "事件",     Sort = 6, IsEnabled = true },
+            new WebMenu { Key = "about",    Path = "/about",     Label = "关于",     Sort = 7, IsEnabled = true },
+        };
+
+        foreach (var menu in defaults)
+        {
+            var existing = await db.WebMenus.FirstOrDefaultAsync(m => m.Key == menu.Key);
+            if (existing is null)
+            {
+                db.WebMenus.Add(menu);
+            }
+            else
+            {
+                existing.Sort = menu.Sort;
+                // 不覆盖 IsEnabled，尊重用户在数据库中的启停配置
+            }
         }
         await db.SaveChangesAsync();
     }
