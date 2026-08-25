@@ -5,7 +5,7 @@ import { containerPageStyle } from '../style'
 
 export default function HistoryEvents() {
   const [activeEra, setActiveEra] = useState<string>('全部')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const [refreshKey] = useState(0)
 
   const items = useMemo(() => {
     const all = getAllHistoryEvents()

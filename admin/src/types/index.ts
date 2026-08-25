@@ -186,12 +186,12 @@ export interface TraitorInput {
   period: Period
   faction: string
   summary: string
-  spouses: Array<{ name: string; remark?: string }>
-  children: Array<{ name: string; gender?: string; whereabouts?: string; remark?: string }>
-  residences: Array<{ place: string; period?: string; remark?: string }>
-  crimeRecords: Array<{ year: number | null; title: string; process?: string; harm?: string; sourceRef?: string }>
-  lifeEvents: Array<{ year: number | null; event: string; sourceRef?: string }>
-  sources: Array<{ citation: string; credibility?: number }>
+  spouses: Array<{ name: string; remark?: string | null }>
+  children: Array<{ name: string; gender?: string | null; whereabouts?: string | null; remark?: string | null }>
+  residences: Array<{ place: string; period?: string | null; remark?: string | null }>
+  crimeRecords: Array<{ year: number | null; title: string; process?: string | null; harm?: string | null; sourceRef?: string | null }>
+  lifeEvents: Array<{ year: number | null; event: string; sourceRef?: string | null }>
+  sources: Array<{ citation: string; credibility?: number | null }>
   relatedIds: string[]
   attachments: Array<Pick<Attachment, 'id' | 'url' | 'kind' | 'fileType' | 'caption'>>
 }
