@@ -34,6 +34,13 @@ try
             case "sqlite":
                 options.UseSqlite(databaseOptions.Sqlite.ConnectionString);
                 break;
+            case "mysql":
+                options.UseMySql(
+                    databaseOptions.Mysql.ConnectionString,
+                    string.IsNullOrWhiteSpace(databaseOptions.Mysql.ServerVersion)
+                        ? ServerVersion.AutoDetect(databaseOptions.Mysql.ConnectionString)
+                        : ServerVersion.Parse(databaseOptions.Mysql.ServerVersion));
+                break;
             default:
                 throw new NotSupportedException($"未知的数据库 Provider：{databaseOptions.Provider}");
         }
