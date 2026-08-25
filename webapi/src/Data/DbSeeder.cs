@@ -70,7 +70,8 @@ public static class DbSeeder
             ("users", "/users", "用户管理", 1, "system", ["admin", "superadmin"]),
             ("roles", "/roles", "角色管理", 2, "system", ["admin", "superadmin"]),
             ("menus", "/menus", "菜单管理", 3, "system", ["admin", "superadmin"]),
-            ("profile", "/profile", "个人信息", 4, "system", ["manager", "admin", "superadmin"]),
+            ("web-menus", "/web-menus", "前台菜单", 4, "system", ["admin", "superadmin"]),
+            ("profile", "/profile", "个人信息", 5, "system", ["manager", "admin", "superadmin"]),
         };
 
         // 1) 菜单：缺则补，存在则修正 Parent/Sort（不改 Label/Path，尊重用户修改）

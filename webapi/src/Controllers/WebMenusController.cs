@@ -40,4 +40,6 @@ public class WebMenuDto
     public string Label { get; set; } = "";
     public int Sort { get; set; }
     public bool IsEnabled { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 }

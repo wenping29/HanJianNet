@@ -11,6 +11,7 @@ import Roles from './pages/Roles'
 import TraitorEditor from './pages/TraitorEditor'
 import Traitors from './pages/Traitors'
 import Users from './pages/Users'
+import WebMenus from './pages/WebMenus'
 import { canManageUsers } from './lib/roles'
 import { useAuth } from './stores/auth'
 
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/users" element={<Users />} />
           <Route path="/roles" element={<Roles />} />
           <Route path="/menus" element={<Menus />} />
+          <Route path="/web-menus" element={<WebMenus />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Route>

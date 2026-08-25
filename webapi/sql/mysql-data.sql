@@ -38,7 +38,7 @@ INSERT INTO `Roles` (`Id`, `Key`, `Name`, `Description`, `Sort`, `IsBuiltIn`, `C
 INSERT INTO `Roles` (`Id`, `Key`, `Name`, `Description`, `Sort`, `IsBuiltIn`, `CreatedAt`) VALUES ('7f716519c70345a2b6fc5362a89b45a6', 'admin', '管理员', '系统管理，含用户/角色/菜单管理', 3, 1, '2026-08-23 11:24:42.145458');
 INSERT INTO `Roles` (`Id`, `Key`, `Name`, `Description`, `Sort`, `IsBuiltIn`, `CreatedAt`) VALUES ('802c0cfbbe2949b2b0619c9ebdb34015', 'superadmin', '超级管理员', '拥有全部权限，不可删除', 4, 1, '2026-08-23 11:24:42.145338');
 
--- Permissions (7 行)
+-- Permissions (8 行)
 INSERT INTO `Permissions` (`Id`, `Key`, `Name`, `Group`, `CreatedAt`) VALUES ('4cc8284d1ec94520a7738052706dc6f8', 'profile', '个人信息', 'menu', '2026-08-23 11:24:42.66898');
 INSERT INTO `Permissions` (`Id`, `Key`, `Name`, `Group`, `CreatedAt`) VALUES ('5998e12cd39e4426b8670322e52278e6', 'roles', '角色管理', 'menu', '2026-08-23 11:24:42.661372');
 INSERT INTO `Permissions` (`Id`, `Key`, `Name`, `Group`, `CreatedAt`) VALUES ('8df50fbefa664c8b8d01294d25510330', 'menus', '菜单管理', 'menu', '2026-08-23 11:24:42.668941');
@@ -46,8 +46,9 @@ INSERT INTO `Permissions` (`Id`, `Key`, `Name`, `Group`, `CreatedAt`) VALUES ('9
 INSERT INTO `Permissions` (`Id`, `Key`, `Name`, `Group`, `CreatedAt`) VALUES ('d6d500629f854eeba59422b5fde8db89', 'traitors', '名录管理', 'menu', '2026-08-23 11:24:42.668989');
 INSERT INTO `Permissions` (`Id`, `Key`, `Name`, `Group`, `CreatedAt`) VALUES ('db9673e9f00848e895db8a9eadf0f560', 'system', '系统管理', 'menu', '2026-08-23 11:24:42.668957');
 INSERT INTO `Permissions` (`Id`, `Key`, `Name`, `Group`, `CreatedAt`) VALUES ('deb91df4286840179dea6ea6dc00e1c9', 'reviews', '待审队列', 'menu', '2026-08-23 11:24:42.668826');
+INSERT INTO `Permissions` (`Id`, `Key`, `Name`, `Group`, `CreatedAt`) VALUES ('b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7', 'web-menus', '前台菜单', 'menu', '2026-08-25 00:00:00.000000');
 
--- RolePermissions (18 行)
+-- RolePermissions (20 行)
 INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('0836b0b8ce4e42239e5a8ef77901d6c7', 'admin', 'traitors', '2026-08-23 11:24:42.700923');
 INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('1f19511ade684dfc9812276dda760f8b', 'superadmin', 'menus', '2026-08-23 11:24:42.700831');
 INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('3e223807f8194624bd0a915c445087af', 'admin', 'menus', '2026-08-23 11:24:42.700822');
@@ -66,6 +67,8 @@ INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VA
 INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('c48aaf753ca54a0da57f07dcc56d3c7b', 'admin', 'profile', '2026-08-23 11:24:42.700904');
 INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('cc61debe4d014585b7e5b5591adbf0fb', 'manager', 'reviews', '2026-08-23 11:24:42.700739');
 INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('00869330caa343488fdde7af6af5a6c1', 'user', 'profile', '2026-08-23 12:11:27.260145');
+INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8', 'admin', 'web-menus', '2026-08-25 00:00:00.000000');
+INSERT INTO `RolePermissions` (`Id`, `RoleKey`, `PermissionKey`, `CreatedAt`) VALUES ('d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9', 'superadmin', 'web-menus', '2026-08-25 00:00:00.000000');
 
 -- WebMenus (7 行)
 INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm01', 'home', '/', '首页', 1, 1, '2026-08-25 00:00:00.000000', NULL);
@@ -76,14 +79,15 @@ INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `Crea
 INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm06', 'events', '/events', '事件', 6, 1, '2026-08-25 00:00:00.000000', NULL);
 INSERT INTO `WebMenus` (`Id`, `Key`, `Path`, `Label`, `Sort`, `IsEnabled`, `CreatedAt`, `UpdatedAt`) VALUES ('wm07', 'about', '/about', '关于', 7, 1, '2026-08-25 00:00:00.000000', NULL);
 
--- MenuItems (7 行)
+-- MenuItems (8 行)
 INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('0cbdafbe2d214dff89f33bf6e873504e', 'roles', '/roles', '角色管理', NULL, 2, 'system', '2026-08-23 11:24:42.624454');
 INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('39862e515a2749a39408b583f7b6740a', 'reviews', '/reviews', '待审队列', NULL, 2, NULL, '2026-08-23 11:24:42.623541');
 INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('3cfb01bce15041c69d888b43a7c6334b', 'menus', '/menus', '菜单管理', NULL, 3, 'system', '2026-08-23 11:24:42.624724');
 INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('582aa55c3b014a4d8085b5c111b1c73c', 'system', '/system', '系统管理', NULL, 3, NULL, '2026-08-23 11:24:42.623891');
 INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('98c32a7766cb4fd2b2200b95040c5bd5', 'users', '/users', '用户管理', NULL, 1, 'system', '2026-08-23 11:24:42.624169');
-INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('dd450d2d3cd44c3ebbf0a2819389dd89', 'profile', '/profile', '个人信息', NULL, 4, 'system', '2026-08-23 11:24:42.624971');
+INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('dd450d2d3cd44c3ebbf0a2819389dd89', 'profile', '/profile', '个人信息', NULL, 5, 'system', '2026-08-23 11:24:42.624971');
 INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('f6c9b70f8c014f3d806822f11f83c19b', 'traitors', '/traitors', '名录管理', NULL, 1, NULL, '2026-08-23 11:24:42.598189');
+INSERT INTO `MenuItems` (`Id`, `Key`, `Path`, `Label`, `Icon`, `Sort`, `Parent`, `CreatedAt`) VALUES ('a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6', 'web-menus', '/web-menus', '前台菜单', NULL, 4, 'system', '2026-08-25 00:00:00.000000');
 
 -- Traitors (8 行)
 INSERT INTO `Traitors` (`Id`, `Name`, `CourtesyName`, `Pseudonym`, `BirthYear`, `DeathYear`, `BirthYearType`, `DeathYearType`, `NativePlace`, `AliasesJson`, `IdentityTagsJson`, `Period`, `Faction`, `Summary`, `RelatedIdsJson`, `CreatedAt`, `UpdatedAt`) VALUES ('5cd9d2c429624c9190edc1a12b5a07da', '殷汝耕', '亦农', NULL, 1885, 1947, 'exact', 'exact', '浙江平阳', '["\\u6BB7\\u4EA6\\u519C"]', '["\\u4F2A\\u5180\\u4E1C\\u9632\\u5171\\u81EA\\u6CBB\\u653F\\u5E9C\\u4E3B\\u5E2D","\\u534E\\u5317\\u8001\\u724C\\u6C49\\u5978"]', '抗日战争时期', '伪冀东防共自治政府 / 汪伪政权', '殷汝耕，字亦农，浙江平阳人。早年留学日本，毕业于早稻田大学，娶日本女子为妻。北洋时期服务于各系军阀。1935年11月25日在河北通县成立「冀东防共自治委员会」，后改称「冀东防共自治政府」，任主席，是抗战前第一个公开独立的汉奸政权。1947年12月1日在南京老虎桥监狱被执行枪决。', '[]', '2026-08-23 12:19:50.915127', '2026-08-23 12:19:50.915128');

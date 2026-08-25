@@ -44,6 +44,18 @@ export interface RoleMenuConfig {
   menuKeys: string[]
 }
 
+/** 前台导航菜单（WebMenus 表） */
+export interface WebMenu {
+  id: string
+  key: string
+  path: string
+  label: string
+  sort: number
+  isEnabled: boolean
+  createdAt: string
+  updatedAt: string | null
+}
+
 export interface User {
   id: string
   username: string

@@ -15,6 +15,7 @@ import type {
   TraitorSnapshot,
   TraitorSummary,
   User,
+  WebMenu,
 } from '../types'
 
 // Admin 控制台始终通过 Vite 代理访问 API 与上传资源，
@@ -100,6 +101,15 @@ export const api = {
     request<{ items: RoleMenuConfig[] }>(`/admin/roles/${role}/menus`, {
       method: 'PUT',
       body: JSON.stringify({ menuKeys }),
+    }),
+
+  // ---- 前台菜单（WebMenus）管理 ----
+  listWebMenus: () => request<{ items: WebMenu[] }>('/admin/web-menus'),
+
+  updateWebMenu: (id: string, body: { label: string; path: string; sort: number; isEnabled: boolean }) =>
+    request<{ item: WebMenu }>(`/admin/web-menus/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
     }),
 
   adminRevisions: (status?: ReviewStatus) =>
