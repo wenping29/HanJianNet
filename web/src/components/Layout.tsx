@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
 import type { Revision, WebMenu } from '../types'
@@ -34,10 +34,17 @@ function SealLogo() {
 export default function Layout() {
   const { user, clear } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [hoverOpen, setHoverOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [notifCount, setNotifCount] = useState(0)
   const [menus, setMenus] = useState<WebMenu[]>(FALLBACK_MENUS)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 路由切换时自动收起移动端菜单
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
 
   // 加载前台菜单
   useEffect(() => {
@@ -107,11 +114,14 @@ export default function Layout() {
   return (
     <div className="paper-texture flex min-h-screen flex-col bg-ink">
       <header className="sticky top-0 z-40 border-b border-paperedge/15 bg-ink/85 backdrop-blur">
-        <div className="container-page flex h-16 items-center">
-          <div className="flex flex-1 items-center justify-start">
+        <div className="container-page flex h-16 items-center justify-between gap-2">
+          {/* 左：印章 Logo */}
+          <div className="flex shrink-0 items-center">
             <SealLogo />
           </div>
-          <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
+
+          {/* 中：桌面导航（≥1024px 显示） */}
+          <nav className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8">
             {menus.map((m) => (
               <NavLink
                 key={m.id}
@@ -124,7 +134,9 @@ export default function Layout() {
               </NavLink>
             ))}
           </nav>
-          <div className="flex flex-1 items-center justify-end gap-3">
+
+          {/* 右：桌面用户区（≥1024px 显示） */}
+          <div className="hidden shrink-0 items-center justify-end gap-3 lg:flex">
             {user ? (
               <div
                 className="relative"
@@ -196,8 +208,103 @@ export default function Layout() {
               </>
             )}
           </div>
+
+          {/* 移动端汉堡按钮（<1024px 显示） */}
+          <button
+            type="button"
+            aria-label="菜单"
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen((o) => !o)}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-paperedge/25 text-paperdim transition hover:border-bronzelight hover:text-paper lg:hidden"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+              {mobileMenuOpen ? (
+                <>
+                  <line x1="5" y1="5" x2="15" y2="15" />
+                  <line x1="15" y1="5" x2="5" y2="15" />
+                </>
+              ) : (
+                <>
+                  <line x1="3" y1="6" x2="17" y2="6" />
+                  <line x1="3" y1="10" x2="17" y2="10" />
+                  <line x1="3" y1="14" x2="17" y2="14" />
+                </>
+              )}
+            </svg>
+          </button>
         </div>
       </header>
+
+      {/* 移动端导航抽屉：从 header 下方滑出，不遮挡 header 本身 */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden">
+          <div
+            className="fixed inset-x-0 bottom-0 top-16 z-40 bg-ink/50 backdrop-blur-sm"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-paperedge/15 bg-inkcard shadow-card animate-fade-up">
+            <nav className="container-page flex flex-col py-2">
+              {menus.map((m) => (
+                <NavLink
+                  key={m.id}
+                  to={m.path}
+                  end={m.path === '/'}
+                  className={({ isActive }) =>
+                    `border-b border-paperedge/10 px-2 py-3 text-sm tracking-[0.25em] transition ${
+                      isActive ? 'text-cinnabarlight' : 'text-paperdim hover:text-paper'
+                    }`
+                  }
+                >
+                  {m.label}
+                </NavLink>
+              ))}
+
+              {/* 用户操作区 */}
+              <div className="mt-2 flex flex-col gap-2 border-t border-paperedge/15 px-2 py-3">
+                {user ? (
+                  <>
+                    <div className="flex items-center justify-between px-1 py-1">
+                      <span className="flex items-center gap-2 text-sm tracking-wider text-paper">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full border border-cinnabar/60 bg-cinnabar/20 font-song text-xs font-bold text-cinnabarlight">
+                          {user.username.slice(0, 1).toUpperCase()}
+                        </span>
+                        {user.username}
+                      </span>
+                      {notifCount > 0 && (
+                        <span className="font-garamond text-xs text-cinnabarlight">
+                          {notifCount > 99 ? '99+' : notifCount} 条审核通知
+                        </span>
+                      )}
+                    </div>
+                    <Link to="/profile" className="btn-ghost w-full !py-2 text-left text-sm">
+                      个人中心
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        clear()
+                        navigate('/')
+                      }}
+                      className="btn-bronze w-full !py-2 text-sm"
+                    >
+                      退出登录
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex gap-3">
+                    <Link to="/login" className="btn-ghost flex-1 !py-2.5">
+                      登录
+                    </Link>
+                    <Link to="/register" className="btn-primary flex-1 !py-2.5">
+                      注册
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
 
       <main className="flex-1">
         <Outlet />
