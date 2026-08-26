@@ -135,7 +135,7 @@ export default function Layout() {
       {/* 右侧主区域 */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* 顶部栏 */}
-        <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-paperedge/15 bg-ink/85 px-4 backdrop-blur sm:px-6">
+        <header className="relative z-50 flex h-16 flex-shrink-0 items-center justify-between border-b border-paperedge/15 bg-ink/85 px-4 backdrop-blur sm:px-6">
           <div className="flex items-center gap-3">
             {/* 桌面端收起按钮 */}
             <button
