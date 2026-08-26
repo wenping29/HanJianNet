@@ -17,6 +17,7 @@ export default function Layout() {
 
   const [menus, setMenus] = useState<MenuItem[]>([])
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [stats, setStats] = useState<RevisionStatusStats | null>(null)
   const closeTimerRef = useRef<number | null>(null)
@@ -111,9 +112,10 @@ export default function Layout() {
     }
   }, [location.pathname, menus, addTab, setActive])
 
-  // 路由变化关闭用户菜单
+  // 路由变化关闭用户菜单与移动端侧边栏
   useEffect(() => {
     setUserMenuOpen(false)
+    setMobileSidebarOpen(false)
   }, [location.pathname])
 
   const badgeText = (n: number) => (n <= 0 ? '' : n > 99 ? '99+' : `${n}`)
@@ -125,7 +127,9 @@ export default function Layout() {
       <Sidebar
         menus={menus}
         collapsed={collapsed}
+        mobileOpen={mobileSidebarOpen}
         onToggleCollapse={() => setCollapsed((v) => !v)}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
       />
 
       {/* 右侧主区域 */}
@@ -133,17 +137,41 @@ export default function Layout() {
         {/* 顶部栏 */}
         <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-paperedge/15 bg-ink/85 px-4 backdrop-blur sm:px-6">
           <div className="flex items-center gap-3">
+            {/* 桌面端收起按钮 */}
             <button
               type="button"
               onClick={() => setCollapsed((v) => !v)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-paperedge/15 text-paperdim transition hover:bg-bronze/10 hover:text-paper"
+              className="hidden h-9 w-9 items-center justify-center rounded-sm border border-paperedge/15 text-paperdim transition hover:bg-bronze/10 hover:text-paper lg:inline-flex"
               aria-label={collapsed ? '展开菜单' : '收起菜单'}
             >
               <span className={`text-[14px] leading-none transition-transform duration-300 ${collapsed ? '' : 'rotate-180'}`}>
                 ▸
               </span>
             </button>
-            <div className="hidden items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 sm:flex">
+            {/* 移动端汉堡按钮 */}
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen((v) => !v)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-paperedge/15 text-paperdim transition hover:bg-bronze/10 hover:text-paper lg:hidden"
+              aria-label="菜单"
+              aria-expanded={mobileSidebarOpen}
+            >
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                {mobileSidebarOpen ? (
+                  <>
+                    <line x1="5" y1="5" x2="15" y2="15" />
+                    <line x1="15" y1="5" x2="5" y2="15" />
+                  </>
+                ) : (
+                  <>
+                    <line x1="3" y1="6" x2="17" y2="6" />
+                    <line x1="3" y1="10" x2="17" y2="10" />
+                    <line x1="3" y1="14" x2="17" y2="14" />
+                  </>
+                )}
+              </svg>
+            </button>
+            <div className="hidden items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 lg:flex">
               <span>秉笔直书 · 去伪存真</span>
             </div>
           </div>
@@ -191,7 +219,7 @@ export default function Layout() {
                       <span className="absolute -bottom-0.5 -right-0.5 inline-block h-2.5 w-2.5 rounded-full border-2 border-ink bg-cinnabarlight" />
                     )}
                   </span>
-                  <span className="hidden items-start text-left leading-tight sm:flex sm:flex-col">
+                  <span className="hidden items-start text-left leading-tight lg:flex lg:flex-col">
                     <span className="text-sm text-paper">{user.username}</span>
                     <span className="text-[11px] tracking-[0.2em] text-bronzelight">
                       {ROLE_LABELS[user.role]}
@@ -208,7 +236,7 @@ export default function Layout() {
                 </button>
                 <div
                   role="menu"
-                  className={`absolute right-0 top-full z-50 w-60 pt-2 transition-all duration-150 ${
+                  className={`absolute right-0 top-full z-50 w-60 max-w-[calc(100vw-1.5rem)] pt-2 transition-all duration-150 ${
                     userMenuOpen
                       ? 'pointer-events-auto visible opacity-100 translate-y-0'
                       : 'pointer-events-none invisible opacity-0 translate-y-1'

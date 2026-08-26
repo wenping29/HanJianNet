@@ -50,7 +50,7 @@ export default function TabsBar() {
               type="button"
               data-tab-key={tab.key}
               onClick={() => setActive(tab.key)}
-              className={`group relative flex h-[34px] flex-shrink-0 items-center gap-2 rounded-t-sm border border-b-transparent px-4 text-sm transition ${
+              className={`group relative flex h-[34px] flex-shrink-0 items-center gap-2 rounded-t-sm border border-b-transparent px-3 text-sm transition lg:px-4 ${
                 active
                   ? 'border-paperedge/20 border-b-0 bg-ink text-paper shadow-[0_-1px_0_0_#d97757_inset]'
                   : 'border-transparent text-paperdim/80 hover:bg-bronze/5 hover:text-paper'
@@ -61,7 +61,7 @@ export default function TabsBar() {
                   active ? 'bg-cinnabarlight' : 'bg-paperdim/30'
                 }`}
               />
-              <span className="max-w-[140px] truncate tracking-[0.15em]">{tab.label}</span>
+              <span className="max-w-[100px] truncate tracking-[0.15em] lg:max-w-[140px]">{tab.label}</span>
               {tab.closable && (
                 <span
                   role="button"
