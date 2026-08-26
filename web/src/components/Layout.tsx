@@ -121,7 +121,21 @@ export default function Layout() {
           </div>
 
           {/* 中：桌面导航（≥1024px 显示） */}
-          <nav className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8">
+          <div className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8 w-5xl flex  pr-20 pl-20" >
+             {menus.map((m) => (
+              <div
+                key={m.id}
+                style={headerMenuItemStyle} >
+                <NavLink
+                  to={m.path}
+                  end={m.path === '/'}
+                  className={navCls}>
+                  {m.label}
+                </NavLink>
+              </div>
+            ))}
+          </div> 
+          {/* <nav className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8">
             {menus.map((m) => (
               <NavLink
                 key={m.id}
@@ -133,7 +147,7 @@ export default function Layout() {
                 {m.label}
               </NavLink>
             ))}
-          </nav>
+          </nav> */}
 
           {/* 右：桌面用户区（≥1024px 显示） */}
           <div className="hidden shrink-0 items-center justify-end gap-3 lg:flex">
