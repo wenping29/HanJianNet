@@ -4,9 +4,12 @@ import * as echarts from 'echarts'
 import { api } from '../lib/api'
 import { matchProvince, fullProvinceName } from '../lib/provinces'
 import type { TraitorSummary } from '../types'
+// import data from '../data/100000_full.json';
 import { containerPageStyle } from '../style'
 
-const CHINA_GEOJSON_URL = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json'
+const CHINA_GEOJSON_URL = '/data/100000_full.json'
+
+
 
 export default function TraitorMap() {
   const chartRef = useRef<HTMLDivElement>(null)
@@ -24,6 +27,7 @@ export default function TraitorMap() {
         // 并行获取地图 GeoJSON + 汉奸数据
         const [geoJson, traitorRes] = await Promise.all([
           fetch(CHINA_GEOJSON_URL).then((r) => r.json()),
+          // data,
           api.listTraitors({}),
         ])
 
@@ -195,7 +199,7 @@ export default function TraitorMap() {
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-inkcard/90 px-8 text-center">
               <p className="text-sm text-cinnabarlight">{error}</p>
               <p className="mt-2 text-xs tracking-wider text-paperdim/60">
-                地图数据需联网获取，请检查网络后刷新
+                地图数据加载失败，请刷新重试
               </p>
             </div>
           )}
