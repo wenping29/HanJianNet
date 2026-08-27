@@ -1,9 +1,10 @@
 import type { Period } from '../types'
+import { PERIODS } from './format'
 
 export interface HistoryEvent {
   id: string
   year: number
-  era: '宋末' | '明末' | '清末' | '抗日'
+  era: Period,
   period: Period
   title: string
   alias?: string
@@ -64,7 +65,7 @@ export const HISTORY_EVENTS: HistoryEvent[] = [
   {
     id: '918',
     year: 1931,
-    era: '抗日',
+    era: '抗日战争时期',
     period: '民国',
     title: '九一八事变',
     alias: '918事变',
@@ -74,7 +75,7 @@ export const HISTORY_EVENTS: HistoryEvent[] = [
   {
     id: '77',
     year: 1937,
-    era: '抗日',
+    era: '抗日战争时期',
     period: '民国',
     title: '七七事变',
     desc: '日军在卢沟桥附近进行所谓"夜间演习"，借口一名士兵失踪，向中国守军第二十九军发动进攻。中国军队奋起还击，全面抗战由此爆发，中华民族进入八年浴血之岁月。',
@@ -83,7 +84,7 @@ export const HISTORY_EVENTS: HistoryEvent[] = [
   {
     id: 'songhu',
     year: 1937,
-    era: '抗日',
+    era: '抗日战争时期',
     period: '民国',
     title: '淞沪会战',
     alias: '淞沪抗战',
@@ -93,7 +94,7 @@ export const HISTORY_EVENTS: HistoryEvent[] = [
   {
     id: 'nanjing',
     year: 1937,
-    era: '抗日',
+    era: '抗日战争时期',
     period: '民国',
     title: '南京大屠杀',
     desc: '日军攻陷南京后，进行长达六周有组织之大屠杀、淫掠与焚毁。据战后南京军事法庭与远东国际军事法庭判定，遇难同胞逾三十万，为近代东亚最为骇人听闻之屠城惨案。',
@@ -101,14 +102,16 @@ export const HISTORY_EVENTS: HistoryEvent[] = [
   },
 ]
 
-export const HISTORY_ERAS = ['全部', '宋末', '明末', '清末', '抗日'] as const
+export const HISTORY_ERAS = ['全部', ...PERIODS] as const
 
 /** 时期 → 数据模型 Period 映射 */
 export const ERA_PERIOD_MAP: Record<HistoryEvent['era'], Period> = {
-  宋末: '宋末',
-  明末: '明末',
-  清末: '清末',
-  抗日: '民国',
+  宋末: PERIODS[0],
+  明末: PERIODS[1],
+  清末: PERIODS[2],
+  抗日战争时期: PERIODS[3],
+  民国: PERIODS[4],
+  其他: PERIODS[5],
 }
 
 const STORAGE_KEY = 'hanjian-custom-events'

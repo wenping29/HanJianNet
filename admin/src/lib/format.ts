@@ -1,6 +1,6 @@
 import type { YearType } from '../types'
 
-export const PERIODS = ['宋末', '明末', '清末', '民国', '其他'] as const
+export const PERIODS = ['宋末', '明末', '清末', '民国',"抗日战争时期", '其他'] as const
 
 export function splitList(text: string): string[] {
   return text

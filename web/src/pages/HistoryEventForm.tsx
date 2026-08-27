@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { addCustomEvent, ERA_PERIOD_MAP } from '../lib/historyEvents'
 import type { HistoryEvent } from '../lib/historyEvents'
-import { splitList } from '../lib/format'
+import { splitList, PERIODS } from '../lib/format'
 
 type Era = HistoryEvent['era']
-const ERA_OPTIONS: Era[] = ['宋末', '明末', '清末', '抗日']
+const ERA_OPTIONS: Era[] = [...PERIODS]
 
 interface FormState {
   title: string
@@ -19,7 +19,7 @@ interface FormState {
 const INITIAL: FormState = {
   title: '',
   year: '',
-  era: '抗日',
+  era: PERIODS[0],
   alias: '',
   desc: '',
   keywords: '',

@@ -3,32 +3,15 @@ import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { TimelineNode } from '../types'
 import { containerPageStyle } from '../style'
-
-
-
-interface EraDef {
-  label: string
-  range: string
-  desc: string
-  from?: number
-  to?: number
-}
-
-// 时光轴时期定义（按年份区间前端过滤）
-const ERAS: EraDef[] = [
-  { label: '全部', range: '不限', desc: '依年序铺陈所有已收录的重大变节事件。' },
-  { label: '唐末', range: '874 — 979', desc: '唐末五代之际，出仕异族或献城降敌者。', from: 874, to: 979 },
-  { label: '宋末', range: '1234 — 1279', desc: '宋元鼎革之际，出仕蒙元或献城降敌者。', from: 1234, to: 1279 },
-  { label: '明末', range: '1616 — 1662', desc: '明清易代之际，降清仕清、助清剿明者。', from: 1616, to: 1662 },
-  { label: '清末', range: '1840 — 1912', desc: '列强侵凌之世，勾结外敌、出卖利权者。', from: 1840, to: 1912 },
-  { label: '抗日', range: '1931 — 1945', desc: '抗战时期，投靠日本侵略者、充任伪职者。', from: 1931, to: 1945 },
-]
+import { ERAS } from '../lib/format'
+export { ERAS } from '../lib/format'
 
 export default function EventTimeline() {
   const [allItems, setAllItems] = useState<TimelineNode[]>([])
   const [activeEra, setActiveEra] = useState<string>('全部')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  
 
   useEffect(() => {
     let cancelled = false

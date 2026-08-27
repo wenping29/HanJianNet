@@ -17,7 +17,7 @@ export interface Paginated<T> {
 
 export type YearType = 'exact' | 'approx' | 'before' | 'after' | 'unknown'
 
-export type Period = '宋末' | '明末' | '清末' | '民国' | '其他'
+export type Period = '宋末' | '明末' | '清末' | '民国' | '抗日战争时期' | '其他'
 
 export type AttachmentKind = 'photo' | 'evidence'
 
