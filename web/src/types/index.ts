@@ -1,4 +1,4 @@
-export type Period = '宋末' | '明末' | '清末' | '民国' | '其他'
+export type Period = '宋末' | '明末' | '清末' | '抗日战争时期' | '其他'
 
 export type YearType = 'exact' | 'approx' | 'before' | 'after' | 'unknown'
 
