@@ -103,17 +103,17 @@ public class TraitorService(AppDbContext db)
     }
 
     /// <summary>
-    /// 分省统计：省份归类在本服务端完成（含历史省名映射），前端只负责展示。
-    /// items 按数量降序；total 为档案总数；matched 为可识别出省份的记录数。
+    /// 分省统计：直接读取档案的 Province 字段，前端只负责展示。
+    /// items 按数量降序；total 为档案总数；matched 为已填写省份的记录数。
     /// </summary>
     public async Task<object> GetProvinceStatsAsync()
     {
-        var places = await db.Traitors.Select(t => t.NativePlace).ToListAsync();
+        var provinces = await db.Traitors.Select(t => t.Province).ToListAsync();
         var counts = new Dictionary<string, int>();
         var matched = 0;
-        foreach (var np in places)
+        foreach (var prov in provinces)
         {
-            if (!ProvinceMatcher.TryMatch(np, out var prov)) continue;
+            if (string.IsNullOrWhiteSpace(prov)) continue;
             matched++;
             counts[prov] = counts.TryGetValue(prov, out var c) ? c + 1 : 1;
         }
@@ -121,7 +121,7 @@ public class TraitorService(AppDbContext db)
             .OrderByDescending(kv => kv.Value)
             .Select(kv => new { province = kv.Key, fullName = ProvinceMatcher.FullName(kv.Key), count = kv.Value })
             .ToList();
-        return new { items, total = places.Count, matched };
+        return new { items, total = provinces.Count, matched };
     }
 
     public async Task<List<object>> GetTimelineAsync()

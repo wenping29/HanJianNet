@@ -161,6 +161,7 @@ CREATE TABLE "Traitors" (
     "BirthYearType" TEXT NOT NULL,
     "DeathYearType" TEXT NOT NULL,
     "NativePlace" TEXT NOT NULL,
+    "Province" TEXT NOT NULL,
     "AliasesJson" TEXT NOT NULL,
     "IdentityTagsJson" TEXT NOT NULL,
     "Period" TEXT NOT NULL,

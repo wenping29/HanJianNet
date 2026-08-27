@@ -81,6 +81,7 @@ CREATE TABLE `Traitors` (
     `BirthYearType` longtext CHARACTER SET utf8mb4 NOT NULL,
     `DeathYearType` longtext CHARACTER SET utf8mb4 NOT NULL,
     `NativePlace` longtext CHARACTER SET utf8mb4 NOT NULL,
+    `Province` longtext CHARACTER SET utf8mb4 NOT NULL,
     `AliasesJson` longtext CHARACTER SET utf8mb4 NOT NULL,
     `IdentityTagsJson` longtext CHARACTER SET utf8mb4 NOT NULL,
     `Period` longtext CHARACTER SET utf8mb4 NOT NULL,

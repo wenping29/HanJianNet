@@ -11,6 +11,7 @@ public class Traitor
     public string BirthYearType { get; set; } = "exact";
     public string DeathYearType { get; set; } = "exact";
     public string NativePlace { get; set; } = "";
+    public string Province { get; set; } = "";
     public string AliasesJson { get; set; } = "[]";
     public string IdentityTagsJson { get; set; } = "[]";
     public string Period { get; set; } = "";

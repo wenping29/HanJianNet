@@ -63,6 +63,7 @@ public class TraitorSummaryDto
     public string BirthYearType { get; set; } = "";
     public string DeathYearType { get; set; } = "";
     public string NativePlace { get; set; } = "";
+    public string Province { get; set; } = "";
     public List<string> IdentityTags { get; set; } = [];
     public string? PhotoUrl { get; set; }
 }
@@ -77,6 +78,7 @@ public class TraitorSnapshotDto
     public string BirthYearType { get; set; } = "";
     public string DeathYearType { get; set; } = "";
     public string NativePlace { get; set; } = "";
+    public string Province { get; set; } = "";
     public List<string> Aliases { get; set; } = [];
     public List<string> IdentityTags { get; set; } = [];
     public string Period { get; set; } = "";
