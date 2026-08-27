@@ -108,7 +108,7 @@ public class TraitorService(AppDbContext db)
     /// </summary>
     public async Task<object> GetProvinceStatsAsync()
     {
-        var provinces = await db.Traitors.Select(t => t.Province).ToListAsync();
+        var provinces = await db.Traitors.Select(t => t.Province ?? "").ToListAsync();
         var counts = new Dictionary<string, int>();
         var matched = 0;
         foreach (var prov in provinces)

@@ -32,7 +32,7 @@ public static class Mappings
         BirthYearType = t.BirthYearType,
         DeathYearType = t.DeathYearType,
         NativePlace = t.NativePlace,
-        Province = t.Province,
+        Province = t.Province ?? "",
         IdentityTags = DeserializeList(t.IdentityTagsJson),
         PhotoUrl = t.Attachments.FirstOrDefault(a => a.Kind == "photo")?.Url,
     };
@@ -48,7 +48,7 @@ public static class Mappings
         BirthYearType = t.BirthYearType,
         DeathYearType = t.DeathYearType,
         NativePlace = t.NativePlace,
-        Province = t.Province,
+        Province = t.Province ?? "",
         Aliases = DeserializeList(t.AliasesJson),
         IdentityTags = DeserializeList(t.IdentityTagsJson),
         Period = t.Period,
