@@ -41,6 +41,10 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
     public async Task<IActionResult> GetStats()
         => Ok(await traitors.GetStatsAsync());
 
+    [HttpGet("api/traitors/province-stats")]
+    public async Task<IActionResult> GetProvinceStats()
+        => Ok(await traitors.GetProvinceStatsAsync());
+
     [HttpGet("api/traitors/timeline")]
     public async Task<IActionResult> GetTimeline()
         => Ok(new { items = await traitors.GetTimelineAsync() });
