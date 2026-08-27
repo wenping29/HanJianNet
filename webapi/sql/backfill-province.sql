@@ -8,6 +8,9 @@
 -- 幂等：仅更新 Province = '' 的记录，可重复执行，不覆盖已手动设置的值。
 -- ============================================
 
+-- ---- 第 0 步：先把历史遗留的 NULL 统一为空串（否则后续 WHERE Province = '' 不匹配 NULL）----
+UPDATE `Traitors` SET `Province` = '' WHERE `Province` IS NULL;
+
 -- ---- 现代省名（3 字，优先匹配，长度较长更精确）----
 UPDATE `Traitors` SET `Province` = '黑龙江' WHERE `Province` = '' AND `NativePlace` LIKE '%黑龙江%';
 UPDATE `Traitors` SET `Province` = '内蒙古' WHERE `Province` = '' AND `NativePlace` LIKE '%内蒙古%';
@@ -66,3 +69,6 @@ UPDATE `Traitors` SET `Province` = '吉林' WHERE `Province` = '' AND `NativePla
 
 -- ---- 校验：查看仍无法识别省份的记录（籍贯为市/县级，需手动补录）----
 -- SELECT `Id`, `Name`, `NativePlace` FROM `Traitors` WHERE `Province` = '' AND `NativePlace` <> '';
+
+-- ---- 最后一步：把列改为 NOT NULL DEFAULT ''，与其它字符串列、实体属性保持一致，杜绝再次出现 NULL ----
+ALTER TABLE `Traitors` MODIFY COLUMN `Province` longtext CHARACTER SET utf8mb4 NOT NULL DEFAULT '';
