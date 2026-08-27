@@ -21,8 +21,13 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
         [FromQuery] int? yearTo,
         [FromQuery] string? @event,
         [FromQuery] string? period,
-        [FromQuery] string? nativePlace)
-        => Ok(new { items = await traitors.ListAsync(name, yearFrom, yearTo, @event, period, nativePlace) });
+        [FromQuery] string? nativePlace,
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null)
+    {
+        var paged = await traitors.ListAsync(name, yearFrom, yearTo, @event, period, nativePlace, page, pageSize);
+        return Ok(new { items = paged.Items, total = paged.Total, page = paged.Page, pageSize = paged.PageSize, totalPages = paged.TotalPages });
+    }
 
     [HttpGet("api/traitors/{id}")]
     public async Task<IActionResult> Get(string id)

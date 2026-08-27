@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import DefinitionDrawer from '../components/DefinitionDrawer'
 import TraitorCard from '../components/TraitorCard'
@@ -43,49 +43,86 @@ function StatCard({ label, value }: { label: string; value: number }) {
   )
 }
 
+const PAGE_SIZE = 20
 const EMPTY_FILTERS: TraitorFilters = { name: '', yearFrom: undefined, yearTo: undefined, event: '', period: undefined }
+
+/** 生成分页按钮上显示的页码列表：首尾页 + 当前页附近 + 省略号 */
+function buildPageList(current: number, total: number): (number | '...')[] {
+  if (total <= 1) return [1]
+  const windows: Array<number | '...'> = []
+  const addRange = (from: number, to: number) => {
+    for (let i = from; i <= to; i++) windows.push(i)
+  }
+  const delta = 2
+  const left = Math.max(2, current - delta)
+  const right = Math.min(total - 1, current + delta)
+
+  windows.push(1)
+  if (left > 2) windows.push('...')
+  addRange(left, right)
+  if (right < total - 1) windows.push('...')
+  if (total > 1) windows.push(total)
+
+  return windows
+}
 
 export default function Home() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [stats, setStats] = useState<TraitorStats | null>(null)
   const [filters, setFilters] = useState<TraitorFilters>(EMPTY_FILTERS)
   const [items, setItems] = useState<TraitorSummary[]>([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const wallRef = useRef<HTMLDivElement>(null)
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
-  const loadList = useCallback(async (f: TraitorFilters) => {
+  const loadList = useCallback(async (f: TraitorFilters, p: number) => {
     setLoading(true)
     setError('')
     try {
-      const data = await api.listTraitors(f)
+      const data = await api.listTraitors({ ...f, page: p, pageSize: PAGE_SIZE })
       setItems(data.items)
+      setTotal(data.total)
+      setPage(data.page)
     } catch (e) {
       setError(e instanceof Error ? e.message : '加载失败')
       setItems([])
+      setTotal(0)
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    loadList(EMPTY_FILTERS)
+    loadList(EMPTY_FILTERS, 1)
     api.getStats().then(setStats).catch(() => setStats(null))
   }, [loadList])
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault()
-    loadList(filters)
+    // 检索：page 重置为 1，避免停留在高页码时出现空列表
+    setPage(1)
+    loadList(filters, 1)
     wallRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
   function pickPeriod(period?: string) {
     const next = { ...filters, period: period as TraitorFilters['period'] }
     setFilters(next)
-    loadList(next)
+    setPage(1)
+    loadList(next, 1)
   }
 
- 
+  function gotoPage(p: number) {
+    const target = Math.min(Math.max(1, p), totalPages)
+    setPage(target)
+    loadList(filters, target)
+    wallRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const pageList = useMemo(() => buildPageList(page, totalPages), [page, totalPages])
 
   return (
     <div>
@@ -193,7 +230,7 @@ export default function Home() {
             ))}
           </div>
           <span className="text-xs tracking-wider text-paperdim/70">
-            {loading ? '检索中…' : `共 ${items.length} 条档案`}
+            {loading ? '检索中…' : `共 ${total} 条档案 · 第 ${page} / ${totalPages} 页`}
           </span>
         </div>
 
@@ -216,6 +253,50 @@ export default function Home() {
             <TraitorCard key={t.id} traitor={t} />
           ))}
         </div>
+
+        {/* 分页控件 */}
+        {!loading && !error && totalPages > 1 && (
+          <nav className="mt-10 flex items-center justify-center gap-2 flex-wrap" aria-label="分页导航">
+            <button
+              type="button"
+              onClick={() => gotoPage(page - 1)}
+              disabled={page <= 1}
+              className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ‹ 上一页
+            </button>
+
+            {pageList.map((p, idx) =>
+              p === '...' ? (
+                <span key={`e${idx}`} className="px-2 text-sm text-paperdim/60">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => gotoPage(p)}
+                  className={`min-w-[36px] rounded-sm border px-2 py-1.5 text-sm transition ${
+                    p === page
+                      ? 'border-cinnabar bg-cinnabar/20 text-cinnabarlight shadow-seal'
+                      : 'border-paperedge/25 text-paperdim hover:border-bronzelight hover:text-paper'
+                  }`}
+                >
+                  {p}
+                </button>
+              ),
+            )}
+
+            <button
+              type="button"
+              onClick={() => gotoPage(page + 1)}
+              disabled={page >= totalPages}
+              className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              下一页 ›
+            </button>
+          </nav>
+        )}
       </section>
 
             {/* 统计看板 */}

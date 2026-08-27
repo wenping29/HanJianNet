@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
@@ -7,42 +7,82 @@ import { formatLifeSpan } from '../lib/format'
 import type { TraitorSummary } from '../types'
 import { containerPageStyle } from '../style'
 
+const PAGE_SIZE = 20
 const EMPTY_FILTERS: TraitorFilters = { name: '', period: undefined }
+
+/** 生成分页按钮上显示的页码列表：首尾页 + 当前页附近 + 省略号 */
+function buildPageList(current: number, total: number): (number | '...')[] {
+  if (total <= 1) return [1]
+  const windows: Array<number | '...'> = []
+  const addRange = (from: number, to: number) => {
+    for (let i = from; i <= to; i++) windows.push(i)
+  }
+  const delta = 2
+  const left = Math.max(2, current - delta)
+  const right = Math.min(total - 1, current + delta)
+
+  windows.push(1)
+  if (left > 2) windows.push('...')
+  addRange(left, right)
+  if (right < total - 1) windows.push('...')
+  if (total > 1) windows.push(total)
+
+  return windows
+}
 
 export default function Roster() {
   const [filters, setFilters] = useState<TraitorFilters>(EMPTY_FILTERS)
   const [items, setItems] = useState<TraitorSummary[]>([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const listRef = useRef<HTMLDivElement>(null)
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
-  const loadList = useCallback(async (f: TraitorFilters) => {
+  const loadList = useCallback(async (f: TraitorFilters, p: number) => {
     setLoading(true)
     setError('')
     try {
-      const data = await api.listTraitors(f)
+      const data = await api.listTraitors({ ...f, page: p, pageSize: PAGE_SIZE })
       setItems(data.items)
+      setTotal(data.total)
+      setPage(data.page)
     } catch (e) {
       setError(e instanceof Error ? e.message : '加载失败')
       setItems([])
+      setTotal(0)
     } finally {
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    loadList(EMPTY_FILTERS)
+    loadList(EMPTY_FILTERS, 1)
   }, [loadList])
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault()
-    loadList(filters)
+    setPage(1)
+    loadList(filters, 1)
+    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   function pickPeriod(period?: string) {
     const next = { ...filters, period: period as TraitorFilters['period'] }
     setFilters(next)
-    loadList(next)
+    setPage(1)
+    loadList(next, 1)
   }
+
+  function gotoPage(p: number) {
+    const target = Math.min(Math.max(1, p), totalPages)
+    setPage(target)
+    loadList(filters, target)
+    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  const pageList = useMemo(() => buildPageList(page, totalPages), [page, totalPages])
 
   return (
     <div>
@@ -59,7 +99,7 @@ export default function Roster() {
         </div>
       </section>
 
-      <section className="container-page py-16">
+      <section ref={listRef} className="container-page py-16">
         {/* 检索栏 */}
         <form onSubmit={submitSearch} className="card mb-6 flex flex-wrap items-end gap-4 p-5">
           <div className="flex-1">
@@ -108,7 +148,7 @@ export default function Roster() {
             ))}
           </div>
           <span className="text-xs tracking-wider text-paperdim/70">
-            {loading ? '检索中…' : `共 ${items.length} 条档案`}
+            {loading ? '检索中…' : `共 ${total} 条档案 · 第 ${page} / ${totalPages} 页`}
           </span>
         </div>
 
@@ -138,7 +178,7 @@ export default function Roster() {
               <tbody>
                 {items.map((t, i) => (
                   <tr key={t.id}>
-                    <td className="text-center font-garamond text-paperdim">{i + 1}</td>
+                    <td className="text-center font-garamond text-paperdim">{i + 1 + (page - 1) * PAGE_SIZE}</td>
                     <td>
                       <Link
                         to={`/traitor/${t.id}`}
@@ -172,6 +212,50 @@ export default function Roster() {
               </tbody>
             </table>
           </div>
+        )}
+
+        {/* 分页控件 */}
+        {!loading && !error && totalPages > 1 && (
+          <nav className="mt-10 flex items-center justify-center gap-2 flex-wrap" aria-label="分页导航">
+            <button
+              type="button"
+              onClick={() => gotoPage(page - 1)}
+              disabled={page <= 1}
+              className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ‹ 上一页
+            </button>
+
+            {pageList.map((p, idx) =>
+              p === '...' ? (
+                <span key={`e${idx}`} className="px-2 text-sm text-paperdim/60">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => gotoPage(p)}
+                  className={`min-w-[36px] rounded-sm border px-2 py-1.5 text-sm transition ${
+                    p === page
+                      ? 'border-cinnabar bg-cinnabar/20 text-cinnabarlight shadow-seal'
+                      : 'border-paperedge/25 text-paperdim hover:border-bronzelight hover:text-paper'
+                  }`}
+                >
+                  {p}
+                </button>
+              ),
+            )}
+
+            <button
+              type="button"
+              onClick={() => gotoPage(page + 1)}
+              disabled={page >= totalPages}
+              className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              下一页 ›
+            </button>
+          </nav>
         )}
       </section>
     </div>

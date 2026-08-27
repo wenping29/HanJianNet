@@ -75,6 +75,16 @@ export interface TraitorFilters {
   event?: string
   period?: Period
   nativePlace?: string
+  page?: number
+  pageSize?: number
+}
+
+export interface PagedTraitorResponse {
+  items: TraitorSummary[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
 }
 
 export const api = {
@@ -87,7 +97,7 @@ export const api = {
   me: () => request<{ user: User }>('/auth/me'),
 
   listTraitors: (filters: TraitorFilters = {}) =>
-    request<{ items: TraitorSummary[] }>(
+    request<PagedTraitorResponse>(
       `/traitors${query({
         name: filters.name,
         yearFrom: filters.yearFrom,
@@ -95,6 +105,8 @@ export const api = {
         event: filters.event,
         period: filters.period,
         nativePlace: filters.nativePlace,
+        page: filters.page,
+        pageSize: filters.pageSize,
       })}`,
     ),
 

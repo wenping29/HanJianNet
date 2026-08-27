@@ -9,7 +9,10 @@ namespace HanJianNet.WebApi.Services;
 
 public class TraitorService(AppDbContext db)
 {
-    public async Task<List<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? nativePlace)
+    /// <summary>
+    /// 公开列表查询。page/pageSize 未指定时返回全量（供地图统计等场景使用），指定时返回分页结果。
+    /// </summary>
+    public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? nativePlace, int? page = null, int? pageSize = null)
     {
         var q = db.Traitors.Include(t => t.LifeEvents).AsQueryable();
 
@@ -35,8 +38,31 @@ public class TraitorService(AppDbContext db)
         if (!string.IsNullOrWhiteSpace(period))
             q = q.Where(t => t.Period == period);
 
-        var list = await q.ToListAsync();
-        return list.Select(t => t.ToSummary()).ToList();
+        // 固定排序：按创建时间倒序（最新录入的在前）
+        q = q.OrderByDescending(t => t.CreatedAt);
+
+        var total = await q.CountAsync();
+        List<Traitor> list;
+        if (page.HasValue && pageSize.HasValue)
+        {
+            var p = Math.Max(1, page.Value);
+            var ps = Math.Clamp(pageSize.Value, 1, 200);
+            list = await q.Skip((p - 1) * ps).Take(ps).ToListAsync();
+            return new PagedResult<TraitorSummaryDto>(
+                Items: list.Select(t => t.ToSummary()).ToList(),
+                Total: total,
+                Page: p,
+                PageSize: ps);
+        }
+        else
+        {
+            list = await q.ToListAsync();
+            return new PagedResult<TraitorSummaryDto>(
+                Items: list.Select(t => t.ToSummary()).ToList(),
+                Total: total,
+                Page: 1,
+                PageSize: Math.Max(1, total));
+        }
     }
 
     public async Task<TraitorDto> GetAsync(string id)
