@@ -87,6 +87,23 @@ export interface PagedTraitorResponse {
   totalPages: number
 }
 
+/** 分省统计项（省份归类在后端完成） */
+export interface ProvinceStat {
+  /** 省份短名，如 广东 */
+  province: string
+  /** GeoJSON 全称，如 广东省 */
+  fullName: string
+  count: number
+}
+
+export interface ProvinceStatsResponse {
+  items: ProvinceStat[]
+  /** 档案总数 */
+  total: number
+  /** 可识别出省份的记录数 */
+  matched: number
+}
+
 export const api = {
   register: (body: { username: string; email: string; password: string }) =>
     request<AuthPayload>('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
@@ -115,6 +132,8 @@ export const api = {
   getRevisions: (id: string) => request<{ items: Revision[] }>(`/traitors/${id}/revisions`),
 
   getStats: () => request<TraitorStats>('/traitors/stats'),
+
+  getProvinceStats: () => request<ProvinceStatsResponse>('/traitors/province-stats'),
 
   getTimeline: () => request<{ items: TimelineNode[] }>('/traitors/timeline'),
 

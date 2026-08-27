@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import * as echarts from 'echarts'
 import { api } from '../lib/api'
-import { matchProvince, fullProvinceName } from '../lib/provinces'
-import type { TraitorSummary } from '../types'
+import type { ProvinceStat } from '../lib/api'
 // import data from '../data/100000_full.json';
 import { containerPageStyle } from '../style'
 
@@ -16,7 +15,7 @@ export default function TraitorMap() {
   const chartInstance = useRef<echarts.ECharts | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [stats, setStats] = useState<{ province: string; count: number }[]>([])
+  const [stats, setStats] = useState<ProvinceStat[]>([])
   const [total, setTotal] = useState(0)
 
   useEffect(() => {
@@ -24,37 +23,24 @@ export default function TraitorMap() {
 
     async function init() {
       try {
-        // 并行获取地图 GeoJSON + 汉奸数据
-        const [geoJson, traitorRes] = await Promise.all([
+        // 并行获取地图 GeoJSON + 后端分省统计（省份归类在后端完成，前端只负责展示）
+        const [geoJson, statsRes] = await Promise.all([
           fetch(CHINA_GEOJSON_URL).then((r) => r.json()),
           // data,
-          api.listTraitors({}),
+          api.getProvinceStats(),
         ])
 
         if (cancelled) return
 
-        const traitors: TraitorSummary[] = traitorRes.items
-
-        // 按省份统计
-        const counts = new Map<string, number>()
-        for (const t of traitors) {
-          const prov = matchProvince(t.nativePlace)
-          if (prov) {
-            counts.set(prov, (counts.get(prov) ?? 0) + 1)
-          }
-        }
-
-        const sortedStats = [...counts.entries()]
-          .map(([province, count]) => ({ province, count }))
-          .sort((a, b) => b.count - a.count)
+        const sortedStats = statsRes.items
 
         setStats(sortedStats)
-        setTotal(traitors.length)
+        setTotal(statsRes.total)
 
-        // 构建 ECharts 数据
+        // 构建 ECharts 数据（fullName 与 GeoJSON 地图要素 name 匹配）
         const maxCount = Math.max(1, ...sortedStats.map((s) => s.count))
         const mapData = sortedStats.map((s) => ({
-          name: fullProvinceName(s.province),
+          name: s.fullName,
           value: s.count,
         }))
 
