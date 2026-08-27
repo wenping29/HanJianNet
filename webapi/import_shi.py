@@ -29,6 +29,40 @@ def escape_sql(s):
     return f"'{s}'"
 
 
+# 现代 23 省 + 4 直市 + 5 自治区 + 2 特区（与 webapi/Common/ProvinceMatcher 一致）
+_PROVINCES = [
+    "北京", "天津", "上海", "重庆",
+    "河北", "山西", "辽宁", "吉林", "黑龙江",
+    "江苏", "浙江", "安徽", "福建", "江西", "山东",
+    "河南", "湖北", "湖南", "广东", "海南",
+    "四川", "贵州", "云南", "陕西", "甘肃", "青海",
+    "内蒙古", "广西", "西藏", "宁夏", "新疆",
+    "台湾", "香港", "澳门",
+]
+
+# 历史省名 → 现代省名
+_HISTORICAL_MAP = {
+    "直隶": "河北", "奉天": "辽宁", "热河": "河北", "察哈尔": "河北",
+    "绥远": "内蒙古", "西康": "四川", "安东": "辽宁", "辽北": "辽宁",
+    "松江": "黑龙江", "合江": "黑龙江", "嫩江": "黑龙江", "兴安": "内蒙古",
+    "满洲": "黑龙江", "新京": "吉林",
+}
+
+# 按长度降序，优先匹配 3 字名称
+_ALL_PREFIXES = sorted(_PROVINCES + list(_HISTORICAL_MAP.keys()), key=len, reverse=True)
+
+
+def match_province(text):
+    """从籍贯字符串中提取省份（支持历史省名映射），无法识别返回空串。"""
+    if not text:
+        return ""
+    for prefix in _ALL_PREFIXES:
+        if prefix in text:
+            return _HISTORICAL_MAP.get(prefix, prefix)
+    return ""
+
+
+
 def extract_aliases(name):
     aliases = []
     m = re.search(r"[\(（]([^)）]+)[\)）]", name)
@@ -112,6 +146,7 @@ def parse_row(row, mapping):
         "id": gen_id(),
         "name": clean_name,
         "native_place": native_place,
+        "province": match_province(native_place),
         "aliases": aliases,
         "identity_tags": identity_tags,
         "period": "抗日战争时期",
@@ -124,7 +159,7 @@ def gen_insert_sql(t):
     return (
         f"INSERT INTO `Traitors` "
         f"(`Id`,`Name`,`CourtesyName`,`Pseudonym`,`BirthYear`,`DeathYear`,"
-        f"`BirthYearType`,`DeathYearType`,`NativePlace`,`AliasesJson`,"
+        f"`BirthYearType`,`DeathYearType`,`NativePlace`,`Province`,`AliasesJson`,"
         f"`IdentityTagsJson`,`Period`,`Faction`,`Summary`,`RelatedIdsJson`,"
         f"`CreatedAt`,`UpdatedAt`) VALUES ("
         f"{escape_sql(t['id'])},"
@@ -132,6 +167,7 @@ def gen_insert_sql(t):
         f"NULL,NULL,NULL,NULL,"
         f"'exact','exact',"
         f"{escape_sql(t['native_place'])},"
+        f"{escape_sql(t['province'])},"
         f"{escape_sql(json.dumps(t['aliases'], ensure_ascii=False))},"
         f"{escape_sql(json.dumps(t['identity_tags'], ensure_ascii=False))},"
         f"{escape_sql(t['period'])},"

@@ -72,7 +72,7 @@ export default function TraitorMap() {
               text: ['多', '少'],
               textStyle: { color: '#9a8870', fontSize: 11 },
               inRange: {
-                color: ['#3d2a2a', '#7a2828', '#b03838', '#d85050', '#f08080'],
+                color: ['#dbb50aff', '#bd504aff', '#dd433bff', '#e94113ff', '#fc1205ff'],
               },
             },
             series: [
