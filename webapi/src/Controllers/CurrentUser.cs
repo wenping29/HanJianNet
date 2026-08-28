@@ -20,4 +20,13 @@ public static class CurrentUser
     {
         return user.FindFirst("role")?.Value ?? Roles.Guest;
     }
+
+    /// <summary>从当前用户安全提取三元组（不存在就返回 null/guest，保证不会抛未授权异常，日志场景可用）</summary>
+    public static (string? UserId, string? Username, string Role) GetTriple(ClaimsPrincipal user)
+    {
+        var uid = user.FindFirst("sub")?.Value ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var uname = user.FindFirst("username")?.Value ?? user.FindFirst(ClaimTypes.Name)?.Value;
+        var role = user.FindFirst("role")?.Value ?? Roles.Guest;
+        return (uid, uname, role);
+    }
 }

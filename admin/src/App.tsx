@@ -2,6 +2,10 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
+import LoginLogs from './pages/Logs/LoginLogs'
+import OperationLogs from './pages/Logs/OperationLogs'
+import QueryLogs from './pages/Logs/QueryLogs'
+import ErrorLogs from './pages/Logs/ErrorLogs'
 import Menus from './pages/Menus'
 import NotFound from './pages/NotFound'
 import Profile from './pages/Profile'
@@ -48,6 +52,12 @@ export default function App() {
           <Route path="/roles" element={<Roles />} />
           <Route path="/menus" element={<Menus />} />
           <Route path="/web-menus" element={<WebMenus />} />
+          <Route element={<AdminOnlyRoute />}>
+            <Route path="/logs/login" element={<LoginLogs />} />
+            <Route path="/logs/operation" element={<OperationLogs />} />
+            <Route path="/logs/query" element={<QueryLogs />} />
+            <Route path="/logs/error" element={<ErrorLogs />} />
+          </Route>
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Route>

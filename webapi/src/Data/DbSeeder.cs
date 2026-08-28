@@ -67,11 +67,16 @@ public static class DbSeeder
             ("traitors", "/traitors", "名录管理", 1, null, ["admin", "superadmin"]),
             ("reviews", "/reviews", "待审队列", 2, null, ["manager", "admin", "superadmin"]),
             ("system", "/system", "系统管理", 3, null, ["manager", "admin", "superadmin"]),
+            ("system-logs", "/system-logs", "系统日志", 4, null, ["admin", "superadmin"]),
             ("users", "/users", "用户管理", 1, "system", ["admin", "superadmin"]),
             ("roles", "/roles", "角色管理", 2, "system", ["admin", "superadmin"]),
             ("menus", "/menus", "菜单管理", 3, "system", ["admin", "superadmin"]),
             ("web-menus", "/web-menus", "前台菜单", 4, "system", ["admin", "superadmin"]),
             ("profile", "/profile", "个人信息", 5, "system", ["manager", "admin", "superadmin"]),
+            ("logs-login", "/logs/login", "登录日志", 1, "system-logs", ["admin", "superadmin"]),
+            ("logs-operation", "/logs/operation", "操作日志", 2, "system-logs", ["admin", "superadmin"]),
+            ("logs-query", "/logs/query", "查询日志", 3, "system-logs", ["admin", "superadmin"]),
+            ("logs-error", "/logs/error", "错误日志", 4, "system-logs", ["admin", "superadmin"]),
         };
 
         // 1) 菜单：缺则补，存在则修正 Parent/Sort（不改 Label/Path，尊重用户修改）

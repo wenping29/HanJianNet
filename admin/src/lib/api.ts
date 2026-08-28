@@ -4,8 +4,12 @@ import type {
   Attachment,
   AttachmentKind,
   AuthPayload,
+  ErrorLogItem,
+  LoginLogItem,
   MenuItem,
+  OperationLogItem,
   Paginated,
+  QueryLogItem,
   ReviewStatus,
   Revision,
   RevisionStatusStats,
@@ -175,4 +179,91 @@ export const api = {
 
   changePassword: (body: { currentPassword: string; newPassword: string }) =>
     request<{ message: string }>('/me/password', { method: 'PUT', body: JSON.stringify(body) }),
+
+  // ---- 系统日志（admin+ 可见） ----
+  loginLogs: (q: {
+    keyword?: string
+    username?: string
+    from?: string
+    to?: string
+    page?: number
+    pageSize?: number
+  }) => {
+    const params = new URLSearchParams()
+    if (q.keyword) params.set('keyword', q.keyword)
+    if (q.username) params.set('username', q.username)
+    if (q.from) params.set('from', q.from)
+    if (q.to) params.set('to', q.to)
+    params.set('page', String(q.page ?? 1))
+    params.set('pageSize', String(q.pageSize ?? 20))
+    return request<Paginated<LoginLogItem>>(`/admin/logs/login-logs?${params.toString()}`)
+  },
+
+  operationLogs: (q: {
+    keyword?: string
+    username?: string
+    module?: string
+    action?: string
+    targetId?: string
+    from?: string
+    to?: string
+    page?: number
+    pageSize?: number
+  }) => {
+    const params = new URLSearchParams()
+    if (q.keyword) params.set('keyword', q.keyword)
+    if (q.username) params.set('username', q.username)
+    if (q.module) params.set('module', q.module)
+    if (q.action) params.set('action', q.action)
+    if (q.targetId) params.set('targetId', q.targetId)
+    if (q.from) params.set('from', q.from)
+    if (q.to) params.set('to', q.to)
+    params.set('page', String(q.page ?? 1))
+    params.set('pageSize', String(q.pageSize ?? 20))
+    return request<Paginated<OperationLogItem>>(`/admin/logs/operation-logs?${params.toString()}`)
+  },
+
+  queryLogs: (q: {
+    keyword?: string
+    username?: string
+    module?: string
+    path?: string
+    from?: string
+    to?: string
+    page?: number
+    pageSize?: number
+  }) => {
+    const params = new URLSearchParams()
+    if (q.keyword) params.set('keyword', q.keyword)
+    if (q.username) params.set('username', q.username)
+    if (q.module) params.set('module', q.module)
+    if (q.path) params.set('path', q.path)
+    if (q.from) params.set('from', q.from)
+    if (q.to) params.set('to', q.to)
+    params.set('page', String(q.page ?? 1))
+    params.set('pageSize', String(q.pageSize ?? 20))
+    return request<Paginated<QueryLogItem>>(`/admin/logs/query-logs?${params.toString()}`)
+  },
+
+  errorLogs: (q: {
+    keyword?: string
+    username?: string
+    level?: string
+    path?: string
+    from?: string
+    to?: string
+    page?: number
+    pageSize?: number
+  }) => {
+    const params = new URLSearchParams()
+    if (q.keyword) params.set('keyword', q.keyword)
+    if (q.username) params.set('username', q.username)
+    if (q.level) params.set('level', q.level)
+    if (q.path) params.set('path', q.path)
+    if (q.from) params.set('from', q.from)
+    if (q.to) params.set('to', q.to)
+    params.set('page', String(q.page ?? 1))
+    params.set('pageSize', String(q.pageSize ?? 20))
+    return request<Paginated<ErrorLogItem>>(`/admin/logs/error-logs?${params.toString()}`)
+  },
 }

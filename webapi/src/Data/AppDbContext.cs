@@ -20,6 +20,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<SourceRef> Sources => Set<SourceRef>();
     public DbSet<LifeEvent> LifeEvents => Set<LifeEvent>();
     public DbSet<Revision> Revisions => Set<Revision>();
+    public DbSet<LoginLog> LoginLogs => Set<LoginLog>();
+    public DbSet<OperationLog> OperationLogs => Set<OperationLog>();
+    public DbSet<QueryLog> QueryLogs => Set<QueryLog>();
+    public DbSet<ErrorLog> ErrorLogs => Set<ErrorLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -105,5 +109,42 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<Revision>()
             .HasOne(r => r.Reviewer).WithMany()
             .HasForeignKey(r => r.ReviewerId).OnDelete(DeleteBehavior.Restrict);
+
+        // ---------- 4 类系统日志：按创建时间/用户建索引，日志不与主业务表级联，避免删除主数据时丢审计链 ----------
+        modelBuilder.Entity<LoginLog>(e =>
+        {
+            e.HasIndex(l => l.CreatedAt);
+            e.HasIndex(l => l.UserId);
+            e.HasIndex(l => l.Username);
+            e.HasIndex(l => l.Status);
+            e.HasIndex(l => l.Action);
+            e.HasIndex(l => l.Ip);
+        });
+        modelBuilder.Entity<OperationLog>(e =>
+        {
+            e.HasIndex(o => o.CreatedAt);
+            e.HasIndex(o => o.UserId);
+            e.HasIndex(o => o.Module);
+            e.HasIndex(o => o.Action);
+            e.HasIndex(o => o.StatusCode);
+            e.HasIndex(o => o.TargetId);
+        });
+        modelBuilder.Entity<QueryLog>(e =>
+        {
+            e.HasIndex(q => q.CreatedAt);
+            e.HasIndex(q => q.UserId);
+            e.HasIndex(q => q.Module);
+            e.HasIndex(q => q.StatusCode);
+            e.HasIndex(q => q.Path);
+        });
+        modelBuilder.Entity<ErrorLog>(e =>
+        {
+            e.HasIndex(er => er.CreatedAt);
+            e.HasIndex(er => er.UserId);
+            e.HasIndex(er => er.Level);
+            e.HasIndex(er => er.StatusCode);
+            e.HasIndex(er => er.Path);
+            e.HasIndex(er => er.ExceptionType);
+        });
     }
 }

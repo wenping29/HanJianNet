@@ -155,6 +155,86 @@ export interface AuthPayload {
   user: User
 }
 
+export type LogAction = 'login' | 'register' | 'logout' | 'refresh' | 'change-password' | string
+export type LogStatus = 'success' | 'fail' | string
+export type ErrorLevel = 'warning' | 'error' | 'critical' | string
+
+export interface LoginLogItem {
+  id: string
+  createdAt: string
+  action: LogAction
+  userId?: string | null
+  username?: string | null
+  account?: string | null
+  status: LogStatus
+  statusCode: number
+  message?: string | null
+  ip?: string | null
+  userAgent?: string | null
+  clientSource?: string | null
+}
+
+export interface OperationLogItem {
+  id: string
+  createdAt: string
+  userId?: string | null
+  username?: string | null
+  role?: string | null
+  module: string
+  action: string
+  targetId?: string | null
+  targetLabel?: string | null
+  statusCode: number
+  status?: string | null
+  message?: string | null
+  path: string
+  method: string
+  requestBody?: string | null
+  elapsedMs: number
+  ip?: string | null
+  userAgent?: string | null
+  clientSource?: string | null
+}
+
+export interface QueryLogItem {
+  id: string
+  createdAt: string
+  userId?: string | null
+  username?: string | null
+  role?: string | null
+  module: string
+  path: string
+  method: string
+  query?: string | null
+  hitCount?: number | null
+  statusCode: number
+  elapsedMs: number
+  ip?: string | null
+  userAgent?: string | null
+  clientSource?: string | null
+}
+
+export interface ErrorLogItem {
+  id: string
+  createdAt: string
+  userId?: string | null
+  username?: string | null
+  role?: string | null
+  level: ErrorLevel
+  exceptionType: string
+  message: string
+  stackTrace?: string | null
+  statusCode: number
+  path: string
+  method: string
+  query?: string | null
+  requestBody?: string | null
+  ip?: string | null
+  userAgent?: string | null
+  clientSource?: string | null
+}
+
+
 export interface TraitorSummary {
   id: string
   name: string
