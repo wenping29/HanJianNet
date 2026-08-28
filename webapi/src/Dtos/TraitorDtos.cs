@@ -102,3 +102,37 @@ public class TraitorDto : TraitorSnapshotDto
 public class TraitorInputDto : TraitorSnapshotDto
 {
 }
+
+/// <summary>档案统计结果（缓存用，避免匿名类型无法反序列化）。</summary>
+public class TraitorStatsDto
+{
+    public int Total { get; set; }
+    public Dictionary<string, int> Periods { get; set; } = [];
+    public int? EarliestYear { get; set; }
+    public int? LatestYear { get; set; }
+}
+
+/// <summary>分省统计单项。</summary>
+public class ProvinceStatItemDto
+{
+    public string Province { get; set; } = "";
+    public string FullName { get; set; } = "";
+    public int Count { get; set; }
+}
+
+/// <summary>分省统计结果。</summary>
+public class ProvinceStatsDto
+{
+    public List<ProvinceStatItemDto> Items { get; set; } = [];
+    public int Total { get; set; }
+    public int Matched { get; set; }
+}
+
+/// <summary>时间轴单项。</summary>
+public class TimelineItemDto
+{
+    public int Year { get; set; }
+    public string TraitorId { get; set; } = "";
+    public string TraitorName { get; set; } = "";
+    public string Event { get; set; } = "";
+}

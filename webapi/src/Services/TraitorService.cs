@@ -7,12 +7,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HanJianNet.WebApi.Services;
 
-public class TraitorService(AppDbContext db)
+/// <summary>档案相关操作。公开读取（列表/详情/统计）启用分布式缓存，写入时自动失效。</summary>
+public class TraitorService(AppDbContext db, CacheService cache)
 {
+    private const string CacheGroup = "traitors";
+
     /// <summary>
     /// 公开列表查询。page/pageSize 未指定时返回全量（供地图统计等场景使用），指定时返回分页结果。
     /// </summary>
     public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? nativePlace, int? page = null, int? pageSize = null)
+    {
+        var key = string.Join("|",
+            name ?? "", yearFrom?.ToString() ?? "", yearTo?.ToString() ?? "",
+            @event ?? "", period ?? "", nativePlace ?? "",
+            page?.ToString() ?? "", pageSize?.ToString() ?? "");
+        return await cache.GetOrCreateAsync(CacheGroup, $"list:{key}", () => ListCoreAsync(name, yearFrom, yearTo, @event, period, nativePlace, page, pageSize))
+            ?? new PagedResult<TraitorSummaryDto>([], 0, 1, 10);
+    }
+
+    private async Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? nativePlace, int? page = null, int? pageSize = null)
     {
         var q = db.Traitors.Include(t => t.LifeEvents).AsQueryable();
 
@@ -67,9 +80,14 @@ public class TraitorService(AppDbContext db)
 
     public async Task<TraitorDto> GetAsync(string id)
     {
-        var t = await WithIncludes().FirstOrDefaultAsync(t => t.Id == id)
-                ?? throw new ApiException(404, "档案不存在");
-        return t.ToDto();
+        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id));
+        return cached ?? throw new ApiException(404, "档案不存在");
+    }
+
+    private async Task<TraitorDto?> GetCoreAsync(string id)
+    {
+        var t = await WithIncludes().FirstOrDefaultAsync(t => t.Id == id);
+        return t?.ToDto();
     }
 
     public async Task<List<RevisionDto>> GetRevisionsAsync(string traitorId)
@@ -83,7 +101,13 @@ public class TraitorService(AppDbContext db)
         return items.Select(r => r.ToDto()).ToList();
     }
 
-    public async Task<object> GetStatsAsync()
+    public async Task<TraitorStatsDto> GetStatsAsync()
+    {
+        return await cache.GetOrCreateAsync(CacheGroup, "stats", StatsCoreAsync)
+            ?? new TraitorStatsDto();
+    }
+
+    private async Task<TraitorStatsDto> StatsCoreAsync()
     {
         var rows = await db.Traitors
             .Select(t => new { t.Period, t.BirthYear, t.DeathYear })
@@ -99,14 +123,20 @@ public class TraitorService(AppDbContext db)
             .ToList();
         int? earliestYear = years.Count > 0 ? years.Min() : null;
         int? latestYear = years.Count > 0 ? years.Max() : null;
-        return new { total, periods, earliestYear, latestYear };
+        return new TraitorStatsDto { Total = total, Periods = periods, EarliestYear = earliestYear, LatestYear = latestYear };
     }
 
     /// <summary>
     /// 分省统计：直接读取档案的 Province 字段，前端只负责展示。
     /// items 按数量降序；total 为档案总数；matched 为已填写省份的记录数。
     /// </summary>
-    public async Task<object> GetProvinceStatsAsync()
+    public async Task<ProvinceStatsDto> GetProvinceStatsAsync()
+    {
+        return await cache.GetOrCreateAsync(CacheGroup, "province-stats", ProvinceStatsCoreAsync)
+            ?? new ProvinceStatsDto();
+    }
+
+    private async Task<ProvinceStatsDto> ProvinceStatsCoreAsync()
     {
         var provinces = await db.Traitors.Select(t => t.Province ?? "").ToListAsync();
         var counts = new Dictionary<string, int>();
@@ -119,21 +149,27 @@ public class TraitorService(AppDbContext db)
         }
         var items = counts
             .OrderByDescending(kv => kv.Value)
-            .Select(kv => new { province = kv.Key, fullName = ProvinceMatcher.FullName(kv.Key), count = kv.Value })
+            .Select(kv => new ProvinceStatItemDto { Province = kv.Key, FullName = ProvinceMatcher.FullName(kv.Key), Count = kv.Value })
             .ToList();
-        return new { items, total = provinces.Count, matched };
+        return new ProvinceStatsDto { Items = items, Total = provinces.Count, Matched = matched };
     }
 
-    public async Task<List<object>> GetTimelineAsync()
+    public async Task<List<TimelineItemDto>> GetTimelineAsync()
+    {
+        return await cache.GetOrCreateAsync(CacheGroup, "timeline", TimelineCoreAsync)
+            ?? [];
+    }
+
+    private async Task<List<TimelineItemDto>> TimelineCoreAsync()
     {
         var items = await db.LifeEvents
             .Include(e => e.Traitor)
             .Where(e => e.Year != null)
             .OrderBy(e => e.Year)
             .ToListAsync();
-        return items.Select(e => (object)new
+        return items.Select(e => new TimelineItemDto
         {
-            Year = e.Year,
+            Year = e.Year!.Value,
             TraitorId = e.TraitorId,
             TraitorName = e.Traitor.Name,
             Event = e.Event,
@@ -178,6 +214,7 @@ public class TraitorService(AppDbContext db)
         input.ToSnapshot().ApplyTo(traitor);
         db.Traitors.Add(traitor);
         await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
         var loaded = await WithIncludes().FirstAsync(t => t.Id == traitor.Id);
         return loaded.ToDto();
     }
@@ -189,6 +226,7 @@ public class TraitorService(AppDbContext db)
         input.ToSnapshot().ApplyTo(traitor);
         traitor.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
         return traitor.ToDto();
     }
 

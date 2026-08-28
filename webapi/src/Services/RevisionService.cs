@@ -7,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HanJianNet.WebApi.Services;
 
-public class RevisionService(AppDbContext db)
+public class RevisionService(AppDbContext db, CacheService cache)
 {
+    private const string CacheGroup = "traitors";
     public async Task<List<RevisionDto>> ListAsync(string? status)
     {
         var q = db.Revisions
@@ -93,6 +94,11 @@ public class RevisionService(AppDbContext db)
         r.ReviewResult = result;
         r.ReviewComment = comment;
         await db.SaveChangesAsync();
+
+        // 审核通过会写入 Traitor 主表，失效档案缓存
+        if (result == "approved")
+            await cache.InvalidateAsync(CacheGroup);
+
         return r.ToDto();
     }
 }

@@ -26,6 +26,7 @@ try
     builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("Database"));
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
     builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
+    builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
 
     var databaseOptions = builder.Configuration.GetSection("Database").Get<DatabaseOptions>() ?? new DatabaseOptions();
     builder.Services.AddDbContext<AppDbContext>(options =>
@@ -69,6 +70,29 @@ try
         });
     builder.Services.AddAuthorization();
 
+    // --- Redis 缓存（Redis:Enabled 开启；关闭时退化为内存缓存占位，CacheService 内部直接跳过） ---
+    var redisOptions = builder.Configuration.GetSection("Redis").Get<RedisOptions>() ?? new RedisOptions();
+    Console.WriteLine($"Redis:Enabled={redisOptions.Enabled}");
+    Console.WriteLine($"Redis:ConnectionString={redisOptions.ConnectionString}");
+    Console.WriteLine($"Redis:InstanceName={redisOptions.InstanceName}");
+    Console.WriteLine($"Redis:DefaultExpireMinutes={redisOptions.DefaultExpireMinutes}");
+    if (redisOptions.Enabled)
+    // if (true)
+    {
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = redisOptions.ConnectionString;
+            options.InstanceName = redisOptions.InstanceName ?? "";
+        });
+        Log.Information("Redis 缓存已启用：{ConnectionString}", redisOptions.ConnectionString);
+    }
+    else
+    {
+        // 未开启 Redis：注册内存缓存占位，保证 IDistributedCache 可解析（CacheService 会跳过缓存）
+        builder.Services.AddDistributedMemoryCache();
+        Log.Information("Redis 缓存未启用（Redis:Enabled=false），缓存功能已关闭");
+    }
+
     var corsOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
     builder.Services.AddCors(o => o.AddPolicy("frontend", p => p
         .WithOrigins(corsOrigins)
@@ -88,6 +112,8 @@ try
     builder.Services.AddScoped<TraitorService>();
     builder.Services.AddScoped<RevisionService>();
     builder.Services.AddScoped<UploadService>();
+    // 分布式缓存服务
+    builder.Services.AddScoped<CacheService>();
 
     builder.Services.AddControllers(options =>
     {
