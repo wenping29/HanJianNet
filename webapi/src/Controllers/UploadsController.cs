@@ -12,6 +12,5 @@ public class UploadsController(UploadService uploads) : ControllerBase
 {
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Upload([FromForm] UploadRequestDto request)
-        => Ok(await uploads.SaveAsync(request.File, request.Kind));
+    public async Task<IActionResult> Upload([FromForm] UploadRequestDto request) => Ok(await uploads.SaveAsync(request.File, request.Kind));
 }

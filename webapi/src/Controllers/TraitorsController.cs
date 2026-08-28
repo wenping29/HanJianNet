@@ -15,39 +15,27 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
     // ---------- 公开接口 ----------
 
     [HttpGet("api/traitors")]
-    public async Task<IActionResult> List(
-        [FromQuery] string? name,
-        [FromQuery] int? yearFrom,
-        [FromQuery] int? yearTo,
-        [FromQuery] string? @event,
-        [FromQuery] string? period,
-        [FromQuery] string? nativePlace,
-        [FromQuery] int? page = null,
-        [FromQuery] int? pageSize = null)
+    public async Task<IActionResult> List([FromQuery] string? name,[FromQuery] int? yearFrom,[FromQuery] int? yearTo,
+        [FromQuery] string? @event,[FromQuery] string? period,[FromQuery] string? nativePlace,[FromQuery] int? page = null,[FromQuery] int? pageSize = null)
     {
         var paged = await traitors.ListAsync(name, yearFrom, yearTo, @event, period, nativePlace, page, pageSize);
         return Ok(new { items = paged.Items, total = paged.Total, page = paged.Page, pageSize = paged.PageSize, totalPages = paged.TotalPages });
     }
 
     [HttpGet("api/traitors/{id}")]
-    public async Task<IActionResult> Get(string id)
-        => Ok(new { traitor = await traitors.GetAsync(id) });
+    public async Task<IActionResult> Get(string id)=> Ok(new { traitor = await traitors.GetAsync(id) });
 
     [HttpGet("api/traitors/{id}/revisions")]
-    public async Task<IActionResult> GetRevisions(string id)
-        => Ok(new { items = await traitors.GetRevisionsAsync(id) });
+    public async Task<IActionResult> GetRevisions(string id)=> Ok(new { items = await traitors.GetRevisionsAsync(id) });
 
     [HttpGet("api/traitors/stats")]
-    public async Task<IActionResult> GetStats()
-        => Ok(await traitors.GetStatsAsync());
+    public async Task<IActionResult> GetStats()=> Ok(await traitors.GetStatsAsync());
 
     [HttpGet("api/traitors/province-stats")]
-    public async Task<IActionResult> GetProvinceStats()
-        => Ok(await traitors.GetProvinceStatsAsync());
+    public async Task<IActionResult> GetProvinceStats()=> Ok(await traitors.GetProvinceStatsAsync());
 
     [HttpGet("api/traitors/timeline")]
-    public async Task<IActionResult> GetTimeline()
-        => Ok(new { items = await traitors.GetTimelineAsync() });
+    public async Task<IActionResult> GetTimeline()=> Ok(new { items = await traitors.GetTimelineAsync() });
 
     // ---------- 用户提交修订（需登录） ----------
 
@@ -79,18 +67,15 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
 
     [Authorize(Roles = "admin,superadmin")]
     [HttpGet("api/admin/traitors/{id}")]
-    public async Task<IActionResult> AdminGet(string id)
-        => Ok(new { traitor = await traitors.AdminGetAsync(id) });
+    public async Task<IActionResult> AdminGet(string id)=> Ok(new { traitor = await traitors.AdminGetAsync(id) });
 
     [Authorize(Roles = "admin,superadmin")]
     [HttpPost("api/admin/traitors")]
-    public async Task<IActionResult> AdminCreate([FromBody] TraitorInputDto input)
-        => Ok(new { traitor = await traitors.AdminCreateAsync(input) });
+    public async Task<IActionResult> AdminCreate([FromBody] TraitorInputDto input)=> Ok(new { traitor = await traitors.AdminCreateAsync(input) });
 
     [Authorize(Roles = "admin,superadmin")]
     [HttpPut("api/admin/traitors/{id}")]
-    public async Task<IActionResult> AdminUpdate(string id, [FromBody] TraitorInputDto input)
-        => Ok(new { traitor = await traitors.AdminUpdateAsync(id, input) });
+    public async Task<IActionResult> AdminUpdate(string id, [FromBody] TraitorInputDto input)=> Ok(new { traitor = await traitors.AdminUpdateAsync(id, input) });
 }
 
 /// <summary>TraitorInputDto + ChangeSummary，用于用户提交修订。</summary>
