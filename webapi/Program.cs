@@ -77,7 +77,6 @@ try
     Console.WriteLine($"Redis:InstanceName={redisOptions.InstanceName}");
     Console.WriteLine($"Redis:DefaultExpireMinutes={redisOptions.DefaultExpireMinutes}");
     if (redisOptions.Enabled)
-    // if (true)
     {
         builder.Services.AddStackExchangeRedisCache(options =>
         {
