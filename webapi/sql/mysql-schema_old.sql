@@ -93,6 +93,88 @@ CREATE TABLE `Traitors` (
 ) CHARACTER SET=utf8mb4;
 
 
+CREATE TABLE `LoginLogs` (
+    `Id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    `CreatedAt` datetime(6) NOT NULL,
+    `Action` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
+    `UserId` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `Username` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `Account` varchar(128) CHARACTER SET utf8mb4 NULL,
+    `Status` varchar(16) CHARACTER SET utf8mb4 NOT NULL,
+    `StatusCode` int NOT NULL,
+    `Message` varchar(512) CHARACTER SET utf8mb4 NULL,
+    `Ip` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `UserAgent` varchar(512) CHARACTER SET utf8mb4 NULL,
+    `ClientSource` varchar(16) CHARACTER SET utf8mb4 NULL,
+    CONSTRAINT `PK_LoginLogs` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
+
+CREATE TABLE `OperationLogs` (
+    `Id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    `CreatedAt` datetime(6) NOT NULL,
+    `UserId` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `Username` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `Role` varchar(16) CHARACTER SET utf8mb4 NULL,
+    `Module` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
+    `Action` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
+    `TargetId` varchar(128) CHARACTER SET utf8mb4 NULL,
+    `TargetLabel` varchar(256) CHARACTER SET utf8mb4 NULL,
+    `StatusCode` int NOT NULL,
+    `Status` varchar(32) CHARACTER SET utf8mb4 NULL,
+    `Message` varchar(512) CHARACTER SET utf8mb4 NULL,
+    `Path` varchar(512) CHARACTER SET utf8mb4 NOT NULL,
+    `Method` varchar(8) CHARACTER SET utf8mb4 NOT NULL,
+    `RequestBody` longtext CHARACTER SET utf8mb4 NULL,
+    `ElapsedMs` bigint NOT NULL,
+    `Ip` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `UserAgent` varchar(512) CHARACTER SET utf8mb4 NULL,
+    `ClientSource` varchar(16) CHARACTER SET utf8mb4 NULL,
+    CONSTRAINT `PK_OperationLogs` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
+
+CREATE TABLE `QueryLogs` (
+    `Id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    `CreatedAt` datetime(6) NOT NULL,
+    `UserId` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `Username` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `Role` varchar(16) CHARACTER SET utf8mb4 NULL,
+    `Module` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
+    `Path` varchar(512) CHARACTER SET utf8mb4 NOT NULL,
+    `Method` varchar(8) CHARACTER SET utf8mb4 NOT NULL,
+    `Query` varchar(2048) CHARACTER SET utf8mb4 NULL,
+    `HitCount` int NULL,
+    `StatusCode` int NOT NULL,
+    `ElapsedMs` bigint NOT NULL,
+    `Ip` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `UserAgent` varchar(512) CHARACTER SET utf8mb4 NULL,
+    `ClientSource` varchar(16) CHARACTER SET utf8mb4 NULL,
+    CONSTRAINT `PK_QueryLogs` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
+
+CREATE TABLE `ErrorLogs` (
+    `Id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+    `CreatedAt` datetime(6) NOT NULL,
+    `UserId` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `Username` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `Role` varchar(16) CHARACTER SET utf8mb4 NULL,
+    `Level` varchar(16) CHARACTER SET utf8mb4 NOT NULL,
+    `ExceptionType` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
+    `Message` varchar(1024) CHARACTER SET utf8mb4 NOT NULL,
+    `StackTrace` varchar(8192) CHARACTER SET utf8mb4 NULL,
+    `StatusCode` int NOT NULL,
+    `Path` varchar(512) CHARACTER SET utf8mb4 NOT NULL,
+    `Method` varchar(8) CHARACTER SET utf8mb4 NOT NULL,
+    `Query` varchar(2048) CHARACTER SET utf8mb4 NULL,
+    `RequestBody` longtext CHARACTER SET utf8mb4 NULL,
+    `Ip` varchar(64) CHARACTER SET utf8mb4 NULL,
+    `UserAgent` varchar(512) CHARACTER SET utf8mb4 NULL,
+    `ClientSource` varchar(16) CHARACTER SET utf8mb4 NULL,
+    CONSTRAINT `PK_ErrorLogs` PRIMARY KEY (`Id`)
+) CHARACTER SET=utf8mb4;
+
 CREATE TABLE `Users` (
     `Id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
     `Username` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
