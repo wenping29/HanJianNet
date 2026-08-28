@@ -7,6 +7,7 @@
 #
 # 用法:
 #   ./pack.ps1                     # 全部打包（web + admin + webapi）
+#   ./pack.ps1 -TraceScript        # 执行同时打印脚本每一行源码
 #   ./pack.ps1 -SkipFrontend       # 只打包 webapi
 #   ./pack.ps1 -SkipWebApi         # 只打包 web/admin
 #   ./pack.ps1 -Target framework-dependent|self-contained
@@ -22,8 +23,14 @@ param(
     [switch]$SkipFrontend,
     [switch]$SkipWebApi,
     [ValidateSet("framework-dependent", "self-contained")]
-    [string]$Target = "framework-dependent"
+    [string]$Target = "framework-dependent",
+    [switch]$TraceScript  # 开启：运行时打印脚本源代码行
 )
+
+# 如果开启跟踪，显示脚本执行源码
+if ($TraceScript) {
+    Set-PSDebug -Trace 1
+}
 
 $ErrorActionPreference = "Stop"
 $repoRoot      = Split-Path -Parent $PSScriptRoot
@@ -62,6 +69,7 @@ if (-not $SkipWebApi) {
     if ($Target -eq "self-contained") { $selfContained = "true" }
 
     dotnet publish "$webapiDir\HanJianNet.WebApi.csproj" -c Release -r $rid --self-contained $selfContained -o $publishDir
+    Write-Host "dotnet publish $webapiDir\HanJianNet.WebApi.csproj -c Release -r $rid --self-contained $selfContained -o $publishDir" -ForegroundColor Cyan
 
     if ($LASTEXITCODE -ne 0) { throw "webapi publish 失败 (exit=$LASTEXITCODE)" }
 
@@ -79,6 +87,7 @@ if (-not $SkipFrontend) {
     Push-Location $webDir
     try {
         npm run build
+        Write-Host "npm run build" -ForegroundColor Cyan
         if ($LASTEXITCODE -ne 0) { throw "web 构建失败" }
     } finally { Pop-Location }
 
@@ -94,6 +103,7 @@ if (-not $SkipFrontend) {
     Push-Location $adminDir
     try {
         npm run build
+        Write-Host "npm run build" -ForegroundColor Cyan
         if ($LASTEXITCODE -ne 0) { throw "admin 构建失败" }
     } finally { Pop-Location }
 
@@ -113,3 +123,7 @@ Remove-IfExists (Join-Path $outDir "webapi-publish")
 Remove-IfExists (Join-Path $outDir "web-dist")
 Remove-IfExists (Join-Path $outDir "admin-dist")
 
+# 关闭调试跟踪
+if ($TraceScript) {
+    Set-PSDebug -Trace 0
+}
