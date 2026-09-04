@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/api_client.dart';
 import '../services/session.dart';
 import '../widgets/theme.dart';
+import 'register_screen.dart';
 
 /// API 地址设置对话框（移动端 API 地址可配置）。
 Future<void> showApiSettingsDialog(BuildContext context) async {
@@ -133,6 +134,20 @@ class _LoginScreenState extends State<LoginScreen> {
           FilledButton(
             onPressed: _busy ? null : _submit,
             child: Text(_busy ? '登录中…' : '登 录'),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: _busy
+                ? null
+                : () async {
+                    final ok = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                    );
+                    if (ok == true && mounted) {
+                      Navigator.of(context).pop(true);
+                    }
+                  },
+            child: const Text('没有账号？去注册'),
           ),
         ],
       ),
