@@ -5,7 +5,7 @@ import '../widgets/theme.dart';
 
 String formatYear(int? year, String type) {
   if (type == 'unknown' || year == null) return '不详';
-  final prefix = type == 'approx' ? '约' : '';
+  final prefix = type == 'circa' ? '约' : '';
   final suffix = type == 'before' ? '前' : type == 'after' ? '后' : '';
   return '$prefix$year$suffix';
 }

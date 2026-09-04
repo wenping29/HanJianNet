@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'screens/home_screen.dart';
-import 'screens/profile_screen.dart';
+import 'screens/mine_screen.dart';
+import 'screens/search_screen.dart';
 import 'services/session.dart';
 import 'widgets/theme.dart';
 
@@ -25,7 +26,7 @@ class HanJianApp extends StatelessWidget {
   }
 }
 
-/// 底部导航：首页 / 个人中心。
+/// 底部导航：首页 / 查询 / 我的。
 class RootNav extends StatefulWidget {
   const RootNav({super.key});
 
@@ -41,7 +42,7 @@ class _RootNavState extends State<RootNav> {
     return Scaffold(
       body: IndexedStack(
         index: _index,
-        children: const [HomeScreen(), ProfileScreen()],
+        children: const [HomeScreen(), SearchScreen(), MineScreen()],
       ),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
@@ -58,7 +59,8 @@ class _RootNavState extends State<RootNav> {
           selectedIndex: _index,
           onDestinationSelected: (i) => setState(() => _index = i),
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: '史册'),
+            NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: '首页'),
+            NavigationDestination(icon: Icon(Icons.search_outlined), selectedIcon: Icon(Icons.search), label: '查询'),
             NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: '我的'),
           ],
         ),

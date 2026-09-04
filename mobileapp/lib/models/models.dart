@@ -237,22 +237,50 @@ class Traitor {
 
 class TraitorStats {
   final int total;
-  final int sentenced;
-  final int childrenInfo;
-  final int descendantsStatus;
+  final Map<String, int> periods;
+  final int? earliestYear;
+  final int? latestYear;
 
   const TraitorStats({
     required this.total,
-    required this.sentenced,
-    required this.childrenInfo,
-    required this.descendantsStatus,
+    this.periods = const {},
+    this.earliestYear,
+    this.latestYear,
   });
 
   factory TraitorStats.fromJson(Json j) => TraitorStats(
         total: (j['total'] as num?)?.toInt() ?? 0,
-        sentenced: (j['sentenced'] as num?)?.toInt() ?? 0,
-        childrenInfo: (j['childrenInfo'] as num?)?.toInt() ?? 0,
-        descendantsStatus: (j['descendantsStatus'] as num?)?.toInt() ?? 0,
+        periods: (j['periods'] as Map<String, dynamic>?)
+                ?.map((k, v) => MapEntry(k, (v as num).toInt())) ??
+            const {},
+        earliestYear: j['earliestYear'] as int?,
+        latestYear: j['latestYear'] as int?,
+      );
+}
+
+class PaginatedTraitors {
+  final List<Traitor> items;
+  final int total;
+  final int page;
+  final int pageSize;
+  final int totalPages;
+
+  const PaginatedTraitors({
+    required this.items,
+    required this.total,
+    required this.page,
+    required this.pageSize,
+    required this.totalPages,
+  });
+
+  factory PaginatedTraitors.fromJson(Json j) => PaginatedTraitors(
+        items: ((j['items'] as List?) ?? const [])
+            .map((e) => Traitor.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        total: (j['total'] as num?)?.toInt() ?? 0,
+        page: (j['page'] as num?)?.toInt() ?? 1,
+        pageSize: (j['pageSize'] as num?)?.toInt() ?? 20,
+        totalPages: (j['totalPages'] as num?)?.toInt() ?? 0,
       );
 }
 

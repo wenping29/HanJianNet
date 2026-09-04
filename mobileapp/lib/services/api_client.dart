@@ -99,12 +99,15 @@ class ApiClient {
 
   // ---- 档案（公开） ----
 
-  Future<List<Traitor>> listTraitors({
+  Future<PaginatedTraitors> listTraitors({
     String? name,
     int? yearFrom,
     int? yearTo,
     String? event,
     String? period,
+    String? nativePlace,
+    int page = 1,
+    int pageSize = 20,
   }) async {
     final q = <String, String>{
       if (name != null && name.isNotEmpty) 'name': name,
@@ -112,11 +115,13 @@ class ApiClient {
       if (yearTo != null) 'yearTo': '$yearTo',
       if (event != null && event.isNotEmpty) 'event': event,
       if (period != null && period.isNotEmpty) 'period': period,
+      if (nativePlace != null && nativePlace.isNotEmpty) 'nativePlace': nativePlace,
+      'page': '$page',
+      'pageSize': '$pageSize',
     };
     final uri = Uri.parse('$_baseUrl/api/traitors').replace(queryParameters: q);
     final data = await _run(() => http.get(uri, headers: _headers)) as Map<String, dynamic>;
-    final items = (data['items'] as List?) ?? const [];
-    return items.map((e) => Traitor.fromJson(e as Map<String, dynamic>)).toList();
+    return PaginatedTraitors.fromJson(data);
   }
 
   Future<Traitor> getTraitor(String id) async {
@@ -162,5 +167,51 @@ class ApiClient {
         )) as Map<String, dynamic>;
     final items = (data['items'] as List?) ?? const [];
     return items.map((e) => Revision.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  // ---- 档案提交（需登录） ----
+
+  Future<String> createTraitor(Map<String, dynamic> body) async {
+    final data = await _run(() => http.post(
+          Uri.parse('$_baseUrl/api/traitors'),
+          headers: _headers,
+          body: jsonEncode(body),
+        )) as Map<String, dynamic>;
+    return data['revisionId'] as String;
+  }
+
+  Future<String> updateTraitor(String id, Map<String, dynamic> body) async {
+    final data = await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/traitors/$id'),
+          headers: _headers,
+          body: jsonEncode(body),
+        )) as Map<String, dynamic>;
+    return data['revisionId'] as String;
+  }
+
+  Future<Map<String, dynamic>> uploadFile({
+    required String filePath,
+    required String kind,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/api/uploads');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers.addAll({
+        if (hasToken) 'Authorization': 'Bearer $_token',
+      })
+      ..files.add(await http.MultipartFile.fromPath('file', filePath))
+      ..fields['kind'] = kind;
+    final streamed = await request.send().timeout(const Duration(seconds: 30));
+    final response = await http.Response.fromStream(streamed);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    }
+    String message = '上传失败（${response.statusCode}）';
+    try {
+      final body = jsonDecode(utf8.decode(response.bodyBytes));
+      if (body is Map) {
+        message = (body['message'] ?? body['error'] ?? message).toString();
+      }
+    } catch (_) {}
+    throw ApiException(message, response.statusCode);
   }
 }

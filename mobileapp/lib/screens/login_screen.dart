@@ -43,7 +43,9 @@ Future<void> showApiSettingsDialog(BuildContext context) async {
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String? redirect;
+
+  const LoginScreen({super.key, this.redirect});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -140,11 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: _busy
                 ? null
                 : () async {
-                    final ok = await Navigator.of(context).push<bool>(
+                    final navigator = Navigator.of(context);
+                    final ok = await navigator.push<bool>(
                       MaterialPageRoute(builder: (_) => const RegisterScreen()),
                     );
                     if (ok == true && mounted) {
-                      Navigator.of(context).pop(true);
+                      navigator.pop(true);
                     }
                   },
             child: const Text('没有账号？去注册'),

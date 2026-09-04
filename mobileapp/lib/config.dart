@@ -1,5 +1,9 @@
-/// 全局配置：Web API 地址。
-///
-/// 默认指向 Android 模拟器中的宿主机（10.0.2.2）。
-/// 真机或其它环境可在 App 内「设置」中修改，修改结果持久化到本地。
-const String kDefaultApiBaseUrl = 'http://10.0.2.2:3000';
+import 'dart:io' show Platform;
+
+/// 默认 API 地址：按平台区分。
+/// Android 模拟器访问宿主机用 10.0.2.2；iOS 模拟器用 127.0.0.1。
+String get kDefaultApiBaseUrl {
+  if (Platform.isAndroid) return 'http://10.0.2.2:3000';
+  if (Platform.isIOS) return 'http://127.0.0.1:3000';
+  return 'http://localhost:3000';
+}

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../services/api_client.dart';
+import '../services/session.dart';
 import '../widgets/common.dart';
 import '../widgets/theme.dart';
+import 'login_screen.dart';
+import 'traitor_form_screen.dart';
 
 class TraitorDetailScreen extends StatefulWidget {
   final String traitorId;
@@ -80,6 +83,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(_traitor?.name ?? '档案详情')),
       body: body,
+      bottomNavigationBar: _traitor != null ? _bottomBar(_traitor!) : null,
     );
   }
 
@@ -602,6 +606,44 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _bottomBar(Traitor t) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.inkCard,
+        border: Border(top: BorderSide(color: AppTheme.paperDim.withValues(alpha: 0.15))),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        12,
+        16,
+        MediaQuery.of(context).padding.bottom + 12,
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        child: FilledButton.icon(
+          onPressed: () {
+            if (!Session.instance.isLogin) {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => LoginScreen(
+                  redirect: '/traitor/${t.id}/edit',
+                ),
+              ));
+            } else {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => TraitorFormScreen(
+                  mode: TraitorFormMode.edit,
+                  traitor: t,
+                ),
+              ));
+            }
+          },
+          icon: const Icon(Icons.edit, size: 18),
+          label: const Text('修改此档案'),
+        ),
+      ),
     );
   }
 }
