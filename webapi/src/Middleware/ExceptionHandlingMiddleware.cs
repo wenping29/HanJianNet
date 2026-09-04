@@ -10,9 +10,9 @@ namespace HanJianNet.WebApi.Middleware;
 /// 统一异常处理：将 ApiException 与未捕获异常转换为 { message } JSON 响应，
 /// 同时写入 ErrorLog（数据库留存，便于管理员排查）。
 /// </summary>
-public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, LogService logService)
 {
-    public async Task InvokeAsync(HttpContext ctx, LogService logService)
+    public async Task InvokeAsync(HttpContext ctx)
     {
         try
         {
@@ -21,23 +21,23 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         catch (ApiException ex)
         {
             var level = ex.Status >= 500 ? "error" : "warning";
-            await LogError(logService, ex, ctx, ex.Status, level);
+            await LogError(ex, ctx, ex.Status, level);
             await WriteAsync(ctx, ex.Status, ex.Message);
         }
         catch (UnauthorizedAccessException ex)
         {
-            await LogError(logService, ex, ctx, 401, "warning");
+            await LogError(ex, ctx, 401, "warning");
             await WriteAsync(ctx, 401, ex.Message);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "未处理的异常");
-            await LogError(logService, ex, ctx, 500, "critical");
+            await LogError(ex, ctx, 500, "critical");
             await WriteAsync(ctx, 500, "服务器内部错误");
         }
     }
 
-    private async Task LogError(LogService logService, Exception ex, HttpContext ctx, int status, string level)
+    private async Task LogError(Exception ex, HttpContext ctx, int status, string level)
     {
         try
         {
