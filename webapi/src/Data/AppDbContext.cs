@@ -24,6 +24,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<OperationLog> OperationLogs => Set<OperationLog>();
     public DbSet<QueryLog> QueryLogs => Set<QueryLog>();
     public DbSet<ErrorLog> ErrorLogs => Set<ErrorLog>();
+    public DbSet<VisitLog> VisitLogs => Set<VisitLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -145,6 +146,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(er => er.StatusCode);
             e.HasIndex(er => er.Path);
             e.HasIndex(er => er.ExceptionType);
+        });
+
+        // ---------- 前台访客统计 ----------
+        modelBuilder.Entity<VisitLog>(e =>
+        {
+            e.HasIndex(v => v.VisitorToken);
+            e.HasIndex(v => v.CreatedAt);
         });
     }
 }

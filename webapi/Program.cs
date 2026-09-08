@@ -113,6 +113,8 @@ try
     builder.Services.AddScoped<UploadService>();
     // 分布式缓存服务
     builder.Services.AddScoped<CacheService>();
+    // 前台访客统计
+    builder.Services.AddScoped<VisitService>();
 
     builder.Services.AddControllers(options =>
     {

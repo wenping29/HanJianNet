@@ -4,7 +4,6 @@ import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
 import type { Revision, WebMenu } from '../types'
 import { headerMenuItemStyle,footerContainerPageStyle } from '../style'
-
 /** 后端不可用时的兜底菜单 */
 const FALLBACK_MENUS: WebMenu[] = [
   { id: 'fb1', key: 'home', path: '/', label: '首页', sort: 1, isEnabled: true },
@@ -39,6 +38,7 @@ export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [notifCount, setNotifCount] = useState(0)
   const [menus, setMenus] = useState<WebMenu[]>(FALLBACK_MENUS)
+  const [visitStats, setVisitStats] = useState<{ totalVisits: number; totalVisitors: number } | null>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // 路由切换时自动收起移动端菜单
@@ -86,6 +86,32 @@ export default function Layout() {
       cancelled = true
     }
   }, [user])
+
+  // 访客统计：生成/读取访客 token，同会话只计一次访问，并加载统计
+  useEffect(() => {
+    let cancelled = false
+    let token = localStorage.getItem('hanjian_visitor')
+    if (!token) {
+      token =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `v-${Date.now()}-${Math.random().toString(36).slice(2)}`
+      localStorage.setItem('hanjian_visitor', token)
+    }
+    if (!sessionStorage.getItem('hanjian_visit_tracked')) {
+      sessionStorage.setItem('hanjian_visit_tracked', '1')
+      api.trackVisit(token).catch(() => {})
+    }
+    api
+      .getVisitStats()
+      .then((r) => {
+        if (!cancelled) setVisitStats(r)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   function openMenu() {
     if (closeTimer.current) {
@@ -329,6 +355,12 @@ export default function Layout() {
           <span>汉奸档案 · HanJianNet — 以史为鉴，勿忘国耻</span>
           <span className="font-garamond italic">Editorial Archive · Est. 2026</span>
         </div>
+        {visitStats && (
+          <div className="container-page flex items-center justify-center gap-6 border-t border-paperedge/10 py-2 text-[11px] tracking-widest text-paperdim/50">
+            <span>总访问量 <span className="font-garamond text-bronzelight">{visitStats.totalVisits.toLocaleString()}</span></span>
+            <span>访客数 <span className="font-garamond text-bronzelight">{visitStats.totalVisitors.toLocaleString()}</span></span>
+          </div>
+        )}
       </footer>
     </div>
   )

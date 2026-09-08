@@ -10,6 +10,7 @@
 - 后端 `WebApi`：ASP.NET Core（.NET 8）+ Entity Framework Core + SQLite
 - 鉴权：JWT Bearer + BCrypt，**五级 RBAC（基于数据库角色表 + 权限表 + 菜单表 + 角色-权限关联表）**
 - 文件上传：API 内置静态文件服务（`/uploads`，照片 / 罪证）
+- 访问统计：前台访客访问记录 + 去重统计（PV / UV），页脚实时展示
 - 跨域：API 端 CORS 白名单（默认放行 5173 / 5174 开发端口）
 
 ## 仓库结构（四个完全独立的子项目）
@@ -128,6 +129,8 @@ VITE_API_URL=http://localhost:3000
 | GET        | `/api/traitors`                     | 档案列表（筛选） | 公开           |
 | GET        | `/api/traitors/stats`               | 统计             | 公开           |
 | GET        | `/api/traitors/timeline`            | 时间线           | 公开           |
+| POST       | `/api/visits/track`                 | 记录一次前台访问（访客），落一条 PV | 公开 |
+| GET        | `/api/visits/stats`                 | 读取总访问量（PV）与总访客数（UV） | 公开 |
 | GET        | `/api/traitors/{id}`                | 档案详情         | 公开           |
 | GET        | `/api/traitors/{id}/revisions`      | 修改历史         | 公开           |
 | POST / PUT | `/api/traitors[/{id}]`              | 提交新建/修改    | user 及以上    |

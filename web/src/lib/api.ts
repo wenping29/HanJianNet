@@ -139,6 +139,11 @@ export const api = {
 
   listWebMenus: () => request<{ items: WebMenu[] }>('/web-menus'),
 
+  trackVisit: (token: string) =>
+    request<{ ok: boolean }>('/visits/track', { method: 'POST', body: JSON.stringify({ token }) }),
+
+  getVisitStats: () => request<{ totalVisits: number; totalVisitors: number }>('/visits/stats'),
+
   createTraitor: (input: TraitorInput & { changeSummary: string }) =>
     request<{ revisionId: string }>('/traitors', { method: 'POST', body: JSON.stringify(input) }),
 
