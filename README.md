@@ -150,3 +150,7 @@ VITE_API_URL=http://localhost:3000
 | DELETE     | `/api/admin/users/{id}`             | 删除用户         | admin 及以上   |
 
 <br />
+
+
+# web 启动
+flutter run -d chrome --web-port=50000

@@ -31,7 +31,7 @@ class TraitorCard extends StatelessWidget {
                   : _placeholder(t.name),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -43,37 +43,37 @@ class TraitorCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 2, color: AppTheme.paper),
+                              fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 2, color: AppTheme.paper),
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                         decoration: BoxDecoration(
                           border: Border.all(color: AppTheme.cinnabar.withValues(alpha: 0.7)),
                           borderRadius: BorderRadius.circular(3),
                           color: AppTheme.cinnabar.withValues(alpha: 0.15),
                         ),
                         child: Text(t.period,
-                            style: const TextStyle(fontSize: 10, color: AppTheme.cinnabarLight)),
+                            style: const TextStyle(fontSize: 9, color: AppTheme.cinnabarLight)),
                       ),
                     ],
                   ),
                   if (t.faction.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.only(top: 2),
                       child: Text(t.faction,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 11, color: AppTheme.bronzeLight)),
+                          style: TextStyle(fontSize: 10, color: AppTheme.bronzeLight)),
                     ),
                   if (t.identityTags.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(top: 6),
+                      padding: const EdgeInsets.only(top: 3),
                       child: Text(
                         t.identityTags.take(3).join(' · '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.8)),
+                        style: TextStyle(fontSize: 10, color: AppTheme.paperDim.withValues(alpha: 0.8)),
                       ),
                     ),
                 ],

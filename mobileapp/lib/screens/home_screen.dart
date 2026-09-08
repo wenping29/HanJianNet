@@ -103,36 +103,46 @@ class _HomeScreenState extends State<HomeScreen> {
               : RefreshIndicator(
                   color: AppTheme.bronzeLight,
                   onRefresh: _loadAll,
-                  child: ListView.builder(
+                  child: CustomScrollView(
                     controller: _scrollCtrl,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _traitors.length + (_loadingMore ? 1 : 0),
-                    itemBuilder: (_, i) {
-                      if (i == 0) return _statsBoard();
-                      if (i == 1) {
-                        return Padding(
+                    slivers: [
+                      SliverToBoxAdapter(child: _statsBoard()),
+                      SliverToBoxAdapter(
+                        child: Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 12),
                           child: SectionHeader(title: '人物列表', en: 'FIGURES'),
-                        );
-                      }
-                      final index = i - 2;
-                      if (index >= _traitors.length) {
-                        return const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Center(
-                              child: CircularProgressIndicator(color: AppTheme.bronzeLight)),
-                        );
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: TraitorCard(
-                          traitor: _traitors[index],
-                          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                            builder: (_) => TraitorDetailScreen(traitorId: _traitors[index].id),
-                          )),
                         ),
-                      );
-                    },
+                      ),
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        sliver: SliverGrid(
+                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 220,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            childAspectRatio: 0.72,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, i) {
+                              if (i >= _traitors.length) {
+                                return const Center(
+                                    child:
+                                        CircularProgressIndicator(color: AppTheme.bronzeLight));
+                              }
+                              final t = _traitors[i];
+                              return TraitorCard(
+                                traitor: t,
+                                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) =>
+                                      TraitorDetailScreen(traitorId: t.id),
+                                )),
+                              );
+                            },
+                            childCount: _traitors.length + (_loadingMore ? 1 : 0),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
     );
