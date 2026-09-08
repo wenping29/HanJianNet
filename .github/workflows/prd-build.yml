@@ -10,6 +10,7 @@ name: PRD 版本打包
 on:
   push:
     branches:
+      - "PRD"
       - "prd"
     paths:
       - "PRD.md"
