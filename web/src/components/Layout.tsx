@@ -38,7 +38,7 @@ export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [notifCount, setNotifCount] = useState(0)
   const [menus, setMenus] = useState<WebMenu[]>(FALLBACK_MENUS)
-  const [visitStats, setVisitStats] = useState<{ totalVisits: number; totalVisitors: number } | null>(null)
+  const [visitStats, setVisitStats] = useState<{ totalVisits: number; totalVisitors: number }>({ totalVisits: 123456, totalVisitors: 56789 })
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // 路由切换时自动收起移动端菜单
