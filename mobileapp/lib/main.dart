@@ -10,6 +10,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Session.instance.load();
   runApp(const HanJianApp());
+  // await Session.instance.clear();
 }
 
 class HanJianApp extends StatelessWidget {
