@@ -21,7 +21,7 @@ class HanJianApp extends StatelessWidget {
       title: '汉奸档案 · HanJianNet',
       debugShowCheckedModeBanner: false,
       //theme: AppTheme.dark,
-      theme: ThemeData(fontFamily: 'NotoSansSC'),
+      theme: ThemeData(fontFamily: 'Noto Sans SC'),
       home: const RootNav(),
     );
   }
@@ -50,7 +50,12 @@ class _RootNavState extends State<RootNav> {
           backgroundColor: AppTheme.inkCard,
           indicatorColor: AppTheme.cinnabar.withValues(alpha: 0.35),
           labelTextStyle: WidgetStatePropertyAll(
-            TextStyle(fontSize: 11, letterSpacing: 2, color: AppTheme.paperDim),
+            TextStyle(
+              fontSize: 11,
+              letterSpacing: 2,
+              fontFamily: 'Noto Sans SC',
+              color: AppTheme.paperDim,
+            ),
           ),
         ),
         child: NavigationBar(
