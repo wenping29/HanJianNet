@@ -17,23 +17,47 @@ on:
       - "PRD.md"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   resolve-version:
-    name: 读取 PRD 版本号
+    name: 读取并递增 PRD 版本号
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - id: v
-        name: 从 PRD.md 提取版本号
+        name: 读取版本号并自动递增小版本
         run: |
           VER=$(grep -E '版本号' PRD.md | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)
           if [ -z "$VER" ]; then echo "::warning::PRD.md 未找到版本号，使用默认 0.0.0"; VER="0.0.0"; fi
-          echo "version=$VER" >> "$GITHUB_OUTPUT"
-          echo "提取到版本号: $VER"
+          IFS='.' read -r MAJ MIN PATCH <<< "$VER"
+          PATCH=$((PATCH + 1))
+          NEW_VER="$MAJ.$MIN.$PATCH"
+          echo "version=$NEW_VER" >> "$GITHUB_OUTPUT"
+          echo "旧版本号: $VER -> 新版本号: $NEW_VER"
+          echo "NEW_VER=$NEW_VER" >> "$GITHUB_ENV"
+
+      - name: 写回新版本号到 PRD.md
+        run: |
+          LINE=$(grep -nE '版本号' PRD.md | head -n1 | cut -d: -f1)
+          if [ -z "$LINE" ]; then echo "::error::未找到版本号行"; exit 1; fi
+          sed -i "${LINE}s/[0-9]\+\.[0-9]\+\.[0-9]\+/$NEW_VER/" PRD.md
+          grep -E '版本号' PRD.md | head -n1
+
+      - name: 提交并推送新版本号
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add PRD.md
+          git -c core.quotepath=false commit -m "chore: 版本号自动递增至 $NEW_VER [skip ci]" || echo "无需提交"
+          git push
 
   build-web:
     name: 打包 Web
