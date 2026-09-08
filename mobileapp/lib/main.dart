@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'screens/home_screen.dart';
@@ -6,10 +8,10 @@ import 'screens/search_screen.dart';
 import 'services/session.dart';
 import 'widgets/theme.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Session.instance.load();
   runApp(const HanJianApp());
+  unawaited(Session.instance.load());
 }
 
 class HanJianApp extends StatelessWidget {
@@ -17,11 +19,14 @@ class HanJianApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '汉奸档案 · HanJianNet',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
-      home: const RootNav(),
+    return ListenableBuilder(
+      listenable: Session.instance,
+      builder: (context, child) => MaterialApp(
+        title: '汉奸档案 · HanJianNet',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.dark,
+        home: const RootNav(),
+      ),
     );
   }
 }
