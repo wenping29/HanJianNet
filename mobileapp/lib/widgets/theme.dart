@@ -19,7 +19,7 @@ class AppTheme {
   static ThemeData get dark => ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        fontFamily: 'Noto Sans SC',
+        fontFamily: 'NotoSansSC',
         scaffoldBackgroundColor: ink,
         colorScheme: const ColorScheme.dark(
           primary: cinnabar,
