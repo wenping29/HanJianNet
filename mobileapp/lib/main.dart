@@ -20,7 +20,8 @@ class HanJianApp extends StatelessWidget {
     return MaterialApp(
       title: '汉奸档案 · HanJianNet',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+      //theme: AppTheme.dark,
+      theme: ThemeData(fontFamily: 'NotoSansSC'),
       home: const RootNav(),
     );
   }
@@ -48,20 +49,30 @@ class _RootNavState extends State<RootNav> {
         data: NavigationBarThemeData(
           backgroundColor: AppTheme.inkCard,
           indicatorColor: AppTheme.cinnabar.withValues(alpha: 0.35),
-          labelTextStyle: WidgetStatePropertyAll(TextStyle(
-            fontSize: 11,
-            letterSpacing: 2,
-            color: AppTheme.paperDim,
-          )),
+          labelTextStyle: WidgetStatePropertyAll(
+            TextStyle(fontSize: 11, letterSpacing: 2, color: AppTheme.paperDim),
+          ),
         ),
         child: NavigationBar(
           height: 64,
           selectedIndex: _index,
           onDestinationSelected: (i) => setState(() => _index = i),
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: '首页'),
-            NavigationDestination(icon: Icon(Icons.search_outlined), selectedIcon: Icon(Icons.search), label: '查询'),
-            NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: '我的'),
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: '首页',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search_outlined),
+              selectedIcon: Icon(Icons.search),
+              label: '查询',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline),
+              selectedIcon: Icon(Icons.person),
+              label: '我的',
+            ),
           ],
         ),
       ),

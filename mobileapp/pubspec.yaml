@@ -21,3 +21,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+assets:
+    - assets/avatar_default.png
+    - assets/app_logo.png
+fonts:
+  - family: NotoSansSC
+    fonts:
+      - asset: assets/fonts/notosanssc/NotoSansSC-6.ttf
