@@ -3,16 +3,16 @@ name: PRD 版本打包
 # 每次修改 PRD.md（即 PRD 版本变更）后，自动对 web / admin / mobileapp 三个项目进行打包构建；
 # 也支持手动触发（workflow_dispatch）。
 #
-# 说明：本工作流仅做"本地构建验证"，不将产物上传为 artifact。
-# - web、admin   ：执行 npm run build，产出 dist/
-# - mobileapp    ：Android 构建 APK，iOS 构建未签名 Runner.app（--no-codesign，不出 .ipa）
+# 构建产物通过 actions/upload-artifact 上传，可在工作流运行页面的 Artifacts 中下载。
+# - web、admin   ：产出 dist/，zip 后上传
+# - mobileapp    ：Android 产出 APK；iOS 产出未签名 Runner.app（--no-codesign，zip 后上传，不出 .ipa）
 
 on:
   push:
+    branches:
+      - "prd"
     paths:
       - "PRD.md"
-    branches:
-      - "**"
   workflow_dispatch:
 
 jobs:
@@ -39,6 +39,14 @@ jobs:
       - name: 构建
         run: npm run build
 
+      - name: 上传 Web 部署包
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: web/dist
+          if-no-files-found: error
+          compression-level: 9
+
   build-admin:
     name: 打包 Admin 后台
     runs-on: ubuntu-latest
@@ -62,6 +70,14 @@ jobs:
       - name: 构建
         run: npm run build
 
+      - name: 上传 Admin 部署包
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-dist
+          path: admin/dist
+          if-no-files-found: error
+          compression-level: 9
+
   build-android:
     name: 打包 Android APK
     runs-on: ubuntu-latest
@@ -84,8 +100,16 @@ jobs:
       - name: 构建 APK
         run: flutter build apk --release
 
+      - name: 上传 Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobileapp-android-apk
+          path: mobileapp/build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
+          compression-level: 9
+
   build-ios:
-    name: 打包 iOS（未签名建）
+    name: 打包 iOS（未签名）
     runs-on: macos-latest
     defaults:
       run:
@@ -104,4 +128,14 @@ jobs:
         run: flutter pub get
 
       - name: 构建 iOS（不签名，产物为 Runner.app）
-        run: flutter build ios --no-codesign
+        run: |
+          flutter build ios --no-codesign
+          cd build/ios/iphoneos && zip -q -r Runner.app.zip Runner.app
+
+      - name: 上传 iOS Runner.app
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobileapp-ios-app
+          path: mobileapp/build/ios/iphoneos/Runner.app.zip
+          if-no-files-found: error
+          compression-level: 9
