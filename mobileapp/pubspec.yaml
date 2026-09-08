@@ -37,3 +37,35 @@ flutter:
           weight: 500
         - asset: assets/fonts/notosanssc/Noto-Sans-SC-Bold-2.ttf
           weight: 700
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/roboto/Roboto-Thin-15.ttf
+          weight: 100
+        - asset: assets/fonts/roboto/Roboto-Light-10.ttf
+          weight: 300
+        - asset: assets/fonts/roboto/Roboto-Regular-14.ttf
+          weight: 400
+        - asset: assets/fonts/roboto/Roboto-Medium-12.ttf
+          weight: 500
+        - asset: assets/fonts/roboto/Roboto-Bold-3.ttf
+          weight: 700
+        - asset: assets/fonts/roboto/Roboto-Black-1.ttf
+          weight: 900
+        - asset: assets/fonts/roboto/Roboto-ThinItalic-16.ttf
+          weight: 100
+          style: italic
+        - asset: assets/fonts/roboto/Roboto-LightItalic-11.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/roboto/Roboto-Italic-9.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/roboto/Roboto-MediumItalic-13.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/roboto/Roboto-BoldItalic-6.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/roboto/Roboto-BlackItalic-2.ttf
+          weight: 900
+          style: italic
