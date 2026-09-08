@@ -3,8 +3,9 @@ name: PRD 版本打包
 # 每次修改 PRD.md（即 PRD 版本变更）后，自动对 web / admin / mobileapp 三个项目进行打包构建；
 # 也支持手动触发（workflow_dispatch）。
 #
+# 版本号从 PRD.md 顶部的「版本号：x.y.z」字段读取，用作打包产物名称。
 # 构建产物通过 actions/upload-artifact 上传，可在工作流运行页面的 Artifacts 中下载。
-# - web、admin   ：产出 dist/，zip 后上传
+# - web、admin   ：产出 dist/
 # - mobileapp    ：Android 产出 APK；iOS 产出未签名 Runner.app（--no-codesign，zip 后上传，不出 .ipa）
 
 on:
@@ -17,8 +18,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  resolve-version:
+    name: 读取 PRD 版本号
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - id: v
+        name: 从 PRD.md 提取版本号
+        run: |
+          VER=$(grep -E '版本号' PRD.md | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1)
+          if [ -z "$VER" ]; then echo "::warning::PRD.md 未找到版本号，使用默认 0.0.0"; VER="0.0.0"; fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "提取到版本号: $VER"
+
   build-web:
     name: 打包 Web
+    needs: resolve-version
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -43,13 +62,14 @@ jobs:
       - name: 上传 Web 部署包
         uses: actions/upload-artifact@v4
         with:
-          name: web-dist
+          name: web-dist-v${{ needs.resolve-version.outputs.version }}
           path: web/dist
           if-no-files-found: error
           compression-level: 9
 
   build-admin:
     name: 打包 Admin 后台
+    needs: resolve-version
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -74,13 +94,14 @@ jobs:
       - name: 上传 Admin 部署包
         uses: actions/upload-artifact@v4
         with:
-          name: admin-dist
+          name: admin-dist-v${{ needs.resolve-version.outputs.version }}
           path: admin/dist
           if-no-files-found: error
           compression-level: 9
 
   build-android:
     name: 打包 Android APK
+    needs: resolve-version
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -104,13 +125,14 @@ jobs:
       - name: 上传 Android APK
         uses: actions/upload-artifact@v4
         with:
-          name: mobileapp-android-apk
+          name: mobileapp-android-v${{ needs.resolve-version.outputs.version }}
           path: mobileapp/build/app/outputs/flutter-apk/*.apk
           if-no-files-found: error
           compression-level: 9
 
   build-ios:
     name: 打包 iOS（未签名）
+    needs: resolve-version
     runs-on: macos-latest
     defaults:
       run:
@@ -136,7 +158,7 @@ jobs:
       - name: 上传 iOS Runner.app
         uses: actions/upload-artifact@v4
         with:
-          name: mobileapp-ios-app
+          name: mobileapp-ios-v${{ needs.resolve-version.outputs.version }}
           path: mobileapp/build/ios/iphoneos/Runner.app.zip
           if-no-files-found: error
           compression-level: 9
