@@ -151,6 +151,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         // ---------- 前台访客统计 ----------
         modelBuilder.Entity<VisitLog>(e =>
         {
+            e.Property(v => v.VisitorToken).HasMaxLength(128);
             e.HasIndex(v => v.VisitorToken);
             e.HasIndex(v => v.CreatedAt);
         });

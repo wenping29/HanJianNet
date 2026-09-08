@@ -200,6 +200,7 @@ try
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Database.EnsureCreated();
+        await DbInitHelpers.EnsureMissingTablesAsync(db);
         await DbSeeder.SeedAsync(db, builder.Configuration);
     }
 
@@ -213,4 +214,58 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
+}
+
+static class DbInitHelpers
+{
+    /// <summary>
+    /// EnsureCreated 只在数据库不存在时建全部表；对于已存在的库，新加的实体表不会自动创建。
+    /// 这里增量补齐缺失的表（当前仅 VisitLogs），兼容 SQLite 与 MySQL。
+    /// </summary>
+    public static async Task EnsureMissingTablesAsync(AppDbContext db)
+    {
+        bool visitLogsExists;
+        if (db.Database.IsSqlite())
+        {
+            visitLogsExists = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='VisitLogs'")
+                .AnyAsync();
+        }
+        else
+        {
+            visitLogsExists = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'VisitLogs'")
+                .AnyAsync();
+        }
+
+        if (!visitLogsExists)
+        {
+            Log.Information("数据库缺少 VisitLogs 表，执行增量建表");
+            if (db.Database.IsSqlite())
+            {
+                const string sqliteDdl = @"
+CREATE TABLE ""VisitLogs"" (
+    ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_VisitLogs"" PRIMARY KEY AUTOINCREMENT,
+    ""VisitorToken"" TEXT NOT NULL,
+    ""CreatedAt"" TEXT NOT NULL
+);
+CREATE INDEX ""IX_VisitLogs_CreatedAt"" ON ""VisitLogs"" (""CreatedAt"");
+CREATE INDEX ""IX_VisitLogs_VisitorToken"" ON ""VisitLogs"" (""VisitorToken"");";
+                await db.Database.ExecuteSqlRawAsync(sqliteDdl);
+            }
+            else
+            {
+                const string mysqlDdl = @"
+CREATE TABLE `VisitLogs` (
+    `Id` bigint NOT NULL AUTO_INCREMENT,
+    `VisitorToken` varchar(128) NOT NULL,
+    `CreatedAt` datetime(6) NOT NULL,
+    CONSTRAINT `PK_VisitLogs` PRIMARY KEY (`Id`)
+);
+CREATE INDEX `IX_VisitLogs_CreatedAt` ON `VisitLogs` (`CreatedAt`);
+CREATE INDEX `IX_VisitLogs_VisitorToken` ON `VisitLogs` (`VisitorToken`);";
+                await db.Database.ExecuteSqlRawAsync(mysqlDdl);
+            }
+        }
+    }
 }
