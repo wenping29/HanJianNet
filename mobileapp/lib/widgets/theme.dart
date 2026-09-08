@@ -17,88 +17,118 @@ class AppTheme {
   static const bambooLight = Color(0xFF6E8F7E);
 
   static ThemeData get dark => ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: ink,
-        colorScheme: const ColorScheme.dark(
-          primary: cinnabar,
-          onPrimary: paper,
-          secondary: bronzeLight,
-          onSecondary: ink,
-          surface: inkCard,
-          onSurface: paper,
-          error: cinnabarLight,
-          onError: paper,
-          outline: Color(0x33D9CBA8),
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    scaffoldBackgroundColor: ink,
+    fontFamily: 'Noto Sans SC',
+    colorScheme: const ColorScheme.dark(
+      primary: cinnabar,
+      onPrimary: paper,
+      secondary: bronzeLight,
+      onSecondary: ink,
+      surface: inkCard,
+      onSurface: paper,
+      error: cinnabarLight,
+      onError: paper,
+      outline: Color(0x33D9CBA8),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xD90E0B08),
+      foregroundColor: paper,
+      elevation: 0,
+
+      centerTitle: false,
+      titleTextStyle: TextStyle(
+        color: paper,
+        fontSize: 18,
+        fontFamily: 'Noto Sans SC',
+        fontWeight: FontWeight.w600,
+        letterSpacing: 4,
+      ),
+    ),
+    cardTheme: CardThemeData(
+      color: inkCard,
+      elevation: 0,
+
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(3),
+
+        side: BorderSide(color: paperDim.withValues(alpha: 0.15)),
+      ),
+      margin: EdgeInsets.zero,
+    ),
+    dividerColor: paperDim.withValues(alpha: 0.15),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: ink,
+
+      hintStyle: TextStyle(
+        color: paperDim.withValues(alpha: 0.5),
+        fontFamily: 'Noto Sans SC',
+      ),
+      labelStyle: const TextStyle(
+        color: paperDim,
+        letterSpacing: 2,
+        fontFamily: 'Noto Sans SC',
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(3),
+        borderSide: BorderSide(color: paperDim.withValues(alpha: 0.25)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(3),
+        borderSide: BorderSide(color: paperDim.withValues(alpha: 0.25)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(3),
+        borderSide: const BorderSide(color: bronzeLight),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: cinnabar.withValues(alpha: 0.9),
+        foregroundColor: paper,
+
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+        textStyle: const TextStyle(
+          letterSpacing: 4,
+          fontSize: 14,
+          fontFamily: 'Noto Sans SC',
         ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xD90E0B08),
-          foregroundColor: paper,
-          elevation: 0,
-          centerTitle: false,
-          titleTextStyle: TextStyle(
-            color: paper,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 4,
-          ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: paperDim,
+        side: BorderSide(color: paperDim.withValues(alpha: 0.3)),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+
+        textStyle: const TextStyle(
+          letterSpacing: 4,
+          fontSize: 14,
+          fontFamily: 'Noto Sans SC',
         ),
-        cardTheme: CardThemeData(
-          color: inkCard,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(3),
-            side: BorderSide(color: paperDim.withValues(alpha: 0.15)),
-          ),
-          margin: EdgeInsets.zero,
-        ),
-        dividerColor: paperDim.withValues(alpha: 0.15),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: ink,
-          hintStyle: TextStyle(color: paperDim.withValues(alpha: 0.5)),
-          labelStyle: const TextStyle(color: paperDim, letterSpacing: 2),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(3),
-            borderSide: BorderSide(color: paperDim.withValues(alpha: 0.25)),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(3),
-            borderSide: BorderSide(color: paperDim.withValues(alpha: 0.25)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(3),
-            borderSide: const BorderSide(color: bronzeLight),
-          ),
-        ),
-        filledButtonTheme: FilledButtonThemeData(
-          style: FilledButton.styleFrom(
-            backgroundColor: cinnabar.withValues(alpha: 0.9),
-            foregroundColor: paper,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-            textStyle: const TextStyle(letterSpacing: 4, fontSize: 14),
-          ),
-        ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: paperDim,
-            side: BorderSide(color: paperDim.withValues(alpha: 0.3)),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-            textStyle: const TextStyle(letterSpacing: 4, fontSize: 14),
-          ),
-        ),
-        chipTheme: ChipThemeData(
-          backgroundColor: inkSoft,
-          side: BorderSide(color: paperDim.withValues(alpha: 0.25)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-          labelStyle: const TextStyle(color: paperDim, fontSize: 12),
-        ),
-        snackBarTheme: SnackBarThemeData(
-          backgroundColor: inkSoft,
-          contentTextStyle: const TextStyle(color: paper),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      ),
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: inkSoft,
+      side: BorderSide(color: paperDim.withValues(alpha: 0.25)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
+      labelStyle: const TextStyle(
+        color: paperDim,
+        fontSize: 12,
+        fontFamily: 'Noto Sans SC',
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: inkSoft,
+      contentTextStyle: const TextStyle(
+        color: paper,
+        fontFamily: 'Noto Sans SC',
+      ),
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
 }

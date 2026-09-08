@@ -20,8 +20,8 @@ class HanJianApp extends StatelessWidget {
     return MaterialApp(
       title: '汉奸档案 · HanJianNet',
       debugShowCheckedModeBanner: false,
-      //theme: AppTheme.dark,
-      theme: ThemeData(fontFamily: 'Noto Sans SC'),
+      theme: AppTheme.dark,
+      // theme: ThemeData(fontFamily: 'Noto Sans SC'),
       home: const RootNav(),
     );
   }
