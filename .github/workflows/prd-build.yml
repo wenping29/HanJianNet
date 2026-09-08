@@ -1,10 +1,11 @@
 name: PRD 版本打包
 
-# 每次修改 PRD.md（即 PRD 版本变更）后，自动对 web / admin / mobileapp 三个项目进行打包构建；
+# 每次修改 PRD.md（即 PRD 版本变更）后，自动对 webapi / web / admin / mobileapp 四个项目进行打包构建；
 # 也支持手动触发（workflow_dispatch）。
 #
-# 版本号从 PRD.md 顶部的「版本号：x.y.z」字段读取，用作打包产物名称。
+# 版本号从 PRD.md 顶部的「版本号：x.y.z」字段读取并自动递增小版本，用作打包产物名称。
 # 构建产物通过 actions/upload-artifact 上传，可在工作流运行页面的 Artifacts 中下载。
+# - webapi      ：dotnet publish 产出 linux-x64 部署包
 # - web、admin   ：产出 dist/
 # - mobileapp    ：Android 产出 APK；iOS 产出未签名 Runner.app（--no-codesign，zip 后上传，不出 .ipa）
 
@@ -58,6 +59,32 @@ jobs:
           git add PRD.md
           git -c core.quotepath=false commit -m "chore: 版本号自动递增至 $NEW_VER [skip ci]" || echo "无需提交"
           git push
+
+  build-webapi:
+    name: 打包 WebApi
+    needs: resolve-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: 发布 webapi（linux-x64）
+        run: |
+          dotnet publish webapi/HanJianNet.WebApi.csproj -c Release -r linux-x64 --self-contained false -o publish
+          (cd publish && zip -q -r ../webapi-linux-x64.zip .)
+
+      - name: 上传 WebApi 部署包
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapi-linux-x64-v${{ needs.resolve-version.outputs.version }}
+          path: webapi-linux-x64.zip
+          if-no-files-found: error
+          compression-level: 9
 
   build-web:
     name: 打包 Web
