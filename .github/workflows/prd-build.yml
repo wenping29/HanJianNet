@@ -1,0 +1,107 @@
+name: PRD 版本打包
+
+# 每次修改 PRD.md（即 PRD 版本变更）后，自动对 web / admin / mobileapp 三个项目进行打包构建；
+# 也支持手动触发（workflow_dispatch）。
+#
+# 说明：本工作流仅做"本地构建验证"，不将产物上传为 artifact。
+# - web、admin   ：执行 npm run build，产出 dist/
+# - mobileapp    ：Android 构建 APK，iOS 构建未签名 Runner.app（--no-codesign，不出 .ipa）
+
+on:
+  push:
+    paths:
+      - "PRD.md"
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build-web:
+    name: 打包 Web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建
+        run: npm run build
+
+  build-admin:
+    name: 打包 Admin 后台
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: admin
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 构建
+        run: npm run build
+
+  build-android:
+    name: 打包 Android APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobileapp
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 安装依赖
+        run: flutter pub get
+
+      - name: 构建 APK
+        run: flutter build apk --release
+
+  build-ios:
+    name: 打包 iOS（未签名建）
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: mobileapp
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 安装依赖
+        run: flutter pub get
+
+      - name: 构建 iOS（不签名，产物为 Runner.app）
+        run: flutter build ios --no-codesign

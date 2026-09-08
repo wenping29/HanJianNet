@@ -1,0 +1,5 @@
+# act 本地运行配置
+# 用法：在项目根目录执行 act，运行 PRD 版本打包工作流
+--workflows .github/workflows
+--workflow ".github/workflows/prd-build.yml"
+--container-architecture linux/amd64
