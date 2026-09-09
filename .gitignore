@@ -14,6 +14,13 @@ $RECYCLE.BIN/
 .LSOverride
 Icon
 
+
+
+# ---- Node.js ----
+node_modules/
+deploy/dist/
+
+
 # ---- 构建输出 ----
 webapi/[Bb]in/
 webapi/[Oo]bj/
