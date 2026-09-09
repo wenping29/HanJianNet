@@ -354,13 +354,13 @@ export default function Layout() {
         <div style={footerContainerPageStyle} className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs tracking-wider text-paperdim/70 sm:flex-row">
           <span>汉奸档案 · HanJianNet — 以史为鉴，勿忘国耻</span>
           <span className="font-garamond italic">Editorial Archive · Est. 2026</span>
+          {visitStats && (
+            <span>总访问量 <span className="font-garamond text-bronzelight">{visitStats.totalVisits.toLocaleString()}</span></span> )}
+          {visitStats && (
+            <span>访客数 <span className="font-garamond text-bronzelight">{visitStats.totalVisitors.toLocaleString()}</span></span>)}
+          
         </div>
-        {visitStats && (
-          <div className="container-page flex items-center justify-center gap-6 border-t border-paperedge/10 py-2 text-[11px] tracking-widest text-paperdim/50">
-            <span>总访问量 <span className="font-garamond text-bronzelight">{visitStats.totalVisits.toLocaleString()}</span></span>
-            <span>访客数 <span className="font-garamond text-bronzelight">{visitStats.totalVisitors.toLocaleString()}</span></span>
-          </div>
-        )}
+        
       </footer>
     </div>
   )
