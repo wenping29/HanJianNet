@@ -241,31 +241,10 @@ static class DbInitHelpers
         if (!visitLogsExists)
         {
             Log.Information("数据库缺少 VisitLogs 表，执行增量建表");
-            if (db.Database.IsSqlite())
-            {
-                const string sqliteDdl = @"
-CREATE TABLE ""VisitLogs"" (
-    ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_VisitLogs"" PRIMARY KEY AUTOINCREMENT,
-    ""VisitorToken"" TEXT NOT NULL,
-    ""CreatedAt"" TEXT NOT NULL
-);
-CREATE INDEX ""IX_VisitLogs_CreatedAt"" ON ""VisitLogs"" (""CreatedAt"");
-CREATE INDEX ""IX_VisitLogs_VisitorToken"" ON ""VisitLogs"" (""VisitorToken"");";
-                await db.Database.ExecuteSqlRawAsync(sqliteDdl);
-            }
-            else
-            {
-                const string mysqlDdl = @"
-CREATE TABLE `VisitLogs` (
-    `Id` bigint NOT NULL AUTO_INCREMENT,
-    `VisitorToken` varchar(128) NOT NULL,
-    `CreatedAt` datetime(6) NOT NULL,
-    CONSTRAINT `PK_VisitLogs` PRIMARY KEY (`Id`)
-);
-CREATE INDEX `IX_VisitLogs_CreatedAt` ON `VisitLogs` (`CreatedAt`);
-CREATE INDEX `IX_VisitLogs_VisitorToken` ON `VisitLogs` (`VisitorToken`);";
-                await db.Database.ExecuteSqlRawAsync(mysqlDdl);
-            }
+            var ddlFile = db.Database.IsSqlite() ? "VisitLogs.sqlite.sql" : "VisitLogs.mysql.sql";
+            var ddlPath = Path.Combine(AppContext.BaseDirectory, "sql", ddlFile);
+            var ddl = await File.ReadAllTextAsync(ddlPath);
+            await db.Database.ExecuteSqlRawAsync(ddl);
         }
     }
 }
