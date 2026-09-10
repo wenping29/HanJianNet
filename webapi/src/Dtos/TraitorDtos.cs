@@ -136,3 +136,18 @@ public class TimelineItemDto
     public string TraitorName { get; set; } = "";
     public string Event { get; set; } = "";
 }
+
+/// <summary>重复记录组（同名+同籍贯）。</summary>
+public class DuplicateGroupDto
+{
+    public string Name { get; set; } = "";
+    public string NativePlace { get; set; } = "";
+    public List<TraitorSummaryDto> Items { get; set; } = [];
+}
+
+/// <summary>合并请求：将 sourceIds 的记录全部合并到 primaryId。</summary>
+public class MergeRequestDto
+{
+    public string PrimaryId { get; set; } = "";
+    public List<string> SourceIds { get; set; } = [];
+}

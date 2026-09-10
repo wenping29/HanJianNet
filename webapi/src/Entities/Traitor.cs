@@ -21,6 +21,10 @@ public class Traitor
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+    /// <summary>合并目标记录 Id（非空表示该记录已被合并到主记录，不再参与重复检测与公开展示）</summary>
+    public string? MergedIntoId { get; set; }
+    public DateTime? MergedAt { get; set; }
+
     public List<Spouse> Spouses { get; set; } = [];
     public List<Child> Children { get; set; } = [];
     public List<Residence> Residences { get; set; } = [];

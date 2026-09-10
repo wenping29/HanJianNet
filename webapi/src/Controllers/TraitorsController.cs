@@ -76,6 +76,16 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
     [Authorize(Roles = "admin,superadmin")]
     [HttpPut("api/admin/traitors/{id}")]
     public async Task<IActionResult> AdminUpdate(string id, [FromBody] TraitorInputDto input)=> Ok(new { traitor = await traitors.AdminUpdateAsync(id, input) });
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpGet("api/admin/traitors/duplicates")]
+    public async Task<IActionResult> AdminDuplicates([FromQuery] string? name, [FromQuery] string? nativePlace)
+        => Ok(new { items = await traitors.FindDuplicatesAsync(name, nativePlace) });
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/traitors/merge")]
+    public async Task<IActionResult> AdminMerge([FromBody] MergeRequestDto req)
+        => Ok(new { traitor = await traitors.MergeAsync(req.PrimaryId, req.SourceIds) });
 }
 
 /// <summary>TraitorInputDto + ChangeSummary，用于用户提交修订。</summary>

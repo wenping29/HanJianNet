@@ -234,6 +234,12 @@ export interface ErrorLogItem {
   clientSource?: string | null
 }
 
+export interface DuplicateGroup {
+  name: string
+  nativePlace: string
+  items: TraitorSummary[]
+}
+
 
 export interface TraitorSummary {
   id: string

@@ -4,6 +4,7 @@ import type {
   Attachment,
   AttachmentKind,
   AuthPayload,
+  DuplicateGroup,
   ErrorLogItem,
   LoginLogItem,
   MenuItem,
@@ -150,6 +151,19 @@ export const api = {
 
   updateTraitorDirect: (id: string, input: TraitorInput) =>
     request<{ traitor: TraitorDetail }>(`/admin/traitors/${id}`, { method: 'PUT', body: JSON.stringify(input) }),
+
+  findDuplicates: (name?: string, nativePlace?: string) => {
+    const params = new URLSearchParams()
+    if (name) params.set('name', name)
+    if (nativePlace) params.set('nativePlace', nativePlace)
+    return request<{ items: DuplicateGroup[] }>(`/admin/traitors/duplicates?${params.toString()}`)
+  },
+
+  mergeTraitors: (primaryId: string, sourceIds: string[]) =>
+    request<{ traitor: TraitorDetail }>('/admin/traitors/merge', {
+      method: 'POST',
+      body: JSON.stringify({ primaryId, sourceIds }),
+    }),
 
   upload: async (file: File, kind: AttachmentKind): Promise<Attachment> => {
     const fd = new FormData()

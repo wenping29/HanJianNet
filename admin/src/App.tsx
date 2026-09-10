@@ -14,6 +14,7 @@ import Reviews from './pages/Reviews'
 import Roles from './pages/Roles'
 import TraitorEditor from './pages/TraitorEditor'
 import Traitors from './pages/Traitors'
+import MergeTraitors from './pages/MergeTraitors'
 import Users from './pages/Users'
 import WebMenus from './pages/WebMenus'
 import { canManageUsers } from './lib/roles'
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/traitors" element={<Traitors />} />
           <Route element={<AdminOnlyRoute />}>
             <Route path="/traitors/new" element={<TraitorEditor mode="create" />} />
+            <Route path="/traitors/merge" element={<MergeTraitors />} />
             <Route path="/traitors/:id/edit" element={<TraitorEditor mode="edit" />} />
           </Route>
           <Route path="/reviews" element={<Reviews />} />

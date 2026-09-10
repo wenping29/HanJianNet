@@ -256,6 +256,121 @@ public class TraitorService(AppDbContext db, CacheService cache)
 
     public async Task<TraitorDto> AdminGetAsync(string id) => await GetAsync(id);
 
+    /// <summary>
+    /// 查找重复记录：按 Name + NativePlace 分组，仅返回未合并（MergedIntoId == null）且 Count > 1 的组。
+    /// 可选 name/nativePlace 过滤。
+    /// </summary>
+    public async Task<List<DuplicateGroupDto>> FindDuplicatesAsync(string? name, string? nativePlace)
+    {
+        var q = db.Traitors.AsQueryable();
+        q = q.Where(t => t.MergedIntoId == null);
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            var n = name!;
+            q = q.Where(t => t.Name.Contains(n));
+        }
+        if (!string.IsNullOrWhiteSpace(nativePlace))
+        {
+            var np = nativePlace!;
+            q = q.Where(t => t.NativePlace.Contains(np));
+        }
+
+        // 只取同名同籍贯且重复数>1的组的 key
+        var dupKeys = await q
+            .GroupBy(t => new { t.Name, t.NativePlace })
+            .Where(g => g.Count() > 1)
+            .Select(g => new { g.Key.Name, g.Key.NativePlace })
+            .ToListAsync();
+
+        var result = new List<DuplicateGroupDto>();
+        foreach (var key in dupKeys)
+        {
+            var items = await q
+                .Where(t => t.Name == key.Name && t.NativePlace == key.NativePlace)
+                .OrderBy(t => t.CreatedAt)
+                .ToListAsync();
+            result.Add(new DuplicateGroupDto
+            {
+                Name = key.Name,
+                NativePlace = key.NativePlace,
+                Items = items.Select(t => t.ToSummary()).ToList(),
+            });
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 合并：将 sourceIds 的所有子记录迁移到 primaryId，合并 JSON 数组字段（不去重），标记 source 为已合并。
+    /// </summary>
+    public async Task<TraitorDto> MergeAsync(string primaryId, List<string> sourceIds)
+    {
+        if (sourceIds.Count == 0)
+            throw new ApiException(400, "未选择要合并的重复记录");
+        if (sourceIds.Contains(primaryId))
+            throw new ApiException(400, "主记录不能同时出现在被合并列表中");
+
+        var primary = await WithIncludes().FirstOrDefaultAsync(t => t.Id == primaryId)
+                      ?? throw new ApiException(404, "主记录不存在");
+        if (primary.MergedIntoId != null)
+            throw new ApiException(400, "主记录已被合并，不能作为合并目标");
+
+        // 合并 JSON 数组字段（union，不去重）
+        var primaryAliases = DeserializeListSafe(primary.AliasesJson);
+        var primaryTags = DeserializeListSafe(primary.IdentityTagsJson);
+        var primaryRelated = DeserializeListSafe(primary.RelatedIdsJson);
+
+        foreach (var sid in sourceIds.Distinct())
+        {
+            var source = await db.Traitors.AsTracking().FirstOrDefaultAsync(t => t.Id == sid)
+                         ?? throw new ApiException(404, $"被合并记录 {sid} 不存在");
+            if (source.MergedIntoId != null)
+                throw new ApiException(400, $"记录 {source.Name} 已被合并，不能重复合并");
+
+            // 迁移子记录：直接 UPDATE TraitorId（EF Core 跟踪 entity 后改 FK 即可批量 UPDATE）
+            foreach (var s in db.Spouses.Where(x => x.TraitorId == sid)) s.TraitorId = primaryId;
+            foreach (var c in db.Children.Where(x => x.TraitorId == sid)) c.TraitorId = primaryId;
+            foreach (var r in db.Residences.Where(x => x.TraitorId == sid)) r.TraitorId = primaryId;
+            foreach (var c in db.CrimeRecords.Where(x => x.TraitorId == sid)) c.TraitorId = primaryId;
+            foreach (var e in db.LifeEvents.Where(x => x.TraitorId == sid)) e.TraitorId = primaryId;
+            foreach (var a in db.Attachments.Where(x => x.TraitorId == sid)) a.TraitorId = primaryId;
+            foreach (var s in db.Sources.Where(x => x.TraitorId == sid)) s.TraitorId = primaryId;
+            foreach (var r in db.Revisions.Where(x => x.TraitorId == sid)) r.TraitorId = primaryId;
+
+            // 合并 JSON 数组
+            primaryAliases.AddRange(DeserializeListSafe(source.AliasesJson));
+            primaryTags.AddRange(DeserializeListSafe(source.IdentityTagsJson));
+            primaryRelated.AddRange(DeserializeListSafe(source.RelatedIdsJson));
+
+            // 标记为已合并
+            source.MergedIntoId = primaryId;
+            source.MergedAt = DateTime.UtcNow;
+        }
+
+        primary.AliasesJson = JsonSerializer.Serialize(primaryAliases, JsonOpts.Default);
+        primary.IdentityTagsJson = JsonSerializer.Serialize(primaryTags, JsonOpts.Default);
+        primary.RelatedIdsJson = JsonSerializer.Serialize(primaryRelated, JsonOpts.Default);
+        primary.UpdatedAt = DateTime.UtcNow;
+
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+
+        var loaded = await WithIncludes().FirstAsync(t => t.Id == primaryId);
+        return loaded.ToDto();
+    }
+
+    private static List<string> DeserializeListSafe(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return [];
+        try
+        {
+            return JsonSerializer.Deserialize<List<string>>(json, JsonOpts.Default) ?? [];
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
     private IQueryable<Traitor> WithIncludes() => db.Traitors
         .Include(t => t.Spouses)
         .Include(t => t.Children)
