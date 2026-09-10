@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'screens/home_screen.dart';
@@ -6,9 +8,8 @@ import 'screens/search_screen.dart';
 import 'services/session.dart';
 import 'widgets/theme.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Session.instance.load();
   runApp(const HanJianApp());
   // await Session.instance.clear();
 }

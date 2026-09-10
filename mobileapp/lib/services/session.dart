@@ -24,7 +24,15 @@ class Session extends ChangeNotifier {
   bool get isAdmin => user?.role == 'admin';
 
   Future<void> load() async {
-    final sp = await SharedPreferences.getInstance();
+    late final SharedPreferences sp;
+    try {
+      sp = await SharedPreferences.getInstance();
+    } on Exception catch (e, stackTrace) {
+      debugPrint('Unable to restore session: $e\n$stackTrace');
+      _applyToClient();
+      notifyListeners();
+      return;
+    }
     baseUrl = sp.getString(_kBaseUrl) ?? kDefaultApiBaseUrl;
     token = sp.getString(_kToken);
     final userJson = sp.getString(_kUser);
