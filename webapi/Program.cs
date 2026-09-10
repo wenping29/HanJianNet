@@ -262,14 +262,13 @@ static class DbInitHelpers
     private static async Task EnsureColumnAsync(AppDbContext db, string table, string column, string alterSql)
     {
         bool exists;
-        if (db.Database.IsSqlite())
+        var conn = db.Database.GetDbConnection();
+        await conn.OpenAsync();
+        try
         {
-            // PRAGMA 不支持参数化表名，直接用 ADO.NET 读取列名
-            var conn = db.Database.GetDbConnection();
-            await conn.OpenAsync();
-            try
+            using var cmd = conn.CreateCommand();
+            if (db.Database.IsSqlite())
             {
-                using var cmd = conn.CreateCommand();
                 cmd.CommandText = $"PRAGMA table_info({table})";
                 using var reader = await cmd.ExecuteReaderAsync();
                 var cols = new List<string>();
@@ -280,20 +279,25 @@ static class DbInitHelpers
                 }
                 exists = cols.Any(c => c.Equals(column, StringComparison.OrdinalIgnoreCase));
             }
-            finally
+            else
             {
-                await conn.CloseAsync();
+                // MySQL：用 information_schema 检查列是否存在
+                cmd.CommandText = "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=@table AND column_name=@col";
+                var pTable = cmd.CreateParameter();
+                pTable.ParameterName = "@table";
+                pTable.Value = table;
+                cmd.Parameters.Add(pTable);
+                var pCol = cmd.CreateParameter();
+                pCol.ParameterName = "@col";
+                pCol.Value = column;
+                cmd.Parameters.Add(pCol);
+                var count = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                exists = count > 0;
             }
         }
-        else
+        finally
         {
-            // MySQL：用 information_schema 检查，参数化
-            var count = await db.Database
-                .SqlQueryRaw<int>(
-                    "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name={0} AND column_name={1}",
-                    table, column)
-                .FirstAsync();
-            exists = count > 0;
+            await conn.CloseAsync();
         }
         if (!exists)
         {
