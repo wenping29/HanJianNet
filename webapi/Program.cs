@@ -219,8 +219,8 @@ finally
 static class DbInitHelpers
 {
     /// <summary>
-    /// EnsureCreated 只在数据库不存在时建全部表；对于已存在的库，新加的实体表不会自动创建。
-    /// 这里增量补齐缺失的表（当前仅 VisitLogs），兼容 SQLite 与 MySQL。
+    /// EnsureCreated 只在数据库不存在时建全部表；对于已存在的库，新加的实体表/列不会自动创建。
+    /// 这里增量补齐缺失的表与列，兼容 SQLite 与 MySQL。
     /// </summary>
     public static async Task EnsureMissingTablesAsync(AppDbContext db)
     {
@@ -234,7 +234,7 @@ static class DbInitHelpers
         else
         {
             visitLogsExists = await db.Database
-                .SqlQueryRaw<int>("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'VisitLogs'")
+                .SqlQueryRaw<int>("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name='VisitLogs'")
                 .AnyAsync();
         }
 
@@ -245,6 +245,60 @@ static class DbInitHelpers
             var ddlPath = Path.Combine(AppContext.BaseDirectory, "sql", ddlFile);
             var ddl = await File.ReadAllTextAsync(ddlPath);
             await db.Database.ExecuteSqlRawAsync(ddl);
+        }
+
+        // 补齐 Traitors 表的新增列（MergedIntoId / MergedAt）
+        await EnsureColumnAsync(db, "Traitors", "MergedIntoId",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN MergedIntoId TEXT;"
+                : "ALTER TABLE Traitors ADD COLUMN MergedIntoId VARCHAR(64) NULL;");
+        await EnsureColumnAsync(db, "Traitors", "MergedAt",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN MergedAt TEXT;"
+                : "ALTER TABLE Traitors ADD COLUMN MergedAt DATETIME NULL;");
+    }
+
+    /// <summary>检查表中是否存在某列，不存在则执行 ALTER TABLE 补列。</summary>
+    private static async Task EnsureColumnAsync(AppDbContext db, string table, string column, string alterSql)
+    {
+        bool exists;
+        if (db.Database.IsSqlite())
+        {
+            // PRAGMA 不支持参数化表名，直接用 ADO.NET 读取列名
+            var conn = db.Database.GetDbConnection();
+            await conn.OpenAsync();
+            try
+            {
+                using var cmd = conn.CreateCommand();
+                cmd.CommandText = $"PRAGMA table_info({table})";
+                using var reader = await cmd.ExecuteReaderAsync();
+                var cols = new List<string>();
+                while (await reader.ReadAsync())
+                {
+                    // PRAGMA table_info 返回：cid, name, type, notnull, dflt_value, pk
+                    cols.Add(reader.GetString(1));
+                }
+                exists = cols.Any(c => c.Equals(column, StringComparison.OrdinalIgnoreCase));
+            }
+            finally
+            {
+                await conn.CloseAsync();
+            }
+        }
+        else
+        {
+            // MySQL：用 information_schema 检查，参数化
+            var count = await db.Database
+                .SqlQueryRaw<int>(
+                    "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name={0} AND column_name={1}",
+                    table, column)
+                .FirstAsync();
+            exists = count > 0;
+        }
+        if (!exists)
+        {
+            Log.Information("数据库表 {Table} 缺少列 {Column}，执行 ALTER TABLE", table, column);
+            await db.Database.ExecuteSqlRawAsync(alterSql);
         }
     }
 }
