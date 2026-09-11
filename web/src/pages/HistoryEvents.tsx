@@ -6,7 +6,7 @@ import type { HistoryEvent } from '../lib/historyEvents'
 import { eraLabel } from '../lib/format'
 import { containerPageStyle } from '../style'
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 12
 
 /** 生成分页按钮上显示的页码列表：首尾页 + 当前页附近 + 省略号 */
 function buildPageList(current: number, total: number): (number | '...')[] {
@@ -65,11 +65,15 @@ export default function HistoryEvents() {
   )
   const pageList = useMemo(() => buildPageList(safePage, totalPages), [safePage, totalPages])
 
+  function scrollToListTop() {
+    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   function gotoPage(p: number) {
     const target = Math.min(Math.max(1, p), totalPages)
     if (target === safePage) return
     setPage(target)
-    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollToListTop()
   }
 
   return (
@@ -87,15 +91,18 @@ export default function HistoryEvents() {
         </div>
       </section>
 
-      <section className="container-page py-16">
+      <section className="container-page py-4">
         {/* 时期切换 */}
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div ref={listRef} className="mb-3 flex scroll-mt-24 flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap gap-2">
             {HISTORY_ERAS.map((era) => (
               <button
                 key={era}
                 type="button"
-                onClick={() => setActiveEra(era)}
+                onClick={() => {
+                  setActiveEra(era)
+                  scrollToListTop()
+                }}
                 className={`badge cursor-pointer ${
                   activeEra === era
                     ? 'border-cinnabar bg-cinnabar/20 text-cinnabarlight'
@@ -114,10 +121,53 @@ export default function HistoryEvents() {
         </div>
 
         {/* 卡片顶部：总数 + 页码 */}
-        <div ref={listRef} className="mt-8 flex flex-wrap items-baseline justify-between gap-2 scroll-mt-24">
+        <div className="mt-0 flex flex-wrap items-baseline justify-between gap-2">
           <p className="text-sm tracking-widest text-paperdim/80">
             {t('common.totalEvents', { count: total })}
           </p>
+                  {/* 分页控件 */}
+        {!loading && totalPages > 1 && (
+          <nav className="mt-0 flex flex-wrap items-center justify-center gap-1" aria-label={t('common.pagination')}>
+            <button
+              type="button"
+              onClick={() => gotoPage(safePage - 1)}
+              disabled={safePage <= 1}
+              className="btn-ghost !px-3 !py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {t('common.prevPage')}
+            </button>
+
+            {pageList.map((p, idx) =>
+              p === '...' ? (
+                <span key={`e${idx}`} className="px-2 text-sm text-paperdim/60">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => gotoPage(p)}
+                  className={`min-w-[36px] rounded-sm border px-2 py-1.5 text-sm transition ${
+                    p === safePage
+                      ? 'border-cinnabar bg-cinnabar/20 text-cinnabarlight shadow-seal'
+                      : 'border-paperedge/25 text-paperdim hover:border-bronzelight hover:text-paper'
+                  }`}
+                >
+                  {p}
+                </button>
+              ),
+            )}
+
+            <button
+              type="button"
+              onClick={() => gotoPage(safePage + 1)}
+              disabled={safePage >= totalPages}
+              className="btn-ghost !px-3 !py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {t('common.nextPage')}
+            </button>
+          </nav>
+        )}
           {totalPages > 1 && (
             <p className="text-xs tracking-wider text-paperdim/60">
               {t('common.pageInfo', { page: safePage, totalPages })}
@@ -159,49 +209,7 @@ export default function HistoryEvents() {
           <p className="py-16 text-center text-paperdim">{t('events.noEvents')}</p>
         )}
 
-        {/* 分页控件 */}
-        {!loading && totalPages > 1 && (
-          <nav className="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label={t('common.pagination')}>
-            <button
-              type="button"
-              onClick={() => gotoPage(safePage - 1)}
-              disabled={safePage <= 1}
-              className="btn-ghost !px-3 !py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {t('common.prevPage')}
-            </button>
 
-            {pageList.map((p, idx) =>
-              p === '...' ? (
-                <span key={`e${idx}`} className="px-2 text-sm text-paperdim/60">
-                  …
-                </span>
-              ) : (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => gotoPage(p)}
-                  className={`min-w-[36px] rounded-sm border px-2 py-1.5 text-sm transition ${
-                    p === safePage
-                      ? 'border-cinnabar bg-cinnabar/20 text-cinnabarlight shadow-seal'
-                      : 'border-paperedge/25 text-paperdim hover:border-bronzelight hover:text-paper'
-                  }`}
-                >
-                  {p}
-                </button>
-              ),
-            )}
-
-            <button
-              type="button"
-              onClick={() => gotoPage(safePage + 1)}
-              disabled={safePage >= totalPages}
-              className="btn-ghost !px-3 !py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {t('common.nextPage')}
-            </button>
-          </nav>
-        )}
       </section>
     </div>
   )

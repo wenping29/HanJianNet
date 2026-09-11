@@ -71,8 +71,9 @@ export function formatLifeSpan(
   deathYear: number | null,
   birthYearType: YearType,
   deathYearType: YearType,
+  t?: (key: string) => string,
 ): string {
-  return `${formatYear(birthYear, birthYearType)} — ${formatYear(deathYear, deathYearType)}`
+  return `${formatYear(birthYear, birthYearType, t)} — ${formatYear(deathYear, deathYearType, t)}`
 }
 
 export function formatDateTime(iso: string | null | undefined): string {

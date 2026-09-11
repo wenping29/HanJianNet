@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import type { TraitorSummary } from '../types'
 import { formatLifeSpan } from '../lib/format'
 
 export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
+  const { t } = useTranslation()
   return (
     <Link
       to={`/traitor/${traitor.id}`}
@@ -33,6 +35,7 @@ export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
           traitor.deathYear,
           traitor.birthYearType,
           traitor.deathYearType,
+          t,
         )}</p>
         <p className="mt-2 truncate text-xs tracking-wider text-paperdim/80">
           {traitor.faction || '—'}

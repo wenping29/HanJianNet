@@ -148,7 +148,7 @@ export default function Home() {
         </div>
       </section>
                   {/* 统计看板 */}
-      <section className="container-page -mt-1 py-14">
+      <section className="container-page -mt-2 py-2">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard label={t('home.statTotal')} value={stats?.total ?? 0} />
           <StatCard label={t('home.statConvicted')} value={stats?.sentenced ?? 0} />
@@ -157,7 +157,7 @@ export default function Home() {
         </div>
       </section>
       {/* 综合检索 + 卡片墙 */}
-      <section ref={wallRef} className="container-page pb-16">
+      <section ref={wallRef} className="container-page pb-1">
         <form onSubmit={submitSearch} className="card mb-8 grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-5">
           <div>
             <label className="label" htmlFor="f-name">{t('home.searchBy')}</label>

@@ -94,7 +94,7 @@ export default function TraitorDetail() {
             <div className="flex gap-2">
               <dt className="shrink-0 text-paperdim">{t('traitorDetail.lifespan')}</dt>
               <dd className="font-garamond text-paper/90">
-                {formatLifeSpan(traitor.birthYear, traitor.deathYear, traitor.birthYearType, traitor.deathYearType)}
+                {formatLifeSpan(traitor.birthYear, traitor.deathYear, traitor.birthYearType, traitor.deathYearType, t)}
               </dd>
             </div>
             <div className="flex gap-2">

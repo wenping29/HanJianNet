@@ -194,7 +194,7 @@ export default function Roster() {
                     </td>
                     <td className="text-paperdim">{tr.faction || '—'}</td>
                     <td className="whitespace-nowrap font-garamond text-paperdim">
-                      {formatLifeSpan(tr.birthYear, tr.deathYear, tr.birthYearType, tr.deathYearType)}
+                      {formatLifeSpan(tr.birthYear, tr.deathYear, tr.birthYearType, tr.deathYearType, t)}
                     </td>
                     <td>
                       {tr.identityTags.length > 0 ? (
