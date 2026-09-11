@@ -83,6 +83,7 @@ public static class Mappings
         }).ToList(),
         CrimeRecords = t.CrimeRecords.Select(c => new CrimeRecordInputDto
         {
+            Name = c.Name,
             Year = c.Year,
             Title = c.Title,
             Process = c.Process,
@@ -162,6 +163,7 @@ public static class Mappings
             .Where(c => !string.IsNullOrWhiteSpace(c.Title))
             .Select(c => new CrimeRecordInputDto
             {
+                Name = NullIfEmpty(c.Name),
                 Year = c.Year,
                 Title = c.Title.Trim(),
                 Process = NullIfEmpty(c.Process),
@@ -235,8 +237,15 @@ public static class Mappings
             Period = x.Period,
             Remark = x.Remark,
         }).ToList();
+        // 犯罪记录整表重建；前端编辑表单不维护 Name，按 Title 从旧记录沿用，避免保存时被清空
+        var priorCrimeNames = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var c in t.CrimeRecords)
+            if (!string.IsNullOrWhiteSpace(c.Name)) priorCrimeNames[c.Title] = c.Name!;
         t.CrimeRecords = s.CrimeRecords.Select(x => new CrimeRecord
         {
+            Name = string.IsNullOrWhiteSpace(x.Name)
+                ? (priorCrimeNames.TryGetValue(x.Title, out var n) ? n : null)
+                : x.Name,
             Year = x.Year,
             Title = x.Title,
             Process = x.Process,

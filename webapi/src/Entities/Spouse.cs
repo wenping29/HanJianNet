@@ -35,6 +35,8 @@ public class CrimeRecord
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string TraitorId { get; set; } = "";
     public Traitor Traitor { get; set; } = null!;
+    /// <summary>数据来源中的本人姓名（导入时写入，编辑表单不维护）</summary>
+    public string? Name { get; set; }
     public int? Year { get; set; }
     public string Title { get; set; } = "";
     public string? Process { get; set; }

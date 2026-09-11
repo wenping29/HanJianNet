@@ -23,6 +23,8 @@ public class ResidenceInputDto
 
 public class CrimeRecordInputDto
 {
+    /// <summary>数据来源中的本人姓名（只读，编辑表单不回传时后端保留原值）</summary>
+    public string? Name { get; set; }
     public int? Year { get; set; }
     public string Title { get; set; } = "";
     public string? Process { get; set; }
