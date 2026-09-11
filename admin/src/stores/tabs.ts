@@ -31,12 +31,16 @@ export const useTabsStore = create<TabsState>()(
       activeKey: DEFAULT_TAB.key,
 
       addTab: (tab) => {
-        const { tabs, activeKey } = get()
-        const exists = tabs.some((t) => t.key === tab.key)
-        if (!exists) {
+        const { tabs } = get()
+        const existing = tabs.find((t) => t.key === tab.key)
+        if (!existing) {
           set({ tabs: [...tabs, tab], activeKey: tab.key })
-        } else if (activeKey !== tab.key) {
-          set({ activeKey: tab.key })
+        } else {
+          // 同 key 的 tab 更新 path/label（子路由导航，如 /traitors/basic-edit/:id）
+          const updatedTabs = tabs.map((t) =>
+            t.key === tab.key ? { ...t, path: tab.path, label: tab.label } : t,
+          )
+          set({ tabs: updatedTabs, activeKey: tab.key })
         }
       },
 

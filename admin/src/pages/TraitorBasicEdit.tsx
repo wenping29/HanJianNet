@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList, formatLifeSpan } from '../lib/format'
-import type { Period, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
+import type { Child, Period, Spouse, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
 
 const PAGE_SIZE = 10
 
@@ -13,6 +13,28 @@ const YEAR_TYPES: Array<{ value: YearType; label: string }> = [
   { value: 'after', label: '之后' },
   { value: 'unknown', label: '不详' },
 ]
+
+function useRowList<T>(initial: T[]) {
+  const [rows, setRows] = useState<T[]>(initial)
+  const add = (...newRows: T[]) => setRows((r) => [...r, ...newRows])
+  const remove = (i: number) => setRows((r) => r.filter((_, idx) => idx !== i))
+  const patch = (i: number, part: Partial<T>) =>
+    setRows((r) => r.map((row, idx) => (idx === i ? { ...row, ...part } : row)))
+  const setAll = (next: T[]) => setRows(next)
+  return [rows, { add, remove, patch, setAll }] as const
+}
+
+function RowActions({ onRemove }: { onRemove: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onRemove}
+      className="mt-1 h-9 shrink-0 rounded-sm border border-paperedge/25 px-3 text-xs text-paperdim hover:border-cinnabar hover:text-cinnabarlight"
+    >
+      删除
+    </button>
+  )
+}
 
 function pageWindow(page: number, totalPages: number): Array<number | '…'> {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -303,6 +325,8 @@ function EditView() {
 
   const [form, setForm] = useState<BasicForm>(EMPTY_FORM)
   const [original, setOriginal] = useState<TraitorDetail | null>(null)
+  const [spouses, spouseCtl] = useRowList<Spouse>([])
+  const [children, childCtl] = useRowList<Child>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -331,6 +355,15 @@ function EditView() {
           faction: traitor.faction,
           summary: traitor.summary,
         })
+        spouseCtl.setAll(traitor.spouses.map((s) => ({ name: s.name, remark: s.remark ?? '' })))
+        childCtl.setAll(
+          traitor.children.map((c) => ({
+            name: c.name,
+            gender: c.gender ?? '',
+            whereabouts: c.whereabouts ?? '',
+            remark: c.remark ?? '',
+          })),
+        )
       })
       .catch((e) => setError(e instanceof Error ? e.message : '加载失败'))
       .finally(() => setLoading(false))
@@ -367,14 +400,15 @@ function EditView() {
       period: form.period,
       faction: form.faction.trim(),
       summary: form.summary.trim(),
-      // 以下保持原数据不变
-      spouses: original.spouses.map((s) => ({ name: s.name, remark: s.remark ?? undefined })),
-      children: original.children.map((c) => ({
-        name: c.name,
-        gender: c.gender ?? undefined,
-        whereabouts: c.whereabouts ?? undefined,
-        remark: c.remark ?? undefined,
+      // 配偶子女用表单值
+      spouses: spouses.filter((s) => s.name.trim()).map((s) => ({ name: s.name.trim(), remark: s.remark?.trim() || undefined })),
+      children: children.filter((c) => c.name.trim()).map((c) => ({
+        name: c.name.trim(),
+        gender: c.gender?.trim() || undefined,
+        whereabouts: c.whereabouts?.trim() || undefined,
+        remark: c.remark?.trim() || undefined,
       })),
+      // 以下保持原数据不变
       residences: original.residences.map((r) => ({
         place: r.place,
         period: r.period ?? undefined,
@@ -413,6 +447,15 @@ function EditView() {
       // 刷新 original 以同步最新状态
       const { traitor } = await api.adminTraitor(id)
       setOriginal(traitor)
+      spouseCtl.setAll(traitor.spouses.map((s) => ({ name: s.name, remark: s.remark ?? '' })))
+      childCtl.setAll(
+        traitor.children.map((c) => ({
+          name: c.name,
+          gender: c.gender ?? '',
+          whereabouts: c.whereabouts ?? '',
+          remark: c.remark ?? '',
+        })),
+      )
     } catch (err) {
       setError(err instanceof Error ? err.message : '保存失败')
     } finally {
@@ -438,7 +481,7 @@ function EditView() {
         )}
       </div>
       <p className="mt-3 text-sm text-paperdim">
-        仅修改基本信息，<span className="text-bronzelight">其他数据（生平、犯罪记录、家族等）保持不变</span>。
+        修改基本信息与家族信息，<span className="text-bronzelight">其他数据（居住地、犯罪记录、生平等）保持不变</span>。
       </p>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
@@ -510,6 +553,88 @@ function EditView() {
               <label className="label" htmlFor="summary">人物概述 *</label>
               <textarea id="summary" rows={5} className="input" value={form.summary} onChange={(e) => update('summary', e.target.value)} />
             </div>
+          </div>
+        </fieldset>
+
+        <fieldset className="card p-6">
+          <legend className="flex items-baseline gap-2 px-2">
+            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">配偶</span>
+            <span className="font-garamond text-[10px] italic text-bronzelight">SPOUSES</span>
+          </legend>
+          <div className="mt-2 space-y-2">
+            {spouses.map((s, i) => (
+              <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_2fr_auto]">
+                <input
+                  className="input"
+                  placeholder="姓名"
+                  value={s.name}
+                  onChange={(e) => spouseCtl.patch(i, { name: e.target.value })}
+                />
+                <input
+                  className="input"
+                  placeholder="备注"
+                  value={s.remark ?? ''}
+                  onChange={(e) => spouseCtl.patch(i, { remark: e.target.value })}
+                />
+                <RowActions onRemove={() => spouseCtl.remove(i)} />
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => spouseCtl.add({ name: '', remark: '' })}
+              className="btn-ghost !py-1.5 text-xs"
+            >
+              + 添加配偶
+            </button>
+          </div>
+        </fieldset>
+
+        <fieldset className="card p-6">
+          <legend className="flex items-baseline gap-2 px-2">
+            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">子女</span>
+            <span className="font-garamond text-[10px] italic text-bronzelight">CHILDREN</span>
+          </legend>
+          <div className="mt-2 space-y-2">
+            {children.map((c, i) => (
+              <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_100px_1fr_1fr_auto]">
+                <input
+                  className="input"
+                  placeholder="姓名"
+                  value={c.name}
+                  onChange={(e) => childCtl.patch(i, { name: e.target.value })}
+                />
+                <select
+                  className="input"
+                  value={c.gender ?? ''}
+                  onChange={(e) => childCtl.patch(i, { gender: e.target.value })}
+                >
+                  <option value="">性别</option>
+                  <option value="男">男</option>
+                  <option value="女">女</option>
+                  <option value="不详">不详</option>
+                </select>
+                <input
+                  className="input"
+                  placeholder="去向"
+                  value={c.whereabouts ?? ''}
+                  onChange={(e) => childCtl.patch(i, { whereabouts: e.target.value })}
+                />
+                <input
+                  className="input"
+                  placeholder="备注"
+                  value={c.remark ?? ''}
+                  onChange={(e) => childCtl.patch(i, { remark: e.target.value })}
+                />
+                <RowActions onRemove={() => childCtl.remove(i)} />
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => childCtl.add({ name: '', gender: '', whereabouts: '', remark: '' })}
+              className="btn-ghost !py-1.5 text-xs"
+            >
+              + 添加子女
+            </button>
           </div>
         </fieldset>
 
