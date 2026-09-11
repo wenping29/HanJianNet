@@ -329,7 +329,8 @@
     "fieldPersonCount": "Persons",
     "personCountValue": "{{count}}",
     "fieldAlias": "Also Known As",
-    "fieldKeywords": "Keywords"
+    "fieldKeywords": "Keywords",
+    "fieldDesc": "Description"
   },
   "eventForm": {
     "createTitle": "Add New Historical Event",

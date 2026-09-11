@@ -99,6 +99,7 @@ export default function HistoryEventDetail() {
     )
     push('alias', t('eventDetail.fieldAlias'), event.alias && event.alias !== event.title ? event.alias : '')
     push('keywords', t('eventDetail.fieldKeywords'), event.keywords.length > 0 ? event.keywords.join('、') : '')
+    push('desc', t('eventDetail.fieldDesc'), event.desc)
     return rows
   }, [event, t])
 
@@ -125,18 +126,17 @@ export default function HistoryEventDetail() {
     <div>
       {/* 事件标题区 */}
       <section className="ink-hero relative overflow-hidden border-b border-paperedge/10">
-        <div className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
+        <div className="container-page animate-ink-in flex flex-col items-center py-10 text-center md:py-12">
           <div className="flex items-center gap-3">
-            <span className="font-garamond text-4xl font-semibold text-cinnabarlight">{event.year ?? t('common.unknownYear')}</span>
+            <span className="font-garamond text-2xl font-semibold text-cinnabarlight">{event.year ?? t('common.unknownYear')}</span>
             <span className="badge border-bronze/40 text-bronzelight">{eraLabel(event.era, t)}</span>
           </div>
-          <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
+          <h1 className="mt-3 font-song text-xl font-bold leading-snug tracking-wide text-paper sm:text-2xl md:text-3xl">
             {event.title}
           </h1>
           {event.alias && event.alias !== event.title && (
-            <p className="mt-3 text-sm tracking-widest text-paperdim/70">{t('eventDetail.alias')}{event.alias}</p>
+            <p className="mt-2 text-sm tracking-widest text-paperdim/70">{t('eventDetail.alias')}{event.alias}</p>
           )}
-          <p className="mt-6 max-w-3xl leading-loose text-paperdim">{event.desc}</p>
         </div>
       </section>
 

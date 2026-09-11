@@ -329,7 +329,8 @@
     "fieldPersonCount": "人数",
     "personCountValue": "{{count}} 人",
     "fieldAlias": "又称",
-    "fieldKeywords": "关键词"
+    "fieldKeywords": "关键词",
+    "fieldDesc": "事件描述"
   },
   "eventForm": {
     "createTitle": "新增历史事件",
