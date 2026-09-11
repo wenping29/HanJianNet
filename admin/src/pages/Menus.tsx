@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { ROLE_LABELS, ROLE_OPTIONS, canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -23,6 +24,7 @@ const EMPTY_FORM: MenuForm = {
 }
 
 export default function Menus() {
+  const { t } = useTranslation()
   const me = useAuth((s) => s.user)!
   const [items, setItems] = useState<AdminMenuItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -40,9 +42,9 @@ export default function Menus() {
       const data = await api.allMenus()
       setItems(data.items)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -106,15 +108,15 @@ export default function Menus() {
     try {
       if (editing) {
         await api.updateMenu(editing.id, form)
-        flash(`菜单「${form.label}」已更新`)
+        flash(t('menus.updateSuccess', { label: form.label }))
       } else {
         await api.createMenu(form)
-        flash(`菜单「${form.label}」已创建`)
+        flash(t('menus.createSuccess', { label: form.label }))
       }
       setShowForm(false)
       await reload()
     } catch (e) {
-      setError(e instanceof Error ? e.message : '保存失败')
+      setError(e instanceof Error ? e.message : t('menus.saveFailed'))
     } finally {
       setSaving(false)
     }
@@ -128,12 +130,12 @@ export default function Menus() {
     <div className="container-page py-10">
       <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">菜单管理</h1>
+          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('menus.title')}</h1>
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Menu Management</p>
         </div>
         {manageable && (
           <button type="button" className="btn-primary" onClick={openCreate}>
-            新增菜单
+            {t('menus.newMenu')}
           </button>
         )}
       </header>
@@ -146,23 +148,23 @@ export default function Menus() {
       )}
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无菜单</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('menus.noMenus')}</p>
         </div>
       ) : (
         <div className="card animate-fade-up mt-6 overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead>
               <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                <th className="px-5 py-3 font-medium">标识</th>
-                <th className="px-5 py-3 font-medium">名称</th>
-                <th className="px-5 py-3 font-medium">分组</th>
-                <th className="px-5 py-3 font-medium">路径</th>
-                <th className="px-5 py-3 font-medium">排序</th>
-                <th className="px-5 py-3 font-medium">可见角色</th>
-                <th className="px-5 py-3 text-right font-medium">操作</th>
+                <th className="px-5 py-3 font-medium">{t('menus.identifier')}</th>
+                <th className="px-5 py-3 font-medium">{t('menus.label')}</th>
+                <th className="px-5 py-3 font-medium">{t('menus.group')}</th>
+                <th className="px-5 py-3 font-medium">{t('menus.path')}</th>
+                <th className="px-5 py-3 font-medium">{t('menus.sort')}</th>
+                <th className="px-5 py-3 font-medium">{t('menus.visibleRoles')}</th>
+                <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
               </tr>
             </thead>
             <tbody>
@@ -189,7 +191,7 @@ export default function Menus() {
                     <div className="flex justify-end">
                       {manageable && (
                         <button type="button" className="btn-ghost !px-3 !py-1.5 text-xs" onClick={() => openEdit(m)}>
-                          编辑
+                          {t('common.edit')}
                         </button>
                       )}
                     </div>
@@ -207,16 +209,16 @@ export default function Menus() {
             className="card animate-fade-up w-full max-w-lg p-6"
             role="dialog"
             aria-modal="true"
-            aria-label={editing ? '修改菜单' : '新增菜单'}
+            aria-label={editing ? t('menus.editMenu') : t('menus.createMenu')}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">
-                {editing ? '修改菜单' : '新增菜单'}
+                {editing ? t('menus.editMenu') : t('menus.createMenu')}
               </h2>
               <button
                 type="button"
-                aria-label="关闭"
+                aria-label={t('common.close')}
                 className="flex h-8 w-8 items-center justify-center rounded-sm border border-paperedge/40 text-paperdim transition hover:border-cinnabar hover:text-cinnabarlight"
                 onClick={closeForm}
               >
@@ -225,25 +227,25 @@ export default function Menus() {
             </div>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                标识
+                {t('menus.identifier')}
                 <input
                   className="input"
                   value={form.key}
                   onChange={(e) => setForm({ ...form, key: e.target.value })}
-                  placeholder="如 reviews"
+                  placeholder={t('menus.identifierPlaceholder')}
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                名称
+                {t('menus.label')}
                 <input
                   className="input"
                   value={form.label}
                   onChange={(e) => setForm({ ...form, label: e.target.value })}
-                  placeholder="如 待审队列"
+                  placeholder={t('menus.labelPlaceholder')}
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim sm:col-span-2">
-                路径
+                {t('menus.path')}
                 <input
                   className="input"
                   value={form.path}
@@ -252,7 +254,7 @@ export default function Menus() {
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                排序
+                {t('menus.sort')}
                 <input
                   className="input"
                   type="number"
@@ -262,22 +264,22 @@ export default function Menus() {
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                所属分组
+                {t('menus.parentMenu')}
                 <select
                   className="input"
                   value={form.parent ?? ''}
                   onChange={(e) => setForm({ ...form, parent: e.target.value || null })}
                 >
-                  <option value="">顶级菜单</option>
-                  {groupCandidates.map((t) => (
-                    <option key={t.id} value={t.key}>
-                      {t.label}
+                  <option value="">{t('menus.topLevel')}</option>
+                  {groupCandidates.map((c) => (
+                    <option key={c.id} value={c.key}>
+                      {c.label}
                     </option>
                   ))}
                 </select>
               </label>
               <div className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                可见角色
+                {t('menus.visibleRoles')}
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
                   {ROLE_OPTIONS.map((r) => (
                     <label key={r} className="flex cursor-pointer items-center gap-1.5 normal-case tracking-normal">
@@ -300,10 +302,10 @@ export default function Menus() {
             )}
             <div className="mt-6 flex justify-end gap-3">
               <button type="button" className="btn-ghost" disabled={saving} onClick={closeForm}>
-                取消
+                {t('common.cancel')}
               </button>
               <button type="button" className="btn-primary" disabled={saving} onClick={handleSave}>
-                {saving ? '保存中…' : '保存'}
+                {saving ? t('common.saveInProgress') : t('common.save')}
               </button>
             </div>
           </div>

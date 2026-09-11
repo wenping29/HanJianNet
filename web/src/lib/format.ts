@@ -2,6 +2,19 @@ import type { YearType, Period, EraDef } from '../types'
 
 export const PERIODS = ['宋末', '明末', '清末', '民国', '抗日战争时期', '其他'] as const
 
+const PERIOD_I18N: Record<Period, string> = {
+  宋末: 'period.lateSong',
+  明末: 'period.lateMing',
+  清末: 'period.lateQing',
+  民国: 'period.republic',
+  抗日战争时期: 'period.warOfResistance',
+  其他: 'period.other',
+}
+
+export function periodLabel(period: Period, t: (key: string) => string): string {
+  return t(PERIOD_I18N[period])
+}
+
 // 时光轴时期定义（按年份区间前端过滤）
 export const ERAS: EraDef[] = [
   { label: '全部', range: '不限', desc: '依年序铺陈所有已收录的重大变节事件。' },
@@ -11,7 +24,22 @@ export const ERAS: EraDef[] = [
   { label: '民国', range: '1912 — 1945', desc: '民国时期，投靠日本侵略者、充任伪职者。', from: 1912, to: 1945 },
   { label: '抗日战争时期', range: '1931 — 1945', desc: '抗日战争时期，投靠日本侵略者、充任伪职者。', from: 1931, to: 1945 },
   { label: '其他', range: '其他', desc: '其他时期，未被分类的事件。' }
-] 
+]
+
+const ERA_I18N: Record<string, string> = {
+  '全部': 'era.all',
+  '宋末': 'era.lateSong',
+  '明末': 'era.lateMing',
+  '清末': 'era.lateQing',
+  '民国': 'era.republic',
+  '抗日战争时期': 'era.warOfResistance',
+  '其他': 'era.other',
+}
+
+export function eraLabel(era: string, t: (key: string) => string): string {
+  const i18nKey = ERA_I18N[era]
+  return i18nKey ? t(i18nKey) : era
+}
 
 export const PERIOD_META: Record<Period, { range: string; desc: string }> = {
   宋末: { range: '1276 — 1279', desc: '宋元鼎革之际，出仕蒙元或献城降敌者。' },
@@ -30,10 +58,11 @@ export const YEAR_TYPE_LABEL: Record<YearType, string> = {
   unknown: '不详',
 }
 
-export function formatYear(year: number | null, type: YearType): string {
-  if (type === 'unknown' || year === null || Number.isNaN(year)) return '不详'
-  const prefix = type === 'approx' ? '约' : ''
-  const suffix = type === 'before' ? '前' : type === 'after' ? '后' : ''
+export function formatYear(year: number | null, type: YearType, t?: (key: string) => string): string {
+  const fmt = t ?? ((k: string) => k)
+  if (type === 'unknown' || year === null || Number.isNaN(year)) return fmt('format.unknown')
+  const prefix = type === 'approx' ? fmt('format.circa') : ''
+  const suffix = type === 'before' ? fmt('format.before') : type === 'after' ? fmt('format.after') : ''
   return `${prefix}${year}${suffix}`
 }
 

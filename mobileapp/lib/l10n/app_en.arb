@@ -1,0 +1,225 @@
+{
+  "@@locale": "en",
+  "appTitle": "Traitor Files · HanJianNet",
+  "appLogoText": "Traitor\nFiles",
+  "navHome": "Home",
+  "navSearch": "Search",
+  "navMine": "Mine",
+  "networkError": "Network request failed. Please check the API URL and internet connection.",
+  "requestFailed": "Request failed ({statusCode})",
+  "@requestFailed": {
+    "description": "Error message with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "Upload failed ({statusCode})",
+  "@uploadFailed": {
+    "description": "File upload failed with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "Unknown",
+  "circa": "c.",
+  "before": " BC",
+  "after": " AD",
+  "approved": "Approved",
+  "rejected": "Rejected",
+  "pending": "Pending",
+  "retry": "Retry",
+  "noRecords": "No records",
+  "archives": "Traitor Files",
+  "figures": "Figures",
+  "totalArchives": "Total Files",
+  "apiSettings": "API Settings",
+  "apiBaseUrlHint": "Web API base URL (use 10.0.2.2 on Android emulator to reach the host)",
+  "cancel": "Cancel",
+  "save": "Save",
+  "saved": "Saved: {url}",
+  "@saved": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "Login",
+  "emailOrUsername": "Email / Username",
+  "password": "Password",
+  "loggingIn": "Logging in…",
+  "loginButton": "LOG IN",
+  "noAccount": "No account? Register",
+  "fillAllFields": "Please fill in all fields",
+  "invalidEmail": "Invalid email format",
+  "passwordTooShort": "Password must be at least 8 characters",
+  "passwordMismatch": "The two passwords do not match",
+  "register": "Register",
+  "username": "Username",
+  "email": "Email",
+  "passwordHint": "Password (at least 8 characters)",
+  "confirmPassword": "Confirm password",
+  "registering": "Registering…",
+  "registerButton": "REGISTER",
+  "hasAccount": "Already have an account? Log in",
+  "allPeriods": "All",
+  "lateSong": "Late Song",
+  "lateMing": "Late Ming",
+  "lateQing": "Late Qing",
+  "republic": "Republic",
+  "other": "Other",
+  "searchButton": "SEARCH",
+  "nameLabel": "Name",
+  "nameHint": "Fuzzy match by person's name",
+  "yearFrom": "Year from",
+  "yearFromHint": "e.g. 1937",
+  "yearTo": "Year to",
+  "yearToHint": "e.g. 1945",
+  "eventKeyword": "Event keyword",
+  "nativePlace": "Native place",
+  "searching": "Searching…",
+  "noResults": "No matching files found",
+  "noPublishedArchives": "No published files yet",
+  "personalCenter": "Profile",
+  "exitButton": "Logout",
+  "mySubmissions": "MY SUBMISSIONS",
+  "mySubmissionsTitle": "MY SUBMISSIONS",
+  "loginForSubmissions": "Log in to view your submissions and review status",
+  "loginForMySubmissions": "Log in to view your personal submissions and review status",
+  "goToLogin": "Go to login",
+  "noSubmissions": "No archives or revisions submitted yet",
+  "submitNewArchive": "Submit New Archive",
+  "modifyArchive": "Modify Archive",
+  "changeContent": "Change details: {summary}",
+  "@changeContent": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedAt": "Submitted at {time}",
+  "@submittedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewedAt": "Reviewed at {time}",
+  "@reviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewer": " · Reviewer: {name}",
+  "@reviewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewComment": " · Comment: {comment}",
+  "@reviewComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Log out",
+  "editArchive": "Edit Archive",
+  "pleaseLoginFirst": "Please log in first",
+  "nameRequired": "Name *",
+  "nameInput": "Please enter the name",
+  "changeDescription": "Change description *",
+  "changeDescriptionInput": "Please enter a change description",
+  "submitButton": "SUBMIT",
+  "archiveDetail": "Archive Details",
+  "courtesyName": "Courtesy name: {name}",
+  "@courtesyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pseudonym": "Pseudonym: {name}",
+  "@pseudonym": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lifeSpan": "Life span",
+  "nativePlaceDetail": "Native place",
+  "faction": "Faction",
+  "aliases": "Aliases",
+  "summaryTitle": "Summary",
+  "noSummary": "No summary",
+  "timeline": "Chronology",
+  "sourceRef": "Source: {source}",
+  "@sourceRef": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "criminalRecords": "Criminal Records",
+  "process": "Process: {detail}",
+  "@process": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "harm": "Harm: {detail}",
+  "@harm": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceMaterial": "Historical source: {reference}",
+  "@sourceMaterial": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "familyAndResidence": "Family & Residence",
+  "spouse": "Spouses",
+  "children": "Children",
+  "genderLabel": "Gender",
+  "whereabouts": "Whereabouts",
+  "residenceChanges": "Residence changes",
+  "photos": "Photographs",
+  "evidence": "Evidence",
+  "document": "Doc",
+  "revisionHistory": "Revisions",
+  "reviewedBy": " · Reviewed by: {name}",
+  "@reviewedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRevisions": "No revisions yet",
+  "editThisArchive": "Edit this archive",
+  "sources": "References",
+  "language": "Language",
+  "chooseLanguage": "Choose language"
+}

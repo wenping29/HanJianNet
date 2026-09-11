@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 
 export interface ModalProps {
   open: boolean
@@ -20,12 +21,13 @@ export interface ModalProps {
 }
 
 export default function Modal(props: ModalProps) {
+  const { t } = useTranslation()
   const {
     open,
     title,
     children,
-    confirmText = '确定',
-    cancelText = '取消',
+    confirmText = t('common.confirm'),
+    cancelText = t('common.cancel'),
     confirmDisabled,
     confirmBusy,
     widthClassName = 'max-w-2xl',
@@ -74,7 +76,7 @@ export default function Modal(props: ModalProps) {
               type="button"
               className="rounded-sm px-2 py-1 text-paperdim/70 transition hover:bg-paperedge/10 hover:text-paper"
               onClick={() => (onCancel ?? onClose)?.()}
-              aria-label="关闭"
+              aria-label={t('common.close')}
             >
               ✕
             </button>
@@ -99,7 +101,7 @@ export default function Modal(props: ModalProps) {
                   onClick={onConfirm}
                   disabled={confirmDisabled || confirmBusy}
                 >
-                  {confirmBusy ? '保存中…' : confirmText}
+                  {confirmBusy ? t('common.saveInProgress') : confirmText}
                 </button>
               )}
             </div>

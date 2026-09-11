@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
 import type { Revision, WebMenu } from '../types'
 import { headerMenuItemStyle,footerContainerPageStyle } from '../style'
+import LanguageSwitcher from './LanguageSwitcher'
 /** 后端不可用时的兜底菜单 */
 const FALLBACK_MENUS: WebMenu[] = [
   { id: 'fb1', key: 'home', path: '/', label: '首页', sort: 1, isEnabled: true },
@@ -16,14 +18,15 @@ const FALLBACK_MENUS: WebMenu[] = [
 ]
 
 function SealLogo() {
+  const { t } = useTranslation()
   return (
     <Link to="/" className="flex items-center gap-3">
       <span className="flex h-10 w-10 flex-col items-center justify-center rounded-sm border-2 border-cinnabar bg-cinnabar/15 font-song text-[11px] font-bold leading-[1.1] tracking-widest text-cinnabarlight shadow-seal">
-        <span>汉奸</span>
-        <span>档案</span>
+        <span>{t('nav.logoSeal1')}</span>
+        <span>{t('nav.logoSeal2')}</span>
       </span>
       <span className="hidden flex-col leading-tight sm:flex">
-        <span className="text-lg font-semibold tracking-[0.3em] text-paper">汉奸档案</span>
+        <span className="text-lg font-semibold tracking-[0.3em] text-paper">{t('nav.brand')}</span>
         <span className="font-garamond text-xs italic tracking-wider text-bronzelight">HanJianNet Archives</span>
       </span>
     </Link>
@@ -31,6 +34,7 @@ function SealLogo() {
 }
 
 export default function Layout() {
+  const { t } = useTranslation()
   const { user, clear } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -161,22 +165,10 @@ export default function Layout() {
               </div>
             ))}
           </div> 
-          {/* <nav className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8">
-            {menus.map((m) => (
-              <NavLink
-                key={m.id}
-                style={headerMenuItemStyle}
-                to={m.path}
-                end={m.path === '/'}
-                className={navCls}
-              >
-                {m.label}
-              </NavLink>
-            ))}
-          </nav> */}
 
           {/* 右：桌面用户区（≥1024px 显示） */}
           <div className="hidden shrink-0 items-center justify-end gap-3 lg:flex">
+            <LanguageSwitcher />
             {user ? (
               <div
                 className="relative"
@@ -204,9 +196,9 @@ export default function Layout() {
                   <div className="absolute right-0 top-full w-48 overflow-hidden rounded-sm border border-paperedge/20 bg-inkcard pt-1 shadow-card">
                     {/* 通知条 */}
                     <div className="flex items-center justify-between border-b border-paperedge/10 px-4 py-2.5">
-                      <span className="text-xs tracking-widest text-paperdim">审核通知</span>
+                      <span className="text-xs tracking-widest text-paperdim">{t('nav.notifications')}</span>
                       <span className="font-garamond text-xs font-bold text-cinnabarlight">
-                        {notifCount > 0 ? `${notifCount} 条未读` : '无新通知'}
+                        {notifCount > 0 ? t('nav.unreadCount', { count: notifCount }) : t('nav.noNotifications')}
                       </span>
                     </div>
                     <Link
@@ -214,14 +206,14 @@ export default function Layout() {
                       onClick={() => setHoverOpen(false)}
                       className="block px-4 py-2.5 text-sm text-paperdim transition hover:bg-cinnabar/15 hover:text-paper"
                     >
-                      个人中心
+                      {t('nav.profile')}
                     </Link>
                     <Link
                       to="/profile"
                       onClick={() => setHoverOpen(false)}
                       className="block px-4 py-2.5 text-sm text-paperdim transition hover:bg-cinnabar/15 hover:text-paper"
                     >
-                      我的提交
+                      {t('nav.mySubmissions')}
                     </Link>
                     <button
                       type="button"
@@ -232,7 +224,7 @@ export default function Layout() {
                       }}
                       className="block w-full border-t border-paperedge/10 px-4 py-2.5 text-left text-sm text-paperdim transition hover:bg-cinnabar/15 hover:text-paper"
                     >
-                      退出登录
+                      {t('nav.logout')}
                     </button>
                   </div>
                 )}
@@ -240,10 +232,10 @@ export default function Layout() {
             ) : (
               <>
                 <Link to="/login" className="btn-ghost !px-4 !py-2">
-                  登录
+                  {t('nav.login')}
                 </Link>
                 <Link to="/register" className="btn-primary !px-4 !py-2">
-                  注册
+                  {t('nav.register')}
                 </Link>
               </>
             )}
@@ -252,7 +244,7 @@ export default function Layout() {
           {/* 移动端汉堡按钮（<1024px 显示） */}
           <button
             type="button"
-            aria-label="菜单"
+            aria-label={t('nav.menu')}
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen((o) => !o)}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-paperedge/25 text-paperdim transition hover:border-bronzelight hover:text-paper lg:hidden"
@@ -284,6 +276,9 @@ export default function Layout() {
           />
           <div className="fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-paperedge/15 bg-inkcard shadow-card animate-fade-up">
             <nav className="container-page flex flex-col py-2">
+              <div className="flex justify-end px-2 py-1.5">
+                <LanguageSwitcher />
+              </div>
               {menus.map((m) => (
                 <NavLink
                   key={m.id}
@@ -312,12 +307,12 @@ export default function Layout() {
                       </span>
                       {notifCount > 0 && (
                         <span className="font-garamond text-xs text-cinnabarlight">
-                          {notifCount > 99 ? '99+' : notifCount} 条审核通知
+                          {notifCount > 99 ? '99+' : notifCount} {t('nav.notifications')}
                         </span>
                       )}
                     </div>
                     <Link to="/profile" className="btn-ghost w-full !py-2 text-left text-sm">
-                      个人中心
+                      {t('nav.profile')}
                     </Link>
                     <button
                       type="button"
@@ -327,16 +322,16 @@ export default function Layout() {
                       }}
                       className="btn-bronze w-full !py-2 text-sm"
                     >
-                      退出登录
+                      {t('nav.logout')}
                     </button>
                   </>
                 ) : (
                   <div className="flex gap-3">
                     <Link to="/login" className="btn-ghost flex-1 !py-2.5">
-                      登录
+                      {t('nav.login')}
                     </Link>
                     <Link to="/register" className="btn-primary flex-1 !py-2.5">
-                      注册
+                      {t('nav.register')}
                     </Link>
                   </div>
                 )}
@@ -352,12 +347,12 @@ export default function Layout() {
 
       <footer className="border-t border-paperedge/15 bg-inksoft/60">
         <div style={footerContainerPageStyle} className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs tracking-wider text-paperdim/70 sm:flex-row">
-          <span>汉奸档案 · HanJianNet — 以史为鉴，勿忘国耻</span>
+          <span>{t('nav.brand')} · HanJianNet — {t('home.heroTitle')}</span>
           <span className="font-garamond italic">Editorial Archive · Est. 2026</span>
           {visitStats && (
-            <span>总访问量 <span className="font-garamond text-bronzelight">{visitStats.totalVisits.toLocaleString()}</span></span> )}
+            <span>{t('layout.totalVisits')} <span className="font-garamond text-bronzelight">{visitStats.totalVisits.toLocaleString()}</span></span> )}
           {visitStats && (
-            <span>访客数 <span className="font-garamond text-bronzelight">{visitStats.totalVisitors.toLocaleString()}</span></span>)}
+            <span>{t('layout.visitorCount')} <span className="font-garamond text-bronzelight">{visitStats.totalVisitors.toLocaleString()}</span></span>)}
           
         </div>
         

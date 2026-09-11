@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
+
 import '../models/models.dart';
 import '../widgets/theme.dart';
 
-String formatYear(int? year, String type) {
-  if (type == 'unknown' || year == null) return '不详';
-  final prefix = type == 'circa' ? '约' : '';
-  final suffix = type == 'before' ? '前' : type == 'after' ? '后' : '';
+String formatYear(BuildContext context, int? year, String type) {
+  final l10n = AppLocalizations.of(context)!;
+  if (type == 'unknown' || year == null) return l10n.unknown;
+  final prefix = type == 'circa' ? l10n.circa : '';
+  final suffix = type == 'before' ? l10n.before : type == 'after' ? l10n.after : '';
   return '$prefix$year$suffix';
 }
 
-String formatLifeSpan(Traitor t) =>
-    '${formatYear(t.birthYear, t.birthYearType)} — ${formatYear(t.deathYear, t.deathYearType)}';
+String formatLifeSpan(BuildContext context, Traitor t) =>
+    '${formatYear(context, t.birthYear, t.birthYearType)} — ${formatYear(context, t.deathYear, t.deathYearType)}';
 
 String formatDateTime(String? iso) {
   if (iso == null || iso.isEmpty) return '—';
@@ -29,10 +32,11 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final (label, color) = switch (status) {
-      'approved' => ('已通过', AppTheme.bambooLight),
-      'rejected' => ('已驳回', AppTheme.cinnabarLight),
-      _ => ('待审核', AppTheme.bronzeLight),
+      'approved' => (l10n.approved, AppTheme.bambooLight),
+      'rejected' => (l10n.rejected, AppTheme.cinnabarLight),
+      _ => (l10n.pending, AppTheme.bronzeLight),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -87,13 +91,14 @@ class ErrorRetry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(message, style: const TextStyle(color: AppTheme.cinnabarLight)),
           const SizedBox(height: 16),
-          OutlinedButton(onPressed: onRetry, child: const Text('重试')),
+          OutlinedButton(onPressed: onRetry, child: Text(l10n.retry)),
         ],
       ),
     );
@@ -104,14 +109,16 @@ class ErrorRetry extends StatelessWidget {
 class EmptyView extends StatelessWidget {
   final String text;
 
-  const EmptyView({super.key, this.text = '暂无记录'});
+  const EmptyView({super.key, this.text = ''});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
-        child: Text(text, style: TextStyle(color: AppTheme.paperDim.withValues(alpha: 0.6))),
+        child: Text(text.isEmpty ? l10n.noRecords : text,
+            style: TextStyle(color: AppTheme.paperDim.withValues(alpha: 0.6))),
       ),
     );
   }

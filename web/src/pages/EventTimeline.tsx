@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import type { TimelineNode } from '../types'
 import { containerPageStyle } from '../style'
@@ -7,11 +8,11 @@ import { ERAS } from '../lib/format'
 export { ERAS } from '../lib/format'
 
 export default function EventTimeline() {
+  const { t } = useTranslation()
   const [allItems, setAllItems] = useState<TimelineNode[]>([])
   const [activeEra, setActiveEra] = useState<string>('全部')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  
 
   useEffect(() => {
     let cancelled = false
@@ -25,7 +26,7 @@ export default function EventTimeline() {
       })
       .catch((e) => {
         if (cancelled) return
-        setError(e instanceof Error ? e.message : '加载失败')
+        setError(e instanceof Error ? e.message : t('common.loadFailed'))
         setAllItems([])
       })
       .finally(() => {
@@ -34,7 +35,7 @@ export default function EventTimeline() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [t])
 
   const activeDef = ERAS.find((e) => e.label === activeEra) ?? ERAS[0]
 
@@ -43,6 +44,21 @@ export default function EventTimeline() {
     return allItems.filter((n) => n.year !== null && n.year >= activeDef.from! && n.year <= activeDef.to!)
   }, [allItems, activeDef])
 
+  const eraLabelMap: Record<string, string> = {
+    '全部': 'era.all',
+    '宋末': 'era.lateSong',
+    '明末': 'era.lateMing',
+    '清末': 'era.lateQing',
+    '民国': 'era.republic',
+    '抗日战争时期': 'era.warOfResistance',
+    '其他': 'era.other',
+  }
+
+  function translateEra(label: string): string {
+    const key = eraLabelMap[label]
+    return key ? t(key) : label
+  }
+
   return (
     <div>
       {/* 页面标题区 */}
@@ -50,10 +66,10 @@ export default function EventTimeline() {
         <div style={containerPageStyle} className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TIMELINE OF EVENTS</p>
           <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
-            事件时光轴
+            {t('timeline.title')}
           </h1>
           <p className="mt-6 max-w-2xl leading-loose text-paperdim">
-            依年序铺陈近代重大变节事件，循时间脉络逐一对照人物与行迹。
+            {t('timeline.heroText')}
           </p>
         </div>
       </section>
@@ -73,12 +89,12 @@ export default function EventTimeline() {
                     : 'border-paperedge/25 text-paperdim hover:border-bronzelight'
                 }`}
               >
-                {era.label}
+                {translateEra(era.label)}
               </button>
             ))}
           </div>
           <span className="text-xs tracking-wider text-paperdim/70">
-            {loading ? '检索中…' : `共 ${items.length} 条事件`}
+            {loading ? t('timeline.searching') : t('common.totalEvents', { count: items.length })}
           </span>
         </div>
 
@@ -91,14 +107,14 @@ export default function EventTimeline() {
         )}
 
         {/* 状态提示 */}
-        {loading && <p className="py-16 text-center text-paperdim">加载中…</p>}
+        {loading && <p className="py-16 text-center text-paperdim">{t('common.loading')}</p>}
         {error && (
           <p className="rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-4 py-3 text-sm text-cinnabarlight">
             {error}
           </p>
         )}
         {!loading && !error && items.length === 0 && (
-          <p className="py-16 text-center text-paperdim">该时期暂无事件记录</p>
+          <p className="py-16 text-center text-paperdim">{t('timeline.noEvents')}</p>
         )}
 
         {/* 时间线主体 */}
@@ -118,7 +134,7 @@ export default function EventTimeline() {
                   />
                   <div className="card animate-fade-up p-5">
                     <p className="font-garamond text-lg font-semibold text-cinnabarlight">
-                      {node.year ?? '不详'}
+                      {node.year ?? t('format.unknown')}
                     </p>
                     <p className="mt-1.5 text-sm leading-relaxed text-paper/90">{node.event}</p>
                     {node.traitorId && (
@@ -126,7 +142,7 @@ export default function EventTimeline() {
                         to={`/traitor/${node.traitorId}`}
                         className="mt-2 inline-block text-xs tracking-widest text-bronzelight underline underline-offset-4 hover:text-paper"
                       >
-                        {node.traitorName ?? '查看档案'} →
+                        {node.traitorName ?? t('timeline.viewArchive')} →
                       </Link>
                     )}
                   </div>

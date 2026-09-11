@@ -1,0 +1,225 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Archives des traîtres · HanJianNet",
+  "appLogoText": "Archives\ndes traîtres",
+  "navHome": "Accueil",
+  "navSearch": "Recherche",
+  "navMine": "Moi",
+  "networkError": "Échec de la requête réseau. Vérifiez l'adresse de l'API et la connexion Internet.",
+  "requestFailed": "Échec de la requête ({statusCode})",
+  "@requestFailed": {
+    "description": "Error message with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "Échec du téléversement ({statusCode})",
+  "@uploadFailed": {
+    "description": "File upload failed with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "Inconnu",
+  "circa": "vers ",
+  "before": " av. J.-C.",
+  "after": " ap. J.-C.",
+  "approved": "Approuvé",
+  "rejected": "Rejeté",
+  "pending": "En attente",
+  "retry": "Réessayer",
+  "noRecords": "Aucun enregistrement",
+  "archives": "Archives des traîtres",
+  "figures": "Personnes",
+  "totalArchives": "Total des archives",
+  "apiSettings": "Paramètres de l'API",
+  "apiBaseUrlHint": "Adresse de base de l'API Web (utilisez 10.0.2.2 sur l'émulateur Android pour accéder à l'hôte)",
+  "cancel": "Annuler",
+  "save": "Enregistrer",
+  "saved": "Enregistré : {url}",
+  "@saved": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "Connexion",
+  "emailOrUsername": "E-mail / Nom d'utilisateur",
+  "password": "Mot de passe",
+  "loggingIn": "Connexion…",
+  "loginButton": "CONNEXION",
+  "noAccount": "Pas de compte ? S'inscrire",
+  "fillAllFields": "Veuillez remplir tous les champs",
+  "invalidEmail": "Format d'e-mail invalide",
+  "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+  "passwordMismatch": "Les deux mots de passe ne correspondent pas",
+  "register": "S'inscrire",
+  "username": "Nom d'utilisateur",
+  "email": "E-mail",
+  "passwordHint": "Mot de passe (au moins 8 caractères)",
+  "confirmPassword": "Confirmer le mot de passe",
+  "registering": "Inscription…",
+  "registerButton": "S'INSCRIRE",
+  "hasAccount": "Déjà un compte ? Se connecter",
+  "allPeriods": "Tous",
+  "lateSong": "Fin des Song",
+  "lateMing": "Fin des Ming",
+  "lateQing": "Fin des Qing",
+  "republic": "République",
+  "other": "Autre",
+  "searchButton": "RECHERCHER",
+  "nameLabel": "Nom",
+  "nameHint": "Correspondance floue par nom",
+  "yearFrom": "Année de",
+  "yearFromHint": "ex. 1937",
+  "yearTo": "Année à",
+  "yearToHint": "ex. 1945",
+  "eventKeyword": "Mot-clé d'événement",
+  "nativePlace": "Lieu d'origine",
+  "searching": "Recherche…",
+  "noResults": "Aucune archive correspondante",
+  "noPublishedArchives": "Aucune archive publiée",
+  "personalCenter": "Profil",
+  "exitButton": "Déconnexion",
+  "mySubmissions": "MES SOUMISSIONS",
+  "mySubmissionsTitle": "MES SOUMISSIONS",
+  "loginForSubmissions": "Connectez-vous pour voir vos soumissions et leur statut",
+  "loginForMySubmissions": "Connectez-vous pour voir vos soumissions personnelles et leur statut",
+  "goToLogin": "Aller à la connexion",
+  "noSubmissions": "Aucune archive ou modification soumise",
+  "submitNewArchive": "Soumettre une nouvelle archive",
+  "modifyArchive": "Modifier l'archive",
+  "changeContent": "Modifications : {summary}",
+  "@changeContent": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedAt": "Soumise le {time}",
+  "@submittedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewedAt": "Examinée le {time}",
+  "@reviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewer": " · Examinateur : {name}",
+  "@reviewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewComment": " · Avis : {comment}",
+  "@reviewComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Se déconnecter",
+  "editArchive": "Modifier l'archive",
+  "pleaseLoginFirst": "Connectez-vous d'abord",
+  "nameRequired": "Nom *",
+  "nameInput": "Veuillez saisir le nom",
+  "changeDescription": "Description des modifications *",
+  "changeDescriptionInput": "Veuillez saisir une description des modifications",
+  "submitButton": "SOUMETTRE",
+  "archiveDetail": "Détails de l'archive",
+  "courtesyName": "Nom de courtoisie : {name}",
+  "@courtesyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pseudonym": "Pseudonyme : {name}",
+  "@pseudonym": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lifeSpan": "Vie",
+  "nativePlaceDetail": "Lieu d'origine",
+  "faction": "Faction",
+  "aliases": "Alias",
+  "summaryTitle": "Résumé",
+  "noSummary": "Aucun résumé",
+  "timeline": "Chronologie",
+  "sourceRef": "Source : {source}",
+  "@sourceRef": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "criminalRecords": "Antécédents criminels",
+  "process": "Processus : {detail}",
+  "@process": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "harm": "Préjudice : {detail}",
+  "@harm": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceMaterial": "Source historique : {reference}",
+  "@sourceMaterial": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "familyAndResidence": "Famille & résidence",
+  "spouse": "Époux(se)",
+  "children": "Enfants",
+  "genderLabel": "Sexe",
+  "whereabouts": "Devenir",
+  "residenceChanges": "Changements de résidence",
+  "photos": "Photographies",
+  "evidence": "Preuves",
+  "document": "Doc",
+  "revisionHistory": "Révisions",
+  "reviewedBy": " · Examiné par : {name}",
+  "@reviewedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRevisions": "Aucune révision",
+  "editThisArchive": "Modifier cette archive",
+  "sources": "Références",
+  "language": "Langue",
+  "chooseLanguage": "Choisir la langue"
+}

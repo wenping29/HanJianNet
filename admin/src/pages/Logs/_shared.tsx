@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const PAGE_SIZE = 20
 
@@ -36,22 +37,21 @@ export interface PaginationProps {
 }
 
 export function Pagination({ total, page, totalPages, loading, label, onGo }: PaginationProps) {
+  const { t } = useTranslation()
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
   return (
     <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
       <div className="text-xs tracking-widest text-paperdim/80">
-        共 <span className="font-garamond text-paper">{total}</span> 条{label} · 第
-        <span className="mx-1 font-garamond text-paper">{totalPages === 0 ? 0 : page}</span>
-        / <span className="font-garamond text-paper">{totalPages}</span> 页
+        {t('common.recordsPageInfo', { count: total, label, page: totalPages === 0 ? 0 : page, totalPages })}
       </div>
-      <nav className="flex flex-wrap items-center gap-1.5" aria-label="分页">
+      <nav className="flex flex-wrap items-center gap-1.5" aria-label={t('common.pagination')}>
         <button
           type="button"
           className="btn-ghost !px-3 !py-1.5 text-xs"
           onClick={() => onGo(page - 1)}
           disabled={page <= 1 || loading}
         >
-          上一页
+          {t('common.prevPage')}
         </button>
         {pages.map((n, i) =>
           n === '…' ? (
@@ -84,7 +84,7 @@ export function Pagination({ total, page, totalPages, loading, label, onGo }: Pa
           onClick={() => onGo(page + 1)}
           disabled={page >= totalPages || loading}
         >
-          下一页
+          {t('common.nextPage')}
         </button>
       </nav>
     </div>
@@ -92,6 +92,7 @@ export function Pagination({ total, page, totalPages, loading, label, onGo }: Pa
 }
 
 export function StatusBadge({ status }: { status?: string | null }) {
+  const { t } = useTranslation()
   const s = status ?? ''
   const ok = /success|approved/i.test(s)
   const fail = /fail|rejected|error/i.test(s)
@@ -100,30 +101,36 @@ export function StatusBadge({ status }: { status?: string | null }) {
     : fail
       ? 'border-cinnabar/60 bg-cinnabar/15 text-cinnabarlight'
       : 'border-paperedge/30 bg-paperedge/10 text-paperdim/80'
-  const text = s ? (ok ? '成功' : fail ? '失败' : s) : '—'
+  const text = s ? (ok ? t('logs.success') : fail ? t('logs.failed') : s) : '—'
   return <span className={`badge ${cls}`}>{text}</span>
 }
 
 export function LevelBadge({ level }: { level?: string | null }) {
+  const { t } = useTranslation()
   const l = (level ?? '').toLowerCase()
   let cls = 'border-paperedge/30 bg-paperedge/10 text-paperdim'
   let text = l || '—'
   if (l === 'warning') {
     cls = 'border-amber-500/50 bg-amber-500/10 text-amber-300'
-    text = '警告'
+    text = t('logs.warning')
   } else if (l === 'error') {
     cls = 'border-cinnabar/60 bg-cinnabar/15 text-cinnabarlight'
-    text = '错误'
+    text = t('logs.error')
   } else if (l === 'critical') {
     cls = 'border-rose-600/70 bg-rose-700/20 text-rose-200'
-    text = '严重'
+    text = t('logs.critical')
   }
   return <span className={`badge ${cls}`}>{text}</span>
 }
 
 export function ClientSourceTag({ s }: { s?: string | null }) {
+  const { t } = useTranslation()
   const v = (s ?? '').toLowerCase()
-  const map: Record<string, string> = { web: '前台 Web', admin: '审校台', api: '开放 API' }
+  const map: Record<string, string> = {
+    web: t('logs.webFrontend'),
+    admin: t('logs.adminPanel'),
+    api: t('logs.openApi'),
+  }
   const label = map[v] || (v || '—')
   return <span className="badge border-bronze/50 bg-bronze/10 text-bronzelight">{label}</span>
 }

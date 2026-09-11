@@ -1,0 +1,225 @@
+{
+  "@@locale": "es",
+  "appTitle": "Archivo de traidores · HanJianNet",
+  "appLogoText": "Archivo\nde traidores",
+  "navHome": "Inicio",
+  "navSearch": "Búsqueda",
+  "navMine": "Mi",
+  "networkError": "Error en la solicitud de red. Comprueba la dirección de la API y la conexión a Internet.",
+  "requestFailed": "La solicitud falló ({statusCode})",
+  "@requestFailed": {
+    "description": "Error message with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "La carga falló ({statusCode})",
+  "@uploadFailed": {
+    "description": "File upload failed with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "Desconocido",
+  "circa": "c.",
+  "before": " a. C.",
+  "after": " d. C.",
+  "approved": "Aprobado",
+  "rejected": "Rechazado",
+  "pending": "Pendiente",
+  "retry": "Reintentar",
+  "noRecords": "Sin registros",
+  "archives": "Archivo de traidores",
+  "figures": "Personas",
+  "totalArchives": "Total de archivos",
+  "apiSettings": "Configuración de la API",
+  "apiBaseUrlHint": "Dirección base de la API web (usa 10.0.2.2 en el emulador de Android para acceder al host)",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "saved": "Guardado: {url}",
+  "@saved": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "Iniciar sesión",
+  "emailOrUsername": "Correo / Usuario",
+  "password": "Contraseña",
+  "loggingIn": "Iniciando sesión…",
+  "loginButton": "ENTRAR",
+  "noAccount": "¿Sin cuenta? Regístrate",
+  "fillAllFields": "Completa todos los campos",
+  "invalidEmail": "Formato de correo no válido",
+  "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+  "passwordMismatch": "Las contraseñas no coinciden",
+  "register": "Registro",
+  "username": "Usuario",
+  "email": "Correo",
+  "passwordHint": "Contraseña (al menos 8 caracteres)",
+  "confirmPassword": "Confirmar contraseña",
+  "registering": "Registrando…",
+  "registerButton": "REGISTRARSE",
+  "hasAccount": "¿Ya tienes cuenta? Inicia sesión",
+  "allPeriods": "Todos",
+  "lateSong": "Final Song",
+  "lateMing": "Final Ming",
+  "lateQing": "Final Qing",
+  "republic": "República",
+  "other": "Otro",
+  "searchButton": "BUSCAR",
+  "nameLabel": "Nombre",
+  "nameHint": "Coincidencia difusa por nombre",
+  "yearFrom": "Año desde",
+  "yearFromHint": "p. ej. 1937",
+  "yearTo": "Año hasta",
+  "yearToHint": "p. ej. 1945",
+  "eventKeyword": "Palabra clave de evento",
+  "nativePlace": "Lugar de origen",
+  "searching": "Buscando…",
+  "noResults": "No se encontraron archivos coincidentes",
+  "noPublishedArchives": "Aún no hay archivos publicados",
+  "personalCenter": "Perfil",
+  "exitButton": "Salir",
+  "mySubmissions": "MIS ENVÍOS",
+  "mySubmissionsTitle": "MIS ENVÍOS",
+  "loginForSubmissions": "Inicia sesión para ver tus envíos y su estado de revisión",
+  "loginForMySubmissions": "Inicia sesión para ver tus envíos personales y su estado de revisión",
+  "goToLogin": "Ir a iniciar sesión",
+  "noSubmissions": "Aún no has enviado archivos ni modificaciones",
+  "submitNewArchive": "Enviar nuevo archivo",
+  "modifyArchive": "Modificar archivo",
+  "changeContent": "Cambios: {summary}",
+  "@changeContent": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedAt": "Enviado el {time}",
+  "@submittedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewedAt": "Revisado el {time}",
+  "@reviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewer": " · Revisor: {name}",
+  "@reviewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewComment": " · Opinión: {comment}",
+  "@reviewComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Cerrar sesión",
+  "editArchive": "Editar archivo",
+  "pleaseLoginFirst": "Inicia sesión primero",
+  "nameRequired": "Nombre *",
+  "nameInput": "Introduce el nombre",
+  "changeDescription": "Descripción de cambios *",
+  "changeDescriptionInput": "Introduce una descripción de los cambios",
+  "submitButton": "ENVIAR",
+  "archiveDetail": "Detalles del archivo",
+  "courtesyName": "Nombre de cortesía: {name}",
+  "@courtesyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pseudonym": "Seudónimo: {name}",
+  "@pseudonym": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lifeSpan": "Vida",
+  "nativePlaceDetail": "Lugar de origen",
+  "faction": "Facción",
+  "aliases": "Alias",
+  "summaryTitle": "Resumen",
+  "noSummary": "Sin resumen",
+  "timeline": "Cronología",
+  "sourceRef": "Fuente: {source}",
+  "@sourceRef": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "criminalRecords": "Antecedentes penales",
+  "process": "Proceso: {detail}",
+  "@process": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "harm": "Daño: {detail}",
+  "@harm": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceMaterial": "Fuente histórica: {reference}",
+  "@sourceMaterial": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "familyAndResidence": "Familia y residencia",
+  "spouse": "Cónyuge",
+  "children": "Hijos",
+  "genderLabel": "Sexo",
+  "whereabouts": "Paradero",
+  "residenceChanges": "Cambios de residencia",
+  "photos": "Fotografías",
+  "evidence": "Pruebas",
+  "document": "Doc",
+  "revisionHistory": "Revisiones",
+  "reviewedBy": " · Revisado por: {name}",
+  "@reviewedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRevisions": "Sin revisiones",
+  "editThisArchive": "Modificar este archivo",
+  "sources": "Referencias",
+  "language": "Idioma",
+  "chooseLanguage": "Elegir idioma"
+}

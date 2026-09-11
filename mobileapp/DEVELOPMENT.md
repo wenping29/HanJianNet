@@ -262,7 +262,16 @@ lib/
 依赖（现有 + 实现编辑时再加）：
 
 - 已有：`http`、`shared_preferences`  
+- 国际化：`flutter_localizations`（SDK）、`intl: ^0.20.0`（`flutter: generate: true` 开启 gen-l10n）  
 - 编辑上传可能需要：`image_picker`（相册/拍照）、`file_picker`（罪证 PDF，可选）
+
+### 国际化（i18n）
+
+- 配置：`l10n.yaml`（`arb-dir: lib/l10n`，`template-arb-file: app_zh.arb`）。改动 ARB 或首次构建时，由 `flutter gen-l10n` 把生成代码写到 `lib/l10n/`（`package:hanjian_mobileapp/l10n/app_localizations.dart`）。
+- 源文案在 `lib/l10n/app_zh.arb`，其余 `app_en/de/fr/ru/ja/es/ko.arb` 为翻译；placeholder 方法（如 `requestFailed(int)`）须各语言保持一致签名。
+- 切换语言：`LocaleController.instance.setLocale(...)`（`lib/services/locale_controller.dart`，ValueNotifier + shared_preferences 持久化）；`main.dart` 用 `ValueListenableBuilder<Locale>` 包裹 `MaterialApp`。
+- 新增语言：复制一份 ARB 并翻译，加进 `LocaleController.supportedLocales`，重新 `flutter gen-l10n`。
+- 注意：`ApiClient`（服务层无 BuildContext）的错误文案仍为中文常量，未接入 l10n。
 
 ---
 

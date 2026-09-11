@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import TraitorCard from '../components/TraitorCard'
 import { api } from '../lib/api'
 import type { TraitorSummary } from '../types'
@@ -29,6 +30,7 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 }
 
 export default function Lookup() {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [nativePlace, setNativePlace] = useState('')
   const [results, setResults] = useState<TraitorSummary[]>([])
@@ -55,7 +57,7 @@ export default function Lookup() {
       setTotal(data.total)
       setPage(data.page)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '查询失败')
+      setError(err instanceof Error ? err.message : t('lookup.queryFailed'))
       setResults([])
       setTotal(0)
     } finally {
@@ -67,7 +69,7 @@ export default function Lookup() {
     e.preventDefault()
     const trimmedName = name.trim()
     if (!trimmedName) {
-      setError('请输入姓名')
+      setError(t('lookup.nameRequired'))
       return
     }
     const trimmedPlace = nativePlace.trim()
@@ -104,10 +106,10 @@ export default function Lookup() {
         <div style={containerPageStyle} className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TRAITOR LOOKUP</p>
           <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
-            汉奸查询
+            {t('lookup.title')}
           </h1>
           <p className="mt-6 max-w-2xl leading-loose text-paperdim">
-            输入姓名与籍贯，查实其人是否录入汉奸档案——青史昭昭，无可遁形。
+            {t('lookup.heroText')}
           </p>
         </div>
       </section>
@@ -118,22 +120,22 @@ export default function Lookup() {
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
               <label className="label" htmlFor="lk-name">
-                姓名 <span className="text-cinnabarlight">*</span>
+                {t('lookup.name')} <span className="text-cinnabarlight">*</span>
               </label>
               <input
                 id="lk-name"
                 className="input"
-                placeholder="必填，如 汪精卫"
+                placeholder={t('lookup.namePlaceholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div>
-              <label className="label" htmlFor="lk-place">籍贯</label>
+              <label className="label" htmlFor="lk-place">{t('lookup.nativePlace')}</label>
               <input
                 id="lk-place"
                 className="input"
-                placeholder="选填，如 广东番禺"
+                placeholder={t('lookup.nativePlacePlaceholder')}
                 value={nativePlace}
                 onChange={(e) => setNativePlace(e.target.value)}
               />
@@ -142,11 +144,11 @@ export default function Lookup() {
           <div className="mt-5 flex items-center justify-end gap-3">
             {state !== 'idle' && (
               <button type="button" onClick={reset} className="btn-ghost !px-5 !py-2.5">
-                清空
+                {t('lookup.clear')}
               </button>
             )}
             <button type="submit" className="btn-primary !px-6 !py-2.5">
-              查 询
+              {t('lookup.searchBtn')}
             </button>
           </div>
           {error && (
@@ -159,7 +161,7 @@ export default function Lookup() {
         <div ref={resultRef}>
           {/* 查询结果 */}
           {state === 'loading' && (
-            <p className="mt-12 text-center text-paperdim">查询中…</p>
+            <p className="mt-12 text-center text-paperdim">{t('lookup.searching')}</p>
           )}
 
           {state === 'done' && (
@@ -168,13 +170,13 @@ export default function Lookup() {
                 <>
                   <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-sm border border-cinnabar/40 bg-cinnabar/10 px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="font-song text-lg font-bold text-cinnabarlight">查实</span>
+                      <span className="font-song text-lg font-bold text-cinnabarlight">{t('lookup.found')}</span>
                       <span className="text-sm leading-relaxed text-paperdim">
-                        「{searchedName}」在汉奸档案中查实 {total} 条记录
+                        {t('lookup.foundResult', { name: searchedName, count: total })}
                       </span>
                     </div>
                     <span className="text-xs tracking-wider text-paperdim/70">
-                      第 {page} / {totalPages} 页
+                      {t('common.pageInfo', { page, totalPages })}
                     </span>
                   </div>
                   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -185,14 +187,14 @@ export default function Lookup() {
 
                   {/* 分页控件 */}
                   {totalPages > 1 && (
-                    <nav className="mt-10 flex items-center justify-center gap-2 flex-wrap" aria-label="分页导航">
+                    <nav className="mt-10 flex items-center justify-center gap-2 flex-wrap" aria-label={t('common.pagination')}>
                       <button
                         type="button"
                         onClick={() => gotoPage(page - 1)}
                         disabled={page <= 1}
                         className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        ‹ 上一页
+                        {t('common.prevPage')}
                       </button>
 
                       {pageList.map((p, idx) =>
@@ -222,7 +224,7 @@ export default function Lookup() {
                         disabled={page >= totalPages}
                         className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        下一页 ›
+                        {t('common.nextPage')}
                       </button>
                     </nav>
                   )}
@@ -230,14 +232,12 @@ export default function Lookup() {
               ) : (
                 <div className="mx-auto max-w-2xl">
                   <div className="card flex flex-col items-center px-6 py-12 text-center">
-                    <span className="font-song text-2xl font-bold text-paperdim">未查实</span>
+                    <span className="font-song text-2xl font-bold text-paperdim">{t('lookup.notFound')}</span>
                     <p className="mt-3 text-sm leading-relaxed text-paperdim/80">
-                      「{searchedName}」
-                      {searchedPlace ? `（籍贯：${searchedPlace}）` : ''}
-                      未在汉奸档案中查实。
+                      {t('lookup.notFoundResult', { name: searchedName, place: searchedPlace })}
                     </p>
                     <p className="mt-2 text-xs tracking-wider text-paperdim/60">
-                      本档案持续编纂，未查实不代表该人清白，亦可能是尚未收录。
+                      {t('lookup.notFoundNote')}
                     </p>
                   </div>
                 </div>
@@ -249,7 +249,7 @@ export default function Lookup() {
         {/* 空闲态提示 */}
         {state === 'idle' && (
           <div className="mt-12 text-center text-sm tracking-wider text-paperdim/50">
-            输入姓名后点击查询，查看结果
+            {t('lookup.idleHint')}
           </div>
         )}
       </section>

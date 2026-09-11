@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import DefinitionDrawer from '../components/DefinitionDrawer'
 import TraitorCard from '../components/TraitorCard'
 import { api } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
-import { PERIODS, PERIOD_META } from '../lib/format'
+import { PERIODS, PERIOD_META, periodLabel } from '../lib/format'
 import type { TraitorStats, TraitorSummary } from '../types'
 
 import { containerPageStyle } from '../style'
@@ -67,6 +68,7 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 }
 
 export default function Home() {
+  const { t } = useTranslation()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [stats, setStats] = useState<TraitorStats | null>(null)
   const [filters, setFilters] = useState<TraitorFilters>(EMPTY_FILTERS)
@@ -87,13 +89,13 @@ export default function Home() {
       setTotal(data.total)
       setPage(data.page)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
       setItems([])
       setTotal(0)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     loadList(EMPTY_FILTERS, 1)
@@ -102,7 +104,6 @@ export default function Home() {
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault()
-    // 检索：page 重置为 1，避免停留在高页码时出现空列表
     setPage(1)
     loadList(filters, 1)
     wallRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -131,18 +132,17 @@ export default function Home() {
         <div style={containerPageStyle} className="container-page animate-ink-in flex flex-col items-center py-24 text-center md:py-32">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">HANJIAN HISTORICAL ARCHIVES</p>
           <h1 className="mt-5 max-w-3xl font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
-            青史为鉴<span className="mx-3 text-cinnabar">·</span>汉奸档案
+            {t('home.heroTitle')}
           </h1>
           <p className="mt-6 max-w-2xl leading-loose text-paperdim">
-            集中收录近代变节者史料档案，公开检索、可溯可查。
-            每一份档案都经审核发布、留痕存证——记其名，录其行，以史为鉴，警醒后人。
+            {t('home.heroText')}
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <button type="button" onClick={() => setDrawerOpen(true)} className="btn-primary">
-              汉奸定义标准
+              {t('home.definitionBtn')}
             </button>
             <Link to="/about" className="btn-ghost">
-              编纂说明
+              {t('home.aboutBtn')}
             </Link>
           </div>
         </div>
@@ -150,32 +150,32 @@ export default function Home() {
                   {/* 统计看板 */}
       <section className="container-page -mt-1 py-14">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard label="汉奸总数" value={stats?.total ?? 0} />
-          <StatCard label="被判刑总数" value={stats?.sentenced ?? 0} />
-          <StatCard label="子女信息数" value={stats?.childrenInfo ?? 0} />
-          <StatCard label="后代现状数" value={stats?.descendantsStatus ?? 0} />
+          <StatCard label={t('home.statTotal')} value={stats?.total ?? 0} />
+          <StatCard label={t('home.statConvicted')} value={stats?.sentenced ?? 0} />
+          <StatCard label={t('home.statChildren')} value={stats?.childrenInfo ?? 0} />
+          <StatCard label={t('home.statDescendants')} value={stats?.descendantsStatus ?? 0} />
         </div>
       </section>
       {/* 综合检索 + 卡片墙 */}
       <section ref={wallRef} className="container-page pb-16">
         <form onSubmit={submitSearch} className="card mb-8 grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label className="label" htmlFor="f-name">姓名</label>
+            <label className="label" htmlFor="f-name">{t('home.searchBy')}</label>
             <input
               id="f-name"
               className="input"
-              placeholder="按姓名检索"
+              placeholder={t('home.searchPlaceholder')}
               value={filters.name ?? ''}
               onChange={(e) => setFilters({ ...filters, name: e.target.value })}
             />
           </div>
           <div>
-            <label className="label" htmlFor="f-from">起始年份</label>
+            <label className="label" htmlFor="f-from">{t('home.startYear')}</label>
             <input
               id="f-from"
               className="input font-garamond"
               type="number"
-              placeholder="如 1931"
+              placeholder={t('home.startYearPlaceholder')}
               value={filters.yearFrom ?? ''}
               onChange={(e) =>
                 setFilters({ ...filters, yearFrom: e.target.value ? Number(e.target.value) : undefined })
@@ -183,12 +183,12 @@ export default function Home() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="f-to">截止年份</label>
+            <label className="label" htmlFor="f-to">{t('home.endYear')}</label>
             <input
               id="f-to"
               className="input font-garamond"
               type="number"
-              placeholder="如 1949"
+              placeholder={t('home.endYearPlaceholder')}
               value={filters.yearTo ?? ''}
               onChange={(e) =>
                 setFilters({ ...filters, yearTo: e.target.value ? Number(e.target.value) : undefined })
@@ -196,18 +196,18 @@ export default function Home() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="f-event">事件关键词</label>
+            <label className="label" htmlFor="f-event">{t('home.eventKeyword')}</label>
             <input
               id="f-event"
               className="input"
-              placeholder="如 投敌、伪政权"
+              placeholder={t('home.eventKeywordPlaceholder')}
               value={filters.event ?? ''}
               onChange={(e) => setFilters({ ...filters, event: e.target.value })}
             />
           </div>
           <div className="flex items-end">
             <button type="submit" className="btn-primary w-full">
-              检 索
+              {t('home.searchBtn')}
             </button>
           </div>
         </form>
@@ -221,7 +221,7 @@ export default function Home() {
                 !filters.period ? 'border-cinnabar bg-cinnabar/20 text-cinnabarlight' : 'border-paperedge/25 text-paperdim'
               }`}
             >
-              全部时期
+              {t('home.allPeriods')}
             </button>
             {PERIODS.map((p) => (
               <button
@@ -234,12 +234,12 @@ export default function Home() {
                     : 'border-paperedge/25 text-paperdim hover:border-bronzelight'
                 }`}
               >
-                {p}
+                {periodLabel(p, t)}
               </button>
             ))}
           </div>
           <span className="text-xs tracking-wider text-paperdim/70">
-            {loading ? '检索中…' : `共 ${total} 条档案 · 第 ${page} / ${totalPages} 页`}
+            {loading ? t('home.searching') : t('home.totalResults', { total, page, totalPages })}
           </span>
         </div>
 
@@ -254,7 +254,7 @@ export default function Home() {
           <p className="rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-4 py-3 text-sm text-cinnabarlight">{error}</p>
         )}
         {!loading && !error && items.length === 0 && (
-          <p className="py-16 text-center text-paperdim">暂无符合条件的档案</p>
+          <p className="py-16 text-center text-paperdim">{t('home.noResults')}</p>
         )}
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -265,14 +265,14 @@ export default function Home() {
 
         {/* 分页控件 */}
         {!loading && !error && totalPages > 1 && (
-          <nav className="mt-10 flex items-center justify-center gap-2 flex-wrap" aria-label="分页导航">
+          <nav className="mt-10 flex items-center justify-center gap-2 flex-wrap" aria-label={t('common.pagination')}>
             <button
               type="button"
               onClick={() => gotoPage(page - 1)}
               disabled={page <= 1}
               className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              ‹ 上一页
+              {t('common.prevPage')}
             </button>
 
             {pageList.map((p, idx) =>
@@ -302,7 +302,7 @@ export default function Home() {
               disabled={page >= totalPages}
               className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              下一页 ›
+              {t('common.nextPage')}
             </button>
           </nav>
         )}

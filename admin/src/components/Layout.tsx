@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Sidebar from './Sidebar'
 import TabsBar from './TabsBar'
+import LanguageSwitcher from './LanguageSwitcher'
 import { api } from '../lib/api'
 import { ROLE_LABELS, canAccessConsole } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -9,6 +11,7 @@ import { useTabsStore } from '../stores/tabs'
 import type { MenuItem, RevisionStatusStats } from '../types'
 
 export default function Layout() {
+  const { t } = useTranslation()
   const { user, clear } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -85,7 +88,7 @@ export default function Layout() {
       if (matched) break
     }
     if (matched) {
-      const label = path.startsWith('/reviews/') ? '修订详情' : matched.label
+      const label = path.startsWith('/reviews/') ? t('layout.revisionDetail') : matched.label
       addTab({
         key: path.startsWith('/reviews/') ? path : matched.path,
         path,
@@ -101,9 +104,9 @@ export default function Layout() {
           path,
           label: path.startsWith('/traitors/')
             ? path.endsWith('/edit')
-              ? '编辑档案'
-              : '档案详情'
-            : '页面',
+              ? t('layout.editArchive')
+              : t('layout.archiveDetail')
+            : t('header.page'),
           closable: true,
         })
       } else {
@@ -142,7 +145,7 @@ export default function Layout() {
               type="button"
               onClick={() => setCollapsed((v) => !v)}
               className="hidden h-9 w-9 items-center justify-center rounded-sm border border-paperedge/15 text-paperdim transition hover:bg-bronze/10 hover:text-paper lg:inline-flex"
-              aria-label={collapsed ? '展开菜单' : '收起菜单'}
+              aria-label={collapsed ? t('layout.expandMenu') : t('layout.collapseMenu')}
             >
               <span className={`text-[14px] leading-none transition-transform duration-300 ${collapsed ? '' : 'rotate-180'}`}>
                 ▸
@@ -153,7 +156,7 @@ export default function Layout() {
               type="button"
               onClick={() => setMobileSidebarOpen((v) => !v)}
               className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-paperedge/15 text-paperdim transition hover:bg-bronze/10 hover:text-paper lg:hidden"
-              aria-label="菜单"
+              aria-label={t('layout.menu')}
               aria-expanded={mobileSidebarOpen}
             >
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
@@ -172,11 +175,12 @@ export default function Layout() {
               </svg>
             </button>
             <div className="hidden items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 lg:flex">
-              <span>秉笔直书 · 去伪存真</span>
+              <span>{t('layout.brand')}</span>
             </div>
           </div>
 
           <div className="flex items-center justify-end gap-3">
+            <LanguageSwitcher />
             {user && (
               <div
                 className="relative"
@@ -209,7 +213,7 @@ export default function Layout() {
                     {user.username.slice(0, 1).toUpperCase()}
                     {badgeText(pendingCount) && (
                       <span
-                        aria-label={`待审修订 ${pendingCount} 条`}
+                        aria-label={t('header.pendingRevisions', { count: pendingCount })}
                         className="absolute -right-1 -top-1 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-ink bg-cinnabar px-[5px] text-[10px] font-bold leading-none text-paper shadow-seal"
                       >
                         {badgeText(pendingCount)}
@@ -248,7 +252,7 @@ export default function Layout() {
                         {user.username.slice(0, 1).toUpperCase()}
                         {badgeText(pendingCount) && (
                           <span
-                            aria-label={`待审修订 ${pendingCount} 条`}
+                            aria-label={t('header.pendingRevisions', { count: pendingCount })}
                             className="absolute -right-1.5 -top-1.5 inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-inksoft bg-cinnabar px-[5px] text-[10px] font-bold leading-none text-paper shadow-seal"
                           >
                             {badgeText(pendingCount)}
@@ -271,12 +275,12 @@ export default function Layout() {
                           className="flex items-center justify-between px-4 py-2 text-sm tracking-[0.15em] text-paperdim transition hover:bg-bronze/15 hover:text-paper"
                           onClick={() => {
                             setUserMenuOpen(false)
-                            addTab({ key: '/reviews', path: '/reviews', label: '待审修订', closable: false })
+                            addTab({ key: '/reviews', path: '/reviews', label: t('header.pendingRevisionsShort'), closable: false })
                           }}
                         >
                           <span className="flex items-center gap-3">
                             <span aria-hidden="true" className="w-4 text-center text-xs text-bronzelight">◷</span>
-                            待审修订
+                            {t('header.pendingRevisionsShort')}
                           </span>
                           {pendingCount > 0 && (
                             <span className="inline-flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-cinnabar/90 px-[6px] text-[10px] font-bold text-paper shadow-seal">
@@ -291,11 +295,11 @@ export default function Layout() {
                         className="flex items-center gap-3 px-4 py-2 text-sm tracking-[0.15em] text-paperdim transition hover:bg-bronze/15 hover:text-paper"
                         onClick={() => {
                           setUserMenuOpen(false)
-                          addTab({ key: '/profile', path: '/profile', label: '个人信息', closable: true })
+                          addTab({ key: '/profile', path: '/profile', label: t('header.profile'), closable: true })
                         }}
                       >
                         <span aria-hidden="true" className="w-4 text-center text-xs text-bronzelight">◉</span>
-                        个人信息
+                        {t('header.profile')}
                       </Link>
                       <button
                         type="button"
@@ -308,7 +312,7 @@ export default function Layout() {
                         }}
                       >
                         <span aria-hidden="true" className="w-4 text-center text-xs">⏻</span>
-                        退出登录
+                        {t('header.logout')}
                       </button>
                     </div>
                   </div>
@@ -331,7 +335,7 @@ export default function Layout() {
         {/* 页脚 */}
         <footer className="flex-shrink-0 border-t border-paperedge/15 bg-inksoft/60">
           <div className="container-page flex flex-col items-center justify-between gap-2 py-4 text-xs tracking-wider text-paperdim/70 sm:flex-row">
-            <span>汉奸档案 · 后台管理 — 秉笔直书，去伪存真</span>
+            <span>{t('layout.title')}</span>
             <span className="font-garamond italic">Editorial Console · Est. 2026</span>
           </div>
         </footer>

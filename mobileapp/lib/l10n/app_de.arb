@@ -1,0 +1,225 @@
+{
+  "@@locale": "de",
+  "appTitle": "Verräter-Akten · HanJianNet",
+  "appLogoText": "Verräter\nAkten",
+  "navHome": "Start",
+  "navSearch": "Suche",
+  "navMine": "Mein",
+  "networkError": "Netzwerkanfrage fehlgeschlagen. Bitte prüfen Sie die API-Adresse und die Internetverbindung.",
+  "requestFailed": "Anfrage fehlgeschlagen ({statusCode})",
+  "@requestFailed": {
+    "description": "Error message with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "Upload fehlgeschlagen ({statusCode})",
+  "@uploadFailed": {
+    "description": "File upload failed with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "Unbekannt",
+  "circa": "ca.",
+  "before": " v. Chr.",
+  "after": " n. Chr.",
+  "approved": "Genehmigt",
+  "rejected": "Abgelehnt",
+  "pending": "Ausstehend",
+  "retry": "Erneut versuchen",
+  "noRecords": "Keine Einträge",
+  "archives": "Verräter-Akten",
+  "figures": "Personen",
+  "totalArchives": "Gesamtzahl der Akten",
+  "apiSettings": "API-Einstellungen",
+  "apiBaseUrlHint": "Web-API-Basisadresse (unter Android-Emulator 10.0.2.2 für den Host verwenden)",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "saved": "Gespeichert: {url}",
+  "@saved": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "Anmeldung",
+  "emailOrUsername": "E-Mail / Benutzername",
+  "password": "Passwort",
+  "loggingIn": "Anmeldung läuft…",
+  "loginButton": "ANMELDEN",
+  "noAccount": "Kein Konto? Registrieren",
+  "fillAllFields": "Bitte alle Felder ausfüllen",
+  "invalidEmail": "Ungültiges E-Mail-Format",
+  "passwordTooShort": "Passwort mindestens 8 Zeichen",
+  "passwordMismatch": "Die Passwörter stimmen nicht überein",
+  "register": "Registrieren",
+  "username": "Benutzername",
+  "email": "E-Mail",
+  "passwordHint": "Passwort (mindestens 8 Zeichen)",
+  "confirmPassword": "Passwort bestätigen",
+  "registering": "Registrierung läuft…",
+  "registerButton": "REGISTRIEREN",
+  "hasAccount": "Schon ein Konto? Anmelden",
+  "allPeriods": "Alle",
+  "lateSong": "Späte Song",
+  "lateMing": "Späte Ming",
+  "lateQing": "Späte Qing",
+  "republic": "Republik",
+  "other": "Andere",
+  "searchButton": "SUCHEN",
+  "nameLabel": "Name",
+  "nameHint": "Unscharfe Suche nach Personenname",
+  "yearFrom": "Jahr von",
+  "yearFromHint": "z. B. 1937",
+  "yearTo": "Jahr bis",
+  "yearToHint": "z. B. 1945",
+  "eventKeyword": "Ereignis-Schlüsselwort",
+  "nativePlace": "Herkunftsort",
+  "searching": "Suche läuft…",
+  "noResults": "Keine passenden Akten gefunden",
+  "noPublishedArchives": "Noch keine veröffentlichten Akten",
+  "personalCenter": "Profil",
+  "exitButton": "Abmelden",
+  "mySubmissions": "MEINE EINREICHUNGEN",
+  "mySubmissionsTitle": "MEINE EINREICHUNGEN",
+  "loginForSubmissions": "Melden Sie sich an, um Einreichungen und Prüfstatus zu sehen",
+  "loginForMySubmissions": "Melden Sie sich an, um Ihre Einreichungen und Prüfstatus zu sehen",
+  "goToLogin": "Zur Anmeldung",
+  "noSubmissions": "Noch keine Akten oder Änderungen eingereicht",
+  "submitNewArchive": "Neue Akte einreichen",
+  "modifyArchive": "Akte ändern",
+  "changeContent": "Änderungen: {summary}",
+  "@changeContent": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedAt": "Eingereicht am {time}",
+  "@submittedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewedAt": "Geprüft am {time}",
+  "@reviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewer": " · Prüfer: {name}",
+  "@reviewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewComment": " · Anmerkung: {comment}",
+  "@reviewComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Abmelden",
+  "editArchive": "Akte bearbeiten",
+  "pleaseLoginFirst": "Bitte zuerst anmelden",
+  "nameRequired": "Name *",
+  "nameInput": "Bitte Namen eingeben",
+  "changeDescription": "Änderungsbeschreibung *",
+  "changeDescriptionInput": "Bitte Änderungsbeschreibung eingeben",
+  "submitButton": "EINREICHEN",
+  "archiveDetail": "Aktendetails",
+  "courtesyName": "Höflichkeitsname: {name}",
+  "@courtesyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pseudonym": "Pseudonym: {name}",
+  "@pseudonym": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lifeSpan": "Lebensdaten",
+  "nativePlaceDetail": "Herkunftsort",
+  "faction": "Fraktion",
+  "aliases": "Aliasse",
+  "summaryTitle": "Überblick",
+  "noSummary": "Kein Überblick",
+  "timeline": "Chronologie",
+  "sourceRef": "Quelle: {source}",
+  "@sourceRef": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "criminalRecords": "Straftaten",
+  "process": "Ablauf: {detail}",
+  "@process": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "harm": "Schaden: {detail}",
+  "@harm": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceMaterial": "Historische Quelle: {reference}",
+  "@sourceMaterial": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "familyAndResidence": "Familie & Wohnsitz",
+  "spouse": "Ehepartner",
+  "children": "Kinder",
+  "genderLabel": "Geschlecht",
+  "whereabouts": "Verbleib",
+  "residenceChanges": "Wohnortwechsel",
+  "photos": "Fotografien",
+  "evidence": "Beweismaterial",
+  "document": "Dok",
+  "revisionHistory": "Revisionen",
+  "reviewedBy": " · Geprüft von: {name}",
+  "@reviewedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRevisions": "Noch keine Revisionen",
+  "editThisArchive": "Diese Akte ändern",
+  "sources": "Quellen",
+  "language": "Sprache",
+  "chooseLanguage": "Sprache wählen"
+}

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
+
 import '../models/models.dart';
 import '../services/api_client.dart';
 import '../widgets/common.dart';
@@ -94,8 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('汉奸档案')),
+      appBar: AppBar(title: Text(l10n.archives)),
       body: _loading
           ? const LoadingView()
           : _error != null
@@ -110,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 12),
-                          child: SectionHeader(title: '人物列表', en: 'FIGURES'),
+                          child: SectionHeader(title: l10n.figures, en: 'FIGURES'),
                         ),
                       ),
                       SliverPadding(
@@ -149,9 +152,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _statsBoard() {
+    final l10n = AppLocalizations.of(context)!;
     final s = _stats;
     final cells = [
-      ('档案总数', s?.total ?? 0),
+      (l10n.totalArchives, s?.total ?? 0),
     ];
     final periods = s?.periods;
     if (periods != null) {

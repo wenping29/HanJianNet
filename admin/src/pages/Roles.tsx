@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import MenuPicker from '../components/MenuPicker'
 import Modal from '../components/Modal'
 import { api } from '../lib/api'
@@ -12,6 +13,7 @@ type EditingState = {
 }
 
 export default function Roles() {
+  const { t } = useTranslation()
   const me = useAuth((s) => s.user)!
   const [items, setItems] = useState<RoleMenuConfig[]>([])
   const [menus, setMenus] = useState<AdminMenuItem[]>([])
@@ -28,9 +30,9 @@ export default function Roles() {
       setItems(roleData.items)
       setMenus(menuData.items)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -70,10 +72,10 @@ export default function Roles() {
     try {
       const data = await api.updateRoleMenus(editing.cfg.role, editing.draft)
       setItems(data.items)
-      flash(`已更新「${editing.cfg.label || ROLE_LABELS[editing.cfg.role]}」的菜单权限`)
+      flash(t('roles.updateSuccess', { label: editing.cfg.label || ROLE_LABELS[editing.cfg.role] }))
       setEditing(null)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '保存失败')
+      setError(e instanceof Error ? e.message : t('roles.updateFailed'))
     } finally {
       setSaving(false)
     }
@@ -94,11 +96,11 @@ export default function Roles() {
     <div className="container-page py-10">
       <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">角色管理</h1>
+          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('roles.title')}</h1>
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Role Management</p>
         </div>
         <p className="text-xs tracking-wider text-paperdim/70">
-          点击「配置菜单」可打开弹框，批量勾选角色可见的后台菜单，保存后立即生效
+          {t('roles.description')}
         </p>
       </header>
 
@@ -114,16 +116,16 @@ export default function Roles() {
       )}
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无角色数据</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('roles.noRoles')}</p>
         </div>
       ) : menus.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无菜单</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('roles.noMenus')}</p>
           <p className="mt-2 text-xs tracking-wider text-paperdim/60">
-            请先在「菜单管理」中创建菜单，再回到此页配置权限。
+            {t('roles.noMenusHint')}
           </p>
         </div>
       ) : (
@@ -131,10 +133,10 @@ export default function Roles() {
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
               <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                <th className="px-5 py-3 font-medium">角色</th>
-                <th className="px-5 py-3 font-medium">用户数</th>
-                <th className="px-5 py-3 font-medium">已授权菜单</th>
-                <th className="px-5 py-3 text-right font-medium">操作</th>
+                <th className="px-5 py-3 font-medium">{t('roles.role')}</th>
+                <th className="px-5 py-3 font-medium">{t('roles.userCount')}</th>
+                <th className="px-5 py-3 font-medium">{t('roles.authorizedMenus')}</th>
+                <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
               </tr>
             </thead>
             <tbody>
@@ -148,16 +150,16 @@ export default function Roles() {
                     <td className="whitespace-nowrap px-5 py-4">
                       <span className="badge border-bronze/60 bg-bronze/15 text-bronzelight">{label}</span>
                       {cfg.role === 'superadmin' && (
-                        <span className="ml-2 text-xs text-paperdim/50">默认全部可见（只读）</span>
+                        <span className="ml-2 text-xs text-paperdim/50">{t('roles.defaultAllVisible')}</span>
                       )}
                       {!editable && cfg.role !== 'superadmin' && (
-                        <span className="ml-2 text-xs text-paperdim/50">权限不足（只读）</span>
+                        <span className="ml-2 text-xs text-paperdim/50">{t('roles.insufficientPermission')}</span>
                       )}
                     </td>
                     <td className="px-5 py-4 font-garamond text-paperdim">{cfg.userCount}</td>
                     <td className="px-5 py-4">
                       {cfg.menuKeys.length === 0 ? (
-                        <span className="text-xs tracking-wider text-paperdim/50">未配置任何菜单（该角色可见 0 个）</span>
+                        <span className="text-xs tracking-wider text-paperdim/50">{t('roles.noMenusConfigured')}</span>
                       ) : (
                         <div className="flex flex-wrap items-center gap-1.5">
                           {grantedPreview.map((g, i) => (
@@ -170,7 +172,7 @@ export default function Roles() {
                             </span>
                           ))}
                           {more > 0 && (
-                            <span className="text-xs tracking-wider text-paperdim/55">+ {more} 个</span>
+                            <span className="text-xs tracking-wider text-paperdim/55">{t('roles.moreItems', { count: more })}</span>
                           )}
                         </div>
                       )}
@@ -181,7 +183,7 @@ export default function Roles() {
                         className={editable ? 'btn-bronze !px-3 !py-1.5 text-xs' : 'btn-ghost !px-3 !py-1.5 text-xs'}
                         onClick={() => openEditor(cfg)}
                       >
-                        {editable ? '配置菜单' : '查看菜单'}
+                        {editable ? t('roles.configureMenus') : t('roles.viewMenus')}
                       </button>
                     </td>
                   </tr>
@@ -191,7 +193,7 @@ export default function Roles() {
           </table>
           {me.role !== 'superadmin' && (
             <p className="border-t border-paperedge/10 px-5 py-3 text-xs tracking-wider text-paperdim/60">
-              仅超级管理员可调整所有角色菜单权限；管理员可调整其下层级角色。接口级访问权限由后端角色规则控制。
+              {t('roles.permissionHint')}
             </p>
           )}
         </div>
@@ -199,9 +201,9 @@ export default function Roles() {
 
       <Modal
         open={!!editing}
-        title={editingEditable ? `配置菜单：${editingLabel}` : `菜单配置（只读）：${editingLabel}`}
-        confirmText={editingEditable ? '保存' : null}
-        cancelText="关闭"
+        title={editingEditable ? t('roles.configureMenuTitle', { name: editingLabel }) : t('roles.readOnlyMenuTitle', { name: editingLabel })}
+        confirmText={editingEditable ? t('common.save') : null}
+        cancelText={t('common.close')}
         confirmBusy={saving}
         onConfirm={saveDraft}
         onCancel={closeEditor}
@@ -212,12 +214,12 @@ export default function Roles() {
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-3 rounded-sm border border-paperedge/15 bg-ink/40 px-4 py-3 text-xs text-paperdim/80">
               <span>
-                角色：
+                {t('roles.roleLabel')}
                 <b className="text-paper">{editingLabel}</b>
               </span>
               <span>·</span>
               <span>
-                当前已授权菜单：
+                {t('roles.authorizedMenusLabel')}
                 <b className="text-bronzelight">{editing.draft.length}</b> / {menus.length}
               </span>
               {!editingEditable && (
@@ -225,8 +227,8 @@ export default function Roles() {
                   <span>·</span>
                   <span className="text-cinnabarlight" data-testid="readonly-warn">
                     {editing.cfg.role === 'superadmin'
-                      ? '超级管理员菜单为只读（始终可见全部）'
-                      : '您无权调整该角色菜单，仅可查看'}
+                      ? t('roles.superAdminReadOnly')
+                      : t('roles.noPermissionToAdjust')}
                   </span>
                 </>
               )}

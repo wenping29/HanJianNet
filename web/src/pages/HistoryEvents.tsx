@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { getAllHistoryEvents, HISTORY_ERAS } from '../lib/historyEvents'
 import { containerPageStyle } from '../style'
 
 export default function HistoryEvents() {
+  const { t } = useTranslation()
   const [activeEra, setActiveEra] = useState<string>('全部')
   const [refreshKey] = useState(0)
 
@@ -11,7 +13,6 @@ export default function HistoryEvents() {
     const all = getAllHistoryEvents()
     if (activeEra === '全部') return all
     return all.filter((e) => e.era === activeEra)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeEra, refreshKey])
 
   return (
@@ -21,10 +22,10 @@ export default function HistoryEvents() {
         <div style={containerPageStyle} className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">HISTORICAL EVENTS</p>
           <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
-            历史事件
+            {t('events.title')}
           </h1>
           <p className="mt-6 max-w-2xl leading-loose text-paperdim">
-            列举近代重大国难与变节事件，标其年月、记其本末——鉴往知来，勿忘国耻。
+            {t('events.heroText')}
           </p>
         </div>
       </section>
@@ -44,15 +45,15 @@ export default function HistoryEvents() {
                     : 'border-paperedge/25 text-paperdim hover:border-bronzelight'
                 }`}
               >
-                {era}
+                {era === '全部' ? t('events.all') : era}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-3">
             <Link to="/events/new" className="btn-bronze !px-4 !py-1.5 text-xs">
-              + 新增事件
+              {t('events.newEvent')}
             </Link>
-            <span className="text-xs tracking-wider text-paperdim/70">共 {items.length} 条事件</span>
+            <span className="text-xs tracking-wider text-paperdim/70">{t('common.totalEvents', { count: items.length })}</span>
           </div>
         </div>
 
@@ -74,18 +75,18 @@ export default function HistoryEvents() {
                 <span className="badge border-bronze/40 text-bronzelight">{ev.era}</span>
               </div>
               {ev.alias && ev.alias !== ev.title && (
-                <p className="mt-2 text-xs tracking-widest text-paperdim/70">又称：{ev.alias}</p>
+                <p className="mt-2 text-xs tracking-widest text-paperdim/70">{t('events.alias')}{ev.alias}</p>
               )}
               <p className="mt-3 flex-1 text-sm leading-loose text-paper/85">{ev.desc}</p>
               <p className="mt-4 text-xs tracking-widest text-bronzelight opacity-70 transition group-hover:opacity-100">
-                查看涉及汉奸 →
+                {t('events.viewTraitors')}
               </p>
             </Link>
           ))}
         </div>
 
         {items.length === 0 && (
-          <p className="py-16 text-center text-paperdim">该时期暂无事件记录</p>
+          <p className="py-16 text-center text-paperdim">{t('events.noEvents')}</p>
         )}
       </section>
     </div>

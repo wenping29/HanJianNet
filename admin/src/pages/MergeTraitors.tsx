@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan } from '../lib/format'
 import type { DuplicateGroup } from '../types'
 
 export default function MergeTraitors() {
+  const { t } = useTranslation()
   const [groups, setGroups] = useState<DuplicateGroup[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -31,9 +33,9 @@ export default function MergeTraitors() {
       }
       setPrimaryMap(map)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -65,29 +67,28 @@ export default function MergeTraitors() {
     const key = groupKey(g)
     const primaryId = primaryMap[key]
     if (!primaryId) {
-      setError('请先选择主记录')
+      setError(t('common.pleaseSelectPrimary'))
       return
     }
     const sourceIds = g.items.filter((t) => t.id !== primaryId).map((t) => t.id)
     if (sourceIds.length === 0) {
-      setError('该组只有一条记录，无需合并')
+      setError(t('common.singleRecordNoMerge'))
       return
     }
 
     const primary = g.items.find((t) => t.id === primaryId)
     if (!window.confirm(
-      `确认将 ${sourceIds.length} 条重复记录合并到「${primary?.name ?? primaryId}」？\n` +
-      `所有子记录（配偶/子女/住所/罪行/生平/附件/来源）将迁移到主记录，重复记录将被标记为已合并。`
+      t('merge.mergeConfirm', { count: sourceIds.length, name: primary?.name ?? primaryId })
     )) return
 
     setMerging(key)
     setError('')
     try {
       await api.mergeTraitors(primaryId, sourceIds)
-      flash(`已合并 ${sourceIds.length} 条记录到「${primary?.name ?? '主记录'}」`)
+      flash(t('merge.mergeSuccess', { count: sourceIds.length, name: primary?.name ?? t('merge.primaryRecord') }))
       await reload(filters)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '合并失败')
+      setError(e instanceof Error ? e.message : t('merge.mergeFailed'))
     } finally {
       setMerging(null)
     }
@@ -97,8 +98,8 @@ export default function MergeTraitors() {
     <div className="container-page py-10">
       <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">数据合并</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Merge Duplicates</p>
+          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('merge.title')}</h1>
+          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">{t('merge.subtitle')}</p>
         </div>
       </header>
 
@@ -110,19 +111,19 @@ export default function MergeTraitors() {
           className="input min-w-0 max-w-xs flex-1"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
-          placeholder="按姓名搜索"
+          placeholder={t('merge.searchName')}
         />
         <input
           className="input min-w-0 max-w-xs flex-1"
           value={form.nativePlace}
           onChange={(e) => setForm({ ...form, nativePlace: e.target.value })}
-          placeholder="按籍贯搜索"
+          placeholder={t('merge.searchNativePlace')}
         />
         <button type="submit" className="btn-bronze flex-none" disabled={loading}>
-          {loading ? '查询中…' : '查找重复'}
+          {loading ? t('merge.querying') : t('merge.findDuplicates')}
         </button>
         <button type="button" className="btn-ghost flex-none" onClick={onReset}>
-          重置
+          {t('common.reset')}
         </button>
       </form>
 
@@ -138,10 +139,10 @@ export default function MergeTraitors() {
       )}
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : groups.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无重复记录</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('merge.noDuplicates')}</p>
         </div>
       ) : (
         <div className="mt-6 space-y-6">
@@ -153,9 +154,9 @@ export default function MergeTraitors() {
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-paperedge/20 px-5 py-3">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-bold tracking-wider text-paper">{g.name}</span>
-                    <span className="font-garamond text-xs text-paperdim/70">{g.nativePlace || '籍贯不详'}</span>
+                    <span className="font-garamond text-xs text-paperdim/70">{g.nativePlace || t('merge.nativePlaceUnknown')}</span>
                     <span className="badge border-cinnabar/50 bg-cinnabar/10 text-cinnabarlight">
-                      共 {g.items.length} 条
+                      {t('merge.totalItems', { count: g.items.length })}
                     </span>
                   </div>
                   <button
@@ -164,26 +165,26 @@ export default function MergeTraitors() {
                     onClick={() => handleMerge(g)}
                     disabled={merging === key}
                   >
-                    {merging === key ? '合并中…' : '合并到主记录'}
+                    {merging === key ? t('merge.merging') : t('merge.mergeToPrimary')}
                   </button>
                 </div>
                 <table className="w-full min-w-[760px] text-left text-sm">
                   <thead>
                     <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                      <th className="px-3 py-2 font-medium">主记录</th>
-                      <th className="px-5 py-2 font-medium">姓名</th>
-                      <th className="px-5 py-2 font-medium">时期</th>
-                      <th className="px-5 py-2 font-medium">派系</th>
-                      <th className="px-5 py-2 font-medium">生卒</th>
-                      <th className="px-5 py-2 font-medium">身份标签</th>
+                      <th className="px-3 py-2 font-medium">{t('merge.tableHeader.primary')}</th>
+                      <th className="px-5 py-2 font-medium">{t('merge.tableHeader.name')}</th>
+                      <th className="px-5 py-2 font-medium">{t('merge.tableHeader.period')}</th>
+                      <th className="px-5 py-2 font-medium">{t('merge.tableHeader.faction')}</th>
+                      <th className="px-5 py-2 font-medium">{t('merge.tableHeader.lifespan')}</th>
+                      <th className="px-5 py-2 font-medium">{t('merge.tableHeader.tags')}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {g.items.map((t) => {
-                      const isPrimary = primaryId === t.id
+                    {g.items.map((item) => {
+                      const isPrimary = primaryId === item.id
                       return (
                         <tr
-                          key={t.id}
+                          key={item.id}
                           className={`border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60 ${
                             isPrimary ? 'bg-cinnabar/5' : ''
                           }`}
@@ -193,46 +194,46 @@ export default function MergeTraitors() {
                               type="radio"
                               name={key}
                               checked={isPrimary}
-                              onChange={() => setPrimaryMap({ ...primaryMap, [key]: t.id })}
+                              onChange={() => setPrimaryMap({ ...primaryMap, [key]: item.id })}
                               className="h-4 w-4 accent-cinnabar"
                             />
                           </td>
                           <td className="px-5 py-3">
                             <div className="flex items-center gap-3">
-                              {t.photoUrl ? (
+                              {item.photoUrl ? (
                                 <img
-                                  src={resolveAssetUrl(t.photoUrl)}
+                                  src={resolveAssetUrl(item.photoUrl)}
                                   alt=""
                                   className="h-8 w-8 shrink-0 rounded-sm object-cover"
                                 />
                               ) : (
                                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-paperedge/20 font-song text-xs text-paperdim/60">
-                                  无
+                                  {t('common.none')}
                                 </span>
                               )}
-                              <span className="font-medium tracking-wider text-paper">{t.name}</span>
+                              <span className="font-medium tracking-wider text-paper">{item.name}</span>
                               {isPrimary && (
                                 <span className="badge border-emerald-500/50 bg-emerald-500/10 text-emerald-300">
-                                  主记录
+                                  {t('merge.primaryRecord')}
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="px-5 py-3 text-paperdim">{t.period}</td>
-                          <td className="px-5 py-3 text-paperdim">{t.faction || '—'}</td>
+                          <td className="px-5 py-3 text-paperdim">{item.period}</td>
+                          <td className="px-5 py-3 text-paperdim">{item.faction || '—'}</td>
                           <td className="px-5 py-3 font-garamond text-xs text-paperdim/80">
-                            {formatLifeSpan(t.birthYear, t.deathYear, t.birthYearType, t.deathYearType)}
+                            {formatLifeSpan(item.birthYear, item.deathYear, item.birthYearType, item.deathYearType)}
                           </td>
                           <td className="px-5 py-3">
                             <div className="flex flex-wrap gap-1.5">
-                              {t.identityTags.slice(0, 3).map((tag) => (
+                              {item.identityTags.slice(0, 3).map((tag) => (
                                 <span key={tag} className="badge border-bronze/60 bg-bronze/15 text-bronzelight">
                                   {tag}
                                 </span>
                               ))}
-                              {t.identityTags.length > 3 && (
+                              {item.identityTags.length > 3 && (
                                 <span className="badge border-paperedge/25 text-paperdim/70">
-                                  +{t.identityTags.length - 3}
+                                  +{item.identityTags.length - 3}
                                 </span>
                               )}
                             </div>

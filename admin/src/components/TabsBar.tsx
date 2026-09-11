@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useTabsStore } from '../stores/tabs'
 
 export default function TabsBar() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const tabs = useTabsStore((s) => s.tabs)
   const activeKey = useTabsStore((s) => s.activeKey)
@@ -75,7 +77,7 @@ export default function TabsBar() {
                       ? 'text-paperdim/60 hover:bg-cinnabar/20 hover:text-cinnabarlight'
                       : 'text-transparent group-hover:text-paperdim/60 group-hover:hover:bg-cinnabar/20 group-hover:hover:text-cinnabarlight'
                   }`}
-                  aria-label={`关闭 ${tab.label}`}
+                  aria-label={`${t('common.close')} ${tab.label}`}
                 >
                   ✕
                 </span>

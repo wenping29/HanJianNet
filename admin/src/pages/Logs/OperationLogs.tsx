@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import { ROLE_LABELS } from '../../lib/roles'
 import type { OperationLogItem } from '../../types'
@@ -26,6 +27,7 @@ interface Filters {
 const EMPTY: Filters = { keyword: '', username: '', module: '', action: '', from: '', to: '' }
 
 export default function OperationLogs() {
+  const { t } = useTranslation()
   const [items, setItems] = useState<OperationLogItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -61,9 +63,9 @@ export default function OperationLogs() {
           : Math.max(1, Math.ceil(list.length / Math.max(1, pageSizeNum))),
       )
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -94,44 +96,44 @@ export default function OperationLogs() {
 
   return (
     <div className="container-page py-10">
-      <SectionTitle zh="操作日志" en="Operation Audits" />
+      <SectionTitle zh={t('logs.operationLogs.title')} en="Operation Audits" />
 
       <form
         className="animate-fade-up card mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5"
         onSubmit={onSubmit}
       >
-        <SearchField label="关键字（消息 / 路径 / 目标）">
+        <SearchField label={t('logs.operationLogs.keywordHint')}>
           <input
             className="input"
             value={form.keyword}
             onChange={(e) => setForm({ ...form, keyword: e.target.value })}
-            placeholder="模糊搜索"
+            placeholder={t('logs.operationLogs.keywordPlaceholder')}
           />
         </SearchField>
-        <SearchField label="用户名">
+        <SearchField label={t('common.username')}>
           <input
             className="input"
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
         </SearchField>
-        <SearchField label="模块">
+        <SearchField label={t('logs.operationLogs.module')}>
           <input
             className="input"
             value={form.module}
             onChange={(e) => setForm({ ...form, module: e.target.value })}
-            placeholder="如 traitors / users / auth"
+            placeholder={t('logs.operationLogs.modulePlaceholder')}
           />
         </SearchField>
-        <SearchField label="动作">
+        <SearchField label={t('logs.operationLogs.action')}>
           <input
             className="input"
             value={form.action}
             onChange={(e) => setForm({ ...form, action: e.target.value })}
-            placeholder="如 create / update / delete"
+            placeholder={t('logs.operationLogs.actionPlaceholder')}
           />
         </SearchField>
-        <SearchField label="起始日期">
+        <SearchField label={t('common.startDate')}>
           <input
             type="date"
             className="input"
@@ -139,7 +141,7 @@ export default function OperationLogs() {
             onChange={(e) => setForm({ ...form, from: e.target.value })}
           />
         </SearchField>
-        <SearchField label="结束日期">
+        <SearchField label={t('common.endDate')}>
           <input
             type="date"
             className="input"
@@ -148,9 +150,9 @@ export default function OperationLogs() {
           />
         </SearchField>
         <div className="md:col-span-2 lg:col-span-5 flex justify-end gap-2">
-          <button type="button" className="btn-ghost" onClick={onReset}>重置</button>
+          <button type="button" className="btn-ghost" onClick={onReset}>{t('common.reset')}</button>
           <button type="submit" className="btn-bronze" disabled={loading}>
-            {loading ? '查询中…' : '查询'}
+            {loading ? t('logs.operationLogs.querying') : t('logs.operationLogs.query')}
           </button>
         </div>
       </form>
@@ -158,10 +160,10 @@ export default function OperationLogs() {
       <NoticeAndError error={error} />
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无操作日志</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('logs.operationLogs.noData')}</p>
         </div>
       ) : (
         <>
@@ -169,16 +171,16 @@ export default function OperationLogs() {
             <table className="w-full min-w-[1280px] text-left text-sm">
               <thead>
                 <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                  <th className="px-5 py-3 font-medium">时间</th>
-                  <th className="px-5 py-3 font-medium">用户</th>
-                  <th className="px-5 py-3 font-medium">模块</th>
-                  <th className="px-5 py-3 font-medium">动作</th>
-                  <th className="px-5 py-3 font-medium">目标</th>
-                  <th className="px-5 py-3 font-medium">结果</th>
-                  <th className="px-5 py-3 font-medium">耗时</th>
-                  <th className="px-5 py-3 font-medium">路径</th>
-                  <th className="px-5 py-3 font-medium">IP</th>
-                  <th className="px-5 py-3 font-medium">来源</th>
+                  <th className="px-5 py-3 font-medium">{t('common.time')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.user')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.operationLogs.module')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.operationLogs.action')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.operationLogs.target')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.loginLogs.result')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.operationLogs.duration')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.operationLogs.path')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.ip')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.origin')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -196,7 +198,7 @@ export default function OperationLogs() {
                         </td>
                         <td className="px-5 py-3">
                           <div className="leading-tight">
-                            <div className="font-medium text-paper">{l.username || '游客'}</div>
+                            <div className="font-medium text-paper">{l.username || t('common.guest')}</div>
                             <div className="font-garamond text-xs text-paperdim/70">
                               {l.role ? (ROLE_LABELS[l.role as keyof typeof ROLE_LABELS] ?? l.role) : ''}
                             </div>
@@ -249,7 +251,7 @@ export default function OperationLogs() {
                           <td colSpan={10} className="px-5 py-4">
                             <dl className="grid gap-3 text-sm md:grid-cols-2">
                               <div>
-                                <dt className="text-xs tracking-widest text-paperdim">消息</dt>
+                                <dt className="text-xs tracking-widest text-paperdim">{t('common.message')}</dt>
                                 <dd className="mt-1 text-paper whitespace-pre-wrap break-words">
                                   {l.message || '—'}
                                 </dd>
@@ -261,7 +263,7 @@ export default function OperationLogs() {
                                 </dd>
                               </div>
                               <div className="md:col-span-2">
-                                <dt className="text-xs tracking-widest text-paperdim">请求体（截断）</dt>
+                                <dt className="text-xs tracking-widest text-paperdim">{t('logs.errorLogs.requestBody')}</dt>
                                 <dd className="mt-1">
                                   <pre className="max-h-60 overflow-auto rounded-sm border border-paperedge/20 bg-black/30 p-3 text-xs text-paperdim/90 whitespace-pre-wrap break-words">
                                     {l.requestBody || '—'}
@@ -278,7 +280,7 @@ export default function OperationLogs() {
               </tbody>
             </table>
           </div>
-          <Pagination total={total} page={page} totalPages={totalPages} loading={loading} label="操作日志" onGo={goPage} />
+          <Pagination total={total} page={page} totalPages={totalPages} loading={loading} label={t('logs.operationLogs.label')} onGo={goPage} />
         </>
       )}
     </div>

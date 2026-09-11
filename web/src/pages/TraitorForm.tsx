@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { api, resolveAssetUrl } from '../lib/api'
-import { PERIODS, splitList } from '../lib/format'
+import { PERIODS, splitList, periodLabel } from '../lib/format'
 import type {
   Attachment,
   AttachmentKind,
@@ -53,12 +54,12 @@ const EMPTY_FORM: FormState = {
   changeSummary: '',
 }
 
-const YEAR_TYPES: Array<{ value: YearType; label: string }> = [
-  { value: 'exact', label: '确切' },
-  { value: 'approx', label: '约' },
-  { value: 'before', label: '之前' },
-  { value: 'after', label: '之后' },
-  { value: 'unknown', label: '不详' },
+const YEAR_TYPE_VALUES: Array<{ value: YearType; i18nKey: string }> = [
+  { value: 'exact', i18nKey: 'yearType.exact' },
+  { value: 'approx', i18nKey: 'yearType.circa' },
+  { value: 'before', i18nKey: 'yearType.before' },
+  { value: 'after', i18nKey: 'yearType.after' },
+  { value: 'unknown', i18nKey: 'yearType.unknown' },
 ]
 
 function useRowList<T>(initial: T[]) {
@@ -82,19 +83,20 @@ function Fieldset({ title, en, children }: { title: string; en?: string; childre
   )
 }
 
-function RowActions({ onRemove }: { onRemove: () => void }) {
+function RowActions({ onRemove, label }: { onRemove: () => void; label: string }) {
   return (
     <button
       type="button"
       onClick={onRemove}
       className="mt-1 h-9 shrink-0 rounded-sm border border-paperedge/25 px-3 text-xs text-paperdim hover:border-cinnabar hover:text-cinnabarlight"
     >
-      删除
+      {label}
     </button>
   )
 }
 
 export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
@@ -168,7 +170,7 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
         setAttachments(traitor.attachments)
         setRelatedIds(traitor.relatedIds)
       })
-      .catch((e) => setError(e instanceof Error ? e.message : '加载失败'))
+      .catch((e) => setError(e instanceof Error ? e.message : t('common.loadFailed')))
       .finally(() => setLoading(false))
   }, [mode, id])
 
@@ -191,7 +193,7 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
         setAttachments((a) => [...a, att])
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : '上传失败')
+      setError(e instanceof Error ? e.message : t('common.uploadFailed'))
     } finally {
       setUploading(false)
     }
@@ -200,9 +202,9 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!form.name.trim()) return setError('请填写姓名')
-    if (!form.summary.trim()) return setError('请填写人物概述')
-    if (!form.changeSummary.trim()) return setError('请填写修改内容摘要（供审核参考）')
+    if (!form.name.trim()) return setError(t('traitorForm.nameRequired'))
+    if (!form.summary.trim()) return setError(t('traitorForm.summaryRequired'))
+    if (!form.changeSummary.trim()) return setError(t('traitorForm.changeSummaryRequired'))
 
     const payload: TraitorInput & { changeSummary: string } = {
       name: form.name.trim(),
@@ -242,43 +244,43 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
       else if (id) await api.updateTraitor(id, payload)
       navigate('/profile')
     } catch (err) {
-      setError(err instanceof Error ? err.message : '提交失败')
+      setError(err instanceof Error ? err.message : t('traitorForm.submitFailed'))
     } finally {
       setBusy(false)
     }
   }
 
-  if (loading) return <div className="container-page py-24 text-center text-paperdim">加载中…</div>
+  if (loading) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
 
   return (
     <div className="container-page max-w-4xl py-10">
       <h1 className="section-title">
         <span className="text-xl font-semibold tracking-[0.25em] text-paper">
-          {mode === 'create' ? '提交新档案' : '编辑档案'}
+          {mode === 'create' ? t('traitorForm.createTitle') : t('traitorForm.editTitle')}
         </span>
         <span className="font-garamond text-xs italic text-bronzelight">
           {mode === 'create' ? 'NEW ARCHIVE' : 'EDIT ARCHIVE'}
         </span>
       </h1>
-      <p className="mt-3 text-sm text-paperdim">提交后将进入待审核状态，审核通过方会发布生效。</p>
+      <p className="mt-3 text-sm text-paperdim">{t('traitorForm.reviewHint')}</p>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
-        <Fieldset title="基本信息" en="BASIC">
+        <Fieldset title={t('traitorForm.basicInfo')} en="BASIC">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <label className="label" htmlFor="name">姓名 *</label>
+              <label className="label" htmlFor="name">{t('traitorForm.form.name')}</label>
               <input id="name" className="input" value={form.name} onChange={(e) => update('name', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="courtesy">字</label>
+              <label className="label" htmlFor="courtesy">{t('traitorForm.form.courtesyName')}</label>
               <input id="courtesy" className="input" value={form.courtesyName} onChange={(e) => update('courtesyName', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="pseudonym">号</label>
+              <label className="label" htmlFor="pseudonym">{t('traitorForm.form.pseudonym')}</label>
               <input id="pseudonym" className="input" value={form.pseudonym} onChange={(e) => update('pseudonym', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="birthYear">出生年份</label>
+              <label className="label" htmlFor="birthYear">{t('traitorForm.form.birthYear')}</label>
               <div className="flex gap-2">
                 <input
                   id="birthYear"
@@ -292,14 +294,14 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
                   value={form.birthYearType}
                   onChange={(e) => update('birthYearType', e.target.value as YearType)}
                 >
-                  {YEAR_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
+                  {YEAR_TYPE_VALUES.map((yt) => (
+                    <option key={yt.value} value={yt.value}>{t(yt.i18nKey)}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div>
-              <label className="label" htmlFor="deathYear">去世年份</label>
+              <label className="label" htmlFor="deathYear">{t('traitorForm.form.deathYear')}</label>
               <div className="flex gap-2">
                 <input
                   id="deathYear"
@@ -313,70 +315,70 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
                   value={form.deathYearType}
                   onChange={(e) => update('deathYearType', e.target.value as YearType)}
                 >
-                  {YEAR_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
+                  {YEAR_TYPE_VALUES.map((yt) => (
+                    <option key={yt.value} value={yt.value}>{t(yt.i18nKey)}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div>
-              <label className="label" htmlFor="nativePlace">籍贯</label>
+              <label className="label" htmlFor="nativePlace">{t('traitorForm.form.nativePlace')}</label>
               <input id="nativePlace" className="input" value={form.nativePlace} onChange={(e) => update('nativePlace', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="birthPlace">出生地</label>
+              <label className="label" htmlFor="birthPlace">{t('traitorForm.form.birthPlace')}</label>
               <input id="birthPlace" className="input" value={form.birthPlace} onChange={(e) => update('birthPlace', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="period">历史时期 *</label>
+              <label className="label" htmlFor="period">{t('traitorForm.form.period')}</label>
               <select id="period" className="input" value={form.period} onChange={(e) => update('period', e.target.value as Period)}>
                 {PERIODS.map((p) => (
-                  <option key={p} value={p}>{p}</option>
+                  <option key={p} value={p}>{periodLabel(p, t)}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="label" htmlFor="faction">派系 / 伪政权</label>
+              <label className="label" htmlFor="faction">{t('traitorForm.form.faction')}</label>
               <input id="faction" className="input" value={form.faction} onChange={(e) => update('faction', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="aliases">别名（逗号分隔）</label>
+              <label className="label" htmlFor="aliases">{t('traitorForm.form.aliases')}</label>
               <input id="aliases" className="input" value={form.aliasesText} onChange={(e) => update('aliasesText', e.target.value)} />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
-              <label className="label" htmlFor="tags">身份标签（逗号分隔）</label>
-              <input id="tags" className="input" placeholder="如：伪政权要员，战犯" value={form.identityTagsText} onChange={(e) => update('identityTagsText', e.target.value)} />
+              <label className="label" htmlFor="tags">{t('traitorForm.form.tags')}</label>
+              <input id="tags" className="input" placeholder={t('traitorForm.form.tagsPlaceholder')} value={form.identityTagsText} onChange={(e) => update('identityTagsText', e.target.value)} />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
-              <label className="label" htmlFor="summary">人物概述 *</label>
+              <label className="label" htmlFor="summary">{t('traitorForm.form.summary')}</label>
               <textarea id="summary" rows={5} className="input" value={form.summary} onChange={(e) => update('summary', e.target.value)} />
             </div>
           </div>
         </Fieldset>
 
-        <Fieldset title="生平事件" en="LIFE EVENTS">
+        <Fieldset title={t('traitorForm.lifeEvents')} en="LIFE EVENTS">
           <div className="space-y-3">
             {lifeEvents.map((ev, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[90px_1fr_1fr_auto]">
                 <input
                   type="number"
                   className="input font-garamond"
-                  placeholder="年份"
+                  placeholder={t('traitorForm.form.year')}
                   value={ev.year ?? ''}
                   onChange={(e) => lifeCtl.patch(i, { year: e.target.value === '' ? null : Number(e.target.value) })}
                 />
-                <input className="input" placeholder="事件描述" value={ev.event} onChange={(e) => lifeCtl.patch(i, { event: e.target.value })} />
-                <input className="input" placeholder="出处" value={ev.sourceRef ?? ''} onChange={(e) => lifeCtl.patch(i, { sourceRef: e.target.value })} />
-                <RowActions onRemove={() => lifeCtl.remove(i)} />
+                <input className="input" placeholder={t('traitorForm.form.eventDesc')} value={ev.event} onChange={(e) => lifeCtl.patch(i, { event: e.target.value })} />
+                <input className="input" placeholder={t('traitorForm.form.sourceRef')} value={ev.sourceRef ?? ''} onChange={(e) => lifeCtl.patch(i, { sourceRef: e.target.value })} />
+                <RowActions onRemove={() => lifeCtl.remove(i)} label={t('common.delete')} />
               </div>
             ))}
             <button type="button" onClick={() => lifeCtl.add({ year: null, event: '', sourceRef: '' })} className="btn-ghost !py-1.5 text-xs">
-              + 添加生平事件
+              {t('traitorForm.addLifeEvent')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="犯罪记录" en="CRIMES">
+        <Fieldset title={t('traitorForm.crimes')} en="CRIMES">
           <div className="space-y-4">
             {crimeRecords.map((c, i) => (
               <div key={i} className="rounded-sm border border-paperedge/15 p-4">
@@ -384,85 +386,85 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
                   <input
                     type="number"
                     className="input font-garamond"
-                    placeholder="年份"
+                    placeholder={t('traitorForm.form.year')}
                     value={c.year ?? ''}
                     onChange={(e) => crimeCtl.patch(i, { year: e.target.value === '' ? null : Number(e.target.value) })}
                   />
-                  <input className="input" placeholder="事件名称 *" value={c.title} onChange={(e) => crimeCtl.patch(i, { title: e.target.value })} />
-                  <RowActions onRemove={() => crimeCtl.remove(i)} />
+                  <input className="input" placeholder={t('traitorForm.form.name')} value={c.title} onChange={(e) => crimeCtl.patch(i, { title: e.target.value })} />
+                  <RowActions onRemove={() => crimeCtl.remove(i)} label={t('common.delete')} />
                 </div>
-                <textarea rows={2} className="input mt-2" placeholder="经过" value={c.process ?? ''} onChange={(e) => crimeCtl.patch(i, { process: e.target.value })} />
+                <textarea rows={2} className="input mt-2" placeholder={t('traitorForm.form.process')} value={c.process ?? ''} onChange={(e) => crimeCtl.patch(i, { process: e.target.value })} />
                 <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <textarea rows={2} className="input" placeholder="危害" value={c.harm ?? ''} onChange={(e) => crimeCtl.patch(i, { harm: e.target.value })} />
-                  <input className="input" placeholder="史料出处" value={c.sourceRef ?? ''} onChange={(e) => crimeCtl.patch(i, { sourceRef: e.target.value })} />
+                  <textarea rows={2} className="input" placeholder={t('traitorForm.form.harm')} value={c.harm ?? ''} onChange={(e) => crimeCtl.patch(i, { harm: e.target.value })} />
+                  <input className="input" placeholder={t('traitorForm.form.sourceRef')} value={c.sourceRef ?? ''} onChange={(e) => crimeCtl.patch(i, { sourceRef: e.target.value })} />
                 </div>
               </div>
             ))}
             <button type="button" onClick={() => crimeCtl.add({ year: null, title: '', process: '', harm: '', sourceRef: '' })} className="btn-ghost !py-1.5 text-xs">
-              + 添加犯罪记录
+              {t('traitorForm.addCrime')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="家族信息" en="FAMILY">
-          <p className="mb-2 text-xs tracking-widest text-paperdim">配偶</p>
+        <Fieldset title={t('traitorForm.family')} en="FAMILY">
+          <p className="mb-2 text-xs tracking-widest text-paperdim">{t('traitorForm.spouse')}</p>
           <div className="space-y-2">
             {spouses.map((s, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_2fr_auto]">
-                <input className="input" placeholder="姓名 *" value={s.name} onChange={(e) => spouseCtl.patch(i, { name: e.target.value })} />
-                <input className="input" placeholder="备注" value={s.remark ?? ''} onChange={(e) => spouseCtl.patch(i, { remark: e.target.value })} />
-                <RowActions onRemove={() => spouseCtl.remove(i)} />
+                <input className="input" placeholder={t('traitorForm.form.namePlaceholder')} value={s.name} onChange={(e) => spouseCtl.patch(i, { name: e.target.value })} />
+                <input className="input" placeholder={t('traitorForm.form.remark')} value={s.remark ?? ''} onChange={(e) => spouseCtl.patch(i, { remark: e.target.value })} />
+                <RowActions onRemove={() => spouseCtl.remove(i)} label={t('common.delete')} />
               </div>
             ))}
             <button type="button" onClick={() => spouseCtl.add({ name: '', remark: '' })} className="btn-ghost !py-1.5 text-xs">
-              + 添加配偶
+              {t('traitorForm.addSpouse')}
             </button>
           </div>
 
-          <p className="mb-2 mt-6 text-xs tracking-widest text-paperdim">子女</p>
+          <p className="mb-2 mt-6 text-xs tracking-widest text-paperdim">{t('traitorForm.children')}</p>
           <div className="space-y-2">
             {children.map((c, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_100px_1fr_1fr_auto]">
-                <input className="input" placeholder="姓名 *" value={c.name} onChange={(e) => childCtl.patch(i, { name: e.target.value })} />
+                <input className="input" placeholder={t('traitorForm.form.namePlaceholder')} value={c.name} onChange={(e) => childCtl.patch(i, { name: e.target.value })} />
                 <select className="input" value={c.gender ?? ''} onChange={(e) => childCtl.patch(i, { gender: e.target.value })}>
-                  <option value="">性别</option>
-                  <option value="男">男</option>
-                  <option value="女">女</option>
-                  <option value="不详">不详</option>
+                  <option value="">{t('traitorForm.form.gender')}</option>
+                  <option value="男">{t('traitorForm.form.male')}</option>
+                  <option value="女">{t('traitorForm.form.female')}</option>
+                  <option value="不详">{t('common.unknown')}</option>
                 </select>
-                <input className="input" placeholder="去向" value={c.whereabouts ?? ''} onChange={(e) => childCtl.patch(i, { whereabouts: e.target.value })} />
-                <input className="input" placeholder="备注" value={c.remark ?? ''} onChange={(e) => childCtl.patch(i, { remark: e.target.value })} />
-                <RowActions onRemove={() => childCtl.remove(i)} />
+                <input className="input" placeholder={t('traitorForm.form.destination')} value={c.whereabouts ?? ''} onChange={(e) => childCtl.patch(i, { whereabouts: e.target.value })} />
+                <input className="input" placeholder={t('traitorForm.form.remark')} value={c.remark ?? ''} onChange={(e) => childCtl.patch(i, { remark: e.target.value })} />
+                <RowActions onRemove={() => childCtl.remove(i)} label={t('common.delete')} />
               </div>
             ))}
             <button type="button" onClick={() => childCtl.add({ name: '', gender: '', whereabouts: '', remark: '' })} className="btn-ghost !py-1.5 text-xs">
-              + 添加子女
+              {t('traitorForm.addChild')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="居住地变迁" en="RESIDENCES">
+        <Fieldset title={t('traitorForm.residences')} en="RESIDENCES">
           <div className="space-y-2">
             {residences.map((r, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_140px_1fr_auto]">
-                <input className="input" placeholder="地点 *" value={r.place} onChange={(e) => residenceCtl.patch(i, { place: e.target.value })} />
-                <input className="input" placeholder="时期" value={r.period ?? ''} onChange={(e) => residenceCtl.patch(i, { period: e.target.value })} />
-                <input className="input" placeholder="备注" value={r.remark ?? ''} onChange={(e) => residenceCtl.patch(i, { remark: e.target.value })} />
-                <RowActions onRemove={() => residenceCtl.remove(i)} />
+                <input className="input" placeholder={t('traitorForm.form.location')} value={r.place} onChange={(e) => residenceCtl.patch(i, { place: e.target.value })} />
+                <input className="input" placeholder={t('common.period')} value={r.period ?? ''} onChange={(e) => residenceCtl.patch(i, { period: e.target.value })} />
+                <input className="input" placeholder={t('traitorForm.form.remark')} value={r.remark ?? ''} onChange={(e) => residenceCtl.patch(i, { remark: e.target.value })} />
+                <RowActions onRemove={() => residenceCtl.remove(i)} label={t('common.delete')} />
               </div>
             ))}
             <button type="button" onClick={() => residenceCtl.add({ place: '', period: '', remark: '' })} className="btn-ghost !py-1.5 text-xs">
-              + 添加居住地
+              {t('traitorForm.addResidence')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="照片与罪证" en="ATTACHMENTS">
+        <Fieldset title={t('traitorForm.photosAndEvidence')} en="ATTACHMENTS">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <p className="mb-2 text-xs tracking-widest text-paperdim">人物照片</p>
+              <p className="mb-2 text-xs tracking-widest text-paperdim">{t('traitorForm.photo')}</p>
               <label className="flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-paperedge/30 px-4 py-8 text-sm text-paperdim hover:border-bronzelight hover:text-paper">
-                {uploading ? '上传中…' : '点击选择图片（可多选）'}
+                {uploading ? t('traitorForm.uploading') : t('traitorForm.selectImages')}
                 <input type="file" accept="image/*" multiple hidden onChange={(e) => handleUpload(e.target.files, 'photo')} />
               </label>
               <ul className="mt-3 space-y-2">
@@ -471,7 +473,7 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
                     <img src={resolveAssetUrl(a.url)} alt="" className="h-12 w-12 shrink-0 rounded-sm object-cover" />
                     <input
                       className="input !py-1.5 text-xs"
-                      placeholder="图片说明"
+                      placeholder={t('traitorForm.imageCaption')}
                       value={a.caption ?? ''}
                       onChange={(e) =>
                         setAttachments((list) => list.map((x) => (x.id === a.id ? { ...x, caption: e.target.value } : x)))
@@ -482,16 +484,16 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
                       onClick={() => setAttachments((list) => list.filter((x) => x.id !== a.id))}
                       className="shrink-0 text-xs text-paperdim hover:text-cinnabarlight"
                     >
-                      移除
+                      {t('traitorForm.remove')}
                     </button>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <p className="mb-2 text-xs tracking-widest text-paperdim">罪证材料</p>
+              <p className="mb-2 text-xs tracking-widest text-paperdim">{t('traitorForm.evidence')}</p>
               <label className="flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-paperedge/30 px-4 py-8 text-sm text-paperdim hover:border-cinnabar hover:text-paper">
-                {uploading ? '上传中…' : '点击选择文件（可多选）'}
+                {uploading ? t('traitorForm.uploading') : t('traitorForm.selectFiles')}
                 <input type="file" multiple hidden onChange={(e) => handleUpload(e.target.files, 'evidence')} />
               </label>
               <ul className="mt-3 space-y-2">
@@ -502,7 +504,7 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
                     </span>
                     <input
                       className="input !py-1.5 text-xs"
-                      placeholder="材料说明"
+                      placeholder={t('traitorForm.evidenceCaption')}
                       value={a.caption ?? ''}
                       onChange={(e) =>
                         setAttachments((list) => list.map((x) => (x.id === a.id ? { ...x, caption: e.target.value } : x)))
@@ -513,7 +515,7 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
                       onClick={() => setAttachments((list) => list.filter((x) => x.id !== a.id))}
                       className="shrink-0 text-xs text-paperdim hover:text-cinnabarlight"
                     >
-                      移除
+                      {t('traitorForm.remove')}
                     </button>
                   </li>
                 ))}
@@ -522,34 +524,34 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
           </div>
         </Fieldset>
 
-        <Fieldset title="史料来源" en="REFERENCES">
+        <Fieldset title={t('traitorForm.references')} en="REFERENCES">
           <div className="space-y-2">
             {sources.map((s, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_110px_auto]">
-                <input className="input" placeholder="引用文献 *" value={s.citation} onChange={(e) => sourceCtl.patch(i, { citation: e.target.value })} />
+                <input className="input" placeholder={t('traitorForm.form.reference')} value={s.citation} onChange={(e) => sourceCtl.patch(i, { citation: e.target.value })} />
                 <select
                   className="input"
                   value={s.credibility ?? 3}
                   onChange={(e) => sourceCtl.patch(i, { credibility: Number(e.target.value) })}
                 >
                   {[5, 4, 3, 2, 1].map((n) => (
-                    <option key={n} value={n}>可信度 {'★'.repeat(n)}</option>
+                    <option key={n} value={n}>{t('traitorDetail.credibility', { count: n })}</option>
                   ))}
                 </select>
-                <RowActions onRemove={() => sourceCtl.remove(i)} />
+                <RowActions onRemove={() => sourceCtl.remove(i)} label={t('common.delete')} />
               </div>
             ))}
             <button type="button" onClick={() => sourceCtl.add({ citation: '', credibility: 3 })} className="btn-ghost !py-1.5 text-xs">
-              + 添加史料来源
+              {t('traitorForm.addReference')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="相关人物" en="RELATED">
+        <Fieldset title={t('traitorForm.related')} en="RELATED">
           {relatedIds.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-2">
               {relatedIds.map((rid) => {
-                const t = candidates.find((c) => c.id === rid)
+                const tr = candidates.find((c) => c.id === rid)
                 return (
                   <button
                     key={rid}
@@ -557,7 +559,7 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
                     onClick={() => setRelatedIds((ids) => ids.filter((x) => x !== rid))}
                     className="badge border-cinnabar/60 bg-cinnabar/15 text-cinnabarlight"
                   >
-                    {t?.name ?? rid} ✕
+                    {tr?.name ?? rid} ✕
                   </button>
                 )
               })}
@@ -577,14 +579,14 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
               ))}
             </div>
           )}
-          {candidates.length === 0 && <p className="text-xs text-paperdim/60">暂无可关联的档案</p>}
+          {candidates.length === 0 && <p className="text-xs text-paperdim/60">{t('traitorForm.noRelated')}</p>}
         </Fieldset>
 
-        <Fieldset title="修改内容摘要" en="CHANGE SUMMARY">
+        <Fieldset title={t('traitorForm.changeSummary')} en="CHANGE SUMMARY">
           <textarea
             rows={3}
             className="input"
-            placeholder="简述本次提交/修改的内容，供审核参考 *"
+            placeholder={t('traitorForm.changeSummaryPlaceholder')}
             value={form.changeSummary}
             onChange={(e) => update('changeSummary', e.target.value)}
           />
@@ -596,10 +598,10 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
 
         <div className="flex items-center justify-end gap-3 pb-10">
           <button type="button" onClick={() => navigate(-1)} className="btn-ghost">
-            取消
+            {t('common.cancel')}
           </button>
           <button type="submit" className="btn-primary min-w-36" disabled={busy || uploading}>
-            {busy ? '提交中…' : mode === 'create' ? '提交档案（待审核）' : '提交修改（待审核）'}
+            {busy ? t('common.submitInProgress') : mode === 'create' ? t('traitorForm.submitBtn') : t('traitorForm.submitChangeBtn')}
           </button>
         </div>
       </form>

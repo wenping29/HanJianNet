@@ -1,0 +1,225 @@
+{
+  "@@locale": "ko",
+  "appTitle": "매국노 기록 · HanJianNet",
+  "appLogoText": "매국노\n기록",
+  "navHome": "홈",
+  "navSearch": "검색",
+  "navMine": "마이",
+  "networkError": "네트워크 요청에 실패했습니다. API 주소와 인터넷 연결을 확인하세요.",
+  "requestFailed": "요청이 실패했습니다 ({statusCode})",
+  "@requestFailed": {
+    "description": "Error message with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "업로드가 실패했습니다 ({statusCode})",
+  "@uploadFailed": {
+    "description": "File upload failed with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "미상",
+  "circa": "약",
+  "before": "전",
+  "after": "후",
+  "approved": "승인됨",
+  "rejected": "반려됨",
+  "pending": "검토 대기",
+  "retry": "재시도",
+  "noRecords": "기록 없음",
+  "archives": "매국노 기록",
+  "figures": "인물 목록",
+  "totalArchives": "총 기록 수",
+  "apiSettings": "API 설정",
+  "apiBaseUrlHint": "Web API 기본 주소 (Android 에뮬레이터에서 호스트에 접속할 때는 10.0.2.2 사용)",
+  "cancel": "취소",
+  "save": "저장",
+  "saved": "저장됨: {url}",
+  "@saved": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "로그인",
+  "emailOrUsername": "이메일 / 사용자 이름",
+  "password": "비밀번호",
+  "loggingIn": "로그인 중…",
+  "loginButton": "로그인",
+  "noAccount": "계정이 없으신가요? 회원가입",
+  "fillAllFields": "모든 항목을 입력해 주세요",
+  "invalidEmail": "이메일 형식이 올바르지 않습니다",
+  "passwordTooShort": "비밀번호는 8자 이상이어야 합니다",
+  "passwordMismatch": "비밀번호가 일치하지 않습니다",
+  "register": "회원가입",
+  "username": "사용자 이름",
+  "email": "이메일",
+  "passwordHint": "비밀번호 (최소 8자)",
+  "confirmPassword": "비밀번호 확인",
+  "registering": "가입 중…",
+  "registerButton": "가입",
+  "hasAccount": "이미 계정이 있으신가요? 로그인",
+  "allPeriods": "전체",
+  "lateSong": "송말",
+  "lateMing": "명말",
+  "lateQing": "청말",
+  "republic": "민국",
+  "other": "기타",
+  "searchButton": "검색",
+  "nameLabel": "이름",
+  "nameHint": "인물 이름 부분 일치 검색",
+  "yearFrom": "연도 시작",
+  "yearFromHint": "예: 1937",
+  "yearTo": "연도 끝",
+  "yearToHint": "예: 1945",
+  "eventKeyword": "사건 키워드",
+  "nativePlace": "출신지",
+  "searching": "검색 중…",
+  "noResults": "조건에 맞는 기록이 없습니다",
+  "noPublishedArchives": "아직 공개된 기록이 없습니다",
+  "personalCenter": "마이페이지",
+  "exitButton": "로그아웃",
+  "mySubmissions": "제출 내역",
+  "mySubmissionsTitle": "제출 기록",
+  "loginForSubmissions": "로그인하면 제출 내역과 검토 상태를 볼 수 있습니다",
+  "loginForMySubmissions": "로그인하면 내 제출 기록과 검토 상태를 볼 수 있습니다",
+  "goToLogin": "로그인하러 가기",
+  "noSubmissions": "아직 제출한 기록이나 수정이 없습니다",
+  "submitNewArchive": "새 기록 제출",
+  "modifyArchive": "기록 수정",
+  "changeContent": "수정 내용: {summary}",
+  "@changeContent": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedAt": "제출일 {time}",
+  "@submittedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewedAt": "검토일 {time}",
+  "@reviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewer": " · 검토자: {name}",
+  "@reviewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewComment": " · 의견: {comment}",
+  "@reviewComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "로그아웃",
+  "editArchive": "기록 편집",
+  "pleaseLoginFirst": "먼저 로그인하세요",
+  "nameRequired": "이름 *",
+  "nameInput": "이름을 입력하세요",
+  "changeDescription": "수정 설명 *",
+  "changeDescriptionInput": "수정 설명을 입력하세요",
+  "submitButton": "제출",
+  "archiveDetail": "기록 상세",
+  "courtesyName": "자: {name}",
+  "@courtesyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pseudonym": "호: {name}",
+  "@pseudonym": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lifeSpan": "생몰",
+  "nativePlaceDetail": "출신지",
+  "faction": "파벌",
+  "aliases": "별명",
+  "summaryTitle": "인물 개요",
+  "noSummary": "개요 없음",
+  "timeline": "생애 연표",
+  "sourceRef": "출처: {source}",
+  "@sourceRef": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "criminalRecords": "범죄 기록",
+  "process": "경과: {detail}",
+  "@process": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "harm": "피해: {detail}",
+  "@harm": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceMaterial": "사료 출처: {reference}",
+  "@sourceMaterial": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "familyAndResidence": "가족과 거주",
+  "spouse": "배우자",
+  "children": "자녀",
+  "genderLabel": "성별",
+  "whereabouts": "행방",
+  "residenceChanges": "거주지 변천",
+  "photos": "인물 사진",
+  "evidence": "죄증 자료",
+  "document": "문서",
+  "revisionHistory": "수정 이력",
+  "reviewedBy": " · 심사: {name}",
+  "@reviewedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRevisions": "수정 이력 없음",
+  "editThisArchive": "이 기록 수정",
+  "sources": "참고 자료",
+  "language": "언어",
+  "chooseLanguage": "언어 선택"
+}

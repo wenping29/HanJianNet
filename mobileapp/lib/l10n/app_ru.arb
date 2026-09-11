@@ -1,0 +1,225 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Архив предателей · HanJianNet",
+  "appLogoText": "Архив\nпредателей",
+  "navHome": "Главная",
+  "navSearch": "Поиск",
+  "navMine": "Моё",
+  "networkError": "Сбой сетевого запроса. Проверьте адрес API и подключение к интернету.",
+  "requestFailed": "Запрос не удался ({statusCode})",
+  "@requestFailed": {
+    "description": "Error message with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "Загрузка не удалась ({statusCode})",
+  "@uploadFailed": {
+    "description": "File upload failed with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "Неизвестно",
+  "circa": "ок. ",
+  "before": " до н.э.",
+  "after": " н.э.",
+  "approved": "Одобрено",
+  "rejected": "Отклонено",
+  "pending": "На рассмотрении",
+  "retry": "Повторить",
+  "noRecords": "Нет записей",
+  "archives": "Архив предателей",
+  "figures": "Персоны",
+  "totalArchives": "Всего архивов",
+  "apiSettings": "Настройки API",
+  "apiBaseUrlHint": "Базовый адрес Web API (на эмуляторе Android используйте 10.0.2.2 для доступа к хосту)",
+  "cancel": "Отмена",
+  "save": "Сохранить",
+  "saved": "Сохранено: {url}",
+  "@saved": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "Вход",
+  "emailOrUsername": "Почта / Имя пользователя",
+  "password": "Пароль",
+  "loggingIn": "Вход…",
+  "loginButton": "ВОЙТИ",
+  "noAccount": "Нет аккаунта? Регистрация",
+  "fillAllFields": "Заполните все поля",
+  "invalidEmail": "Некорректный формат почты",
+  "passwordTooShort": "Пароль не короче 8 символов",
+  "passwordMismatch": "Пароли не совпадают",
+  "register": "Регистрация",
+  "username": "Имя пользователя",
+  "email": "Почта",
+  "passwordHint": "Пароль (не менее 8 символов)",
+  "confirmPassword": "Подтвердите пароль",
+  "registering": "Регистрация…",
+  "registerButton": "ЗАРЕГИСТРИРОВАТЬ",
+  "hasAccount": "Уже есть аккаунт? Войти",
+  "allPeriods": "Все",
+  "lateSong": "Конец Сун",
+  "lateMing": "Конец Мин",
+  "lateQing": "Конец Цин",
+  "republic": "Республика",
+  "other": "Другое",
+  "searchButton": "НАЙТИ",
+  "nameLabel": "Имя",
+  "nameHint": "Нечёткий поиск по имени",
+  "yearFrom": "Год с",
+  "yearFromHint": "напр. 1937",
+  "yearTo": "Год по",
+  "yearToHint": "напр. 1945",
+  "eventKeyword": "Ключевое слово события",
+  "nativePlace": "Родной край",
+  "searching": "Поиск…",
+  "noResults": "Подходящих архивов нет",
+  "noPublishedArchives": "Опубликованных архивов пока нет",
+  "personalCenter": "Профиль",
+  "exitButton": "Выйти",
+  "mySubmissions": "МОИ ЗАЯВКИ",
+  "mySubmissionsTitle": "МОИ ЗАЯВКИ",
+  "loginForSubmissions": "Войдите, чтобы видеть свои заявки и статус проверки",
+  "loginForMySubmissions": "Войдите, чтобы видеть личные заявки и статус проверки",
+  "goToLogin": "Перейти к входу",
+  "noSubmissions": "Пока нет поданных архивов или правок",
+  "submitNewArchive": "Подать новый архив",
+  "modifyArchive": "Изменить архив",
+  "changeContent": "Изменения: {summary}",
+  "@changeContent": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedAt": "Подано {time}",
+  "@submittedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewedAt": "Проверено {time}",
+  "@reviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewer": " · Проверяющий: {name}",
+  "@reviewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewComment": " · Мнение: {comment}",
+  "@reviewComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Выйти",
+  "editArchive": "Редактировать архив",
+  "pleaseLoginFirst": "Сначала войдите",
+  "nameRequired": "Имя *",
+  "nameInput": "Введите имя",
+  "changeDescription": "Описание изменений *",
+  "changeDescriptionInput": "Введите описание изменений",
+  "submitButton": "ОТПРАВИТЬ",
+  "archiveDetail": "Детали архива",
+  "courtesyName": "Прозвище: {name}",
+  "@courtesyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pseudonym": "Псевдоним: {name}",
+  "@pseudonym": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lifeSpan": "Годы жизни",
+  "nativePlaceDetail": "Родной край",
+  "faction": "Фракция",
+  "aliases": "Псевдонимы",
+  "summaryTitle": "Обзор",
+  "noSummary": "Нет обзора",
+  "timeline": "Хронология",
+  "sourceRef": "Источник: {source}",
+  "@sourceRef": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "criminalRecords": "Преступления",
+  "process": "Ход: {detail}",
+  "@process": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "harm": "Вред: {detail}",
+  "@harm": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceMaterial": "Исторический источник: {reference}",
+  "@sourceMaterial": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "familyAndResidence": "Семья и место жительства",
+  "spouse": "Супруг(а)",
+  "children": "Дети",
+  "genderLabel": "Пол",
+  "whereabouts": "Местонахождение",
+  "residenceChanges": "Переезды",
+  "photos": "Фотографии",
+  "evidence": "Улики",
+  "document": "Док",
+  "revisionHistory": "Ревизии",
+  "reviewedBy": " · Проверил: {name}",
+  "@reviewedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRevisions": "Пока нет ревизий",
+  "editThisArchive": "Изменить этот архив",
+  "sources": "Источники",
+  "language": "Язык",
+  "chooseLanguage": "Выбрать язык"
+}

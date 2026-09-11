@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { ROLE_LABELS } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 
 export default function Profile() {
+  const { t } = useTranslation()
   const { user, setAuth } = useAuth()
   const token = useAuth((s) => s.token)
 
@@ -29,9 +31,9 @@ export default function Profile() {
     try {
       const data = await api.updateProfile(form)
       if (token) setAuth(token, data.user)
-      setProfileMsg('个人信息已更新')
+      setProfileMsg(t('profile.updateSuccess'))
     } catch (e) {
-      setProfileErr(e instanceof Error ? e.message : '保存失败')
+      setProfileErr(e instanceof Error ? e.message : t('profile.updateFailed'))
     } finally {
       setSavingProfile(false)
     }
@@ -41,16 +43,16 @@ export default function Profile() {
     setPwdErr('')
     setPwdMsg('')
     if (pwd.newPassword !== pwd.confirm) {
-      setPwdErr('两次输入的新密码不一致')
+      setPwdErr(t('profile.passwordMismatch'))
       return
     }
     setSavingPwd(true)
     try {
       await api.changePassword({ currentPassword: pwd.currentPassword, newPassword: pwd.newPassword })
-      setPwdMsg('密码修改成功')
+      setPwdMsg(t('profile.passwordChanged'))
       setPwd({ currentPassword: '', newPassword: '', confirm: '' })
     } catch (e) {
-      setPwdErr(e instanceof Error ? e.message : '密码修改失败')
+      setPwdErr(e instanceof Error ? e.message : t('profile.passwordChangeFailed'))
     } finally {
       setSavingPwd(false)
     }
@@ -59,25 +61,27 @@ export default function Profile() {
   return (
     <div className="container-page max-w-3xl py-10">
       <header className="animate-fade-up">
-        <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">个人信息</h1>
+        <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('profile.title')}</h1>
         <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">My Profile</p>
       </header>
 
       <section className="card animate-fade-up mt-6 p-6">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-paperdim">
           <span>
-            用户名：<span className="text-paper">{user.username}</span>
+            {t('profile.usernameLabel')}<span className="text-paper">{user.username}</span>
           </span>
           <span>
-            角色：<span className="badge border-bronze/60 bg-bronze/15 text-bronzelight">{ROLE_LABELS[user.role]}</span>
+            {t('profile.roleLabel')}<span className="badge border-bronze/60 bg-bronze/15 text-bronzelight">{ROLE_LABELS[user.role]}</span>
           </span>
-          <span className="font-garamond text-xs text-paperdim/70">注册于 {new Date(user.createdAt).toLocaleDateString()}</span>
+          <span className="font-garamond text-xs text-paperdim/70">
+            {t('profile.registeredAt', { date: new Date(user.createdAt).toLocaleDateString() })}
+          </span>
         </div>
 
-        <h2 className="mt-6 text-sm font-semibold tracking-[0.25em] text-paper">基本信息</h2>
+        <h2 className="mt-6 text-sm font-semibold tracking-[0.25em] text-paper">{t('profile.basicInfo')}</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-            用户名
+            {t('profile.username')}
             <input
               className="input"
               value={form.username}
@@ -85,7 +89,7 @@ export default function Profile() {
             />
           </label>
           <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-            邮箱
+            {t('profile.email')}
             <input
               className="input"
               value={form.email}
@@ -96,15 +100,15 @@ export default function Profile() {
         {profileMsg && <p className="mt-3 text-sm text-bronzelight">{profileMsg}</p>}
         {profileErr && <p className="mt-3 text-sm text-cinnabarlight">{profileErr}</p>}
         <button type="button" className="btn-primary mt-4" disabled={savingProfile} onClick={handleProfile}>
-          {savingProfile ? '保存中…' : '保存基本信息'}
+          {savingProfile ? t('common.saveInProgress') : t('common.saveBasicInfo')}
         </button>
       </section>
 
       <section className="card animate-fade-up mt-6 p-6">
-        <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">修改密码</h2>
+        <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">{t('profile.changePassword')}</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-            当前密码
+            {t('profile.currentPassword')}
             <input
               className="input"
               type="password"
@@ -113,7 +117,7 @@ export default function Profile() {
             />
           </label>
           <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-            新密码（至少 8 位）
+            {t('profile.newPassword')}
             <input
               className="input"
               type="password"
@@ -122,7 +126,7 @@ export default function Profile() {
             />
           </label>
           <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-            确认新密码
+            {t('profile.confirmNewPassword')}
             <input
               className="input"
               type="password"
@@ -134,7 +138,7 @@ export default function Profile() {
         {pwdMsg && <p className="mt-3 text-sm text-bronzelight">{pwdMsg}</p>}
         {pwdErr && <p className="mt-3 text-sm text-cinnabarlight">{pwdErr}</p>}
         <button type="button" className="btn-primary mt-4" disabled={savingPwd} onClick={handlePassword}>
-          {savingPwd ? '提交中…' : '修改密码'}
+          {savingPwd ? t('common.submitInProgress') : t('profile.changePassword')}
         </button>
       </section>
     </div>

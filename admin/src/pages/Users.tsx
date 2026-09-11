@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { ROLE_LABELS, ROLE_OPTIONS, canAssignRole, canManageUsers, roleRank } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -14,6 +15,7 @@ interface CreateForm {
 const EMPTY_CREATE: CreateForm = { username: '', email: '', password: '', role: 'user' }
 
 export default function Users() {
+  const { t } = useTranslation()
   const me = useAuth((s) => s.user)!
   const [items, setItems] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
@@ -34,9 +36,9 @@ export default function Users() {
       const data = await api.users()
       setItems(data.items)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -85,10 +87,10 @@ export default function Users() {
       await api.createUser(createForm)
       setShowCreate(false)
       setCreateForm(EMPTY_CREATE)
-      flash('用户创建成功')
+      flash(t('users.createSuccess'))
       await reload()
     } catch (e) {
-      setError(e instanceof Error ? e.message : '创建失败')
+      setError(e instanceof Error ? e.message : t('users.createFailed'))
     } finally {
       setCreating(false)
     }
@@ -109,10 +111,10 @@ export default function Users() {
         password: editForm.password || undefined,
       })
       setEditingId(null)
-      flash('用户信息已更新')
+      flash(t('users.updateSuccess'))
       await reload()
     } catch (e) {
-      setError(e instanceof Error ? e.message : '保存失败')
+      setError(e instanceof Error ? e.message : t('users.updateFailed'))
     } finally {
       setSavingId(null)
     }
@@ -122,22 +124,22 @@ export default function Users() {
     setError('')
     try {
       await api.changeRole(u.id, role)
-      flash(`已将 ${u.username} 的角色调整为 ${ROLE_LABELS[role]}`)
+      flash(t('users.roleChanged', { username: u.username, role: ROLE_LABELS[role] }))
       await reload()
     } catch (e) {
-      setError(e instanceof Error ? e.message : '角色调整失败')
+      setError(e instanceof Error ? e.message : t('users.roleChangeFailed'))
     }
   }
 
   const handleDelete = async (u: User) => {
-    if (!window.confirm(`确定删除用户「${u.username}」？该操作不可恢复。`)) return
+    if (!window.confirm(t('users.deleteConfirm', { username: u.username }))) return
     setError('')
     try {
       await api.deleteUser(u.id)
-      flash('用户已删除')
+      flash(t('users.deleteSuccess'))
       await reload()
     } catch (e) {
-      setError(e instanceof Error ? e.message : '删除失败')
+      setError(e instanceof Error ? e.message : t('users.deleteFailed'))
     }
   }
 
@@ -147,12 +149,12 @@ export default function Users() {
     <div className="container-page py-10">
       <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">用户管理</h1>
+          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('users.title')}</h1>
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">User Management</p>
         </div>
         {manageable && (
           <button type="button" className="btn-primary" onClick={openCreate}>
-            新增用户
+            {t('users.newUser')}
           </button>
         )}
       </header>
@@ -170,14 +172,14 @@ export default function Users() {
             className="card animate-fade-up w-full max-w-lg p-6"
             role="dialog"
             aria-modal="true"
-            aria-label="新增用户"
+            aria-label={t('users.newUser')}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">新增用户</h2>
+              <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">{t('users.newUser')}</h2>
               <button
                 type="button"
-                aria-label="关闭"
+                aria-label={t('common.close')}
                 className="flex h-8 w-8 items-center justify-center rounded-sm border border-paperedge/40 text-paperdim transition hover:border-cinnabar hover:text-cinnabarlight"
                 onClick={closeCreate}
               >
@@ -186,16 +188,16 @@ export default function Users() {
             </div>
             <div className="mt-5 grid gap-4">
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                用户名
+                {t('users.username')}
                 <input
                   className="input"
                   value={createForm.username}
                   onChange={(e) => setCreateForm({ ...createForm, username: e.target.value })}
-                  placeholder="至少 2 个字符"
+                  placeholder={t('users.usernamePlaceholder')}
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                邮箱
+                {t('users.email')}
                 <input
                   className="input"
                   value={createForm.email}
@@ -204,17 +206,17 @@ export default function Users() {
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                初始密码
+                {t('users.initialPassword')}
                 <input
                   className="input"
                   type="password"
                   value={createForm.password}
                   onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
-                  placeholder="至少 8 位"
+                  placeholder={t('users.passwordPlaceholder')}
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                角色
+                {t('users.role')}
                 <select
                   className="input"
                   value={createForm.role}
@@ -235,10 +237,10 @@ export default function Users() {
             )}
             <div className="mt-6 flex justify-end gap-3">
               <button type="button" className="btn-ghost" disabled={creating} onClick={closeCreate}>
-                取消
+                {t('common.cancel')}
               </button>
               <button type="button" className="btn-primary" disabled={creating} onClick={handleCreate}>
-                {creating ? '创建中…' : '创建'}
+                {creating ? t('common.createInProgress') : t('common.create')}
               </button>
             </div>
           </div>
@@ -246,21 +248,21 @@ export default function Users() {
       )}
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无用户</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('users.noUsers')}</p>
         </div>
       ) : (
         <div className="card mt-6 overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
               <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                <th className="px-5 py-3 font-medium">用户名</th>
-                <th className="px-5 py-3 font-medium">邮箱</th>
-                <th className="px-5 py-3 font-medium">角色</th>
-                <th className="px-5 py-3 font-medium">注册时间</th>
-                <th className="px-5 py-3 text-right font-medium">操作</th>
+                <th className="px-5 py-3 font-medium">{t('users.username')}</th>
+                <th className="px-5 py-3 font-medium">{t('users.email')}</th>
+                <th className="px-5 py-3 font-medium">{t('users.role')}</th>
+                <th className="px-5 py-3 font-medium">{t('common.registeredAt')}</th>
+                <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
               </tr>
             </thead>
             <tbody>
@@ -280,7 +282,7 @@ export default function Users() {
                       ) : (
                         <span className="font-medium tracking-wider text-paper">
                           {u.username}
-                          {u.id === me.id && <span className="ml-2 text-xs text-paperdim/60">（我）</span>}
+                          {u.id === me.id && <span className="ml-2 text-xs text-paperdim/60">{t('users.me')}</span>}
                         </span>
                       )}
                     </td>
@@ -331,14 +333,14 @@ export default function Users() {
                                 disabled={savingId === u.id}
                                 onClick={() => handleSaveEdit(u)}
                               >
-                                {savingId === u.id ? '保存中…' : '保存'}
+                                {savingId === u.id ? t('common.saveInProgress') : t('common.save')}
                               </button>
                               <button
                                 type="button"
                                 className="btn-ghost !px-3 !py-1.5 text-xs"
                                 onClick={() => setEditingId(null)}
                               >
-                                取消
+                                {t('common.cancel')}
                               </button>
                             </>
                           ) : (
@@ -348,14 +350,14 @@ export default function Users() {
                                 className="btn-ghost !px-3 !py-1.5 text-xs"
                                 onClick={() => startEdit(u)}
                               >
-                                编辑
+                                {t('common.edit')}
                               </button>
                               <button
                                 type="button"
                                 className="btn-ghost !px-3 !py-1.5 text-xs !text-cinnabarlight"
                                 onClick={() => handleDelete(u)}
                               >
-                                删除
+                                {t('common.delete')}
                               </button>
                             </>
                           ))}

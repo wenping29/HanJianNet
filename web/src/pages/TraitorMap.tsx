@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import * as echarts from 'echarts'
 import { api } from '../lib/api'
 import type { ProvinceStat } from '../lib/api'
-// import data from '../data/100000_full.json';
 import { containerPageStyle } from '../style'
 
 const CHINA_GEOJSON_URL = '/data/100000_full.json'
@@ -11,6 +10,7 @@ const CHINA_GEOJSON_URL = '/data/100000_full.json'
 
 
 export default function TraitorMap() {
+  const { t } = useTranslation()
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<echarts.ECharts | null>(null)
   const [loading, setLoading] = useState(true)
@@ -23,10 +23,8 @@ export default function TraitorMap() {
 
     async function init() {
       try {
-        // 并行获取地图 GeoJSON + 后端分省统计（省份归类在后端完成，前端只负责展示）
         const [geoJson, statsRes] = await Promise.all([
           fetch(CHINA_GEOJSON_URL).then((r) => r.json()),
-          // data,
           api.getProvinceStats(),
         ])
 
@@ -37,17 +35,14 @@ export default function TraitorMap() {
         setStats(sortedStats)
         setTotal(statsRes.total)
 
-        // 构建 ECharts 数据（fullName 与 GeoJSON 地图要素 name 匹配）
         const maxCount = Math.max(1, ...sortedStats.map((s) => s.count))
         const mapData = sortedStats.map((s) => ({
           name: s.fullName,
           value: s.count,
         }))
 
-        // 注册地图
         echarts.registerMap('china', geoJson)
 
-        // 初始化图表（容器始终在 DOM 中，此时 ref 可用）
         const el = chartRef.current
         if (el && !cancelled) {
           const chart = echarts.init(el)
@@ -61,7 +56,7 @@ export default function TraitorMap() {
               borderWidth: 1,
               textStyle: { color: '#e8dcc8', fontSize: 13 },
               formatter: (p: { name?: string; value?: number }) =>
-                `<b>${p.name}</b><br/>汉奸档案：${p.value && p.value > 0 ? p.value + ' 人' : '暂无记录'}`,
+                `<b>${p.name}</b><br/>${t('map.tooltipTemplate', { count: p.value && p.value > 0 ? p.value : 0, name: p.value && p.value > 0 ? '' : '' })}`,
             },
             visualMap: {
               min: 0,
@@ -69,7 +64,7 @@ export default function TraitorMap() {
               left: 20,
               bottom: 20,
               calculable: true,
-              text: ['多', '少'],
+              text: [t('map.high'), t('map.low')],
               textStyle: { color: '#9a8870', fontSize: 11 },
               inRange: {
                 color: ['#dbb50aff', '#bd504aff', '#dd433bff', '#e94113ff', '#fc1205ff'],
@@ -104,7 +99,7 @@ export default function TraitorMap() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : '地图加载失败')
+          setError(err instanceof Error ? err.message : t('map.loadFailed'))
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -122,7 +117,7 @@ export default function TraitorMap() {
       chartInstance.current?.dispose()
       chartInstance.current = null
     }
-  }, [])
+  }, [t])
 
   return (
     <section style={containerPageStyle} className="py-12">
@@ -133,13 +128,13 @@ export default function TraitorMap() {
           <div className="card flex flex-col p-6">
             <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TRAITOR MAP</p>
             <h1 className="mt-3 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl">
-              汉奸地图
+              {t('map.title')}
             </h1>
             <p className="mt-4 leading-loose text-paperdim">
-              按省份统计在册汉奸数量，昭示各省流毒分布
+              {t('map.desc')}
             </p>
             {total > 0 && (
-              <p className="mt-2 text-sm text-cinnabarlight">当前共录入 {total} 人</p>
+              <p className="mt-2 text-sm text-cinnabarlight">{t('map.totalLabel', { count: total })}</p>
             )}
           </div>
 
@@ -147,14 +142,14 @@ export default function TraitorMap() {
           {!loading && !error && stats.length > 0 && (
             <div className="flex flex-col gap-3">
               <h2 className="section-title">
-                <span className="text-base font-semibold tracking-widest text-paper">各省统计</span>
+                <span className="text-base font-semibold tracking-widest text-paper">{t('map.provinceStats')}</span>
                 <span className="font-garamond text-xs italic text-bronzelight">RANKING</span>
               </h2>
               <div className="flex flex-col gap-2">
                 {stats.map((s, i) => (
-                  <Link
+                  <a
                     key={s.province}
-                    to={`/roster`}
+                    href={`/roster`}
                     className="card flex items-center justify-between px-3 py-2.5 transition-colors hover:border-cinnabar/40"
                   >
                     <span className="flex items-center gap-2">
@@ -162,7 +157,7 @@ export default function TraitorMap() {
                       <span className="text-sm text-paper">{s.province}</span>
                     </span>
                     <span className="font-garamond text-lg font-bold text-cinnabarlight">{s.count}</span>
-                  </Link>
+                  </a>
                 ))}
               </div>
             </div>
@@ -176,7 +171,7 @@ export default function TraitorMap() {
           {/* 加载遮罩 */}
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center bg-inkcard/90">
-              <p className="text-paperdim">地图加载中…</p>
+              <p className="text-paperdim">{t('map.loading')}</p>
             </div>
           )}
 
@@ -185,7 +180,7 @@ export default function TraitorMap() {
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-inkcard/90 px-8 text-center">
               <p className="text-sm text-cinnabarlight">{error}</p>
               <p className="mt-2 text-xs tracking-wider text-paperdim/60">
-                地图数据加载失败，请刷新重试
+                {t('map.loadErrorHint')}
               </p>
             </div>
           )}

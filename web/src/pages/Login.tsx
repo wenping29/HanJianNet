@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
 
 export default function Login() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const setAuth = useAuth((s) => s.setAuth)
@@ -22,7 +24,7 @@ export default function Login() {
       const from = (location.state as { from?: string } | null)?.from ?? '/'
       navigate(from, { replace: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : '登录失败')
+      setError(err instanceof Error ? err.message : t('auth.loginFailed'))
     } finally {
       setBusy(false)
     }
@@ -32,12 +34,12 @@ export default function Login() {
     <div className="ink-hero flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-16">
       <div className="card animate-fade-up w-full max-w-md p-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-[0.3em] text-paper">登 录</h1>
+          <h1 className="text-2xl font-bold tracking-[0.3em] text-paper">{t('auth.loginTitle')}</h1>
           <p className="mt-2 font-garamond text-xs italic text-bronzelight">Sign in to contribute</p>
         </div>
         <form onSubmit={submit} className="mt-8 space-y-5">
           <div>
-            <label className="label" htmlFor="account">邮箱 / 用户名</label>
+            <label className="label" htmlFor="account">{t('auth.account')}</label>
             <input
               id="account"
               className="input"
@@ -48,7 +50,7 @@ export default function Login() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="password">密码</label>
+            <label className="label" htmlFor="password">{t('auth.password')}</label>
             <input
               id="password"
               type="password"
@@ -63,13 +65,13 @@ export default function Login() {
             <p className="rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-3 py-2 text-sm text-cinnabarlight">{error}</p>
           )}
           <button type="submit" className="btn-primary w-full" disabled={busy}>
-            {busy ? '登录中…' : '登录'}
+            {busy ? t('auth.loggingIn') : t('auth.login')}
           </button>
         </form>
         <p className="mt-6 text-center text-sm text-paperdim">
-          尚无账号？
+          {t('auth.noAccount')}
           <Link to="/register" state={location.state} className="ml-1 text-bronzelight underline underline-offset-4 hover:text-paper">
-            立即注册
+            {t('auth.registerLink')}
           </Link>
         </p>
       </div>

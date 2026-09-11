@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -12,6 +13,7 @@ interface WebMenuForm {
 }
 
 export default function WebMenus() {
+  const { t } = useTranslation()
   const me = useAuth((s) => s.user)!
   const [items, setItems] = useState<WebMenu[]>([])
   const [loading, setLoading] = useState(true)
@@ -29,9 +31,9 @@ export default function WebMenus() {
       const data = await api.listWebMenus()
       setItems(data.items)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -86,10 +88,10 @@ export default function WebMenus() {
         sort: m.sort,
         isEnabled: !m.isEnabled,
       })
-      flash(`菜单「${m.label}」已${!m.isEnabled ? '启用' : '停用'}`)
+      flash(t(!m.isEnabled ? 'webMenus.enableSuccess' : 'webMenus.disableSuccess', { label: m.label }))
     } catch {
-      setItems(prev) // 回滚
-      setError('操作失败')
+      setItems(prev)
+      setError(t('webMenus.operationFailed'))
     }
   }
 
@@ -99,11 +101,11 @@ export default function WebMenus() {
     setError('')
     try {
       await api.updateWebMenu(editing.id, form)
-      flash(`菜单「${form.label}」已更新`)
+      flash(t('webMenus.updateSuccess', { label: form.label }))
       setShowForm(false)
       await reload()
     } catch (e) {
-      setError(e instanceof Error ? e.message : '保存失败')
+      setError(e instanceof Error ? e.message : t('webMenus.updateFailed'))
     } finally {
       setSaving(false)
     }
@@ -115,13 +117,13 @@ export default function WebMenus() {
     <div className="container-page py-10">
       <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">前台菜单</h1>
+          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('webMenus.title')}</h1>
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Web Menu Configuration</p>
         </div>
         <p className="text-xs leading-relaxed text-paperdim/70">
-          配置前台（web 项目）导航菜单的启用/停用、显示名称、路径与排序。
+          {t('webMenus.description')}
           <br />
-          停用后菜单将从前台导航栏隐藏，不影响路由本身。
+          {t('webMenus.hint')}
         </p>
       </header>
 
@@ -133,23 +135,23 @@ export default function WebMenus() {
       )}
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无前台菜单数据</p>
-          <p className="mt-2 text-xs text-paperdim/50">请启动后端服务，种子数据将自动创建</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('webMenus.noData')}</p>
+          <p className="mt-2 text-xs text-paperdim/50">{t('webMenus.startBackend')}</p>
         </div>
       ) : (
         <div className="card animate-fade-up mt-6 overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead>
               <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                <th className="px-5 py-3 font-medium">标识</th>
-                <th className="px-5 py-3 font-medium">名称</th>
-                <th className="px-5 py-3 font-medium">路径</th>
-                <th className="px-5 py-3 font-medium">排序</th>
-                <th className="px-5 py-3 font-medium">状态</th>
-                <th className="px-5 py-3 text-right font-medium">操作</th>
+                <th className="px-5 py-3 font-medium">{t('webMenus.identifier')}</th>
+                <th className="px-5 py-3 font-medium">{t('webMenus.label')}</th>
+                <th className="px-5 py-3 font-medium">{t('webMenus.path')}</th>
+                <th className="px-5 py-3 font-medium">{t('webMenus.sort')}</th>
+                <th className="px-5 py-3 font-medium">{t('webMenus.status')}</th>
+                <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
               </tr>
             </thead>
             <tbody>
@@ -167,7 +169,7 @@ export default function WebMenus() {
                         className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${
                           m.isEnabled ? 'bg-cinnabar/70' : 'bg-paperedge/30'
                         }`}
-                        title={m.isEnabled ? '点击停用' : '点击启用'}
+                        title={m.isEnabled ? t('webMenus.clickToDisable') : t('webMenus.clickToEnable')}
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-paper transition-transform ${
@@ -179,7 +181,7 @@ export default function WebMenus() {
                       <span
                         className={`badge ${m.isEnabled ? 'border-bronze/60 bg-bronze/15 text-bronzelight' : 'border-paperedge/40 bg-inkcard text-paperdim/50'}`}
                       >
-                        {m.isEnabled ? '启用' : '停用'}
+                        {m.isEnabled ? t('common.enable') : t('common.disable')}
                       </span>
                     )}
                   </td>
@@ -187,7 +189,7 @@ export default function WebMenus() {
                     <div className="flex justify-end">
                       {manageable && (
                         <button type="button" className="btn-ghost !px-3 !py-1.5 text-xs" onClick={() => openEdit(m)}>
-                          编辑
+                          {t('webMenus.editMenu')}
                         </button>
                       )}
                     </div>
@@ -205,14 +207,14 @@ export default function WebMenus() {
             className="card animate-fade-up w-full max-w-lg p-6"
             role="dialog"
             aria-modal="true"
-            aria-label="修改前台菜单"
+            aria-label={t('webMenus.editTitle')}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">修改前台菜单</h2>
+              <h2 className="text-sm font-semibold tracking-[0.25em] text-paper">{t('webMenus.editTitle')}</h2>
               <button
                 type="button"
-                aria-label="关闭"
+                aria-label={t('common.close')}
                 className="flex h-8 w-8 items-center justify-center rounded-sm border border-paperedge/40 text-paperdim transition hover:border-cinnabar hover:text-cinnabarlight"
                 onClick={closeForm}
               >
@@ -220,20 +222,20 @@ export default function WebMenus() {
               </button>
             </div>
             <p className="mt-2 text-xs text-paperdim/50">
-              标识 <code className="font-garamond text-bronzelight/70">{editing.key}</code> 不可修改
+              {t('webMenus.identifierNotModifiable', { key: editing.key })}
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                名称
+                {t('webMenus.label')}
                 <input
                   className="input"
                   value={form.label}
                   onChange={(e) => setForm({ ...form, label: e.target.value })}
-                  placeholder="如 首页"
+                  placeholder={t('webMenus.labelPlaceholder')}
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                路径
+                {t('webMenus.path')}
                 <input
                   className="input"
                   value={form.path}
@@ -242,7 +244,7 @@ export default function WebMenus() {
                 />
               </label>
               <label className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                排序
+                {t('webMenus.sort')}
                 <input
                   className="input"
                   type="number"
@@ -252,7 +254,7 @@ export default function WebMenus() {
                 />
               </label>
               <div className="flex flex-col gap-1.5 text-xs tracking-widest text-paperdim">
-                状态
+                {t('webMenus.status')}
                 <div className="flex h-9 items-center gap-3">
                   <button
                     type="button"
@@ -268,7 +270,7 @@ export default function WebMenus() {
                     />
                   </button>
                   <span className="text-sm normal-case tracking-normal text-paper">
-                    {form.isEnabled ? '启用' : '停用'}
+                    {form.isEnabled ? t('common.enable') : t('common.disable')}
                   </span>
                 </div>
               </div>
@@ -280,10 +282,10 @@ export default function WebMenus() {
             )}
             <div className="mt-6 flex justify-end gap-3">
               <button type="button" className="btn-ghost" disabled={saving} onClick={closeForm}>
-                取消
+                {t('common.cancel')}
               </button>
               <button type="button" className="btn-primary" disabled={saving} onClick={handleSave}>
-                {saving ? '保存中…' : '保存'}
+                {saving ? t('common.saveInProgress') : t('common.save')}
               </button>
             </div>
           </div>

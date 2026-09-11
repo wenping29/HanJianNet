@@ -1,0 +1,225 @@
+{
+  "@@locale": "ja",
+  "appTitle": "売国奴ファイル · HanJianNet",
+  "appLogoText": "売国奴\nファイル",
+  "navHome": "ホーム",
+  "navSearch": "検索",
+  "navMine": "マイ",
+  "networkError": "ネットワークリクエストに失敗しました。API アドレスとインターネット接続を確認してください。",
+  "requestFailed": "リクエストに失敗しました（{statusCode}）",
+  "@requestFailed": {
+    "description": "Error message with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "アップロードに失敗しました（{statusCode}）",
+  "@uploadFailed": {
+    "description": "File upload failed with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "不明",
+  "circa": "約",
+  "before": "前",
+  "after": "後",
+  "approved": "承認済み",
+  "rejected": "却下",
+  "pending": "審査待ち",
+  "retry": "再試行",
+  "noRecords": "記録なし",
+  "archives": "売国奴ファイル",
+  "figures": "人物一覧",
+  "totalArchives": "ファイル総数",
+  "apiSettings": "API 設定",
+  "apiBaseUrlHint": "Web API ベースアドレス（Android エミュレーターからホストへは 10.0.2.2 を使用）",
+  "cancel": "キャンセル",
+  "save": "保存",
+  "saved": "保存しました：{url}",
+  "@saved": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "ログイン",
+  "emailOrUsername": "メール / ユーザー名",
+  "password": "パスワード",
+  "loggingIn": "ログイン中…",
+  "loginButton": "ログイン",
+  "noAccount": "アカウントをお持ちでない方は登録",
+  "fillAllFields": "すべての項目を入力してください",
+  "invalidEmail": "メールアドレスの形式が正しくありません",
+  "passwordTooShort": "パスワードは8文字以上必要です",
+  "passwordMismatch": "パスワードが一致しません",
+  "register": "登録",
+  "username": "ユーザー名",
+  "email": "メール",
+  "passwordHint": "パスワード（8文字以上）",
+  "confirmPassword": "パスワード（確認）",
+  "registering": "登録中…",
+  "registerButton": "登録",
+  "hasAccount": "アカウントをお持ちですか？ログイン",
+  "allPeriods": "すべて",
+  "lateSong": "宋末",
+  "lateMing": "明末",
+  "lateQing": "清末",
+  "republic": "民国",
+  "other": "その他",
+  "searchButton": "検索",
+  "nameLabel": "姓名",
+  "nameHint": "人物名によるあいまい検索",
+  "yearFrom": "年（始まり）",
+  "yearFromHint": "例 1937",
+  "yearTo": "年（終わり）",
+  "yearToHint": "例 1945",
+  "eventKeyword": "事件キーワード",
+  "nativePlace": "出身地",
+  "searching": "検索中…",
+  "noResults": "該当するファイルがありません",
+  "noPublishedArchives": "公開されたファイルはまだありません",
+  "personalCenter": "マイページ",
+  "exitButton": "ログアウト",
+  "mySubmissions": "マイ投稿",
+  "mySubmissionsTitle": "マイ投稿履歴",
+  "loginForSubmissions": "ログインすると投稿履歴と審査状況を確認できます",
+  "loginForMySubmissions": "ログインすると自分の投稿履歴と審査状況を確認できます",
+  "goToLogin": "ログインへ",
+  "noSubmissions": "まだ投稿や修正はありません",
+  "submitNewArchive": "新しいファイルを投稿",
+  "modifyArchive": "ファイルを修正",
+  "changeContent": "修正内容：{summary}",
+  "@changeContent": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedAt": "投稿日時 {time}",
+  "@submittedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewedAt": "審査日時 {time}",
+  "@reviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewer": " · 審査人：{name}",
+  "@reviewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewComment": " · 意見：{comment}",
+  "@reviewComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "ログアウト",
+  "editArchive": "ファイルを編集",
+  "pleaseLoginFirst": "先にログインしてください",
+  "nameRequired": "姓名 *",
+  "nameInput": "姓名を入力してください",
+  "changeDescription": "修正説明 *",
+  "changeDescriptionInput": "修正の説明を入力してください",
+  "submitButton": "送信",
+  "archiveDetail": "ファイルの詳細",
+  "courtesyName": "字：{name}",
+  "@courtesyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pseudonym": "号：{name}",
+  "@pseudonym": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lifeSpan": "生没年",
+  "nativePlaceDetail": "出身地",
+  "faction": "派閥",
+  "aliases": "別名",
+  "summaryTitle": "人物概要",
+  "noSummary": "概要なし",
+  "timeline": "年表",
+  "sourceRef": "出典：{source}",
+  "@sourceRef": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "criminalRecords": "犯罪記録",
+  "process": "経過：{detail}",
+  "@process": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "harm": "危害：{detail}",
+  "@harm": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceMaterial": "史料出典：{reference}",
+  "@sourceMaterial": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "familyAndResidence": "家族と居住",
+  "spouse": "配偶者",
+  "children": "子女",
+  "genderLabel": "性別",
+  "whereabouts": "去向",
+  "residenceChanges": "居住地の変遷",
+  "photos": "人物写真",
+  "evidence": "罪証資料",
+  "document": "文書",
+  "revisionHistory": "修正履歴",
+  "reviewedBy": " · 審査：{name}",
+  "@reviewedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRevisions": "修正履歴なし",
+  "editThisArchive": "このファイルを修正",
+  "sources": "参考文献",
+  "language": "言語",
+  "chooseLanguage": "言語を選択"
+}

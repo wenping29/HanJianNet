@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
+
 import '../services/api_client.dart';
 import '../services/session.dart';
 import '../widgets/theme.dart';
@@ -31,24 +33,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
+    final l10n = AppLocalizations.of(context)!;
     final username = _usernameCtrl.text.trim();
     final email = _emailCtrl.text.trim();
     final password = _passwordCtrl.text;
     final confirm = _confirmCtrl.text;
     if (username.isEmpty || email.isEmpty || password.isEmpty) {
-      setState(() => _error = '请填写完整信息');
+      setState(() => _error = l10n.fillAllFields);
       return;
     }
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
-      setState(() => _error = '邮箱格式不正确');
+      setState(() => _error = l10n.invalidEmail);
       return;
     }
     if (password.length < 8) {
-      setState(() => _error = '密码至少 8 位');
+      setState(() => _error = l10n.passwordTooShort);
       return;
     }
     if (password != confirm) {
-      setState(() => _error = '两次输入的密码不一致');
+      setState(() => _error = l10n.passwordMismatch);
       return;
     }
     setState(() {
@@ -69,35 +72,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('注册')),
+      appBar: AppBar(title: Text(l10n.register)),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
           TextField(
             controller: _usernameCtrl,
-            decoration: const InputDecoration(labelText: '用户名'),
+            decoration: InputDecoration(labelText: l10n.username),
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(labelText: '邮箱'),
+            decoration: InputDecoration(labelText: l10n.email),
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _passwordCtrl,
             obscureText: true,
-            decoration: const InputDecoration(labelText: '密码（至少 8 位）'),
+            decoration: InputDecoration(labelText: l10n.passwordHint),
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _confirmCtrl,
             obscureText: true,
-            decoration: const InputDecoration(labelText: '确认密码'),
+            decoration: InputDecoration(labelText: l10n.confirmPassword),
             onSubmitted: (_) => _submit(),
           ),
           if (_error != null)
@@ -108,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const SizedBox(height: 24),
           FilledButton(
             onPressed: _busy ? null : _submit,
-            child: Text(_busy ? '注册中…' : '注 册'),
+            child: Text(_busy ? l10n.registering : l10n.registerButton),
           ),
           const SizedBox(height: 12),
           OutlinedButton(
@@ -121,7 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 MaterialPageRoute(builder: (_) => const LoginScreen()),
               );
             },
-            child: const Text('已有账号？去登录'),
+            child: Text(l10n.hasAccount),
           ),
         ],
       ),

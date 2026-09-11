@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import { ROLE_LABELS } from '../../lib/roles'
 import type { QueryLogItem } from '../../types'
@@ -25,6 +26,7 @@ interface Filters {
 const EMPTY: Filters = { keyword: '', username: '', module: '', path: '', from: '', to: '' }
 
 export default function QueryLogs() {
+  const { t } = useTranslation()
   const [items, setItems] = useState<QueryLogItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -59,9 +61,9 @@ export default function QueryLogs() {
           : Math.max(1, Math.ceil(list.length / Math.max(1, pageSizeNum))),
       )
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -92,44 +94,44 @@ export default function QueryLogs() {
 
   return (
     <div className="container-page py-10">
-      <SectionTitle zh="查询日志" en="Query Audits" />
+      <SectionTitle zh={t('logs.queryLogs.title')} en="Query Audits" />
 
       <form
         className="animate-fade-up card mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5"
         onSubmit={onSubmit}
       >
-        <SearchField label="关键字（路径 / Query）">
+        <SearchField label={t('logs.queryLogs.keywordHint')}>
           <input
             className="input"
             value={form.keyword}
             onChange={(e) => setForm({ ...form, keyword: e.target.value })}
-            placeholder="模糊搜索"
+            placeholder={t('logs.queryLogs.keywordPlaceholder')}
           />
         </SearchField>
-        <SearchField label="用户名">
+        <SearchField label={t('common.username')}>
           <input
             className="input"
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
         </SearchField>
-        <SearchField label="模块">
+        <SearchField label={t('logs.queryLogs.module')}>
           <input
             className="input"
             value={form.module}
             onChange={(e) => setForm({ ...form, module: e.target.value })}
-            placeholder="如 traitors / province-stats"
+            placeholder={t('logs.queryLogs.pathPlaceholder')}
           />
         </SearchField>
-        <SearchField label="路径（包含）">
+        <SearchField label={t('logs.errorLogs.pathContains')}>
           <input
             className="input"
             value={form.path}
             onChange={(e) => setForm({ ...form, path: e.target.value })}
-            placeholder="/api/..."
+            placeholder={t('logs.queryLogs.pathHint')}
           />
         </SearchField>
-        <SearchField label="起始日期">
+        <SearchField label={t('common.startDate')}>
           <input
             type="date"
             className="input"
@@ -137,7 +139,7 @@ export default function QueryLogs() {
             onChange={(e) => setForm({ ...form, from: e.target.value })}
           />
         </SearchField>
-        <SearchField label="结束日期">
+        <SearchField label={t('common.endDate')}>
           <input
             type="date"
             className="input"
@@ -146,9 +148,9 @@ export default function QueryLogs() {
           />
         </SearchField>
         <div className="md:col-span-2 lg:col-span-5 flex justify-end gap-2">
-          <button type="button" className="btn-ghost" onClick={onReset}>重置</button>
+          <button type="button" className="btn-ghost" onClick={onReset}>{t('common.reset')}</button>
           <button type="submit" className="btn-bronze" disabled={loading}>
-            {loading ? '查询中…' : '查询'}
+            {loading ? t('logs.queryLogs.querying') : t('logs.queryLogs.query')}
           </button>
         </div>
       </form>
@@ -156,10 +158,10 @@ export default function QueryLogs() {
       <NoticeAndError error={error} />
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无查询日志</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('logs.queryLogs.noData')}</p>
         </div>
       ) : (
         <>
@@ -167,16 +169,16 @@ export default function QueryLogs() {
             <table className="w-full min-w-[1280px] text-left text-sm">
               <thead>
                 <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                  <th className="px-5 py-3 font-medium">时间</th>
-                  <th className="px-5 py-3 font-medium">用户</th>
-                  <th className="px-5 py-3 font-medium">模块</th>
-                  <th className="px-5 py-3 font-medium">方法</th>
-                  <th className="px-5 py-3 font-medium">路径</th>
-                  <th className="px-5 py-3 font-medium">命中数</th>
-                  <th className="px-5 py-3 font-medium">状态码</th>
-                  <th className="px-5 py-3 font-medium">耗时</th>
-                  <th className="px-5 py-3 font-medium">IP</th>
-                  <th className="px-5 py-3 font-medium">来源</th>
+                  <th className="px-5 py-3 font-medium">{t('common.time')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.user')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.queryLogs.module')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.queryLogs.method')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.queryLogs.path')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.queryLogs.hits')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.queryLogs.statusCode')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.operationLogs.duration')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.ip')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.origin')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -187,7 +189,7 @@ export default function QueryLogs() {
                     </td>
                     <td className="px-5 py-3">
                       <div className="leading-tight">
-                        <div className="font-medium text-paper">{l.username || '游客'}</div>
+                        <div className="font-medium text-paper">{l.username || t('common.guest')}</div>
                         <div className="font-garamond text-xs text-paperdim/70">
                           {l.role ? (ROLE_LABELS[l.role as keyof typeof ROLE_LABELS] ?? l.role) : ''}
                         </div>
@@ -228,7 +230,7 @@ export default function QueryLogs() {
               </tbody>
             </table>
           </div>
-          <Pagination total={total} page={page} totalPages={totalPages} loading={loading} label="查询日志" onGo={goPage} />
+          <Pagination total={total} page={page} totalPages={totalPages} loading={loading} label={t('logs.queryLogs.label')} onGo={goPage} />
         </>
       )}
     </div>

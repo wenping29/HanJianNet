@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
 
 export default function Register() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const setAuth = useAuth((s) => s.setAuth)
@@ -19,11 +21,11 @@ export default function Register() {
     e.preventDefault()
     setError('')
     if (form.password.length < 8) {
-      setError('密码至少 8 位')
+      setError(t('auth.passwordTooShort'))
       return
     }
     if (form.password !== form.confirm) {
-      setError('两次输入的密码不一致')
+      setError(t('auth.passwordMismatch'))
       return
     }
     setBusy(true)
@@ -37,7 +39,7 @@ export default function Register() {
       const from = (location.state as { from?: string } | null)?.from ?? '/'
       navigate(from, { replace: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : '注册失败')
+      setError(err instanceof Error ? err.message : t('auth.registerFailed'))
     } finally {
       setBusy(false)
     }
@@ -47,12 +49,12 @@ export default function Register() {
     <div className="ink-hero flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-16">
       <div className="card animate-fade-up w-full max-w-md p-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-[0.3em] text-paper">注 册</h1>
+          <h1 className="text-2xl font-bold tracking-[0.3em] text-paper">{t('auth.registerTitle')}</h1>
           <p className="mt-2 font-garamond text-xs italic text-bronzelight">Join the compilation</p>
         </div>
         <form onSubmit={submit} className="mt-8 space-y-5">
           <div>
-            <label className="label" htmlFor="username">用户名</label>
+            <label className="label" htmlFor="username">{t('auth.username')}</label>
             <input
               id="username"
               className="input"
@@ -63,7 +65,7 @@ export default function Register() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="email">邮箱</label>
+            <label className="label" htmlFor="email">{t('auth.email')}</label>
             <input
               id="email"
               type="email"
@@ -74,7 +76,7 @@ export default function Register() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="reg-password">密码（至少 8 位）</label>
+            <label className="label" htmlFor="reg-password">{t('auth.passwordMin')}</label>
             <input
               id="reg-password"
               type="password"
@@ -87,7 +89,7 @@ export default function Register() {
             />
           </div>
           <div>
-            <label className="label" htmlFor="confirm">确认密码</label>
+            <label className="label" htmlFor="confirm">{t('auth.confirmPassword')}</label>
             <input
               id="confirm"
               type="password"
@@ -102,13 +104,13 @@ export default function Register() {
             <p className="rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-3 py-2 text-sm text-cinnabarlight">{error}</p>
           )}
           <button type="submit" className="btn-primary w-full" disabled={busy}>
-            {busy ? '注册中…' : '注册'}
+            {busy ? t('auth.registering') : t('auth.register')}
           </button>
         </form>
         <p className="mt-6 text-center text-sm text-paperdim">
-          已有账号？
+          {t('auth.hasAccount')}
           <Link to="/login" state={location.state} className="ml-1 text-bronzelight underline underline-offset-4 hover:text-paper">
-            直接登录
+            {t('auth.loginLink')}
           </Link>
         </p>
       </div>

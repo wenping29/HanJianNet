@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { AdminMenuItem } from '../types'
 
 export interface MenuPickerProps {
@@ -59,6 +60,7 @@ function computeState(node: Node, valueSet: Set<string>): CheckState {
 }
 
 export default function MenuPicker({ menus, value, onChange, disabled, disabledKeys = [] }: MenuPickerProps) {
+  const { t } = useTranslation()
   const [keyword, setKeyword] = useState('')
   const { roots, byKey } = useMemo(() => buildTree(menus), [menus])
   const disabledSet = useMemo(() => new Set(disabledKeys), [disabledKeys])
@@ -143,14 +145,14 @@ export default function MenuPicker({ menus, value, onChange, disabled, disabledK
       <div className="flex flex-wrap items-center justify-between gap-3">
         <input
           className="input max-w-xs"
-          placeholder="搜索菜单名称或 Key…"
+          placeholder={t('menuPicker.searchPlaceholder')}
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           disabled={disabled}
         />
         <div className="flex flex-wrap items-center gap-2 text-xs tracking-wider text-paperdim/80">
           <span>
-            已选 <b className="text-bronzelight">{writableCheckedCount}</b> / {writableKeys.length}
+            {t('menuPicker.selected', { selected: writableCheckedCount, total: writableKeys.length })}
           </span>
           <button
             type="button"
@@ -158,7 +160,7 @@ export default function MenuPicker({ menus, value, onChange, disabled, disabledK
             onClick={selectAll}
             disabled={disabled || writableKeys.length === 0}
           >
-            全选
+            {t('menuPicker.selectAll')}
           </button>
           <button
             type="button"
@@ -166,14 +168,14 @@ export default function MenuPicker({ menus, value, onChange, disabled, disabledK
             onClick={clearAll}
             disabled={disabled || writableKeys.length === 0}
           >
-            清空
+            {t('menuPicker.clearAll')}
           </button>
         </div>
       </div>
 
       <div className="rounded-sm border border-paperedge/15 bg-ink/40 p-3">
         {displayTree.length === 0 ? (
-          <p className="py-12 text-center text-sm tracking-wider text-paperdim/60">没有匹配的菜单</p>
+          <p className="py-12 text-center text-sm tracking-wider text-paperdim/60">{t('menuPicker.noMatch')}</p>
         ) : (
           <ul className="space-y-0.5">
             {displayTree.map((n) => (
@@ -206,6 +208,7 @@ interface TreeNodeProps {
 }
 
 function TreeNode({ node, depth, valueSet, disabled, disabledSet, onToggleSubtree, setNode }: TreeNodeProps) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(true)
   const hasChildren = node.children.length > 0
   const state = computeState(node, valueSet)
@@ -222,7 +225,7 @@ function TreeNode({ node, depth, valueSet, disabled, disabledSet, onToggleSubtre
             type="button"
             className="w-5 text-xs text-paperdim/60 transition group-hover:text-paperdim"
             onClick={() => setExpanded((e) => !e)}
-            aria-label={expanded ? '折叠' : '展开'}
+            aria-label={expanded ? t('menuPicker.collapse') : t('menuPicker.expand')}
           >
             {expanded ? '▾' : '▸'}
           </button>
@@ -246,7 +249,7 @@ function TreeNode({ node, depth, valueSet, disabled, disabledSet, onToggleSubtre
           </span>
           {disabledSet.has(node.key) && (
             <span className="ml-2 rounded-sm bg-paperedge/15 px-1.5 py-0.5 text-[10px] tracking-wider text-paperdim/60">
-              固定
+              {t('menuPicker.fixed')}
             </span>
           )}
         </label>

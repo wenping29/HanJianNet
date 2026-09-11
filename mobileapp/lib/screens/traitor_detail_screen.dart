@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
+
 import '../models/models.dart';
 import '../services/api_client.dart';
 import '../services/session.dart';
@@ -53,6 +55,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     Widget body;
     if (_error != null) {
       body = ErrorRetry(message: _error!, onRetry: _load);
@@ -81,13 +84,14 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
       );
     }
     return Scaffold(
-      appBar: AppBar(title: Text(_traitor?.name ?? '档案详情')),
+      appBar: AppBar(title: Text(_traitor?.name ?? l10n.archiveDetail)),
       body: body,
       bottomNavigationBar: _traitor != null ? _bottomBar(_traitor!) : null,
     );
   }
 
   Widget _header(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
     final photo = t.photoUrl;
     return Card(
       child: Padding(
@@ -135,17 +139,17 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
                         [
-                          if (t.courtesyName?.isNotEmpty == true) '字：${t.courtesyName}',
-                          if (t.pseudonym?.isNotEmpty == true) '号：${t.pseudonym}',
+                          if (t.courtesyName?.isNotEmpty == true) l10n.courtesyName(t.courtesyName!),
+                          if (t.pseudonym?.isNotEmpty == true) l10n.pseudonym(t.pseudonym!),
                         ].join('　'),
                         style: TextStyle(fontSize: 12, letterSpacing: 1, color: AppTheme.paperDim),
                       ),
                     ),
                   const SizedBox(height: 10),
-                  _kv('生卒', formatLifeSpan(t)),
-                  _kv('籍贯', t.nativePlace.isEmpty ? '—' : t.nativePlace),
-                  if (t.faction.isNotEmpty) _kv('派系', t.faction),
-                  if (t.aliases.isNotEmpty) _kv('别名', t.aliases.join('、')),
+                  _kv(l10n.lifeSpan, formatLifeSpan(context, t)),
+                  _kv(l10n.nativePlaceDetail, t.nativePlace.isEmpty ? '—' : t.nativePlace),
+                  if (t.faction.isNotEmpty) _kv(l10n.faction, t.faction),
+                  if (t.aliases.isNotEmpty) _kv(l10n.aliases, t.aliases.join('、')),
                   if (t.identityTags.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
@@ -183,26 +187,30 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         ),
       );
 
-  Widget _summary(Traitor t) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SectionHeader(title: '人物概述', en: 'SUMMARY'),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Text(t.summary.isEmpty ? '暂无概述' : t.summary,
-                  style: TextStyle(height: 1.7, fontSize: 13.5, color: AppTheme.paper.withValues(alpha: 0.9))),
-            ),
+  Widget _summary(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(title: l10n.summaryTitle, en: 'SUMMARY'),
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Text(t.summary.isEmpty ? l10n.noSummary : t.summary,
+                style: TextStyle(height: 1.7, fontSize: 13.5, color: AppTheme.paper.withValues(alpha: 0.9))),
           ),
-        ],
-      );
+        ),
+      ],
+    );
+  }
 
   Widget _lifeEvents(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
     final events = [...t.lifeEvents]..sort((a, b) => (a.year ?? 0).compareTo(b.year ?? 0));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: '生平时间线', en: 'CHRONOLOGY'),
+        SectionHeader(title: l10n.timeline, en: 'CHRONOLOGY'),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -217,7 +225,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                           width: 52,
                           child: Align(
                             alignment: Alignment.topCenter,
-                            child: Text('${ev.year ?? '不详'}',
+                            child: Text('${ev.year ?? l10n.unknown}',
                                 style: TextStyle(fontSize: 13, color: AppTheme.bronzeLight)),
                           ),
                         ),
@@ -249,7 +257,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                                     style: TextStyle(
                                         fontSize: 13, height: 1.5, color: AppTheme.paper.withValues(alpha: 0.9))),
                                 if (ev.sourceRef?.isNotEmpty == true)
-                                  Text('出处：${ev.sourceRef}',
+                                  Text(l10n.sourceRef(ev.sourceRef!),
                                       style: TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.6))),
                               ],
                             ),
@@ -266,140 +274,146 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
     );
   }
 
-  Widget _crimeRecords(Traitor t) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SectionHeader(title: '犯罪记录', en: 'CRIMINAL RECORDS'),
-          for (final c in t.crimeRecords)
-            Card(
-              margin: const EdgeInsets.only(bottom: 10),
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Expanded(
-                          child: Text(c.title,
-                              style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 1, color: AppTheme.cinnabarLight)),
-                        ),
-                        Text('${c.year ?? '不详'}',
-                            style: TextStyle(fontSize: 15, color: AppTheme.bronzeLight)),
-                      ],
+  Widget _crimeRecords(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(title: l10n.criminalRecords, en: 'CRIMINAL RECORDS'),
+        for (final c in t.crimeRecords)
+          Card(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Expanded(
+                        child: Text(c.title,
+                            style: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 1, color: AppTheme.cinnabarLight)),
+                      ),
+                      Text('${c.year ?? l10n.unknown}',
+                          style: TextStyle(fontSize: 15, color: AppTheme.bronzeLight)),
+                    ],
+                  ),
+                  if (c.process?.isNotEmpty == true)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(l10n.process(c.process!),
+                          style: TextStyle(height: 1.6, fontSize: 12.5, color: AppTheme.paper.withValues(alpha: 0.85))),
                     ),
-                    if (c.process?.isNotEmpty == true)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text('经过：${c.process}',
-                            style: TextStyle(height: 1.6, fontSize: 12.5, color: AppTheme.paper.withValues(alpha: 0.85))),
-                      ),
-                    if (c.harm?.isNotEmpty == true)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Text('危害：${c.harm}',
-                            style: TextStyle(height: 1.6, fontSize: 12.5, color: AppTheme.paper.withValues(alpha: 0.85))),
-                      ),
-                    if (c.sourceRef?.isNotEmpty == true)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Text('史料出处：${c.sourceRef}',
-                            style: TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.6))),
-                      ),
-                  ],
-                ),
+                  if (c.harm?.isNotEmpty == true)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(l10n.harm(c.harm!),
+                          style: TextStyle(height: 1.6, fontSize: 12.5, color: AppTheme.paper.withValues(alpha: 0.85))),
+                    ),
+                  if (c.sourceRef?.isNotEmpty == true)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(l10n.sourceMaterial(c.sourceRef!),
+                          style: TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.6))),
+                    ),
+                ],
               ),
             ),
-        ],
-      );
+          ),
+      ],
+    );
+  }
 
-  Widget _family(Traitor t) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SectionHeader(title: '家族与居住', en: 'FAMILY'),
-          if (t.spouses.isNotEmpty)
-            Card(
-              margin: const EdgeInsets.only(bottom: 10),
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('配偶', style: TextStyle(fontSize: 12, letterSpacing: 2, color: AppTheme.cinnabarLight)),
-                    const SizedBox(height: 8),
-                    for (final s in t.spouses)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          s.remark?.isNotEmpty == true ? '${s.name}（${s.remark}）' : s.name,
-                          style: TextStyle(fontSize: 13, color: AppTheme.paper.withValues(alpha: 0.9)),
-                        ),
+  Widget _family(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(title: l10n.familyAndResidence, en: 'FAMILY'),
+        if (t.spouses.isNotEmpty)
+          Card(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.spouse, style: TextStyle(fontSize: 12, letterSpacing: 2, color: AppTheme.cinnabarLight)),
+                  const SizedBox(height: 8),
+                  for (final s in t.spouses)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        s.remark?.isNotEmpty == true ? '${s.name}（${s.remark}）' : s.name,
+                        style: TextStyle(fontSize: 13, color: AppTheme.paper.withValues(alpha: 0.9)),
                       ),
-                  ],
-                ),
-              ),
-            ),
-          if (t.children.isNotEmpty)
-            Card(
-              margin: const EdgeInsets.only(bottom: 10),
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('子女', style: TextStyle(fontSize: 12, letterSpacing: 2, color: AppTheme.cinnabarLight)),
-                    const SizedBox(height: 8),
-                    Table(
-                      columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1), 2: FlexColumnWidth(3)},
-                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                      children: [
-                        TableRow(
-                          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppTheme.cinnabar.withValues(alpha: 0.5)))),
-                          children: [
-                            _th('姓名'), _th('性别'), _th('去向'),
-                          ],
-                        ),
-                        for (final c in t.children)
-                          TableRow(
-                            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppTheme.paperDim.withValues(alpha: 0.1)))),
-                            children: [_td(c.name), _td(c.gender ?? '—'), _td(c.whereabouts ?? '—')],
-                          ),
-                      ],
                     ),
-                  ],
-                ),
+                ],
               ),
             ),
-          if (t.residences.isNotEmpty)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('居住地变迁', style: TextStyle(fontSize: 12, letterSpacing: 2, color: AppTheme.cinnabarLight)),
-                    const SizedBox(height: 8),
-                    for (final r in t.residences)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          [
-                            r.period?.isNotEmpty == true ? '${r.period}：' : '',
-                            r.place,
-                            if (r.remark?.isNotEmpty == true) '（${r.remark}）',
-                          ].join(),
-                          style: TextStyle(fontSize: 13, color: AppTheme.paper.withValues(alpha: 0.9)),
-                        ),
+          ),
+        if (t.children.isNotEmpty)
+          Card(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.children, style: TextStyle(fontSize: 12, letterSpacing: 2, color: AppTheme.cinnabarLight)),
+                  const SizedBox(height: 8),
+                  Table(
+                    columnWidths: const {0: FlexColumnWidth(2), 1: FlexColumnWidth(1), 2: FlexColumnWidth(3)},
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      TableRow(
+                        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppTheme.cinnabar.withValues(alpha: 0.5)))),
+                        children: [
+                          _th(l10n.nameLabel), _th(l10n.genderLabel), _th(l10n.whereabouts),
+                        ],
                       ),
-                  ],
-                ),
+                      for (final c in t.children)
+                        TableRow(
+                          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppTheme.paperDim.withValues(alpha: 0.1)))),
+                          children: [_td(c.name), _td(c.gender ?? '—'), _td(c.whereabouts ?? '—')],
+                        ),
+                    ],
+                  ),
+                ],
               ),
             ),
-        ],
-      );
+          ),
+        if (t.residences.isNotEmpty)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.residenceChanges, style: TextStyle(fontSize: 12, letterSpacing: 2, color: AppTheme.cinnabarLight)),
+                  const SizedBox(height: 8),
+                  for (final r in t.residences)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        [
+                          r.period?.isNotEmpty == true ? '${r.period}：' : '',
+                          r.place,
+                          if (r.remark?.isNotEmpty == true) '（${r.remark}）',
+                        ].join(),
+                        style: TextStyle(fontSize: 13, color: AppTheme.paper.withValues(alpha: 0.9)),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 
   Widget _th(String text) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
@@ -412,11 +426,12 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
       );
 
   Widget _photos(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
     final photos = t.attachments.where((a) => a.isPhoto).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: '人物照片', en: 'PHOTOGRAPHS'),
+        SectionHeader(title: l10n.photos, en: 'PHOTOGRAPHS'),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -487,11 +502,12 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
   }
 
   Widget _evidences(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
     final evidences = t.attachments.where((a) => !a.isPhoto).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: '罪证材料', en: 'EVIDENCE'),
+        SectionHeader(title: l10n.evidence, en: 'EVIDENCE'),
         Card(
           child: Column(
             children: [
@@ -513,9 +529,9 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                             border: Border.all(color: AppTheme.paperDim.withValues(alpha: 0.2)),
                             borderRadius: BorderRadius.circular(3),
                           ),
-                          child: Text('文', style: TextStyle(fontSize: 18, color: AppTheme.bronzeLight)),
+                          child: Text(l10n.document, style: TextStyle(fontSize: 18, color: AppTheme.bronzeLight)),
                         ),
-                  title: Text(ev.caption?.isNotEmpty == true ? ev.caption! : '罪证材料',
+                  title: Text(ev.caption?.isNotEmpty == true ? ev.caption! : l10n.evidence,
                       maxLines: 1, overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 13, color: AppTheme.paper)),
                   subtitle: Text(ev.fileType, style: TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.7))),
@@ -531,10 +547,11 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
   }
 
   Widget _sources(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: '史料来源', en: 'REFERENCES'),
+        SectionHeader(title: l10n.sources, en: 'REFERENCES'),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -566,10 +583,11 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
   }
 
   Widget _history(List<Revision> revs) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: '修改历史', en: 'REVISIONS'),
+        SectionHeader(title: l10n.revisionHistory, en: 'REVISIONS'),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -591,7 +609,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                                   style: TextStyle(fontSize: 12.5, color: AppTheme.paper.withValues(alpha: 0.9))),
                               Text(
                                 '${r.submitter?.username ?? r.submitterId} · ${formatDateTime(r.submittedAt)}'
-                                '${r.reviewer != null ? ' · 审核：${r.reviewer!.username}' : ''}',
+                                '${r.reviewer != null ? l10n.reviewedBy(r.reviewer!.username) : ''}',
                                 style: TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.7)),
                               ),
                             ],
@@ -600,7 +618,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                       ],
                     ),
                   ),
-                if (revs.isEmpty) const EmptyView(text: '暂无修改记录'),
+                if (revs.isEmpty) EmptyView(text: l10n.noRevisions),
               ],
             ),
           ),
@@ -610,6 +628,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
   }
 
   Widget _bottomBar(Traitor t) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.inkCard,
@@ -641,7 +660,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
             }
           },
           icon: const Icon(Icons.edit, size: 18),
-          label: const Text('修改此档案'),
+          label: Text(l10n.editThisArchive),
         ),
       ),
     );

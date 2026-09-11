@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList } from '../lib/format'
@@ -17,6 +18,15 @@ import type {
   TraitorSummary,
   YearType,
 } from '../types'
+
+const PERIOD_KEYS: Record<string, string> = {
+  '宋末': 'periods.lateSong',
+  '明末': 'periods.lateMing',
+  '清末': 'periods.lateQing',
+  '民国': 'periods.republic',
+  '抗日战争时期': 'periods.warOfResistance',
+  '其他': 'periods.other',
+}
 
 interface FormState {
   name: string
@@ -52,12 +62,12 @@ const EMPTY_FORM: FormState = {
   summary: '',
 }
 
-const YEAR_TYPES: Array<{ value: YearType; label: string }> = [
-  { value: 'exact', label: '确切' },
-  { value: 'approx', label: '约' },
-  { value: 'before', label: '之前' },
-  { value: 'after', label: '之后' },
-  { value: 'unknown', label: '不详' },
+const YEAR_TYPES: Array<{ value: YearType; key: string }> = [
+  { value: 'exact', key: 'yearTypes.exact' },
+  { value: 'approx', key: 'yearTypes.circa' },
+  { value: 'before', key: 'yearTypes.before' },
+  { value: 'after', key: 'yearTypes.after' },
+  { value: 'unknown', key: 'yearTypes.unknown' },
 ]
 
 function useRowList<T>(initial: T[]) {
@@ -83,18 +93,20 @@ function Fieldset({ title, en, children }: { title: string; en?: string; childre
 }
 
 function RowActions({ onRemove }: { onRemove: () => void }) {
+  const { t } = useTranslation()
   return (
     <button
       type="button"
       onClick={onRemove}
       className="mt-1 h-9 shrink-0 rounded-sm border border-paperedge/25 px-3 text-xs text-paperdim hover:border-cinnabar hover:text-cinnabarlight"
     >
-      删除
+      {t('common.delete')}
     </button>
   )
 }
 
 export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
@@ -186,9 +198,9 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         setAttachments(traitor.attachments)
         setRelatedIds(traitor.relatedIds)
       })
-      .catch((e) => setError(e instanceof Error ? e.message : '加载失败'))
+      .catch((e) => setError(e instanceof Error ? e.message : t('common.loadFailed')))
       .finally(() => setLoading(false))
-  }, [mode, id])
+  }, [mode, id, t])
 
   const relatedCandidates = useMemo(
     () => candidates.filter((c) => c.id !== id && !relatedIds.includes(c.id)),
@@ -214,7 +226,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         setAttachments((a) => [...a, att])
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : '上传失败')
+      setError(e instanceof Error ? e.message : t('common.uploadFailed'))
     } finally {
       setUploading(false)
     }
@@ -223,8 +235,8 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!form.name.trim()) return setError('请填写姓名')
-    if (!form.summary.trim()) return setError('请填写人物概述')
+    if (!form.name.trim()) return setError(t('traitorEditor.pleaseFillName'))
+    if (!form.summary.trim()) return setError(t('traitorEditor.pleaseFillSummary'))
 
     const payload: TraitorInput = {
       name: form.name.trim(),
@@ -261,27 +273,27 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
     try {
       if (mode === 'create') {
         await api.createTraitorDirect(payload)
-        flash('档案已创建')
+        flash(t('traitorEditor.createSuccess'))
       } else if (id) {
         await api.updateTraitorDirect(id, payload)
-        flash('档案已保存')
+        flash(t('traitorEditor.saveSuccess'))
       }
       navigate('/traitors', { replace: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : '保存失败')
+      setError(err instanceof Error ? err.message : t('traitorEditor.saveFailed'))
     } finally {
       setBusy(false)
     }
   }
 
-  if (loading) return <div className="container-page py-24 text-center text-paperdim">加载中…</div>
+  if (loading) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
 
   return (
     <div className="container-page max-w-4xl py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <header>
           <h1 className="text-xl font-semibold tracking-[0.25em] text-paper">
-            {mode === 'create' ? '新增汉奸档案' : '编辑汉奸档案'}
+            {mode === 'create' ? t('traitorEditor.createTitle') : t('traitorEditor.editTitle')}
           </h1>
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
             {mode === 'create' ? 'NEW ARCHIVE · ADMIN DIRECT' : 'EDIT ARCHIVE · ADMIN DIRECT'}
@@ -294,15 +306,15 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         )}
       </div>
       <p className="mt-3 text-sm text-paperdim">
-        管理员直接保存，<span className="text-bronzelight">无需审核，立即生效</span>。如需走审核流程请改为在公众站提交。
+        {t('traitorEditor.adminHint')}
       </p>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
-        <Fieldset title="基本信息" en="BASIC">
+        <Fieldset title={t('traitorEditor.basicInfo')} en="BASIC">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
               <label className="label" htmlFor="name">
-                姓名 *
+                {t('traitorEditor.form.name')}
               </label>
               <input
                 id="name"
@@ -313,7 +325,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div>
               <label className="label" htmlFor="courtesy">
-                字
+                {t('traitorEditor.form.courtesyName')}
               </label>
               <input
                 id="courtesy"
@@ -324,7 +336,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div>
               <label className="label" htmlFor="pseudonym">
-                号
+                {t('traitorEditor.form.pseudonym')}
               </label>
               <input
                 id="pseudonym"
@@ -335,7 +347,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div>
               <label className="label" htmlFor="birthYear">
-                出生年份
+                {t('traitorEditor.form.birthYear')}
               </label>
               <div className="flex gap-2">
                 <input
@@ -350,9 +362,9 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                   value={form.birthYearType}
                   onChange={(e) => update('birthYearType', e.target.value as YearType)}
                 >
-                  {YEAR_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
+                  {YEAR_TYPES.map((yt) => (
+                    <option key={yt.value} value={yt.value}>
+                      {t(yt.key)}
                     </option>
                   ))}
                 </select>
@@ -360,7 +372,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div>
               <label className="label" htmlFor="deathYear">
-                去世年份
+                {t('traitorEditor.form.deathYear')}
               </label>
               <div className="flex gap-2">
                 <input
@@ -375,9 +387,9 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                   value={form.deathYearType}
                   onChange={(e) => update('deathYearType', e.target.value as YearType)}
                 >
-                  {YEAR_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
+                  {YEAR_TYPES.map((yt) => (
+                    <option key={yt.value} value={yt.value}>
+                      {t(yt.key)}
                     </option>
                   ))}
                 </select>
@@ -385,7 +397,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div>
               <label className="label" htmlFor="nativePlace">
-                籍贯
+                {t('traitorEditor.form.nativePlace')}
               </label>
               <input
                 id="nativePlace"
@@ -396,7 +408,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div>
               <label className="label" htmlFor="birthPlace">
-                出生地
+                {t('traitorEditor.form.birthPlace')}
               </label>
               <input
                 id="birthPlace"
@@ -407,7 +419,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div>
               <label className="label" htmlFor="period">
-                历史时期 *
+                {t('traitorEditor.form.period')}
               </label>
               <select
                 id="period"
@@ -417,14 +429,14 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               >
                 {PERIODS.map((p) => (
                   <option key={p} value={p}>
-                    {p}
+                    {t(PERIOD_KEYS[p])}
                   </option>
                 ))}
               </select>
             </div>
             <div>
               <label className="label" htmlFor="faction">
-                派系 / 伪政权
+                {t('traitorEditor.form.faction')}
               </label>
               <input
                 id="faction"
@@ -435,7 +447,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div>
               <label className="label" htmlFor="aliases">
-                别名（逗号分隔）
+                {t('traitorEditor.form.aliases')}
               </label>
               <input
                 id="aliases"
@@ -446,19 +458,19 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
               <label className="label" htmlFor="tags">
-                身份标签（逗号分隔）
+                {t('traitorEditor.form.tags')}
               </label>
               <input
                 id="tags"
                 className="input"
-                placeholder="如：伪政权要员，战犯"
+                placeholder={t('traitorEditor.form.tagsPlaceholder')}
                 value={form.identityTagsText}
                 onChange={(e) => update('identityTagsText', e.target.value)}
               />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
               <label className="label" htmlFor="summary">
-                人物概述 *
+                {t('traitorEditor.form.summary')}
               </label>
               <textarea
                 id="summary"
@@ -471,14 +483,14 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
           </div>
         </Fieldset>
 
-        <Fieldset title="生平事件" en="LIFE EVENTS">
+        <Fieldset title={t('traitorEditor.lifeEvents')} en="LIFE EVENTS">
           <div className="space-y-3">
             {lifeEvents.map((ev, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[90px_1fr_1fr_auto]">
                 <input
                   type="number"
                   className="input font-garamond"
-                  placeholder="年份"
+                  placeholder={t('traitorEditor.form.year')}
                   value={ev.year ?? ''}
                   onChange={(e) =>
                     lifeCtl.patch(i, { year: e.target.value === '' ? null : Number(e.target.value) })
@@ -486,13 +498,13 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                 />
                 <input
                   className="input"
-                  placeholder="事件描述"
+                  placeholder={t('traitorEditor.form.eventDesc')}
                   value={ev.event}
                   onChange={(e) => lifeCtl.patch(i, { event: e.target.value })}
                 />
                 <input
                   className="input"
-                  placeholder="出处"
+                  placeholder={t('traitorEditor.form.sourceRef')}
                   value={ev.sourceRef ?? ''}
                   onChange={(e) => lifeCtl.patch(i, { sourceRef: e.target.value })}
                 />
@@ -504,12 +516,12 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               onClick={() => lifeCtl.add({ year: null, event: '', sourceRef: '' })}
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加生平事件
+              {t('traitorEditor.addLifeEvent')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="犯罪记录" en="CRIMES">
+        <Fieldset title={t('traitorEditor.crimes')} en="CRIMES">
           <div className="space-y-4">
             {crimeRecords.map((c, i) => (
               <div key={i} className="rounded-sm border border-paperedge/15 p-4">
@@ -517,7 +529,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                   <input
                     type="number"
                     className="input font-garamond"
-                    placeholder="年份"
+                    placeholder={t('traitorEditor.form.year')}
                     value={c.year ?? ''}
                     onChange={(e) =>
                       crimeCtl.patch(i, { year: e.target.value === '' ? null : Number(e.target.value) })
@@ -525,7 +537,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                   />
                   <input
                     className="input"
-                    placeholder="事件名称 *"
+                    placeholder={t('traitorEditor.form.eventName')}
                     value={c.title}
                     onChange={(e) => crimeCtl.patch(i, { title: e.target.value })}
                   />
@@ -534,7 +546,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                 <textarea
                   rows={2}
                   className="input mt-2"
-                  placeholder="经过"
+                  placeholder={t('traitorEditor.form.process')}
                   value={c.process ?? ''}
                   onChange={(e) => crimeCtl.patch(i, { process: e.target.value })}
                 />
@@ -542,13 +554,13 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                   <textarea
                     rows={2}
                     className="input"
-                    placeholder="危害"
+                    placeholder={t('traitorEditor.form.harm')}
                     value={c.harm ?? ''}
                     onChange={(e) => crimeCtl.patch(i, { harm: e.target.value })}
                   />
                   <input
                     className="input"
-                    placeholder="史料出处"
+                    placeholder={t('traitorEditor.form.sourceRef')}
                     value={c.sourceRef ?? ''}
                     onChange={(e) => crimeCtl.patch(i, { sourceRef: e.target.value })}
                   />
@@ -562,25 +574,25 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               }
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加犯罪记录
+              {t('traitorEditor.addCrime')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="家族信息" en="FAMILY">
-          <p className="mb-2 text-xs tracking-widest text-paperdim">配偶</p>
+        <Fieldset title={t('traitorEditor.family')} en="FAMILY">
+          <p className="mb-2 text-xs tracking-widest text-paperdim">{t('traitorEditor.spouse')}</p>
           <div className="space-y-2">
             {spouses.map((s, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_2fr_auto]">
                 <input
                   className="input"
-                  placeholder="姓名 *"
+                  placeholder={t('traitorEditor.form.namePlaceholder')}
                   value={s.name}
                   onChange={(e) => spouseCtl.patch(i, { name: e.target.value })}
                 />
                 <input
                   className="input"
-                  placeholder="备注"
+                  placeholder={t('traitorEditor.form.remark')}
                   value={s.remark ?? ''}
                   onChange={(e) => spouseCtl.patch(i, { remark: e.target.value })}
                 />
@@ -592,17 +604,17 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               onClick={() => spouseCtl.add({ name: '', remark: '' })}
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加配偶
+              {t('traitorEditor.addSpouse')}
             </button>
           </div>
 
-          <p className="mb-2 mt-6 text-xs tracking-widest text-paperdim">子女</p>
+          <p className="mb-2 mt-6 text-xs tracking-widest text-paperdim">{t('traitorEditor.children')}</p>
           <div className="space-y-2">
             {children.map((c, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_100px_1fr_1fr_auto]">
                 <input
                   className="input"
-                  placeholder="姓名 *"
+                  placeholder={t('traitorEditor.form.namePlaceholder')}
                   value={c.name}
                   onChange={(e) => childCtl.patch(i, { name: e.target.value })}
                 />
@@ -611,20 +623,20 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                   value={c.gender ?? ''}
                   onChange={(e) => childCtl.patch(i, { gender: e.target.value })}
                 >
-                  <option value="">性别</option>
-                  <option value="男">男</option>
-                  <option value="女">女</option>
-                  <option value="不详">不详</option>
+                  <option value="">{t('traitorEditor.form.gender')}</option>
+                  <option value="男">{t('traitorEditor.form.male')}</option>
+                  <option value="女">{t('traitorEditor.form.female')}</option>
+                  <option value="不详">{t('common.unknown')}</option>
                 </select>
                 <input
                   className="input"
-                  placeholder="去向"
+                  placeholder={t('traitorEditor.form.destination')}
                   value={c.whereabouts ?? ''}
                   onChange={(e) => childCtl.patch(i, { whereabouts: e.target.value })}
                 />
                 <input
                   className="input"
-                  placeholder="备注"
+                  placeholder={t('traitorEditor.form.remark')}
                   value={c.remark ?? ''}
                   onChange={(e) => childCtl.patch(i, { remark: e.target.value })}
                 />
@@ -636,30 +648,30 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               onClick={() => childCtl.add({ name: '', gender: '', whereabouts: '', remark: '' })}
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加子女
+              {t('traitorEditor.addChild')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="居住地变迁" en="RESIDENCES">
+        <Fieldset title={t('traitorEditor.residences')} en="RESIDENCES">
           <div className="space-y-2">
             {residences.map((r, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_140px_1fr_auto]">
                 <input
                   className="input"
-                  placeholder="地点 *"
+                  placeholder={t('traitorEditor.form.place')}
                   value={r.place}
                   onChange={(e) => residenceCtl.patch(i, { place: e.target.value })}
                 />
                 <input
                   className="input"
-                  placeholder="时期"
+                  placeholder={t('traitorEditor.form.residencePeriod')}
                   value={r.period ?? ''}
                   onChange={(e) => residenceCtl.patch(i, { period: e.target.value })}
                 />
                 <input
                   className="input"
-                  placeholder="备注"
+                  placeholder={t('traitorEditor.form.remark')}
                   value={r.remark ?? ''}
                   onChange={(e) => residenceCtl.patch(i, { remark: e.target.value })}
                 />
@@ -671,17 +683,17 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               onClick={() => residenceCtl.add({ place: '', period: '', remark: '' })}
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加居住地
+              {t('traitorEditor.addResidence')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="照片与罪证" en="ATTACHMENTS">
+        <Fieldset title={t('traitorEditor.photosAndEvidence')} en="ATTACHMENTS">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <p className="mb-2 text-xs tracking-widest text-paperdim">人物照片</p>
+              <p className="mb-2 text-xs tracking-widest text-paperdim">{t('traitorEditor.photo')}</p>
               <label className="flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-paperedge/30 px-4 py-8 text-sm text-paperdim hover:border-bronzelight hover:text-paper">
-                {uploading ? '上传中…' : '点击选择图片（可多选）'}
+                {uploading ? t('traitorEditor.uploading') : t('traitorEditor.selectImages')}
                 <input
                   type="file"
                   accept="image/*"
@@ -705,7 +717,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                       />
                       <input
                         className="input !py-1.5 text-xs"
-                        placeholder="图片说明"
+                        placeholder={t('traitorEditor.imageCaption')}
                         value={a.caption ?? ''}
                         onChange={(e) =>
                           setAttachments((list) =>
@@ -718,16 +730,16 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                         onClick={() => setAttachments((list) => list.filter((x) => x.id !== a.id))}
                         className="shrink-0 text-xs text-paperdim hover:text-cinnabarlight"
                       >
-                        移除
+                        {t('traitorEditor.remove')}
                       </button>
                     </li>
                   ))}
               </ul>
             </div>
             <div>
-              <p className="mb-2 text-xs tracking-widest text-paperdim">罪证材料</p>
+              <p className="mb-2 text-xs tracking-widest text-paperdim">{t('traitorEditor.evidence')}</p>
               <label className="flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-paperedge/30 px-4 py-8 text-sm text-paperdim hover:border-cinnabar hover:text-paper">
-                {uploading ? '上传中…' : '点击选择文件（可多选）'}
+                {uploading ? t('traitorEditor.uploading') : t('traitorEditor.selectFiles')}
                 <input type="file" multiple hidden onChange={(e) => handleUpload(e.target.files, 'evidence')} />
               </label>
               <ul className="mt-3 space-y-2">
@@ -743,7 +755,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                       </span>
                       <input
                         className="input !py-1.5 text-xs"
-                        placeholder="材料说明"
+                        placeholder={t('traitorEditor.evidenceCaption')}
                         value={a.caption ?? ''}
                         onChange={(e) =>
                           setAttachments((list) =>
@@ -756,7 +768,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                         onClick={() => setAttachments((list) => list.filter((x) => x.id !== a.id))}
                         className="shrink-0 text-xs text-paperdim hover:text-cinnabarlight"
                       >
-                        移除
+                        {t('traitorEditor.remove')}
                       </button>
                     </li>
                   ))}
@@ -765,13 +777,13 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
           </div>
         </Fieldset>
 
-        <Fieldset title="史料来源" en="REFERENCES">
+        <Fieldset title={t('traitorEditor.references')} en="REFERENCES">
           <div className="space-y-2">
             {sources.map((s, i) => (
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_110px_auto]">
                 <input
                   className="input"
-                  placeholder="引用文献 *"
+                  placeholder={t('traitorEditor.form.citation')}
                   value={s.citation}
                   onChange={(e) => sourceCtl.patch(i, { citation: e.target.value })}
                 />
@@ -782,7 +794,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                 >
                   {[5, 4, 3, 2, 1].map((n) => (
                     <option key={n} value={n}>
-                      可信度 {'★'.repeat(n)}
+                      {t('traitorEditor.form.credibility')} {'★'.repeat(n)}
                     </option>
                   ))}
                 </select>
@@ -794,16 +806,16 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               onClick={() => sourceCtl.add({ citation: '', credibility: 3 })}
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加史料来源
+              {t('traitorEditor.addReference')}
             </button>
           </div>
         </Fieldset>
 
-        <Fieldset title="相关人物" en="RELATED">
+        <Fieldset title={t('traitorEditor.related')} en="RELATED">
           {relatedIds.length > 0 && (
             <div className="mb-3 flex flex-wrap gap-2">
               {relatedIds.map((rid) => {
-                const t = candidates.find((c) => c.id === rid)
+                const cand = candidates.find((c) => c.id === rid)
                 return (
                   <button
                     key={rid}
@@ -811,7 +823,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
                     onClick={() => setRelatedIds((ids) => ids.filter((x) => x !== rid))}
                     className="badge border-cinnabar/60 bg-cinnabar/15 text-cinnabarlight"
                   >
-                    {t?.name ?? rid} ✕
+                    {cand?.name ?? rid} ✕
                   </button>
                 )
               })}
@@ -831,7 +843,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               ))}
             </div>
           )}
-          {candidates.length === 0 && <p className="text-xs text-paperdim/60">暂无可关联的档案</p>}
+          {candidates.length === 0 && <p className="text-xs text-paperdim/60">{t('traitorEditor.noRelated')}</p>}
         </Fieldset>
 
         {error && (
@@ -842,10 +854,10 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
 
         <div className="flex items-center justify-end gap-3 pb-10">
           <button type="button" onClick={() => navigate(-1)} className="btn-ghost">
-            取消
+            {t('common.cancel')}
           </button>
           <button type="submit" className="btn-primary min-w-36" disabled={busy || uploading}>
-            {busy ? '保存中…' : mode === 'create' ? '直接保存档案' : '保存修改'}
+            {busy ? t('common.saveInProgress') : mode === 'create' ? t('traitorEditor.saveDraft') : t('traitorEditor.saveChanges')}
           </button>
         </div>
       </form>

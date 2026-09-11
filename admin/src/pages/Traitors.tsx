@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan } from '../lib/format'
@@ -23,6 +24,7 @@ function pageWindow(page: number, totalPages: number): Array<number | '…'> {
 }
 
 export default function Traitors() {
+  const { t } = useTranslation()
   const me = useAuth((s) => s.user)!
   const navigate = useNavigate()
   const [items, setItems] = useState<TraitorSummary[]>([])
@@ -51,9 +53,9 @@ export default function Traitors() {
       setTotal(totalNum)
       setTotalPages(totalPagesNum)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -96,7 +98,7 @@ export default function Traitors() {
     <div className="container-page py-10">
       <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">汉奸管理</h1>
+          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('traitors.title')}</h1>
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Archive Management</p>
         </div>
       </header>
@@ -113,14 +115,14 @@ export default function Traitors() {
             className="input min-w-0 max-w-xs flex-1"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="按姓名 / 别名搜索"
+            placeholder={t('traitors.searchPlaceholder')}
           />
           <button type="submit" className="btn-bronze flex-none" disabled={loading}>
-            搜索
+            {t('common.search')}
           </button>
           {searched && (
             <button type="button" className="btn-ghost flex-none" onClick={handleReset}>
-              重置
+              {t('common.reset')}
             </button>
           )}
         </form>
@@ -130,7 +132,7 @@ export default function Traitors() {
             className="btn-primary flex-none md:ml-2"
             onClick={() => navigate('/traitors/new')}
           >
-            新增汉奸
+            {t('traitors.newTraitor')}
           </button>
         )}
       </div>
@@ -142,10 +144,10 @@ export default function Traitors() {
       )}
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无档案</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('traitors.noArchives')}</p>
         </div>
       ) : (
         <>
@@ -153,48 +155,48 @@ export default function Traitors() {
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead>
                 <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                  <th className="px-5 py-3 font-medium">姓名</th>
-                  <th className="px-5 py-3 font-medium">时期</th>
-                  <th className="px-5 py-3 font-medium">派系</th>
-                  <th className="px-5 py-3 font-medium">生卒</th>
-                  <th className="px-5 py-3 font-medium">身份标签</th>
-                  <th className="px-5 py-3 text-right font-medium">操作</th>
+                  <th className="px-5 py-3 font-medium">{t('common.name')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.period')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.faction')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.lifespan')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.identityTags')}</th>
+                  <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
                 </tr>
               </thead>
               <tbody>
-                {items.map((t) => (
-                  <tr key={t.id} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
+                {items.map((tr) => (
+                  <tr key={tr.id} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
-                        {t.photoUrl ? (
+                        {tr.photoUrl ? (
                           <img
-                            src={resolveAssetUrl(t.photoUrl)}
+                            src={resolveAssetUrl(tr.photoUrl)}
                             alt=""
                             className="h-10 w-10 shrink-0 rounded-sm object-cover"
                           />
                         ) : (
                           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-paperedge/20 font-song text-xs text-paperdim/60">
-                            无
+                            {t('common.none')}
                           </span>
                         )}
-                        <span className="font-medium tracking-wider text-paper">{t.name}</span>
+                        <span className="font-medium tracking-wider text-paper">{tr.name}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-paperdim">{t.period}</td>
-                    <td className="px-5 py-3 text-paperdim">{t.faction || '—'}</td>
+                    <td className="px-5 py-3 text-paperdim">{tr.period}</td>
+                    <td className="px-5 py-3 text-paperdim">{tr.faction || '—'}</td>
                     <td className="px-5 py-3 font-garamond text-xs text-paperdim/80">
-                      {formatLifeSpan(t.birthYear, t.deathYear, t.birthYearType, t.deathYearType)}
+                      {formatLifeSpan(tr.birthYear, tr.deathYear, tr.birthYearType, tr.deathYearType)}
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex flex-wrap gap-1.5">
-                        {t.identityTags.slice(0, 3).map((tag) => (
+                        {tr.identityTags.slice(0, 3).map((tag) => (
                           <span key={tag} className="badge border-bronze/60 bg-bronze/15 text-bronzelight">
                             {tag}
                           </span>
                         ))}
-                        {t.identityTags.length > 3 && (
+                        {tr.identityTags.length > 3 && (
                           <span className="badge border-paperedge/25 text-paperdim/70">
-                            +{t.identityTags.length - 3}
+                            +{tr.identityTags.length - 3}
                           </span>
                         )}
                       </div>
@@ -205,9 +207,9 @@ export default function Traitors() {
                           <button
                             type="button"
                             className="btn-ghost !px-3 !py-1.5 text-xs"
-                            onClick={() => navigate(`/traitors/${t.id}/edit`)}
+                            onClick={() => navigate(`/traitors/${tr.id}/edit`)}
                           >
-                            编辑
+                            {t('traitors.edit')}
                           </button>
                         )}
                       </div>
@@ -220,18 +222,16 @@ export default function Traitors() {
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs tracking-widest text-paperdim/80">
-              共 <span className="font-garamond text-paper">{total}</span> 条档案 · 第
-              <span className="mx-1 font-garamond text-paper">{totalPages === 0 ? 0 : page}</span>
-              / <span className="font-garamond text-paper">{totalPages}</span> 页
+              {t('traitors.totalRecords', { total, page: totalPages === 0 ? 0 : page, totalPages })}
             </div>
-            <nav className="flex flex-wrap items-center gap-1.5" aria-label="分页">
+            <nav className="flex flex-wrap items-center gap-1.5" aria-label={t('common.pagination')}>
               <button
                 type="button"
                 className="btn-ghost !px-3 !py-1.5 text-xs"
                 onClick={() => goPage(page - 1)}
                 disabled={page <= 1 || loading}
               >
-                上一页
+                {t('common.prevPage')}
               </button>
               {pages.map((n, i) =>
                 n === '…' ? (
@@ -264,7 +264,7 @@ export default function Traitors() {
                 onClick={() => goPage(page + 1)}
                 disabled={page >= totalPages || loading}
               >
-                下一页
+                {t('common.nextPage')}
               </button>
             </nav>
           </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import type { MenuItem } from '../types'
 import { useTabsStore } from '../stores/tabs'
 
@@ -21,6 +22,7 @@ function MenuIcon({ label }: { label: string }) {
 }
 
 export default function Sidebar({ menus, collapsed, mobileOpen, onToggleCollapse, onCloseMobile }: SidebarProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const addTab = useTabsStore((s) => s.addTab)
@@ -73,7 +75,7 @@ export default function Sidebar({ menus, collapsed, mobileOpen, onToggleCollapse
           <span>审校</span>
         </span>
         <div className={`flex min-w-0 flex-col leading-tight ${textHideCls}`}>
-          <span className="truncate text-base font-semibold tracking-[0.25em] text-paper">汉奸档案</span>
+          <span className="truncate text-base font-semibold tracking-[0.25em] text-paper">{t('sidebar.traitors')}</span>
           <span className="truncate font-garamond text-[11px] italic tracking-wider text-bronzelight">Admin Console</span>
         </div>
       </div>
@@ -189,7 +191,7 @@ export default function Sidebar({ menus, collapsed, mobileOpen, onToggleCollapse
           <span className={`text-[14px] leading-none transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}>
             ◂
           </span>
-          {!collapsed && <span>收 起 菜 单</span>}
+          {!collapsed && <span>{t('sidebar.collapseMenu')}</span>}
         </button>
       </div>
 
@@ -200,7 +202,7 @@ export default function Sidebar({ menus, collapsed, mobileOpen, onToggleCollapse
           onClick={onCloseMobile}
           className="flex w-full items-center justify-center gap-2 rounded-sm px-2 py-2.5 text-xs tracking-[0.2em] text-paperdim/70 transition hover:bg-bronze/10 hover:text-paper"
         >
-          收 起 菜 单
+          {t('sidebar.collapseMenu')}
         </button>
       </div>
     </aside>

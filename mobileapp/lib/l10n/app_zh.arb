@@ -1,0 +1,225 @@
+{
+  "@@locale": "zh",
+  "appTitle": "汉奸档案 · HanJianNet",
+  "appLogoText": "汉奸\n档案",
+  "navHome": "首页",
+  "navSearch": "查询",
+  "navMine": "我的",
+  "networkError": "网络请求失败，请检查 API 地址与网络连接",
+  "requestFailed": "请求失败（{statusCode}）",
+  "@requestFailed": {
+    "description": "Error message with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadFailed": "上传失败（{statusCode}）",
+  "@uploadFailed": {
+    "description": "File upload failed with HTTP status code",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "unknown": "不详",
+  "circa": "约",
+  "before": "前",
+  "after": "后",
+  "approved": "已通过",
+  "rejected": "已驳回",
+  "pending": "待审核",
+  "retry": "重试",
+  "noRecords": "暂无记录",
+  "archives": "汉奸档案",
+  "figures": "人物列表",
+  "totalArchives": "档案总数",
+  "apiSettings": "API 设置",
+  "apiBaseUrlHint": "Web API 基础地址（Android 模拟器访问宿主机请用 10.0.2.2）",
+  "cancel": "取消",
+  "save": "保存",
+  "saved": "已保存：{url}",
+  "@saved": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "login": "登录",
+  "emailOrUsername": "邮箱 / 用户名",
+  "password": "密码",
+  "loggingIn": "登录中…",
+  "loginButton": "登 录",
+  "noAccount": "没有账号？去注册",
+  "fillAllFields": "请填写完整信息",
+  "invalidEmail": "邮箱格式不正确",
+  "passwordTooShort": "密码至少 8 位",
+  "passwordMismatch": "两次输入的密码不一致",
+  "register": "注册",
+  "username": "用户名",
+  "email": "邮箱",
+  "passwordHint": "密码（至少 8 位）",
+  "confirmPassword": "确认密码",
+  "registering": "注册中…",
+  "registerButton": "注 册",
+  "hasAccount": "已有账号？去登录",
+  "allPeriods": "全部",
+  "lateSong": "宋末",
+  "lateMing": "明末",
+  "lateQing": "清末",
+  "republic": "民国",
+  "other": "其他",
+  "searchButton": "查 询",
+  "nameLabel": "姓名",
+  "nameHint": "按人物姓名模糊匹配",
+  "yearFrom": "年份从",
+  "yearFromHint": "如 1937",
+  "yearTo": "年份到",
+  "yearToHint": "如 1945",
+  "eventKeyword": "事件关键词",
+  "nativePlace": "籍贯",
+  "searching": "查询中…",
+  "noResults": "没有符合条件的档案",
+  "noPublishedArchives": "暂无已发布档案",
+  "personalCenter": "个人中心",
+  "exitButton": "退出",
+  "mySubmissions": "我的提交",
+  "mySubmissionsTitle": "我的提交记录",
+  "loginForSubmissions": "登录后可查看提交记录与审核状态",
+  "loginForMySubmissions": "登录后可查看本人提交记录与审核状态",
+  "goToLogin": "去登录",
+  "noSubmissions": "还没有提交过档案或修改",
+  "submitNewArchive": "提交新档案",
+  "modifyArchive": "修改档案",
+  "changeContent": "修改内容：{summary}",
+  "@changeContent": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "submittedAt": "提交于 {time}",
+  "@submittedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewedAt": "审核于 {time}",
+  "@reviewedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewer": " · 审核人：{name}",
+  "@reviewer": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewComment": " · 意见：{comment}",
+  "@reviewComment": {
+    "placeholders": {
+      "comment": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "退出登录",
+  "editArchive": "编辑档案",
+  "pleaseLoginFirst": "请先登录",
+  "nameRequired": "姓名 *",
+  "nameInput": "请输入姓名",
+  "changeDescription": "修改说明 *",
+  "changeDescriptionInput": "请输入修改说明",
+  "submitButton": "提 交",
+  "archiveDetail": "档案详情",
+  "courtesyName": "字：{name}",
+  "@courtesyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pseudonym": "号：{name}",
+  "@pseudonym": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lifeSpan": "生卒",
+  "nativePlaceDetail": "籍贯",
+  "faction": "派系",
+  "aliases": "别名",
+  "summaryTitle": "人物概述",
+  "noSummary": "暂无概述",
+  "timeline": "生平时间线",
+  "sourceRef": "出处：{source}",
+  "@sourceRef": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "criminalRecords": "犯罪记录",
+  "process": "经过：{detail}",
+  "@process": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "harm": "危害：{detail}",
+  "@harm": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceMaterial": "史料出处：{reference}",
+  "@sourceMaterial": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "familyAndResidence": "家族与居住",
+  "spouse": "配偶",
+  "children": "子女",
+  "genderLabel": "性别",
+  "whereabouts": "去向",
+  "residenceChanges": "居住地变迁",
+  "photos": "人物照片",
+  "evidence": "罪证材料",
+  "document": "文",
+  "revisionHistory": "修改历史",
+  "reviewedBy": " · 审核：{name}",
+  "@reviewedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noRevisions": "暂无修改记录",
+  "editThisArchive": "修改此档案",
+  "sources": "史料来源",
+  "language": "语言",
+  "chooseLanguage": "选择语言"
+}

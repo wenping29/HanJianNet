@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
+
 import '../models/models.dart';
 import '../services/api_client.dart';
 import '../widgets/common.dart';
@@ -7,7 +9,8 @@ import '../widgets/theme.dart';
 import '../widgets/traitor_card.dart';
 import 'traitor_detail_screen.dart';
 
-const _periods = ['全部', '宋末', '明末', '清末', '民国', '其他'];
+/// 与 API 对齐的时期值（第一个 null 代表「全部」）。
+const _periodApiValues = [null, '宋末', '明末', '清末', '民国', '其他'];
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -31,6 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _loadingMore = false;
   String? _error;
   bool _hasSearched = false;
+  int _selectedPeriod = 0;
 
   @override
   void initState() {
@@ -94,7 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
         yearFrom: int.tryParse(_yearFromCtrl.text.trim()),
         yearTo: int.tryParse(_yearToCtrl.text.trim()),
         event: _eventCtrl.text.trim(),
-        period: _period == '全部' ? null : _period,
+        period: _periodApiValues[_selectedPeriod],
         nativePlace: _nativePlaceCtrl.text.trim(),
         page: 1,
         pageSize: 20,
@@ -124,7 +128,7 @@ class _SearchScreenState extends State<SearchScreen> {
         yearFrom: int.tryParse(_yearFromCtrl.text.trim()),
         yearTo: int.tryParse(_yearToCtrl.text.trim()),
         event: _eventCtrl.text.trim(),
-        period: _period == '全部' ? null : _period,
+        period: _periodApiValues[_selectedPeriod],
         nativePlace: _nativePlaceCtrl.text.trim(),
         page: _page + 1,
         pageSize: 20,
@@ -142,12 +146,11 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  String _period = '全部';
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('查询')),
+      appBar: AppBar(title: Text(l10n.navSearch)),
       body: Column(
         children: [
           _searchPanel(),
@@ -158,6 +161,15 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _searchPanel() {
+    final l10n = AppLocalizations.of(context)!;
+    final periodLabels = [
+      l10n.allPeriods,
+      l10n.lateSong,
+      l10n.lateMing,
+      l10n.lateQing,
+      l10n.republic,
+      l10n.other,
+    ];
     return Card(
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: Padding(
@@ -166,10 +178,10 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             TextField(
               controller: _nameCtrl,
-              decoration: const InputDecoration(
-                labelText: '姓名',
-                hintText: '按人物姓名模糊匹配',
-                prefixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                labelText: l10n.nameLabel,
+                hintText: l10n.nameHint,
+                prefixIcon: const Icon(Icons.search),
               ),
               onSubmitted: (_) => _search(),
             ),
@@ -180,7 +192,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: TextField(
                     controller: _yearFromCtrl,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: '年份从', hintText: '如 1937'),
+                    decoration: InputDecoration(
+                        labelText: l10n.yearFrom, hintText: l10n.yearFromHint),
                   ),
                 ),
                 Padding(
@@ -191,7 +204,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: TextField(
                     controller: _yearToCtrl,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: '年份到', hintText: '如 1945'),
+                    decoration: InputDecoration(
+                        labelText: l10n.yearTo, hintText: l10n.yearToHint),
                   ),
                 ),
               ],
@@ -199,12 +213,12 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(height: 10),
             TextField(
               controller: _eventCtrl,
-              decoration: const InputDecoration(labelText: '事件关键词'),
+              decoration: InputDecoration(labelText: l10n.eventKeyword),
             ),
             const SizedBox(height: 10),
             TextField(
               controller: _nativePlaceCtrl,
-              decoration: const InputDecoration(labelText: '籍贯'),
+              decoration: InputDecoration(labelText: l10n.nativePlace),
             ),
             const SizedBox(height: 10),
             SizedBox(
@@ -213,19 +227,21 @@ class _SearchScreenState extends State<SearchScreen> {
                 spacing: 8,
                 runSpacing: 4,
                 children: [
-                  for (final p in _periods)
+                  for (int i = 0; i < periodLabels.length; i++) ...[
                     ChoiceChip(
-                      label: Text(p),
-                      selected: _period == p,
+                      label: Text(periodLabels[i]),
+                      selected: _selectedPeriod == i,
                       selectedColor: AppTheme.cinnabar.withValues(alpha: 0.5),
                       labelStyle: TextStyle(
-                          color: _period == p ? AppTheme.paper : AppTheme.paperDim, fontSize: 12),
+                          color: _selectedPeriod == i ? AppTheme.paper : AppTheme.paperDim,
+                          fontSize: 12),
                       side: BorderSide(
-                          color: _period == p
+                          color: _selectedPeriod == i
                               ? AppTheme.cinnabarLight
                               : AppTheme.paperDim.withValues(alpha: 0.25)),
-                      onSelected: (_) => setState(() => _period = p),
+                      onSelected: (_) => setState(() => _selectedPeriod = i),
                     ),
+                  ],
                 ],
               ),
             ),
@@ -234,7 +250,7 @@ class _SearchScreenState extends State<SearchScreen> {
               width: double.infinity,
               child: FilledButton(
                 onPressed: _loading ? null : _search,
-                child: Text(_loading && !_loadingMore ? '查询中…' : '查 询'),
+                child: Text(_loading && !_loadingMore ? l10n.searching : l10n.searchButton),
               ),
             ),
           ],
@@ -244,13 +260,14 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildResults() {
+    final l10n = AppLocalizations.of(context)!;
     if (_loading && !_loadingMore) return const LoadingView();
     if (_error != null) return ErrorRetry(message: _error!, onRetry: _loadAll);
     if (_hasSearched && _results.isEmpty) {
-      return const EmptyView(text: '没有符合条件的档案');
+      return EmptyView(text: l10n.noResults);
     }
     if (!_hasSearched && _results.isEmpty) {
-      return const EmptyView(text: '暂无已发布档案');
+      return EmptyView(text: l10n.noPublishedArchives);
     }
     return RefreshIndicator(
       color: AppTheme.bronzeLight,

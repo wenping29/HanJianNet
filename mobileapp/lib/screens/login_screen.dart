@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
+
 import '../services/api_client.dart';
 import '../services/session.dart';
 import '../widgets/theme.dart';
@@ -12,12 +14,13 @@ Future<void> showApiSettingsDialog(BuildContext context) async {
     context: context,
     builder: (ctx) => AlertDialog(
       backgroundColor: AppTheme.inkCard,
-      title: const Text('API 设置', style: TextStyle(fontSize: 16, letterSpacing: 2)),
+      title: Text(AppLocalizations.of(ctx)!.apiSettings,
+          style: const TextStyle(fontSize: 16, letterSpacing: 2)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Web API 基础地址（Android 模拟器访问宿主机请用 10.0.2.2）',
-              style: TextStyle(fontSize: 12)),
+          Text(AppLocalizations.of(ctx)!.apiBaseUrlHint,
+              style: const TextStyle(fontSize: 12)),
           const SizedBox(height: 12),
           TextField(
             controller: ctrl,
@@ -27,8 +30,12 @@ Future<void> showApiSettingsDialog(BuildContext context) async {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('取消')),
-        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('保存')),
+        TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(AppLocalizations.of(ctx)!.cancel)),
+        FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(AppLocalizations.of(ctx)!.save)),
       ],
     ),
   );
@@ -36,7 +43,7 @@ Future<void> showApiSettingsDialog(BuildContext context) async {
     await Session.instance.updateBaseUrl(ctrl.text);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('已保存：${Session.instance.baseUrl}')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.saved(Session.instance.baseUrl))),
       );
     }
   }
@@ -84,13 +91,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('登录'),
+        title: Text(l10n.login),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined, size: 20),
-            tooltip: 'API 设置',
+            tooltip: l10n.apiSettings,
             onPressed: () => showApiSettingsDialog(context),
           ),
         ],
@@ -109,22 +117,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 borderRadius: BorderRadius.circular(3),
                 color: AppTheme.cinnabar.withValues(alpha: 0.15),
               ),
-              child: const Text('汉奸\n档案',
+              child: Text(l10n.appLogoText,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, height: 1.2, letterSpacing: 2, color: AppTheme.cinnabarLight)),
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, height: 1.2, letterSpacing: 2, color: AppTheme.cinnabarLight)),
             ),
           ),
           const SizedBox(height: 32),
           TextField(
             controller: _accountCtrl,
-            decoration: const InputDecoration(labelText: '邮箱 / 用户名'),
+            decoration: InputDecoration(labelText: l10n.emailOrUsername),
             textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _passwordCtrl,
             obscureText: true,
-            decoration: const InputDecoration(labelText: '密码'),
+            decoration: InputDecoration(labelText: l10n.password),
             onSubmitted: (_) => _submit(),
           ),
           if (_error != null)
@@ -135,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 24),
           FilledButton(
             onPressed: _busy ? null : _submit,
-            child: Text(_busy ? '登录中…' : '登 录'),
+            child: Text(_busy ? l10n.loggingIn : l10n.loginButton),
           ),
           const SizedBox(height: 12),
           TextButton(
@@ -150,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       navigator.pop(true);
                     }
                   },
-            child: const Text('没有账号？去注册'),
+            child: Text(l10n.noAccount),
           ),
         ],
       ),

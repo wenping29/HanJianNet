@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
-import { PERIODS } from '../lib/format'
+import { PERIODS, periodLabel } from '../lib/format'
 import { formatLifeSpan } from '../lib/format'
 import type { TraitorSummary } from '../types'
 import { containerPageStyle } from '../style'
@@ -31,6 +32,7 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 }
 
 export default function Roster() {
+  const { t } = useTranslation()
   const [filters, setFilters] = useState<TraitorFilters>(EMPTY_FILTERS)
   const [items, setItems] = useState<TraitorSummary[]>([])
   const [total, setTotal] = useState(0)
@@ -49,13 +51,13 @@ export default function Roster() {
       setTotal(data.total)
       setPage(data.page)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
       setItems([])
       setTotal(0)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     loadList(EMPTY_FILTERS, 1)
@@ -91,10 +93,10 @@ export default function Roster() {
         <div  style={containerPageStyle}  className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
           <p className="font-garamond text-sm italic tracking-widest text-bronzelight">TRAITOR ROSTER</p>
           <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
-            名录档案
+            {t('roster.title')}
           </h1>
           <p className="mt-6 max-w-2xl leading-loose text-paperdim">
-            以名册形式胪列全部在册变节者，可按姓名、时期检索——录其名，存其档。
+            {t('roster.heroText')}
           </p>
         </div>
       </section>
@@ -103,20 +105,20 @@ export default function Roster() {
         {/* 检索栏 */}
         <form onSubmit={submitSearch} className="card mb-6 flex flex-wrap items-end gap-4 p-5">
           <div className="flex-1">
-            <label className="label" htmlFor="r-name">姓名检索</label>
+            <label className="label" htmlFor="r-name">{t('roster.searchLabel')}</label>
             <input
               id="r-name"
               className="input"
-              placeholder="输入姓名关键词"
+              placeholder={t('roster.searchPlaceholder')}
               value={filters.name ?? ''}
               onChange={(e) => setFilters({ ...filters, name: e.target.value })}
             />
           </div>
           <button type="submit" className="btn-primary !px-6 !py-2.5">
-            检 索
+            {t('roster.searchBtn')}
           </button>
           <Link to="/submit" className="btn-bronze !px-6 !py-2.5">
-            + 新增汉奸
+            {t('roster.newTraitor')}
           </Link>
         </form>
 
@@ -130,7 +132,7 @@ export default function Roster() {
                 !filters.period ? 'border-cinnabar bg-cinnabar/20 text-cinnabarlight' : 'border-paperedge/25 text-paperdim hover:border-bronzelight'
               }`}
             >
-              全部时期
+              {t('roster.allPeriods')}
             </button>
             {PERIODS.map((p) => (
               <button
@@ -143,22 +145,22 @@ export default function Roster() {
                     : 'border-paperedge/25 text-paperdim hover:border-bronzelight'
                 }`}
               >
-                {p}
+                {periodLabel(p, t)}
               </button>
             ))}
           </div>
           <span className="text-xs tracking-wider text-paperdim/70">
-            {loading ? '检索中…' : `共 ${total} 条档案 · 第 ${page} / ${totalPages} 页`}
+            {loading ? t('roster.searching') : t('roster.totalRecords', { total, page, totalPages })}
           </span>
         </div>
 
         {/* 状态提示 */}
-        {loading && <p className="py-16 text-center text-paperdim">加载中…</p>}
+        {loading && <p className="py-16 text-center text-paperdim">{t('common.loading')}</p>}
         {error && (
           <p className="rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-4 py-3 text-sm text-cinnabarlight">{error}</p>
         )}
         {!loading && !error && items.length === 0 && (
-          <p className="py-16 text-center text-paperdim">暂无符合条件的档案</p>
+          <p className="py-16 text-center text-paperdim">{t('roster.empty')}</p>
         )}
 
         {/* 名录表格 */}
@@ -167,37 +169,37 @@ export default function Roster() {
             <table className="table-old">
               <thead>
                 <tr>
-                  <th className="w-10 text-center">序</th>
-                  <th>姓名</th>
-                  <th>时期</th>
-                  <th>派系</th>
-                  <th>生卒年</th>
-                  <th>身份标签</th>
+                  <th className="w-10 text-center">{t('roster.colIndex')}</th>
+                  <th>{t('roster.colName')}</th>
+                  <th>{t('roster.colPeriod')}</th>
+                  <th>{t('roster.colFaction')}</th>
+                  <th>{t('roster.colLifespan')}</th>
+                  <th>{t('roster.colTags')}</th>
                 </tr>
               </thead>
               <tbody>
-                {items.map((t, i) => (
-                  <tr key={t.id}>
+                {items.map((tr, i) => (
+                  <tr key={tr.id}>
                     <td className="text-center font-garamond text-paperdim">{i + 1 + (page - 1) * PAGE_SIZE}</td>
                     <td>
                       <Link
-                        to={`/traitor/${t.id}`}
+                        to={`/traitor/${tr.id}`}
                         className="font-song font-semibold tracking-widest text-paper hover:text-cinnabarlight"
                       >
-                        {t.name}
+                        {tr.name}
                       </Link>
                     </td>
                     <td>
-                      <span className="badge border-bronze/40 text-bronzelight">{t.period}</span>
+                      <span className="badge border-bronze/40 text-bronzelight">{periodLabel(tr.period, t)}</span>
                     </td>
-                    <td className="text-paperdim">{t.faction || '—'}</td>
+                    <td className="text-paperdim">{tr.faction || '—'}</td>
                     <td className="whitespace-nowrap font-garamond text-paperdim">
-                      {formatLifeSpan(t.birthYear, t.deathYear, t.birthYearType, t.deathYearType)}
+                      {formatLifeSpan(tr.birthYear, tr.deathYear, tr.birthYearType, tr.deathYearType)}
                     </td>
                     <td>
-                      {t.identityTags.length > 0 ? (
+                      {tr.identityTags.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5">
-                          {t.identityTags.map((tag) => (
+                          {tr.identityTags.map((tag) => (
                             <span key={tag} className="badge border-paperedge/25 text-paperdim/80">
                               {tag}
                             </span>
@@ -216,14 +218,14 @@ export default function Roster() {
 
         {/* 分页控件 */}
         {!loading && !error && totalPages > 1 && (
-          <nav className="mt-10 flex items-center justify-center gap-2 flex-wrap" aria-label="分页导航">
+          <nav className="mt-10 flex items-center justify-center gap-2 flex-wrap" aria-label={t('common.pagination')}>
             <button
               type="button"
               onClick={() => gotoPage(page - 1)}
               disabled={page <= 1}
               className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              ‹ 上一页
+              {t('common.prevPage')}
             </button>
 
             {pageList.map((p, idx) =>
@@ -253,7 +255,7 @@ export default function Roster() {
               disabled={page >= totalPages}
               className="btn-ghost !px-3 !py-1.5 text-xs disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              下一页 ›
+              {t('common.nextPage')}
             </button>
           </nav>
         )}

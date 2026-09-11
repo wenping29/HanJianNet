@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import { ROLE_LABELS } from '../../lib/roles'
 import type { ErrorLogItem } from '../../types'
@@ -26,6 +27,7 @@ interface Filters {
 const EMPTY: Filters = { keyword: '', username: '', level: '', path: '', from: '', to: '' }
 
 export default function ErrorLogs() {
+  const { t } = useTranslation()
   const [items, setItems] = useState<ErrorLogItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -61,9 +63,9 @@ export default function ErrorLogs() {
           : Math.max(1, Math.ceil(list.length / Math.max(1, pageSizeNum))),
       )
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -94,40 +96,40 @@ export default function ErrorLogs() {
 
   return (
     <div className="container-page py-10">
-      <SectionTitle zh="错误日志" en="Error Audits" />
+      <SectionTitle zh={t('logs.errorLogs.title')} en="Error Audits" />
 
       <form
         className="animate-fade-up card mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-5"
         onSubmit={onSubmit}
       >
-        <SearchField label="关键字（消息 / 异常类型）">
+        <SearchField label={t('logs.errorLogs.keywordHint')}>
           <input
             className="input"
             value={form.keyword}
             onChange={(e) => setForm({ ...form, keyword: e.target.value })}
-            placeholder="模糊搜索"
+            placeholder={t('logs.errorLogs.keywordPlaceholder')}
           />
         </SearchField>
-        <SearchField label="用户名">
+        <SearchField label={t('common.username')}>
           <input
             className="input"
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
           />
         </SearchField>
-        <SearchField label="级别">
+        <SearchField label={t('logs.errorLogs.level')}>
           <select
             className="input"
             value={form.level}
             onChange={(e) => setForm({ ...form, level: e.target.value })}
           >
-            <option value="">全部</option>
-            <option value="warning">警告 (warning)</option>
-            <option value="error">错误 (error)</option>
-            <option value="critical">严重 (critical)</option>
+            <option value="">{t('common.all')}</option>
+            <option value="warning">{t('logs.errorLogs.warning')}</option>
+            <option value="error">{t('logs.errorLogs.errorLevel')}</option>
+            <option value="critical">{t('logs.errorLogs.critical')}</option>
           </select>
         </SearchField>
-        <SearchField label="路径（包含）">
+        <SearchField label={t('logs.errorLogs.pathContains')}>
           <input
             className="input"
             value={form.path}
@@ -135,7 +137,7 @@ export default function ErrorLogs() {
             placeholder="/api/..."
           />
         </SearchField>
-        <SearchField label="起始日期">
+        <SearchField label={t('common.startDate')}>
           <input
             type="date"
             className="input"
@@ -143,7 +145,7 @@ export default function ErrorLogs() {
             onChange={(e) => setForm({ ...form, from: e.target.value })}
           />
         </SearchField>
-        <SearchField label="结束日期">
+        <SearchField label={t('common.endDate')}>
           <input
             type="date"
             className="input"
@@ -152,9 +154,9 @@ export default function ErrorLogs() {
           />
         </SearchField>
         <div className="md:col-span-2 lg:col-span-5 flex justify-end gap-2">
-          <button type="button" className="btn-ghost" onClick={onReset}>重置</button>
+          <button type="button" className="btn-ghost" onClick={onReset}>{t('common.reset')}</button>
           <button type="submit" className="btn-bronze" disabled={loading}>
-            {loading ? '查询中…' : '查询'}
+            {loading ? t('logs.errorLogs.querying') : t('logs.errorLogs.query')}
           </button>
         </div>
       </form>
@@ -162,10 +164,10 @@ export default function ErrorLogs() {
       <NoticeAndError error={error} />
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无错误日志（系统平稳运行）</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('logs.errorLogs.noData')}</p>
         </div>
       ) : (
         <>
@@ -173,15 +175,15 @@ export default function ErrorLogs() {
             <table className="w-full min-w-[1280px] text-left text-sm">
               <thead>
                 <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                  <th className="px-5 py-3 font-medium">时间</th>
-                  <th className="px-5 py-3 font-medium">级别</th>
-                  <th className="px-5 py-3 font-medium">异常类型</th>
-                  <th className="px-5 py-3 font-medium">用户</th>
-                  <th className="px-5 py-3 font-medium">消息</th>
-                  <th className="px-5 py-3 font-medium">状态码</th>
-                  <th className="px-5 py-3 font-medium">接口</th>
-                  <th className="px-5 py-3 font-medium">IP</th>
-                  <th className="px-5 py-3 font-medium">来源</th>
+                  <th className="px-5 py-3 font-medium">{t('common.time')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.errorLogs.level')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.errorLogs.exceptionType')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.user')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.message')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.errorLogs.statusCode')}</th>
+                  <th className="px-5 py-3 font-medium">{t('logs.errorLogs.api')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.ip')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.origin')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -203,7 +205,7 @@ export default function ErrorLogs() {
                         </td>
                         <td className="px-5 py-3">
                           <div className="leading-tight">
-                            <div className="font-medium text-paper">{l.username || '游客'}</div>
+                            <div className="font-medium text-paper">{l.username || t('common.guest')}</div>
                             <div className="font-garamond text-xs text-paperdim/70">
                               {l.role ? (ROLE_LABELS[l.role as keyof typeof ROLE_LABELS] ?? l.role) : ''}
                             </div>
@@ -233,7 +235,7 @@ export default function ErrorLogs() {
                           <td colSpan={9} className="px-5 py-4">
                             <dl className="grid gap-4 text-sm md:grid-cols-2">
                               <div className="md:col-span-2">
-                                <dt className="text-xs tracking-widest text-paperdim">错误消息</dt>
+                                <dt className="text-xs tracking-widest text-paperdim">{t('logs.errorLogs.errorMessage')}</dt>
                                 <dd className="mt-1 text-rose-200 whitespace-pre-wrap break-words">
                                   {l.message || '—'}
                                 </dd>
@@ -247,7 +249,7 @@ export default function ErrorLogs() {
                                 </dd>
                               </div>
                               <div>
-                                <dt className="text-xs tracking-widest text-paperdim">请求体（截断）</dt>
+                                <dt className="text-xs tracking-widest text-paperdim">{t('logs.errorLogs.requestBody')}</dt>
                                 <dd className="mt-1">
                                   <pre className="max-h-40 overflow-auto rounded-sm border border-paperedge/20 bg-black/30 p-3 text-xs text-paperdim/90 break-all whitespace-pre-wrap">
                                     {l.requestBody || '—'}
@@ -261,10 +263,10 @@ export default function ErrorLogs() {
                                 </dd>
                               </div>
                               <div className="md:col-span-2">
-                                <dt className="text-xs tracking-widest text-paperdim">堆栈</dt>
+                                <dt className="text-xs tracking-widest text-paperdim">{t('logs.errorLogs.stack')}</dt>
                                 <dd className="mt-1">
                                   <pre className="max-h-80 overflow-auto rounded-sm border border-rose-500/20 bg-black/40 p-3 text-xs text-rose-100/90 break-words whitespace-pre">
-                                    {l.stackTrace || '（无堆栈信息）'}
+                                    {l.stackTrace || t('logs.errorLogs.noStack')}
                                   </pre>
                                 </dd>
                               </div>
@@ -278,7 +280,7 @@ export default function ErrorLogs() {
               </tbody>
             </table>
           </div>
-          <Pagination total={total} page={page} totalPages={totalPages} loading={loading} label="错误日志" onGo={goPage} />
+          <Pagination total={total} page={page} totalPages={totalPages} loading={loading} label={t('logs.errorLogs.label')} onGo={goPage} />
         </>
       )}
     </div>

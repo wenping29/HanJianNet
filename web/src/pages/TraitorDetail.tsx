@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Lightbox from '../components/Lightbox'
 import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan, formatYear, maskName } from '../lib/format'
@@ -23,6 +24,7 @@ function Empty({ text }: { text: string }) {
 }
 
 export default function TraitorDetail() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const user = useAuth((s) => s.user)
   const [traitor, setTraitor] = useState<Traitor | null>(null)
@@ -41,13 +43,13 @@ export default function TraitorDetail() {
         if (data.traitor.relatedIds.length > 0) {
           try {
             const all = await api.listTraitors()
-            setRelated(all.items.filter((t) => data.traitor.relatedIds.includes(t.id)))
+            setRelated(all.items.filter((tr) => data.traitor.relatedIds.includes(tr.id)))
           } catch {
             setRelated([])
           }
         }
       })
-      .catch((e) => setError(e instanceof Error ? e.message : '加载失败'))
+      .catch((e) => setError(e instanceof Error ? e.message : t('common.loadFailed')))
   }, [id])
 
   if (error)
@@ -55,11 +57,11 @@ export default function TraitorDetail() {
       <div className="container-page py-24 text-center">
         <p className="text-cinnabarlight">{error}</p>
         <Link to="/" className="btn-ghost mt-6">
-          返回首页
+          {t('traitorDetail.backHome')}
         </Link>
       </div>
     )
-  if (!traitor) return <div className="container-page py-24 text-center text-paperdim">加载中…</div>
+  if (!traitor) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
 
   const photos = traitor.attachments.filter((a) => a.kind === 'photo')
   const evidences = traitor.attachments.filter((a) => a.kind === 'evidence')
@@ -84,28 +86,28 @@ export default function TraitorDetail() {
           </div>
           {(traitor.courtesyName || traitor.pseudonym) && (
             <p className="mt-2 text-sm tracking-widest text-paperdim">
-              {traitor.courtesyName && <span className="mr-4">字：{traitor.courtesyName}</span>}
-              {traitor.pseudonym && <span>号：{traitor.pseudonym}</span>}
+              {traitor.courtesyName && <span className="mr-4">{t('traitorDetail.courtesyName')}{traitor.courtesyName}</span>}
+              {traitor.pseudonym && <span>{t('traitorDetail.pseudonym')}{traitor.pseudonym}</span>}
             </p>
           )}
           <dl className="mt-4 grid grid-cols-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
             <div className="flex gap-2">
-              <dt className="shrink-0 text-paperdim">生卒：</dt>
+              <dt className="shrink-0 text-paperdim">{t('traitorDetail.lifespan')}</dt>
               <dd className="font-garamond text-paper/90">
                 {formatLifeSpan(traitor.birthYear, traitor.deathYear, traitor.birthYearType, traitor.deathYearType)}
               </dd>
             </div>
             <div className="flex gap-2">
-              <dt className="shrink-0 text-paperdim">籍贯：</dt>
+              <dt className="shrink-0 text-paperdim">{t('traitorDetail.nativePlace')}</dt>
               <dd className="text-paper/90">{traitor.nativePlace || '—'}</dd>
             </div>
             <div className="flex gap-2">
-              <dt className="shrink-0 text-paperdim">出生地：</dt>
+              <dt className="shrink-0 text-paperdim">{t('traitorDetail.birthPlace')}</dt>
               <dd className="text-paper/90">{traitor.birthPlace || '—'}</dd>
             </div>
             {traitor.aliases.length > 0 && (
               <div className="flex gap-2 sm:col-span-2">
-                <dt className="shrink-0 text-paperdim">别名：</dt>
+                <dt className="shrink-0 text-paperdim">{t('traitorDetail.aliases')}</dt>
                 <dd className="text-paper/90">{traitor.aliases.join('、')}</dd>
               </div>
             )}
@@ -121,11 +123,11 @@ export default function TraitorDetail() {
           )}
           <div className="mt-6 flex flex-wrap gap-3">
             <Link to={`/traitor/${traitor.id}/history`} className="btn-bronze">
-              修改历史
+              {t('traitorDetail.historyBtn')}
             </Link>
             {user && (
               <Link to={`/traitor/${traitor.id}/edit`} className="btn-primary">
-                编辑此档案
+                {t('traitorDetail.editBtn')}
               </Link>
             )}
           </div>
@@ -133,13 +135,13 @@ export default function TraitorDetail() {
       </header>
 
       {/* 摘要 */}
-      <Section title="人物概述" en="SUMMARY">
-        <p className="card p-6 leading-loose text-paper/90">{traitor.summary || '暂无概述'}</p>
+      <Section title={t('traitorDetail.summaryTitle')} en="SUMMARY">
+        <p className="card p-6 leading-loose text-paper/90">{traitor.summary || t('traitorDetail.noSummary')}</p>
       </Section>
 
       {/* 生平时间线 */}
       {traitor.lifeEvents.length > 0 && (
-        <Section title="生平时间线" en="CHRONOLOGY">
+        <Section title={t('traitorDetail.lifeTimeline')} en="CHRONOLOGY">
           <ol className="relative ml-2 space-y-6 border-l border-cinnabar/40 pl-6">
             {[...traitor.lifeEvents]
               .sort((a, b) => (a.year ?? 0) - (b.year ?? 0))
@@ -148,7 +150,7 @@ export default function TraitorDetail() {
                   <span className="absolute -left-[31px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-cinnabar bg-ink" />
                   <p className="font-garamond text-base font-semibold text-bronzelight">{formatYear(ev.year, 'exact')}</p>
                   <p className="mt-1 text-sm leading-relaxed text-paper/90">{ev.event}</p>
-                  {ev.sourceRef && <p className="mt-1 text-xs text-paperdim/60">出处：{ev.sourceRef}</p>}
+                  {ev.sourceRef && <p className="mt-1 text-xs text-paperdim/60">{t('traitorDetail.sourceRef')}{ev.sourceRef}</p>}
                 </li>
               ))}
           </ol>
@@ -156,30 +158,30 @@ export default function TraitorDetail() {
       )}
 
       {/* 犯罪记录 */}
-      <Section title="犯罪记录" en="CRIMINAL RECORDS">
+      <Section title={t('traitorDetail.crimesTitle')} en="CRIMINAL RECORDS">
         {traitor.crimeRecords.length === 0 ? (
-          <Empty text="暂无犯罪记录" />
+          <Empty text={t('traitorDetail.noCrimes')} />
         ) : (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {traitor.crimeRecords.map((c, i) => (
               <article key={i} className="card p-5">
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-semibold tracking-wider text-cinnabarlight">{c.title}</h3>
-                  <span className="font-garamond text-lg text-bronzelight">{c.year ?? '不详'}</span>
+                  <span className="font-garamond text-lg text-bronzelight">{c.year ?? t('format.unknown')}</span>
                 </div>
                 {c.process && (
                   <p className="mt-3 text-sm leading-relaxed text-paper/85">
-                    <span className="mr-2 badge border-paperedge/25 text-paperdim/80">经过</span>
+                    <span className="mr-2 badge border-paperedge/25 text-paperdim/80">{t('traitorDetail.process')}</span>
                     {c.process}
                   </p>
                 )}
                 {c.harm && (
                   <p className="mt-2 text-sm leading-relaxed text-paper/85">
-                    <span className="mr-2 badge border-cinnabar/40 text-cinnabarlight/90">危害</span>
+                    <span className="mr-2 badge border-cinnabar/40 text-cinnabarlight/90">{t('traitorDetail.harm')}</span>
                     {c.harm}
                   </p>
                 )}
-                {c.sourceRef && <p className="mt-3 text-xs text-paperdim/60">史料出处：{c.sourceRef}</p>}
+                {c.sourceRef && <p className="mt-3 text-xs text-paperdim/60">{t('traitorDetail.crimeSource')}{c.sourceRef}</p>}
               </article>
             ))}
           </div>
@@ -187,9 +189,9 @@ export default function TraitorDetail() {
       </Section>
 
       {/* 家族 */}
-      <Section title="配偶信息" en="SPOUSES">
+      <Section title={t('traitorDetail.spouseTitle')} en="SPOUSES">
         {traitor.spouses.length === 0 ? (
-          <Empty text="暂无记录" />
+          <Empty text={t('traitorDetail.noRecord')} />
         ) : (
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {traitor.spouses.map((s, i) => (
@@ -202,18 +204,18 @@ export default function TraitorDetail() {
         )}
       </Section>
 
-      <Section title="子女信息" en="CHILDREN">
+      <Section title={t('traitorDetail.childrenTitle')} en="CHILDREN">
         {traitor.children.length === 0 ? (
-          <Empty text="暂无记录" />
+          <Empty text={t('traitorDetail.noRecord')} />
         ) : (
           <div className="card overflow-x-auto">
             <table className="table-old">
               <thead>
                 <tr>
-                  <th>姓名</th>
-                  <th>性别</th>
-                  <th>去向</th>
-                  <th>备注</th>
+                  <th>{t('common.name')}</th>
+                  <th>{t('traitorDetail.gender')}</th>
+                  <th>{t('traitorDetail.destination')}</th>
+                  <th>{t('traitorDetail.remark')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -232,9 +234,9 @@ export default function TraitorDetail() {
       </Section>
 
       {/* 居住地 */}
-      <Section title="居住地变迁" en="RESIDENCES">
+      <Section title={t('traitorDetail.residencesTitle')} en="RESIDENCES">
         {traitor.residences.length === 0 ? (
-          <Empty text="暂无记录" />
+          <Empty text={t('traitorDetail.noRecord')} />
         ) : (
           <ol className="relative ml-2 space-y-5 border-l border-bronze/50 pl-6">
             {traitor.residences.map((r, i) => (
@@ -253,7 +255,7 @@ export default function TraitorDetail() {
 
       {/* 照片 */}
       {photos.length > 0 && (
-        <Section title="人物照片" en="PHOTOGRAPHS">
+        <Section title={t('traitorDetail.photoTitle')} en="PHOTOGRAPHS">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {photos.map((p) => (
               <button
@@ -272,7 +274,7 @@ export default function TraitorDetail() {
 
       {/* 罪证 */}
       {evidences.length > 0 && (
-        <Section title="罪证材料" en="EVIDENCE">
+        <Section title={t('traitorDetail.evidenceTitle')} en="EVIDENCE">
           <ul className="space-y-3">
             {evidences.map((ev) => (
               <li key={ev.id} className="card flex items-center gap-4 p-4">
@@ -284,11 +286,11 @@ export default function TraitorDetail() {
                   </span>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm text-paper">{ev.caption || '罪证材料'}</p>
+                  <p className="truncate text-sm text-paper">{ev.caption || t('traitorDetail.evidenceFallback')}</p>
                   <p className="mt-0.5 font-garamond text-xs text-paperdim/70">{ev.fileType}</p>
                 </div>
                 <a href={photoUrl(ev)} target="_blank" rel="noreferrer" className="btn-ghost !px-3 !py-1.5 text-xs">
-                  查看
+                  {t('traitorDetail.viewBtn')}
                 </a>
               </li>
             ))}
@@ -297,9 +299,9 @@ export default function TraitorDetail() {
       )}
 
       {/* 史料来源 */}
-      <Section title="史料来源" en="REFERENCES">
+      <Section title={t('traitorDetail.referencesTitle')} en="REFERENCES">
         {traitor.sources.length === 0 ? (
-          <Empty text="暂无记录" />
+          <Empty text={t('traitorDetail.noRecord')} />
         ) : (
           <ol className="space-y-2">
             {traitor.sources.map((s, i) => (
@@ -307,7 +309,7 @@ export default function TraitorDetail() {
                 <span className="font-garamond text-bronzelight">[{i + 1}]</span>
                 <span className="flex-1 leading-relaxed text-paper/85">{s.citation}</span>
                 {typeof s.credibility === 'number' && (
-                  <span className="shrink-0 font-garamond text-xs text-bronzelight" title={`可信度 ${s.credibility}/5`}>
+                  <span className="shrink-0 font-garamond text-xs text-bronzelight" title={t('traitorDetail.credibility', { count: s.credibility })}>
                     {'★'.repeat(s.credibility)}
                     {'☆'.repeat(5 - s.credibility)}
                   </span>
@@ -320,16 +322,16 @@ export default function TraitorDetail() {
 
       {/* 相关人物 */}
       {related.length > 0 && (
-        <Section title="相关人物" en="RELATED FIGURES">
+        <Section title={t('traitorDetail.relatedTitle')} en="RELATED FIGURES">
           <div className="flex flex-wrap gap-3">
-            {related.map((t) => (
+            {related.map((tr) => (
               <Link
-                key={t.id}
-                to={`/traitor/${t.id}`}
+                key={tr.id}
+                to={`/traitor/${tr.id}`}
                 className="badge border-paperedge/30 py-1.5 text-sm text-paperdim hover:border-cinnabar hover:text-cinnabarlight"
               >
-                {t.name}
-                <span className="ml-2 text-xs text-bronzelight">{t.period}</span>
+                {tr.name}
+                <span className="ml-2 text-xs text-bronzelight">{tr.period}</span>
               </Link>
             ))}
           </div>

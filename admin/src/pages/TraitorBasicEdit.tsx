@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList, formatLifeSpan } from '../lib/format'
@@ -6,12 +7,21 @@ import type { Child, CrimeRecord, Period, Spouse, TraitorDetail, TraitorInput, T
 
 const PAGE_SIZE = 10
 
-const YEAR_TYPES: Array<{ value: YearType; label: string }> = [
-  { value: 'exact', label: '确切' },
-  { value: 'approx', label: '约' },
-  { value: 'before', label: '之前' },
-  { value: 'after', label: '之后' },
-  { value: 'unknown', label: '不详' },
+const PERIOD_KEYS: Record<string, string> = {
+  '宋末': 'periods.lateSong',
+  '明末': 'periods.lateMing',
+  '清末': 'periods.lateQing',
+  '民国': 'periods.republic',
+  '抗日战争时期': 'periods.warOfResistance',
+  '其他': 'periods.other',
+}
+
+const YEAR_TYPES: Array<{ value: YearType; key: string }> = [
+  { value: 'exact', key: 'yearTypes.exact' },
+  { value: 'approx', key: 'yearTypes.circa' },
+  { value: 'before', key: 'yearTypes.before' },
+  { value: 'after', key: 'yearTypes.after' },
+  { value: 'unknown', key: 'yearTypes.unknown' },
 ]
 
 function useRowList<T>(initial: T[]) {
@@ -25,13 +35,14 @@ function useRowList<T>(initial: T[]) {
 }
 
 function RowActions({ onRemove }: { onRemove: () => void }) {
+  const { t } = useTranslation()
   return (
     <button
       type="button"
       onClick={onRemove}
       className="mt-1 h-9 shrink-0 rounded-sm border border-paperedge/25 px-3 text-xs text-paperdim hover:border-cinnabar hover:text-cinnabarlight"
     >
-      删除
+      {t('common.delete')}
     </button>
   )
 }
@@ -87,6 +98,7 @@ const EMPTY_FORM: BasicForm = {
 // ── 列表视图 ──────────────────────────────────────
 
 function ListView() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [items, setItems] = useState<TraitorSummary[]>([])
   const [loading, setLoading] = useState(true)
@@ -114,9 +126,9 @@ function ListView() {
       setTotal(totalNum)
       setTotalPages(totalPagesNum)
     } catch (e) {
-      setError(e instanceof Error ? e.message : '加载失败')
+      setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     let alive = true
@@ -159,7 +171,7 @@ function ListView() {
     <div className="container-page py-10">
       <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">基本信息编辑</h1>
+          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('basicEdit.title')}</h1>
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
             Basic Info Editor
           </p>
@@ -167,7 +179,7 @@ function ListView() {
       </header>
 
       <p className="mt-3 text-sm text-paperdim">
-        选择档案编辑<span className="text-bronzelight">基本信息</span>（姓名、生卒、籍贯、概述等），其他数据不受影响。
+        {t('basicEdit.description')}
       </p>
 
       <div className="animate-fade-up mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
@@ -182,14 +194,14 @@ function ListView() {
             className="input min-w-0 max-w-xs flex-1"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="按姓名 / 别名搜索"
+            placeholder={t('basicEdit.searchPlaceholder')}
           />
           <button type="submit" className="btn-bronze flex-none" disabled={loading}>
-            搜索
+            {t('common.search')}
           </button>
           {searched && (
             <button type="button" className="btn-ghost flex-none" onClick={handleReset}>
-              重置
+              {t('common.reset')}
             </button>
           )}
         </form>
@@ -202,10 +214,10 @@ function ListView() {
       )}
 
       {loading ? (
-        <div className="card mt-6 p-12 text-center text-paperdim">加载中…</div>
+        <div className="card mt-6 p-12 text-center text-paperdim">{t('common.loading')}</div>
       ) : items.length === 0 ? (
         <div className="card mt-6 p-12 text-center">
-          <p className="font-song text-lg tracking-widest text-paperdim/70">暂无档案</p>
+          <p className="font-song text-lg tracking-widest text-paperdim/70">{t('traitors.noArchives')}</p>
         </div>
       ) : (
         <>
@@ -213,37 +225,37 @@ function ListView() {
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead>
                 <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
-                  <th className="px-5 py-3 font-medium">姓名</th>
-                  <th className="px-5 py-3 font-medium">时期</th>
-                  <th className="px-5 py-3 font-medium">派系</th>
-                  <th className="px-5 py-3 font-medium">生卒</th>
-                  <th className="px-5 py-3 font-medium">籍贯</th>
-                  <th className="px-5 py-3 text-right font-medium">操作</th>
+                  <th className="px-5 py-3 font-medium">{t('common.name')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.period')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.faction')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.lifespan')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.nativePlace')}</th>
+                  <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
                 </tr>
               </thead>
               <tbody>
-                {items.map((t) => (
-                  <tr key={t.id} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
+                {items.map((tr) => (
+                  <tr key={tr.id} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
-                        {t.photoUrl ? (
+                        {tr.photoUrl ? (
                           <img
-                            src={resolveAssetUrl(t.photoUrl)}
+                            src={resolveAssetUrl(tr.photoUrl)}
                             alt=""
                             className="h-10 w-10 shrink-0 rounded-sm object-cover"
                           />
                         ) : (
                           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-paperedge/20 font-song text-xs text-paperdim/60">
-                            无
+                            {t('common.none')}
                           </span>
                         )}
-                        <span className="font-medium tracking-wider text-paper">{t.name}</span>
+                        <span className="font-medium tracking-wider text-paper">{tr.name}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-paperdim">{t.period}</td>
-                    <td className="px-5 py-3 text-paperdim">{t.faction || '—'}</td>
+                    <td className="px-5 py-3 text-paperdim">{tr.period}</td>
+                    <td className="px-5 py-3 text-paperdim">{tr.faction || '—'}</td>
                     <td className="px-5 py-3 font-garamond text-xs text-paperdim/80">
-                      {formatLifeSpan(t.birthYear, t.deathYear, t.birthYearType, t.deathYearType)}
+                      {formatLifeSpan(tr.birthYear, tr.deathYear, tr.birthYearType, tr.deathYearType)}
                     </td>
                     <td className="px-5 py-3 text-paperdim">—</td>
                     <td className="px-5 py-3">
@@ -251,9 +263,9 @@ function ListView() {
                         <button
                           type="button"
                           className="btn-ghost !px-3 !py-1.5 text-xs"
-                          onClick={() => navigate(`/traitors/basic-edit/${t.id}`)}
+                          onClick={() => navigate(`/traitors/basic-edit/${tr.id}`)}
                         >
-                          编辑基本信息
+                          {t('basicEdit.editBasicInfo')}
                         </button>
                       </div>
                     </td>
@@ -265,18 +277,16 @@ function ListView() {
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs tracking-widest text-paperdim/80">
-              共 <span className="font-garamond text-paper">{total}</span> 条档案 · 第
-              <span className="mx-1 font-garamond text-paper">{totalPages === 0 ? 0 : page}</span>
-              / <span className="font-garamond text-paper">{totalPages}</span> 页
+              {t('basicEdit.totalRecords', { total, page: totalPages === 0 ? 0 : page, totalPages })}
             </div>
-            <nav className="flex flex-wrap items-center gap-1.5" aria-label="分页">
+            <nav className="flex flex-wrap items-center gap-1.5" aria-label={t('common.pagination')}>
               <button
                 type="button"
                 className="btn-ghost !px-3 !py-1.5 text-xs"
                 onClick={() => goPage(page - 1)}
                 disabled={page <= 1 || loading}
               >
-                上一页
+                {t('common.prevPage')}
               </button>
               {pages.map((n, i) =>
                 n === '…' ? (
@@ -309,7 +319,7 @@ function ListView() {
                 onClick={() => goPage(page + 1)}
                 disabled={page >= totalPages || loading}
               >
-                下一页
+                {t('common.nextPage')}
               </button>
             </nav>
           </div>
@@ -322,6 +332,7 @@ function ListView() {
 // ── 编辑视图 ──────────────────────────────────────
 
 function EditView() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
@@ -378,9 +389,9 @@ function EditView() {
           })),
         )
       })
-      .catch((e) => setError(e instanceof Error ? e.message : '加载失败'))
+      .catch((e) => setError(e instanceof Error ? e.message : t('common.loadFailed')))
       .finally(() => setLoading(false))
-  }, [id])
+  }, [id, t])
 
   const flash = (msg: string) => {
     setNotice(msg)
@@ -394,8 +405,8 @@ function EditView() {
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!form.name.trim()) return setError('请填写姓名')
-    if (!form.summary.trim()) return setError('请填写人物概述')
+    if (!form.name.trim()) return setError(t('basicEdit.pleaseFillName'))
+    if (!form.summary.trim()) return setError(t('basicEdit.pleaseFillSummary'))
     if (!id || !original) return
 
     // 构建完整 payload：基本信息用表单值，其他数据保持原样
@@ -458,7 +469,7 @@ function EditView() {
     setBusy(true)
     try {
       await api.updateTraitorDirect(id, payload)
-      flash('基本信息已保存')
+      flash(t('basicEdit.basicInfoSaved'))
       // 刷新 original 以同步最新状态
       const { traitor } = await api.adminTraitor(id)
       setOriginal(traitor)
@@ -481,19 +492,19 @@ function EditView() {
         })),
       )
     } catch (err) {
-      setError(err instanceof Error ? err.message : '保存失败')
+      setError(err instanceof Error ? err.message : t('common.saveFailed'))
     } finally {
       setBusy(false)
     }
   }
 
-  if (loading) return <div className="container-page py-24 text-center text-paperdim">加载中…</div>
+  if (loading) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
 
   return (
     <div className="container-page max-w-3xl py-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <header>
-          <h1 className="text-xl font-semibold tracking-[0.25em] text-paper">编辑基本信息</h1>
+          <h1 className="text-xl font-semibold tracking-[0.25em] text-paper">{t('basicEdit.editBasicInfo')}</h1>
           <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
             BASIC INFO · ADMIN DIRECT
           </p>
@@ -505,80 +516,80 @@ function EditView() {
         )}
       </div>
       <p className="mt-3 text-sm text-paperdim">
-        修改基本信息与家族信息及犯罪记录，<span className="text-bronzelight">其他数据（居住地、生平等）保持不变</span>。
+        {t('basicEdit.description2')}
       </p>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
         <fieldset className="card p-6">
           <legend className="flex items-baseline gap-2 px-2">
-            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">基本信息</span>
+            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">{t('traitorEditor.basicInfo')}</span>
             <span className="font-garamond text-[10px] italic text-bronzelight">BASIC</span>
           </legend>
           <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <label className="label" htmlFor="name">姓名 *</label>
+              <label className="label" htmlFor="name">{t('traitorEditor.form.name')}</label>
               <input id="name" className="input" value={form.name} onChange={(e) => update('name', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="courtesy">字</label>
+              <label className="label" htmlFor="courtesy">{t('common.courtesyName')}</label>
               <input id="courtesy" className="input" value={form.courtesyName} onChange={(e) => update('courtesyName', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="pseudonym">号</label>
+              <label className="label" htmlFor="pseudonym">{t('common.pseudonym')}</label>
               <input id="pseudonym" className="input" value={form.pseudonym} onChange={(e) => update('pseudonym', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="birthYear">出生年份</label>
+              <label className="label" htmlFor="birthYear">{t('common.birthYear')}</label>
               <div className="flex gap-2">
                 <input id="birthYear" type="number" className="input font-garamond" value={form.birthYear} onChange={(e) => update('birthYear', e.target.value)} />
                 <select className="input !w-24" value={form.birthYearType} onChange={(e) => update('birthYearType', e.target.value as YearType)}>
-                  {YEAR_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
+                  {YEAR_TYPES.map((yt) => (
+                    <option key={yt.value} value={yt.value}>{t(yt.key)}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div>
-              <label className="label" htmlFor="deathYear">去世年份</label>
+              <label className="label" htmlFor="deathYear">{t('common.deathYear')}</label>
               <div className="flex gap-2">
                 <input id="deathYear" type="number" className="input font-garamond" value={form.deathYear} onChange={(e) => update('deathYear', e.target.value)} />
                 <select className="input !w-24" value={form.deathYearType} onChange={(e) => update('deathYearType', e.target.value as YearType)}>
-                  {YEAR_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
+                  {YEAR_TYPES.map((yt) => (
+                    <option key={yt.value} value={yt.value}>{t(yt.key)}</option>
                   ))}
                 </select>
               </div>
             </div>
             <div>
-              <label className="label" htmlFor="nativePlace">籍贯</label>
+              <label className="label" htmlFor="nativePlace">{t('common.nativePlace')}</label>
               <input id="nativePlace" className="input" value={form.nativePlace} onChange={(e) => update('nativePlace', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="birthPlace">出生地</label>
+              <label className="label" htmlFor="birthPlace">{t('common.birthPlace')}</label>
               <input id="birthPlace" className="input" value={form.birthPlace} onChange={(e) => update('birthPlace', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="period">历史时期 *</label>
+              <label className="label" htmlFor="period">{t('traitorEditor.form.period')}</label>
               <select id="period" className="input" value={form.period} onChange={(e) => update('period', e.target.value as Period)}>
                 {PERIODS.map((p) => (
-                  <option key={p} value={p}>{p}</option>
+                  <option key={p} value={p}>{t(PERIOD_KEYS[p])}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="label" htmlFor="faction">派系 / 伪政权</label>
+              <label className="label" htmlFor="faction">{t('traitorEditor.form.faction')}</label>
               <input id="faction" className="input" value={form.faction} onChange={(e) => update('faction', e.target.value)} />
             </div>
             <div>
-              <label className="label" htmlFor="aliases">别名（逗号分隔）</label>
+              <label className="label" htmlFor="aliases">{t('common.aliases')}</label>
               <input id="aliases" className="input" value={form.aliasesText} onChange={(e) => update('aliasesText', e.target.value)} />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
-              <label className="label" htmlFor="tags">身份标签（逗号分隔）</label>
-              <input id="tags" className="input" placeholder="如：伪政权要员，战犯" value={form.identityTagsText} onChange={(e) => update('identityTagsText', e.target.value)} />
+              <label className="label" htmlFor="tags">{t('common.tags')}</label>
+              <input id="tags" className="input" placeholder={t('traitorEditor.form.tagsPlaceholder')} value={form.identityTagsText} onChange={(e) => update('identityTagsText', e.target.value)} />
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
-              <label className="label" htmlFor="summary">人物概述 *</label>
+              <label className="label" htmlFor="summary">{t('traitorEditor.form.summary')}</label>
               <textarea id="summary" rows={5} className="input" value={form.summary} onChange={(e) => update('summary', e.target.value)} />
             </div>
           </div>
@@ -586,7 +597,7 @@ function EditView() {
 
         <fieldset className="card p-6">
           <legend className="flex items-baseline gap-2 px-2">
-            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">配偶</span>
+            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">{t('traitorEditor.spouse')}</span>
             <span className="font-garamond text-[10px] italic text-bronzelight">SPOUSES</span>
           </legend>
           <div className="mt-2 space-y-2">
@@ -594,13 +605,13 @@ function EditView() {
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_2fr_auto]">
                 <input
                   className="input"
-                  placeholder="姓名"
+                  placeholder={t('traitorEditor.form.namePlaceholder')}
                   value={s.name}
                   onChange={(e) => spouseCtl.patch(i, { name: e.target.value })}
                 />
                 <input
                   className="input"
-                  placeholder="备注"
+                  placeholder={t('traitorEditor.form.remark')}
                   value={s.remark ?? ''}
                   onChange={(e) => spouseCtl.patch(i, { remark: e.target.value })}
                 />
@@ -612,14 +623,14 @@ function EditView() {
               onClick={() => spouseCtl.add({ name: '', remark: '' })}
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加配偶
+              {t('traitorEditor.addSpouse')}
             </button>
           </div>
         </fieldset>
 
         <fieldset className="card p-6">
           <legend className="flex items-baseline gap-2 px-2">
-            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">子女</span>
+            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">{t('traitorEditor.children')}</span>
             <span className="font-garamond text-[10px] italic text-bronzelight">CHILDREN</span>
           </legend>
           <div className="mt-2 space-y-2">
@@ -627,7 +638,7 @@ function EditView() {
               <div key={i} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_100px_1fr_1fr_auto]">
                 <input
                   className="input"
-                  placeholder="姓名"
+                  placeholder={t('traitorEditor.form.namePlaceholder')}
                   value={c.name}
                   onChange={(e) => childCtl.patch(i, { name: e.target.value })}
                 />
@@ -636,20 +647,20 @@ function EditView() {
                   value={c.gender ?? ''}
                   onChange={(e) => childCtl.patch(i, { gender: e.target.value })}
                 >
-                  <option value="">性别</option>
-                  <option value="男">男</option>
-                  <option value="女">女</option>
-                  <option value="不详">不详</option>
+                  <option value="">{t('traitorEditor.form.gender')}</option>
+                  <option value="男">{t('traitorEditor.form.male')}</option>
+                  <option value="女">{t('traitorEditor.form.female')}</option>
+                  <option value="不详">{t('common.unknown')}</option>
                 </select>
                 <input
                   className="input"
-                  placeholder="去向"
+                  placeholder={t('traitorEditor.form.destination')}
                   value={c.whereabouts ?? ''}
                   onChange={(e) => childCtl.patch(i, { whereabouts: e.target.value })}
                 />
                 <input
                   className="input"
-                  placeholder="备注"
+                  placeholder={t('traitorEditor.form.remark')}
                   value={c.remark ?? ''}
                   onChange={(e) => childCtl.patch(i, { remark: e.target.value })}
                 />
@@ -661,14 +672,14 @@ function EditView() {
               onClick={() => childCtl.add({ name: '', gender: '', whereabouts: '', remark: '' })}
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加子女
+              {t('traitorEditor.addChild')}
             </button>
           </div>
         </fieldset>
 
         <fieldset className="card p-6">
           <legend className="flex items-baseline gap-2 px-2">
-            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">犯罪记录</span>
+            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">{t('traitorEditor.crimes')}</span>
             <span className="font-garamond text-[10px] italic text-bronzelight">CRIMES</span>
           </legend>
           <div className="mt-2 space-y-4">
@@ -678,7 +689,7 @@ function EditView() {
                   <input
                     type="number"
                     className="input font-garamond"
-                    placeholder="年份"
+                    placeholder={t('traitorEditor.form.year')}
                     value={c.year ?? ''}
                     onChange={(e) =>
                       crimeCtl.patch(i, { year: e.target.value === '' ? null : Number(e.target.value) })
@@ -686,7 +697,7 @@ function EditView() {
                   />
                   <input
                     className="input"
-                    placeholder="事件名称"
+                    placeholder={t('traitorEditor.form.eventName')}
                     value={c.title}
                     onChange={(e) => crimeCtl.patch(i, { title: e.target.value })}
                   />
@@ -695,7 +706,7 @@ function EditView() {
                 <textarea
                   rows={2}
                   className="input mt-2"
-                  placeholder="经过"
+                  placeholder={t('traitorEditor.form.process')}
                   value={c.process ?? ''}
                   onChange={(e) => crimeCtl.patch(i, { process: e.target.value })}
                 />
@@ -703,13 +714,13 @@ function EditView() {
                   <textarea
                     rows={2}
                     className="input"
-                    placeholder="危害"
+                    placeholder={t('traitorEditor.form.harm')}
                     value={c.harm ?? ''}
                     onChange={(e) => crimeCtl.patch(i, { harm: e.target.value })}
                   />
                   <input
                     className="input"
-                    placeholder="史料出处"
+                    placeholder={t('traitorEditor.form.sourceRef')}
                     value={c.sourceRef ?? ''}
                     onChange={(e) => crimeCtl.patch(i, { sourceRef: e.target.value })}
                   />
@@ -721,7 +732,7 @@ function EditView() {
               onClick={() => crimeCtl.add({ year: null, title: '', process: '', harm: '', sourceRef: '' })}
               className="btn-ghost !py-1.5 text-xs"
             >
-              + 添加犯罪记录
+              {t('traitorEditor.addCrime')}
             </button>
           </div>
         </fieldset>
@@ -734,10 +745,10 @@ function EditView() {
 
         <div className="flex items-center justify-end gap-3 pb-10">
           <button type="button" onClick={() => navigate('/traitors/basic-edit')} className="btn-ghost">
-            返回列表
+            {t('common.returnToList')}
           </button>
           <button type="submit" className="btn-primary min-w-36" disabled={busy}>
-            {busy ? '保存中…' : '保存基本信息'}
+            {busy ? t('common.saveInProgress') : t('common.saveBasicInfo')}
           </button>
         </div>
       </form>

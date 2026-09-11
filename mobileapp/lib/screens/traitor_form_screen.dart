@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
+
 import '../models/models.dart';
 import '../services/session.dart';
 import '../widgets/theme.dart';
@@ -43,17 +45,18 @@ class _TraitorFormScreenState extends State<TraitorFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (!Session.instance.isLogin) {
       return Scaffold(
-        appBar: AppBar(title: const Text('编辑档案')),
-        body: const Center(
-          child: Text('请先登录', style: TextStyle(color: AppTheme.paperDim)),
+        appBar: AppBar(title: Text(l10n.editArchive)),
+        body: Center(
+          child: Text(l10n.pleaseLoginFirst, style: const TextStyle(color: AppTheme.paperDim)),
         ),
       );
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.mode == TraitorFormMode.create ? '提交新档案' : '修改档案'),
+        title: Text(widget.mode == TraitorFormMode.create ? l10n.submitNewArchive : l10n.modifyArchive),
       ),
       body: Form(
         key: _formKey,
@@ -62,20 +65,20 @@ class _TraitorFormScreenState extends State<TraitorFormScreen> {
           children: [
             TextFormField(
               controller: _nameCtrl,
-              decoration: const InputDecoration(labelText: '姓名 *'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? '请输入姓名' : null,
+              decoration: InputDecoration(labelText: l10n.nameRequired),
+              validator: (v) => (v == null || v.trim().isEmpty) ? l10n.nameInput : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _changeSummaryCtrl,
-              decoration: const InputDecoration(labelText: '修改说明 *'),
+              decoration: InputDecoration(labelText: l10n.changeDescription),
               maxLines: 3,
-              validator: (v) => (v == null || v.trim().isEmpty) ? '请输入修改说明' : null,
+              validator: (v) => (v == null || v.trim().isEmpty) ? l10n.changeDescriptionInput : null,
             ),
             const SizedBox(height: 24),
             FilledButton(
               onPressed: _submit,
-              child: const Text('提 交'),
+              child: Text(l10n.submitButton),
             ),
           ],
         ),
