@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList, formatLifeSpan } from '../lib/format'
-import type { Child, Period, Spouse, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
+import type { Child, CrimeRecord, Period, Spouse, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
 
 const PAGE_SIZE = 10
 
@@ -329,6 +329,7 @@ function EditView() {
   const [original, setOriginal] = useState<TraitorDetail | null>(null)
   const [spouses, spouseCtl] = useRowList<Spouse>([])
   const [children, childCtl] = useRowList<Child>([])
+  const [crimes, crimeCtl] = useRowList<CrimeRecord>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -365,6 +366,15 @@ function EditView() {
             gender: c.gender ?? '',
             whereabouts: c.whereabouts ?? '',
             remark: c.remark ?? '',
+          })),
+        )
+        crimeCtl.setAll(
+          traitor.crimeRecords.map((c) => ({
+            year: c.year,
+            title: c.title,
+            process: c.process ?? '',
+            harm: c.harm ?? '',
+            sourceRef: c.sourceRef ?? '',
           })),
         )
       })
@@ -412,18 +422,19 @@ function EditView() {
         whereabouts: c.whereabouts?.trim() || undefined,
         remark: c.remark?.trim() || undefined,
       })),
+      // 犯罪记录用表单值
+      crimeRecords: crimes.filter((c) => c.title.trim()).map((c) => ({
+        year: c.year,
+        title: c.title.trim(),
+        process: c.process?.trim() || undefined,
+        harm: c.harm?.trim() || undefined,
+        sourceRef: c.sourceRef?.trim() || undefined,
+      })),
       // 以下保持原数据不变
       residences: original.residences.map((r) => ({
         place: r.place,
         period: r.period ?? undefined,
         remark: r.remark ?? undefined,
-      })),
-      crimeRecords: original.crimeRecords.map((c) => ({
-        year: c.year,
-        title: c.title,
-        process: c.process ?? undefined,
-        harm: c.harm ?? undefined,
-        sourceRef: c.sourceRef ?? undefined,
       })),
       lifeEvents: original.lifeEvents.map((l) => ({
         year: l.year,
@@ -460,6 +471,15 @@ function EditView() {
           remark: c.remark ?? '',
         })),
       )
+      crimeCtl.setAll(
+        traitor.crimeRecords.map((c) => ({
+          year: c.year,
+          title: c.title,
+          process: c.process ?? '',
+          harm: c.harm ?? '',
+          sourceRef: c.sourceRef ?? '',
+        })),
+      )
     } catch (err) {
       setError(err instanceof Error ? err.message : '保存失败')
     } finally {
@@ -485,7 +505,7 @@ function EditView() {
         )}
       </div>
       <p className="mt-3 text-sm text-paperdim">
-        修改基本信息与家族信息，<span className="text-bronzelight">其他数据（居住地、犯罪记录、生平等）保持不变</span>。
+        修改基本信息与家族信息及犯罪记录，<span className="text-bronzelight">其他数据（居住地、生平等）保持不变</span>。
       </p>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
@@ -642,6 +662,66 @@ function EditView() {
               className="btn-ghost !py-1.5 text-xs"
             >
               + 添加子女
+            </button>
+          </div>
+        </fieldset>
+
+        <fieldset className="card p-6">
+          <legend className="flex items-baseline gap-2 px-2">
+            <span className="text-sm font-semibold tracking-[0.25em] text-cinnabarlight">犯罪记录</span>
+            <span className="font-garamond text-[10px] italic text-bronzelight">CRIMES</span>
+          </legend>
+          <div className="mt-2 space-y-4">
+            {crimes.map((c, i) => (
+              <div key={i} className="rounded-sm border border-paperedge/15 p-4">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-[90px_1fr_auto]">
+                  <input
+                    type="number"
+                    className="input font-garamond"
+                    placeholder="年份"
+                    value={c.year ?? ''}
+                    onChange={(e) =>
+                      crimeCtl.patch(i, { year: e.target.value === '' ? null : Number(e.target.value) })
+                    }
+                  />
+                  <input
+                    className="input"
+                    placeholder="事件名称"
+                    value={c.title}
+                    onChange={(e) => crimeCtl.patch(i, { title: e.target.value })}
+                  />
+                  <RowActions onRemove={() => crimeCtl.remove(i)} />
+                </div>
+                <textarea
+                  rows={2}
+                  className="input mt-2"
+                  placeholder="经过"
+                  value={c.process ?? ''}
+                  onChange={(e) => crimeCtl.patch(i, { process: e.target.value })}
+                />
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <textarea
+                    rows={2}
+                    className="input"
+                    placeholder="危害"
+                    value={c.harm ?? ''}
+                    onChange={(e) => crimeCtl.patch(i, { harm: e.target.value })}
+                  />
+                  <input
+                    className="input"
+                    placeholder="史料出处"
+                    value={c.sourceRef ?? ''}
+                    onChange={(e) => crimeCtl.patch(i, { sourceRef: e.target.value })}
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => crimeCtl.add({ year: null, title: '', process: '', harm: '', sourceRef: '' })}
+              className="btn-ghost !py-1.5 text-xs"
+            >
+              + 添加犯罪记录
             </button>
           </div>
         </fieldset>
