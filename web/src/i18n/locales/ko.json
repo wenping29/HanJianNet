@@ -330,7 +330,7 @@
     "descRequired": "사건 설명을 입력하세요",
     "eventName": "사건 이름 *",
     "eventNamePlaceholder": "예: 만주사변",
-    "year": "연도 *",
+    "year": "연도",
     "yearPlaceholder": "예: 1937",
     "period": "시기 *",
     "alias": "별칭 (선택)",

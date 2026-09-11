@@ -123,7 +123,7 @@ appsettings.*.json
 # ---- 压缩与备份 ----
 *.7z
 *.zip
-*.rar
+# *.rar
 *.tar
 *.gz
 *.tgz

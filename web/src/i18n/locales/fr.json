@@ -22,6 +22,7 @@
     "all": "Tous",
     "totalRecords": "{{total}} dossiers · Page {{page}} / {{totalPages}}",
     "totalEvents": "{{count}} événements",
+    "unknownYear": "Année inconnue",
     "pageInfo": "Page {{page}} / {{totalPages}}",
     "pagination": "Navigation par pages",
     "noData": "Aucun dossier",
@@ -312,7 +313,12 @@
     "searching": "Recherche…",
     "totalPeople": "Total {{count}} personnes",
     "noTraitors": "Aucun dossier de traître associé à cet événement",
-    "relatedEvents": "Événements contemporains"
+    "relatedEvents": "Événements contemporains",
+    "location": "Lieu : ",
+    "personsTitle": "Personnes impliquées",
+    "personsCount": "{{count}} enregistrées",
+    "knownPersons": "~{{count}} selon les sources",
+    "personLocation": "Lieu d'origine : "
   },
   "eventForm": {
     "createTitle": "Ajouter un nouvel événement historique",
