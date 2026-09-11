@@ -19,6 +19,9 @@ public class Traitor
     public string Faction { get; set; } = "";
     public string Summary { get; set; } = "";
     public string RelatedIdsJson { get; set; } = "[]";
+
+    /// <summary>危害度分级：1=特级 2=一级 3=二级 4=三级 5=四级；null=未分级</summary>
+    public int? HarmLevel { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
