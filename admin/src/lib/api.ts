@@ -1,6 +1,9 @@
 import { useAuth } from '../stores/auth'
 import type {
   AdminMenuItem,
+  AtrocityEventDetail,
+  AtrocityEventInput,
+  AtrocityEventSummary,
   Attachment,
   AttachmentKind,
   AuthPayload,
@@ -151,6 +154,23 @@ export const api = {
 
   updateTraitorDirect: (id: string, input: TraitorInput) =>
     request<{ traitor: TraitorDetail }>(`/admin/traitors/${id}`, { method: 'PUT', body: JSON.stringify(input) }),
+
+  // ---- 历史事件（惨案/宏观事件） ----
+  listAtrocityEvents: (era?: string) => {
+    const params = new URLSearchParams()
+    if (era) params.set('era', era)
+    const qs = params.toString()
+    return request<{ items: AtrocityEventSummary[] }>(`/atrocity-events${qs ? `?${qs}` : ''}`)
+  },
+
+  getAtrocityEvent: (id: string) =>
+    request<{ item: AtrocityEventDetail }>(`/atrocity-events/${id}`),
+
+  updateAtrocityEvent: (id: string, input: AtrocityEventInput) =>
+    request<{ item: AtrocityEventDetail }>(`/atrocity-events/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(input),
+    }),
 
   findDuplicates: (name?: string, nativePlace?: string) => {
     const params = new URLSearchParams()

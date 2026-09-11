@@ -184,6 +184,47 @@
     "basicInfoSaved": "基本信息已保存",
     "description2": "修改基本信息与家族信息及犯罪记录，其他数据（居住地、生平等）保持不变。"
   },
+  "eventsAdmin": {
+    "title": "事件管理",
+    "subtitle": "Event Basic Info Editor",
+    "description": "选择历史事件编辑基本信息（名称、类型、时期、年份、地区、摘要等），涉案人员等其他数据不受影响。",
+    "searchPlaceholder": "按名称 / 别名 / 省市搜索",
+    "editBasicInfo": "编辑基本信息",
+    "totalRecords": "共 {{total}} 条事件 · 第 {{page}} / {{totalPages}} 页",
+    "noEvents": "暂无事件",
+    "editTitle": "编辑事件基本信息",
+    "editSubtitle": "EVENT BASIC INFO · ADMIN DIRECT",
+    "description2": "修改事件基本信息，涉案人员等其他数据保持不变。",
+    "pleaseFillName": "请填写事件名称",
+    "saved": "基本信息已保存",
+    "col": {
+      "name": "事件名称",
+      "type": "类型",
+      "era": "时期",
+      "year": "年份",
+      "region": "省 / 市",
+      "personCount": "人数",
+      "operation": "操作"
+    },
+    "form": {
+      "name": "事件名称 *",
+      "namePlaceholder": "如：平顶山惨案",
+      "alias": "又称",
+      "eventType": "事件类型",
+      "eventTypePlaceholder": "如：惨案 / 事件",
+      "era": "历史时期",
+      "eraUnset": "未指定",
+      "year": "年份",
+      "province": "省份",
+      "city": "城市",
+      "location": "地点",
+      "isGeneral": "通史（宏观）事件",
+      "personCount": "涉案人数",
+      "keywords": "检索关键词（逗号分隔）",
+      "keywordsPlaceholder": "如：惨案，屠杀",
+      "summary": "事件摘要"
+    }
+  },
   "users": {
     "title": "用户管理",
     "newUser": "新增用户",

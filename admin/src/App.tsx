@@ -6,6 +6,7 @@ import LoginLogs from './pages/Logs/LoginLogs'
 import OperationLogs from './pages/Logs/OperationLogs'
 import QueryLogs from './pages/Logs/QueryLogs'
 import ErrorLogs from './pages/Logs/ErrorLogs'
+import Events from './pages/Events'
 import Menus from './pages/Menus'
 import NotFound from './pages/NotFound'
 import Profile from './pages/Profile'
@@ -50,6 +51,8 @@ export default function App() {
             <Route path="/traitors/basic-edit" element={<TraitorBasicEdit />} />
             <Route path="/traitors/basic-edit/:id" element={<TraitorBasicEdit />} />
             <Route path="/traitors/:id/edit" element={<TraitorEditor mode="edit" />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/events/:id/edit" element={<Events />} />
           </Route>
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/reviews/:rid" element={<ReviewDetail />} />

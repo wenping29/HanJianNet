@@ -283,3 +283,52 @@ export interface TraitorInput {
   relatedIds: string[]
   attachments: Array<Pick<Attachment, 'id' | 'url' | 'kind' | 'fileType' | 'caption'>>
 }
+
+/** 历史事件涉案人员（对应后端 AtrocityCasePersonDto） */
+export interface AtrocityCasePerson {
+  id: string
+  name: string
+  location?: string | null
+  identityTags?: string | null
+  sort: number
+}
+
+/** 历史事件列表项（对应后端 AtrocityEventDto） */
+export interface AtrocityEventSummary {
+  id: string
+  name: string
+  eventType: string
+  era: string
+  year: number | null
+  province: string
+  city: string
+  isGeneral: boolean
+  personCount: number
+  summary: string
+  keywords: string[]
+}
+
+/** 历史事件详情（对应后端 AtrocityEventDetailDto） */
+export interface AtrocityEventDetail extends AtrocityEventSummary {
+  alias: string
+  location: string
+  createdAt: string
+  updatedAt: string
+  persons: AtrocityCasePerson[]
+}
+
+/** 历史事件编辑入参（对应后端 AtrocityEventInputDto） */
+export interface AtrocityEventInput {
+  name: string
+  alias?: string
+  eventType?: string
+  era?: string
+  year: number | null
+  province?: string
+  city?: string
+  location?: string
+  isGeneral: boolean
+  personCount: number
+  summary?: string
+  keywords: string[]
+}

@@ -21,4 +21,9 @@ public class AtrocityEventsController(AtrocityCaseService service) : ControllerB
     [HttpPost("api/atrocity-events")]
     public async Task<IActionResult> Create([FromBody] AtrocityEventInputDto input)
         => Ok(new { item = await service.CreateAsync(input) });
+
+    [Authorize]
+    [HttpPut("api/atrocity-events/{id}")]
+    public async Task<IActionResult> Update(string id, [FromBody] AtrocityEventInputDto input)
+        => Ok(new { item = await service.UpdateAsync(id, input) });
 }

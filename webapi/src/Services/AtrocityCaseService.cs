@@ -64,4 +64,23 @@ public class AtrocityCaseService(AppDbContext db, CacheService cache)
         await cache.InvalidateAsync(CacheGroup);
         return entity.ToDetailDto();
     }
+
+    /// <summary>修改事件基本信息（仅主表字段，不改涉案人员）。</summary>
+    public async Task<AtrocityEventDetailDto> UpdateAsync(string id, AtrocityEventInputDto input)
+    {
+        if (string.IsNullOrWhiteSpace(input.Name))
+            throw new ApiException(400, "事件名称不能为空");
+
+        var entity = await db.AtrocityCases
+            .Include(c => c.Persons)
+            .FirstOrDefaultAsync(c => c.Id == id)
+            ?? throw new ApiException(404, "事件不存在");
+
+        input.ApplyTo(entity);
+        entity.UpdatedAt = DateTime.UtcNow;
+
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+        return entity.ToDetailDto();
+    }
 }

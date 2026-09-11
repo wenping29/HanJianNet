@@ -184,6 +184,47 @@
     "basicInfoSaved": "Basic info saved",
     "description2": "Edit basic info, family info, and criminal records. Other data (residences, biography, etc.) remains unchanged."
   },
+  "eventsAdmin": {
+    "title": "Event Management",
+    "subtitle": "Event Basic Info Editor",
+    "description": "Select a historical event to edit its basic info (name, type, era, year, region, summary, etc.). Related persons and other data are unaffected.",
+    "searchPlaceholder": "Search by name / alias / region",
+    "editBasicInfo": "Edit Basic Info",
+    "totalRecords": "{{total}} events · Page {{page}} / {{totalPages}}",
+    "noEvents": "No events",
+    "editTitle": "Edit Event Basic Info",
+    "editSubtitle": "EVENT BASIC INFO · ADMIN DIRECT",
+    "description2": "Edit the event's basic info. Related persons and other data remain unchanged.",
+    "pleaseFillName": "Please enter the event name",
+    "saved": "Basic info saved",
+    "col": {
+      "name": "Event Name",
+      "type": "Type",
+      "era": "Era",
+      "year": "Year",
+      "region": "Province / City",
+      "personCount": "Persons",
+      "operation": "Actions"
+    },
+    "form": {
+      "name": "Event Name *",
+      "namePlaceholder": "e.g. Pingdingshan Massacre",
+      "alias": "Also Known As",
+      "eventType": "Event Type",
+      "eventTypePlaceholder": "e.g. Massacre / Event",
+      "era": "Era",
+      "eraUnset": "Unspecified",
+      "year": "Year",
+      "province": "Province",
+      "city": "City",
+      "location": "Location",
+      "isGeneral": "General (macro) event",
+      "personCount": "Person Count",
+      "keywords": "Keywords (comma separated)",
+      "keywordsPlaceholder": "e.g. massacre, atrocity",
+      "summary": "Summary"
+    }
+  },
   "users": {
     "title": "User Management",
     "newUser": "New User",

@@ -318,6 +318,25 @@ public static class Mappings
             JsonOpts.Default),
     };
 
+    /// <summary>把事件基本信息写回已有实体（不含 Id/CreatedAt/涉案人员）。</summary>
+    public static void ApplyTo(this AtrocityEventInputDto input, AtrocityCase c)
+    {
+        c.Name = (input.Name ?? "").Trim();
+        c.Alias = (input.Alias ?? "").Trim();
+        c.EventType = (input.EventType ?? "").Trim();
+        c.Era = (input.Era ?? "").Trim();
+        c.Year = input.Year;
+        c.Province = (input.Province ?? "").Trim();
+        c.City = (input.City ?? "").Trim();
+        c.Location = (input.Location ?? "").Trim();
+        c.IsGeneral = input.IsGeneral;
+        c.PersonCount = input.PersonCount;
+        c.Summary = input.Summary ?? "";
+        c.Keywords = JsonSerializer.Serialize(
+            (input.Keywords ?? []).Select(x => (x ?? "").Trim()).Where(x => x.Length > 0).ToList(),
+            JsonOpts.Default);
+    }
+
     public static RevisionDto ToDto(this Revision r)
     {
         var snapshot = JsonSerializer.Deserialize<TraitorSnapshotDto>(r.PayloadJson, JsonOpts.Default)
