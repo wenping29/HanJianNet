@@ -141,6 +141,9 @@
     "colPeriod": "Zeitraum",
     "colFaction": "Fraktion",
     "colLifespan": "Lebensdaten",
+    "colTitle": "Position",
+    "colHarmLevel": "Gefährdungsgrad",
+    "colCrimes": "Straftaten",
     "colTags": "Identitätsetiketten"
   },
   "about": {
@@ -252,6 +255,18 @@
       "location": "Ort",
       "reference": "Quellenangabe *"
     }
+  },
+  "traitorCard": {
+    "title": "Position",
+    "harmLevel": "Gefährdungsgrad",
+    "crimeCount": "Straftaten: {{count}}"
+  },
+  "harmLevel": {
+    "1": "Höchste Stufe",
+    "2": "Stufe I",
+    "3": "Stufe II",
+    "4": "Stufe III",
+    "5": "Stufe IV"
   },
   "traitorDetail": {
     "backHome": "Zurück zur Startseite",

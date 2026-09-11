@@ -141,6 +141,9 @@
     "colPeriod": "Período",
     "colFaction": "Facción",
     "colLifespan": "Fechas de vida",
+    "colTitle": "Cargo",
+    "colHarmLevel": "Nivel de peligro",
+    "colCrimes": "Delitos",
     "colTags": "Etiquetas de identidad"
   },
   "about": {
@@ -252,6 +255,18 @@
       "location": "Ubicación",
       "reference": "Cita de la fuente *"
     }
+  },
+  "traitorCard": {
+    "title": "Cargo",
+    "harmLevel": "Nivel de peligro",
+    "crimeCount": "Registros criminales: {{count}}"
+  },
+  "harmLevel": {
+    "1": "Nivel supremo",
+    "2": "Nivel I",
+    "3": "Nivel II",
+    "4": "Nivel III",
+    "5": "Nivel IV"
   },
   "traitorDetail": {
     "backHome": "Volver al inicio",

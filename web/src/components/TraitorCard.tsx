@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { TraitorSummary } from '../types'
-import { formatLifeSpan } from '../lib/format'
+import { formatLifeSpan, harmLevelClass, harmLevelLabel } from '../lib/format'
 
 export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
   const { t } = useTranslation()
@@ -40,6 +40,25 @@ export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
         <p className="mt-2 truncate text-xs tracking-wider text-paperdim/80">
           {traitor.faction || '—'}
         </p>
+        {(traitor.title || traitor.harmLevel != null) && (
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            {traitor.title && (
+              <span className="badge border-paperedge/30 text-paper/85" title={t('traitorCard.title')}>
+                {traitor.title}
+              </span>
+            )}
+            {traitor.harmLevel != null && (
+              <span className={`badge ${harmLevelClass(traitor.harmLevel)}`} title={t('traitorCard.harmLevel')}>
+                {t('traitorCard.harmLevel')} · {harmLevelLabel(traitor.harmLevel, t)}
+              </span>
+            )}
+          </div>
+        )}
+        {traitor.crimeRecordCount > 0 && (
+          <p className="mt-2 text-xs tracking-wider text-cinnabarlight/80">
+            {t('traitorCard.crimeCount', { count: traitor.crimeRecordCount })}
+          </p>
+        )}
         {traitor.identityTags.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {traitor.identityTags.slice(0, 3).map((tag) => (

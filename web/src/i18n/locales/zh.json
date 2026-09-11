@@ -141,6 +141,9 @@
     "colPeriod": "时期",
     "colFaction": "派系",
     "colLifespan": "生卒年",
+    "colTitle": "职位",
+    "colHarmLevel": "危害等级",
+    "colCrimes": "犯罪记录",
     "colTags": "身份标签"
   },
   "about": {
@@ -252,6 +255,18 @@
       "location": "地点",
       "reference": "引用文献 *"
     }
+  },
+  "traitorCard": {
+    "title": "职位",
+    "harmLevel": "危害等级",
+    "crimeCount": "犯罪记录 {{count}} 条"
+  },
+  "harmLevel": {
+    "1": "特级",
+    "2": "一级",
+    "3": "二级",
+    "4": "三级",
+    "5": "四级"
   },
   "traitorDetail": {
     "backHome": "返回首页",

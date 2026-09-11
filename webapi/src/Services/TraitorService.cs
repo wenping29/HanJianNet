@@ -27,7 +27,7 @@ public class TraitorService(AppDbContext db, CacheService cache)
 
     private async Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? nativePlace, int? page = null, int? pageSize = null)
     {
-        var q = db.Traitors.Include(t => t.LifeEvents).AsQueryable();
+        var q = db.Traitors.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(name))
         {
@@ -55,23 +55,27 @@ public class TraitorService(AppDbContext db, CacheService cache)
         q = q.OrderByDescending(t => t.CreatedAt);
 
         var total = await q.CountAsync();
-        List<Traitor> list;
+        // 犯罪记录条数在 SQL 侧聚合，避免把明细全部读入内存
         if (page.HasValue && pageSize.HasValue)
         {
             var p = Math.Max(1, page.Value);
             var ps = Math.Clamp(pageSize.Value, 1, 200);
-            list = await q.Skip((p - 1) * ps).Take(ps).ToListAsync();
+            var rows = await q.Skip((p - 1) * ps).Take(ps)
+                .Select(t => new { Traitor = t, CrimeCount = t.CrimeRecords.Count })
+                .ToListAsync();
             return new PagedResult<TraitorSummaryDto>(
-                Items: list.Select(t => t.ToSummary()).ToList(),
+                Items: rows.Select(r => r.Traitor.ToSummary(r.CrimeCount)).ToList(),
                 Total: total,
                 Page: p,
                 PageSize: ps);
         }
         else
         {
-            list = await q.ToListAsync();
+            var rows = await q
+                .Select(t => new { Traitor = t, CrimeCount = t.CrimeRecords.Count })
+                .ToListAsync();
             return new PagedResult<TraitorSummaryDto>(
-                Items: list.Select(t => t.ToSummary()).ToList(),
+                Items: rows.Select(r => r.Traitor.ToSummary(r.CrimeCount)).ToList(),
                 Total: total,
                 Page: 1,
                 PageSize: Math.Max(1, total));

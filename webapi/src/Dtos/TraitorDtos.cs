@@ -68,6 +68,8 @@ public class TraitorSummaryDto
     public List<string> IdentityTags { get; set; } = [];
     public int? HarmLevel { get; set; }
     public string? Title { get; set; }
+    /// <summary>犯罪记录条数（列表用，不含明细）</summary>
+    public int CrimeRecordCount { get; set; }
     public string? PhotoUrl { get; set; }
 }
 

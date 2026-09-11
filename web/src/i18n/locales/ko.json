@@ -141,6 +141,9 @@
     "colPeriod": "시기",
     "colFaction": "파벌",
     "colLifespan": "생몰년",
+    "colTitle": "직위",
+    "colHarmLevel": "위해 등급",
+    "colCrimes": "범죄 기록",
     "colTags": "신분 태그"
   },
   "about": {
@@ -252,6 +255,18 @@
       "location": "장소",
       "reference": "인용 문헌 *"
     }
+  },
+  "traitorCard": {
+    "title": "직위",
+    "harmLevel": "위해 등급",
+    "crimeCount": "범죄 기록 {{count}}건"
+  },
+  "harmLevel": {
+    "1": "특급",
+    "2": "1급",
+    "3": "2급",
+    "4": "3급",
+    "5": "4급"
   },
   "traitorDetail": {
     "backHome": "홈으로 돌아가기",

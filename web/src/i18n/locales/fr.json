@@ -141,6 +141,9 @@
     "colPeriod": "Période",
     "colFaction": "Faction",
     "colLifespan": "Dates de vie",
+    "colTitle": "Fonction",
+    "colHarmLevel": "Niveau de danger",
+    "colCrimes": "Crimes",
     "colTags": "Étiquettes d'identité"
   },
   "about": {
@@ -252,6 +255,18 @@
       "location": "Lieu",
       "reference": "Citation de la source *"
     }
+  },
+  "traitorCard": {
+    "title": "Fonction",
+    "harmLevel": "Niveau de danger",
+    "crimeCount": "Dossiers criminels : {{count}}"
+  },
+  "harmLevel": {
+    "1": "Niveau suprême",
+    "2": "Niveau I",
+    "3": "Niveau II",
+    "4": "Niveau III",
+    "5": "Niveau IV"
   },
   "traitorDetail": {
     "backHome": "Retour à l'accueil",

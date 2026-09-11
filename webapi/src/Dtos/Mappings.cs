@@ -21,7 +21,9 @@ public static class Mappings
         Username = u.Username,
     };
 
-    public static TraitorSummaryDto ToSummary(this Traitor t) => new()
+    public static TraitorSummaryDto ToSummary(this Traitor t) => t.ToSummary(t.CrimeRecords.Count);
+
+    public static TraitorSummaryDto ToSummary(this Traitor t, int crimeRecordCount) => new()
     {
         Id = t.Id,
         Name = t.Name,
@@ -37,6 +39,7 @@ public static class Mappings
         IdentityTags = DeserializeList(t.IdentityTagsJson),
         HarmLevel = t.HarmLevel,
         Title = t.Title,
+        CrimeRecordCount = crimeRecordCount,
         PhotoUrl = t.Attachments.FirstOrDefault(a => a.Kind == "photo")?.Url,
     };
 

@@ -141,6 +141,9 @@
     "colPeriod": "Period",
     "colFaction": "Faction",
     "colLifespan": "Lifespan",
+    "colTitle": "Position",
+    "colHarmLevel": "Harm Level",
+    "colCrimes": "Crimes",
     "colTags": "Identity Tags"
   },
   "about": {
@@ -252,6 +255,18 @@
       "location": "Location",
       "reference": "Source Citation *"
     }
+  },
+  "traitorCard": {
+    "title": "Position",
+    "harmLevel": "Harm Level",
+    "crimeCount": "Criminal records: {{count}}"
+  },
+  "harmLevel": {
+    "1": "Top Tier",
+    "2": "Tier I",
+    "3": "Tier II",
+    "4": "Tier III",
+    "5": "Tier IV"
   },
   "traitorDetail": {
     "backHome": "Return to Home",

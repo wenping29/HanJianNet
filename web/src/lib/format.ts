@@ -91,6 +91,28 @@ export function splitList(text: string): string[] {
     .filter(Boolean)
 }
 
+/** 危害度分级：1=特级 … 5=四级（最低）；null/undefined 表示未分级 */
+export const HARM_LEVELS = [1, 2, 3, 4, 5] as const
+
+export function harmLevelLabel(level: number | null | undefined, t: (key: string) => string): string {
+  if (level == null) return ''
+  return t(`harmLevel.${level}`)
+}
+
+const HARM_LEVEL_CLASS: Record<number, string> = {
+  1: 'border-cinnabar bg-cinnabar/25 text-cinnabarlight',
+  2: 'border-cinnabar/70 bg-cinnabar/15 text-cinnabarlight/90',
+  3: 'border-bronze/70 bg-bronze/15 text-bronzelight',
+  4: 'border-bronze/40 bg-bronze/10 text-bronzelight/90',
+  5: 'border-paperedge/30 text-paperdim',
+}
+
+/** 危害等级徽标配色：级别越高越醒目 */
+export function harmLevelClass(level: number | null | undefined): string {
+  if (level == null) return ''
+  return HARM_LEVEL_CLASS[level] ?? 'border-paperedge/30 text-paperdim'
+}
+
 /**
  * 加密姓名第二个字：如"张三丰"→"张**丰"，"王二"→"王*"，"李"→"李"
  */

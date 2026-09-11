@@ -87,6 +87,10 @@ export interface Traitor {
   period: Period
   faction: string
   summary: string
+  /** 危害度分级：1=特级 2=一级 3=二级 4=三级 5=四级；null=未分级 */
+  harmLevel?: number | null
+  /** 伪职：从摘要提取的职位 */
+  title?: string | null
   spouses: Spouse[]
   children: Child[]
   residences: Residence[]
@@ -99,9 +103,22 @@ export interface Traitor {
 
 export type TraitorSummary = Pick<
   Traitor,
-  'id' | 'name' | 'period' | 'faction' | 'birthYear' | 'deathYear' | 'birthYearType' | 'deathYearType' | 'nativePlace' | 'identityTags'
+  | 'id'
+  | 'name'
+  | 'period'
+  | 'faction'
+  | 'birthYear'
+  | 'deathYear'
+  | 'birthYearType'
+  | 'deathYearType'
+  | 'nativePlace'
+  | 'identityTags'
+  | 'harmLevel'
+  | 'title'
 > & {
   photoUrl?: string | null
+  /** 犯罪记录条数 */
+  crimeRecordCount: number
 }
 
 export interface Revision {

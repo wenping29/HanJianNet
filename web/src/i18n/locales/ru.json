@@ -141,6 +141,9 @@
     "colPeriod": "Период",
     "colFaction": "Фракция",
     "colLifespan": "Даты жизни",
+    "colTitle": "Должность",
+    "colHarmLevel": "Уровень опасности",
+    "colCrimes": "Судимости",
     "colTags": "Теги личности"
   },
   "about": {
@@ -252,6 +255,18 @@
       "location": "Место",
       "reference": "Цитата источника *"
     }
+  },
+  "traitorCard": {
+    "title": "Должность",
+    "harmLevel": "Уровень опасности",
+    "crimeCount": "Судимости: {{count}}"
+  },
+  "harmLevel": {
+    "1": "Высший уровень",
+    "2": "Уровень I",
+    "3": "Уровень II",
+    "4": "Уровень III",
+    "5": "Уровень IV"
   },
   "traitorDetail": {
     "backHome": "Вернуться на главную",

@@ -5,6 +5,7 @@ import { api } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
 import { PERIODS, periodLabel } from '../lib/format'
 import { formatLifeSpan } from '../lib/format'
+import { harmLevelClass, harmLevelLabel } from '../lib/format'
 import type { TraitorSummary } from '../types'
 import { containerPageStyle } from '../style'
 
@@ -171,6 +172,9 @@ export default function Roster() {
                 <tr>
                   <th className="w-10 text-center">{t('roster.colIndex')}</th>
                   <th>{t('roster.colName')}</th>
+                  <th>{t('roster.colTitle')}</th>
+                  <th>{t('roster.colHarmLevel')}</th>
+                  <th className="text-center">{t('roster.colCrimes')}</th>
                   <th>{t('roster.colPeriod')}</th>
                   <th>{t('roster.colFaction')}</th>
                   <th>{t('roster.colLifespan')}</th>
@@ -188,6 +192,19 @@ export default function Roster() {
                       >
                         {tr.name}
                       </Link>
+                    </td>
+                    <td className="text-paperdim">{tr.title || '—'}</td>
+                    <td>
+                      {tr.harmLevel != null ? (
+                        <span className={`badge whitespace-nowrap ${harmLevelClass(tr.harmLevel)}`}>
+                          {harmLevelLabel(tr.harmLevel, t)}
+                        </span>
+                      ) : (
+                        <span className="text-paperdim/50">—</span>
+                      )}
+                    </td>
+                    <td className="text-center font-garamond text-paperdim">
+                      {tr.crimeRecordCount > 0 ? tr.crimeRecordCount : '—'}
                     </td>
                     <td>
                       <span className="badge border-bronze/40 text-bronzelight">{periodLabel(tr.period, t)}</span>
