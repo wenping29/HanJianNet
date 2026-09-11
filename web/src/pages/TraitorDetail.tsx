@@ -99,6 +99,10 @@ export default function TraitorDetail() {
               <dt className="shrink-0 text-paperdim">籍贯：</dt>
               <dd className="text-paper/90">{traitor.nativePlace || '—'}</dd>
             </div>
+            <div className="flex gap-2">
+              <dt className="shrink-0 text-paperdim">出生地：</dt>
+              <dd className="text-paper/90">{traitor.birthPlace || '—'}</dd>
+            </div>
             {traitor.aliases.length > 0 && (
               <div className="flex gap-2 sm:col-span-2">
                 <dt className="shrink-0 text-paperdim">别名：</dt>

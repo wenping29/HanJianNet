@@ -32,6 +32,7 @@ public static class Mappings
         BirthYearType = t.BirthYearType,
         DeathYearType = t.DeathYearType,
         NativePlace = t.NativePlace,
+        BirthPlace = t.BirthPlace,
         Province = t.Province ?? "",
         IdentityTags = DeserializeList(t.IdentityTagsJson),
         PhotoUrl = t.Attachments.FirstOrDefault(a => a.Kind == "photo")?.Url,
@@ -48,6 +49,7 @@ public static class Mappings
         BirthYearType = t.BirthYearType,
         DeathYearType = t.DeathYearType,
         NativePlace = t.NativePlace,
+        BirthPlace = t.BirthPlace,
         Province = t.Province ?? "",
         Aliases = DeserializeList(t.AliasesJson),
         IdentityTags = DeserializeList(t.IdentityTagsJson),
@@ -112,6 +114,7 @@ public static class Mappings
         BirthYearType = (i.BirthYearType ?? "").Trim(),
         DeathYearType = (i.DeathYearType ?? "").Trim(),
         NativePlace = (i.NativePlace ?? "").Trim(),
+        BirthPlace = (i.BirthPlace ?? "").Trim(),
         Province = (i.Province ?? "").Trim(),
         Aliases = (i.Aliases ?? [])
             .Select(x => (x ?? "").Trim())
@@ -199,6 +202,7 @@ public static class Mappings
         t.BirthYearType = s.BirthYearType;
         t.DeathYearType = s.DeathYearType;
         t.NativePlace = s.NativePlace;
+        t.BirthPlace = s.BirthPlace;
         t.Province = s.Province;
         t.AliasesJson = JsonSerializer.Serialize(s.Aliases, JsonOpts.Default);
         t.IdentityTagsJson = JsonSerializer.Serialize(s.IdentityTags, JsonOpts.Default);
@@ -286,6 +290,7 @@ public static class Mappings
         BirthYearType = s.BirthYearType,
         DeathYearType = s.DeathYearType,
         NativePlace = s.NativePlace,
+        BirthPlace = s.BirthPlace,
         Province = s.Province,
         Aliases = s.Aliases,
         IdentityTags = s.IdentityTags,

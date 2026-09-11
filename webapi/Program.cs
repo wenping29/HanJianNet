@@ -256,6 +256,10 @@ static class DbInitHelpers
             db.Database.IsSqlite()
                 ? "ALTER TABLE Traitors ADD COLUMN MergedAt TEXT;"
                 : "ALTER TABLE Traitors ADD COLUMN MergedAt DATETIME NULL;");
+        await EnsureColumnAsync(db, "Traitors", "BirthPlace",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN BirthPlace TEXT NOT NULL DEFAULT '';"
+                : "ALTER TABLE Traitors ADD COLUMN BirthPlace VARCHAR(255) NOT NULL DEFAULT '';");
     }
 
     /// <summary>检查表中是否存在某列，不存在则执行 ALTER TABLE 补列。</summary>

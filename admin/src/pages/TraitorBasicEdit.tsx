@@ -59,6 +59,7 @@ interface BasicForm {
   birthYearType: YearType
   deathYearType: YearType
   nativePlace: string
+  birthPlace: string
   aliasesText: string
   identityTagsText: string
   period: Period
@@ -75,6 +76,7 @@ const EMPTY_FORM: BasicForm = {
   birthYearType: 'exact',
   deathYearType: 'exact',
   nativePlace: '',
+  birthPlace: '',
   aliasesText: '',
   identityTagsText: '',
   period: '民国',
@@ -349,6 +351,7 @@ function EditView() {
           birthYearType: traitor.birthYearType,
           deathYearType: traitor.deathYearType,
           nativePlace: traitor.nativePlace,
+          birthPlace: traitor.birthPlace,
           aliasesText: traitor.aliases.join('，'),
           identityTagsText: traitor.identityTags.join('，'),
           period: (traitor.period as Period) || '民国',
@@ -395,6 +398,7 @@ function EditView() {
       birthYearType: form.birthYearType,
       deathYearType: form.deathYearType,
       nativePlace: form.nativePlace.trim(),
+      birthPlace: form.birthPlace.trim(),
       aliases: splitList(form.aliasesText),
       identityTags: splitList(form.identityTagsText),
       period: form.period,
@@ -528,6 +532,10 @@ function EditView() {
             <div>
               <label className="label" htmlFor="nativePlace">籍贯</label>
               <input id="nativePlace" className="input" value={form.nativePlace} onChange={(e) => update('nativePlace', e.target.value)} />
+            </div>
+            <div>
+              <label className="label" htmlFor="birthPlace">出生地</label>
+              <input id="birthPlace" className="input" value={form.birthPlace} onChange={(e) => update('birthPlace', e.target.value)} />
             </div>
             <div>
               <label className="label" htmlFor="period">历史时期 *</label>

@@ -81,6 +81,7 @@ export interface Traitor {
   birthYearType: YearType
   deathYearType: YearType
   nativePlace: string
+  birthPlace: string
   aliases: string[]
   identityTags: string[]
   period: Period
@@ -157,6 +158,7 @@ export interface TraitorInput {
   birthYearType: YearType
   deathYearType: YearType
   nativePlace: string
+  birthPlace: string
   aliases: string[]
   identityTags: string[]
   period: Period

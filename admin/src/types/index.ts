@@ -119,6 +119,7 @@ export interface TraitorSnapshot {
   birthYearType: YearType
   deathYearType: YearType
   nativePlace: string
+  birthPlace: string
   aliases: string[]
   identityTags: string[]
   period: string
@@ -267,6 +268,7 @@ export interface TraitorInput {
   birthYearType: YearType
   deathYearType: YearType
   nativePlace: string
+  birthPlace: string
   aliases: string[]
   identityTags: string[]
   period: Period
