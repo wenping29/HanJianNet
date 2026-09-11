@@ -12,6 +12,7 @@ import Profile from './pages/Profile'
 import ReviewDetail from './pages/ReviewDetail'
 import Reviews from './pages/Reviews'
 import Roles from './pages/Roles'
+import TraitorBasicEdit from './pages/TraitorBasicEdit'
 import TraitorEditor from './pages/TraitorEditor'
 import Traitors from './pages/Traitors'
 import MergeTraitors from './pages/MergeTraitors'
@@ -46,6 +47,8 @@ export default function App() {
           <Route element={<AdminOnlyRoute />}>
             <Route path="/traitors/new" element={<TraitorEditor mode="create" />} />
             <Route path="/traitors/merge" element={<MergeTraitors />} />
+            <Route path="/traitors/basic-edit" element={<TraitorBasicEdit />} />
+            <Route path="/traitors/basic-edit/:id" element={<TraitorBasicEdit />} />
             <Route path="/traitors/:id/edit" element={<TraitorEditor mode="edit" />} />
           </Route>
           <Route path="/reviews" element={<Reviews />} />
