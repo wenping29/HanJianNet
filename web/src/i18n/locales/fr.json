@@ -325,10 +325,12 @@
     "backToList": "← Retour à la liste",
     "nameRequired": "Veuillez entrer un nom d'événement",
     "yearRequired": "Veuillez entrer une année valide",
+    "yearInvalid": "Veuillez entrer une année valide",
+    "yearOptionalHint": "Laissez vide si l'année est inconnue",
     "descRequired": "Veuillez entrer une description de l'événement",
     "eventName": "Nom de l'événement *",
     "eventNamePlaceholder": "ex. : Incident de Mukden",
-    "year": "Année *",
+    "year": "Année",
     "yearPlaceholder": "ex. 1937",
     "period": "Période *",
     "alias": "Aussi connu sous (facultatif)",
@@ -339,7 +341,10 @@
     "keywordsPlaceholder": "Séparez plusieurs mots-clés par des virgules, ex. : Mukden, Liutiaohu, Shenyang",
     "keywordHint": "Utilisé pour faire correspondre les dossiers de traîtres sur la page de détails de l'événement",
     "cancel": "Annuler",
-    "saveBtn": "Enregistrer"
+    "saveBtn": "Enregistrer",
+    "saving": "Enregistrement…",
+    "loginRequired": "Veuillez vous connecter pour ajouter un événement.",
+    "submitFailed": "Échec de la soumission. Veuillez réessayer plus tard."
   },
   "auth": {
     "loginFailed": "Échec de la connexion",
