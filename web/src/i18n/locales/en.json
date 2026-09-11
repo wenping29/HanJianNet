@@ -318,7 +318,18 @@
     "personsTitle": "Persons Involved",
     "personsCount": "{{count}} recorded",
     "knownPersons": "~{{count}} per historical records",
-    "personLocation": "Place: "
+    "personLocation": "Place: ",
+    "infoTitle": "Event Info",
+    "fieldType": "Type",
+    "fieldYear": "Year",
+    "fieldEra": "Era",
+    "fieldProvince": "Province",
+    "fieldCity": "City",
+    "fieldLocation": "Location",
+    "fieldPersonCount": "Persons",
+    "personCountValue": "{{count}}",
+    "fieldAlias": "Also Known As",
+    "fieldKeywords": "Keywords"
   },
   "eventForm": {
     "createTitle": "Add New Historical Event",

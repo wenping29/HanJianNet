@@ -77,6 +77,31 @@ export default function HistoryEventDetail() {
 
   const persons = useMemo(() => event?.persons?.filter((p) => p.name.trim()).sort((a, b) => a.sort - b.sort) ?? [], [event])
 
+  const infoRows = useMemo(() => {
+    const rows: Array<{ key: string; label: string; value: string }> = []
+    if (!event) return rows
+    const push = (key: string, label: string, value?: string | number | null) => {
+      if (value === undefined || value === null || value === '') return
+      rows.push({ key, label, value: String(value) })
+    }
+    push('type', t('eventDetail.fieldType'), event.eventType)
+    push('year', t('eventDetail.fieldYear'), event.year ?? t('common.unknownYear'))
+    push('era', t('eventDetail.fieldEra'), eraLabel(event.era, t))
+    push('province', t('eventDetail.fieldProvince'), event.province)
+    push('city', t('eventDetail.fieldCity'), event.city)
+    push('location', t('eventDetail.fieldLocation'), event.location)
+    push(
+      'personCount',
+      t('eventDetail.fieldPersonCount'),
+      typeof event.personCount === 'number' && event.personCount > 0
+        ? t('eventDetail.personCountValue', { count: event.personCount })
+        : '',
+    )
+    push('alias', t('eventDetail.fieldAlias'), event.alias && event.alias !== event.title ? event.alias : '')
+    push('keywords', t('eventDetail.fieldKeywords'), event.keywords.length > 0 ? event.keywords.join('、') : '')
+    return rows
+  }, [event, t])
+
   if (loadingEvent) {
     return (
       <section className="container-page py-24 text-center">
@@ -111,12 +136,36 @@ export default function HistoryEventDetail() {
           {event.alias && event.alias !== event.title && (
             <p className="mt-3 text-sm tracking-widest text-paperdim/70">{t('eventDetail.alias')}{event.alias}</p>
           )}
-          {event.location && (
-            <p className="mt-2 text-sm tracking-widest text-paperdim/70">{t('eventDetail.location')}{event.location}</p>
-          )}
           <p className="mt-6 max-w-3xl leading-loose text-paperdim">{event.desc}</p>
         </div>
       </section>
+
+      {/* 事件信息表格 */}
+      {infoRows.length > 0 && (
+        <section className="container-page py-16">
+          <h2 className="section-title mb-8">
+            <span className="text-xl font-semibold tracking-[0.25em] text-paper">{t('eventDetail.infoTitle')}</span>
+            <span className="font-garamond text-xs italic text-bronzelight">EVENT INFO</span>
+          </h2>
+          <div className="card overflow-hidden">
+            <table className="w-full text-left text-sm">
+              <tbody>
+                {infoRows.map((row) => (
+                  <tr key={row.key} className="border-b border-paperedge/10 last:border-0">
+                    <th
+                      scope="row"
+                      className="w-32 whitespace-nowrap bg-inkcard/40 px-5 py-3 align-top font-medium tracking-widest text-paperdim/70 sm:w-44"
+                    >
+                      {row.label}
+                    </th>
+                    <td className="px-5 py-3 leading-loose text-paper/90">{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       {/* 涉案人员 */}
       {persons.length > 0 && (

@@ -318,7 +318,18 @@
     "personsTitle": "涉案人员",
     "personsCount": "已录入 {{count}} 人",
     "knownPersons": "史载约 {{count}} 人",
-    "personLocation": "籍贯／地点："
+    "personLocation": "籍贯／地点：",
+    "infoTitle": "事件信息",
+    "fieldType": "事件类型",
+    "fieldYear": "年份",
+    "fieldEra": "时期",
+    "fieldProvince": "省份",
+    "fieldCity": "城市",
+    "fieldLocation": "事件地点",
+    "fieldPersonCount": "人数",
+    "personCountValue": "{{count}} 人",
+    "fieldAlias": "又称",
+    "fieldKeywords": "关键词"
   },
   "eventForm": {
     "createTitle": "新增历史事件",

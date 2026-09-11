@@ -10,8 +10,14 @@ export interface HistoryEvent {
   title: string
   alias?: string
   desc: string
+  /** 事件类型（惨案 / 宏观事件等） */
+  eventType?: string
   /** 关联汉奸检索关键词（匹配档案生平事件文本） */
   keywords: string[]
+  /** 省份（详情展示用） */
+  province?: string
+  /** 城市（详情展示用） */
+  city?: string
   /** 事件地点（详情展示用） */
   location?: string
   /** 涉案人员（详情接口返回） */
@@ -49,7 +55,10 @@ function toHistoryEvent(ev: AtrocityEvent): HistoryEvent {
     title: ev.name,
     alias: ev.alias || undefined,
     desc: ev.summary,
+    eventType: ev.eventType || undefined,
     keywords: ev.keywords ?? [],
+    province: ev.province || undefined,
+    city: ev.city || undefined,
     location: ev.location || undefined,
     persons: ev.persons,
     personCount: ev.personCount,
