@@ -43,7 +43,7 @@ export default function Sidebar({ menus, collapsed, mobileOpen, onToggleCollapse
       key: item.path,
       path: item.path,
       label: item.label,
-      closable: item.path !== '/reviews',
+      closable: true,
     })
     navigate(item.path)
     onCloseMobile()

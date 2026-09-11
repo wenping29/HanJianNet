@@ -93,7 +93,7 @@ export default function Layout() {
         key: path.startsWith('/reviews/') ? path : matched.path,
         path,
         label,
-        closable: matched.path !== '/reviews',
+        closable: true,
       })
     } else {
       // 未知路径也加入标签
@@ -275,7 +275,7 @@ export default function Layout() {
                           className="flex items-center justify-between px-4 py-2 text-sm tracking-[0.15em] text-paperdim transition hover:bg-bronze/15 hover:text-paper"
                           onClick={() => {
                             setUserMenuOpen(false)
-                            addTab({ key: '/reviews', path: '/reviews', label: t('header.pendingRevisionsShort'), closable: false })
+                            addTab({ key: '/reviews', path: '/reviews', label: t('header.pendingRevisionsShort'), closable: true })
                           }}
                         >
                           <span className="flex items-center gap-3">

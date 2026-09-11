@@ -64,24 +64,22 @@ export default function TabsBar() {
                 }`}
               />
               <span className="max-w-[100px] truncate tracking-[0.15em] lg:max-w-[140px]">{tab.label}</span>
-              {tab.closable && (
-                <span
-                  role="button"
-                  tabIndex={0}
-                  onClick={(e) => handleClose(e, tab.key)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') handleClose(e as unknown as React.MouseEvent, tab.key)
-                  }}
-                  className={`ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none transition ${
-                    active
-                      ? 'text-paperdim/60 hover:bg-cinnabar/20 hover:text-cinnabarlight'
-                      : 'text-transparent group-hover:text-paperdim/60 group-hover:hover:bg-cinnabar/20 group-hover:hover:text-cinnabarlight'
-                  }`}
-                  aria-label={`${t('common.close')} ${tab.label}`}
-                >
-                  ✕
-                </span>
-              )}
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={(e) => handleClose(e, tab.key)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') handleClose(e as unknown as React.MouseEvent, tab.key)
+                }}
+                className={`ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none transition ${
+                  active
+                    ? 'text-paperdim/60 hover:bg-cinnabar/20 hover:text-cinnabarlight'
+                    : 'text-transparent group-hover:text-paperdim/60 group-hover:hover:bg-cinnabar/20 group-hover:hover:text-cinnabarlight'
+                }`}
+                aria-label={`${t('common.close')} ${tab.label}`}
+              >
+                ✕
+              </span>
             </button>
           )
         })}

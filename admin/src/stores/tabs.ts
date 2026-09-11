@@ -21,7 +21,7 @@ const DEFAULT_TAB: TabItem = {
   key: '/reviews',
   path: '/reviews',
   label: '待审修订',
-  closable: false,
+  closable: true,
 }
 
 export const useTabsStore = create<TabsState>()(
@@ -47,7 +47,7 @@ export const useTabsStore = create<TabsState>()(
       removeTab: (key) => {
         const { tabs, activeKey } = get()
         const target = tabs.find((t) => t.key === key)
-        if (!target || !target.closable) return
+        if (!target) return
         const idx = tabs.findIndex((t) => t.key === key)
         const next = tabs.filter((t) => t.key !== key)
         let nextActive = activeKey
