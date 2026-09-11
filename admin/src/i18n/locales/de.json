@@ -1,4 +1,22 @@
 {
+  "menu": {
+    "traitors": "Verräterakten",
+    "edit-traitor": "Stammdaten bearbeiten",
+    "merge-traitors": "Datenzusammenführung",
+    "reviews": "Prüfwarteschlange",
+    "events": "Ereignisverwaltung",
+    "system": "Systemverwaltung",
+    "system-logs": "Systemprotokolle",
+    "users": "Benutzerverwaltung",
+    "roles": "Rollenverwaltung",
+    "menus": "Menüverwaltung",
+    "web-menus": "Frontend-Menüs",
+    "profile": "Profil",
+    "logs-login": "Anmeldeprotokolle",
+    "logs-operation": "Vorgangsprotokolle",
+    "logs-query": "Abfrageprotokolle",
+    "logs-error": "Fehlerprotokolle"
+  },
   "common": {
     "loading": "Wird geladen…",
     "loadFailed": "Laden fehlgeschlagen",

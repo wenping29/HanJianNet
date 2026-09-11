@@ -141,6 +141,9 @@ export default function Layout() {
       isActive ? 'text-cinnabarlight' : 'text-paperdim'
     }`
 
+  // 菜单名称按 key 国际化：有对应翻译则显示译文，否则回退到后台配置的原始名称
+  const menuLabel = (m: WebMenu) => t(`nav.${m.key}`, { defaultValue: m.label })
+
   return (
     <div className="paper-texture flex min-h-screen flex-col bg-ink">
       <header className="sticky top-0 z-40 border-b border-paperedge/15 bg-ink/85 backdrop-blur">
@@ -160,7 +163,7 @@ export default function Layout() {
                   to={m.path}
                   end={m.path === '/'}
                   className={navCls}>
-                  {m.label}
+                  {menuLabel(m)}
                 </NavLink>
               </div>
             ))}
@@ -290,7 +293,7 @@ export default function Layout() {
                     }`
                   }
                 >
-                  {m.label}
+                  {menuLabel(m)}
                 </NavLink>
               ))}
 

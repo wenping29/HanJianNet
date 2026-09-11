@@ -1,4 +1,22 @@
 {
+  "menu": {
+    "traitors": "Registro de traidores",
+    "edit-traitor": "Edición de datos básicos",
+    "merge-traitors": "Fusión de datos",
+    "reviews": "Cola de revisión",
+    "events": "Gestión de eventos",
+    "system": "Gestión del sistema",
+    "system-logs": "Registros del sistema",
+    "users": "Gestión de usuarios",
+    "roles": "Gestión de roles",
+    "menus": "Gestión de menús",
+    "web-menus": "Menús del sitio",
+    "profile": "Perfil",
+    "logs-login": "Registros de inicio de sesión",
+    "logs-operation": "Registros de operaciones",
+    "logs-query": "Registros de consultas",
+    "logs-error": "Registros de errores"
+  },
   "common": {
     "loading": "Cargando…",
     "loadFailed": "Error al cargar",

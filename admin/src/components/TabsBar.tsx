@@ -1,9 +1,14 @@
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { useTabsStore } from '../stores/tabs'
+import { useTabsStore, type TabItem } from '../stores/tabs'
+import type { MenuItem } from '../types'
 
-export default function TabsBar() {
+interface TabsBarProps {
+  menus: MenuItem[]
+}
+
+export default function TabsBar({ menus }: TabsBarProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const tabs = useTabsStore((s) => s.tabs)
@@ -11,6 +16,17 @@ export default function TabsBar() {
   const setActive = useTabsStore((s) => s.setActive)
   const removeTab = useTabsStore((s) => s.removeTab)
   const scrollerRef = useRef<HTMLDivElement>(null)
+
+  // 标签标题实时跟随语言：菜单类标签从（已翻译的）菜单取名称，
+  // 动态详情页按路径规则翻译，其余回退到 store 中持久化的标题。
+  const labelOf = (tab: TabItem) => {
+    for (const m of menus) {
+      if (m.path === tab.key) return m.label
+      for (const c of m.children ?? []) if (c.path === tab.key) return c.label
+    }
+    if (tab.key.startsWith('/reviews/')) return t('layout.revisionDetail')
+    return tab.label
+  }
 
   // 路由变化时同步激活标签
   useEffect(() => {
@@ -63,7 +79,7 @@ export default function TabsBar() {
                   active ? 'bg-cinnabarlight' : 'bg-paperdim/30'
                 }`}
               />
-              <span className="max-w-[100px] truncate tracking-[0.15em] lg:max-w-[140px]">{tab.label}</span>
+              <span className="max-w-[100px] truncate tracking-[0.15em] lg:max-w-[140px]">{labelOf(tab)}</span>
               <span
                 role="button"
                 tabIndex={0}
@@ -76,7 +92,7 @@ export default function TabsBar() {
                     ? 'text-paperdim/60 hover:bg-cinnabar/20 hover:text-cinnabarlight'
                     : 'text-transparent group-hover:text-paperdim/60 group-hover:hover:bg-cinnabar/20 group-hover:hover:text-cinnabarlight'
                 }`}
-                aria-label={`${t('common.close')} ${tab.label}`}
+                aria-label={`${t('common.close')} ${labelOf(tab)}`}
               >
                 ✕
               </span>

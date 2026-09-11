@@ -1,4 +1,22 @@
 {
+  "menu": {
+    "traitors": "Fichier des traîtres",
+    "edit-traitor": "Édition des informations de base",
+    "merge-traitors": "Fusion de données",
+    "reviews": "File de révision",
+    "events": "Gestion des événements",
+    "system": "Gestion du système",
+    "system-logs": "Journaux système",
+    "users": "Gestion des utilisateurs",
+    "roles": "Gestion des rôles",
+    "menus": "Gestion des menus",
+    "web-menus": "Menus du site",
+    "profile": "Profil",
+    "logs-login": "Journaux de connexion",
+    "logs-operation": "Journaux d'opérations",
+    "logs-query": "Journaux de requêtes",
+    "logs-error": "Journaux d'erreurs"
+  },
   "common": {
     "loading": "Chargement…",
     "loadFailed": "Échec du chargement",

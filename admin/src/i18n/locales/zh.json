@@ -1,4 +1,22 @@
 {
+  "menu": {
+    "traitors": "名录管理",
+    "edit-traitor": "基本信息编辑",
+    "merge-traitors": "数据合并",
+    "reviews": "待审队列",
+    "events": "事件管理",
+    "system": "系统管理",
+    "system-logs": "系统日志",
+    "users": "用户管理",
+    "roles": "角色管理",
+    "menus": "菜单管理",
+    "web-menus": "前台菜单",
+    "profile": "个人信息",
+    "logs-login": "登录日志",
+    "logs-operation": "操作日志",
+    "logs-query": "查询日志",
+    "logs-error": "错误日志"
+  },
   "common": {
     "loading": "加载中…",
     "loadFailed": "加载失败",

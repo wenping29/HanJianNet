@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Sidebar from './Sidebar'
@@ -11,19 +11,33 @@ import { useTabsStore } from '../stores/tabs'
 import type { MenuItem, RevisionStatusStats } from '../types'
 
 export default function Layout() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { user, clear } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const addTab = useTabsStore((s) => s.addTab)
   const setActive = useTabsStore((s) => s.setActive)
 
-  const [menus, setMenus] = useState<MenuItem[]>([])
+  const [rawMenus, setRawMenus] = useState<MenuItem[]>([])
   const [collapsed, setCollapsed] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [stats, setStats] = useState<RevisionStatusStats | null>(null)
   const closeTimerRef = useRef<number | null>(null)
+
+  // 菜单标签按 key 做国际化：有对应翻译则显示译文，否则回退到后端配置的原始名称
+  const menus = useMemo(
+    () =>
+      rawMenus.map((m) => ({
+        ...m,
+        label: t(`menu.${m.key}`, { defaultValue: m.label }),
+        children: m.children?.map((c) => ({
+          ...c,
+          label: t(`menu.${c.key}`, { defaultValue: c.label }),
+        })),
+      })),
+    [rawMenus, t, i18n.language],
+  )
 
   // 组件卸载清理悬浮关闭定时器
   useEffect(() => {
@@ -41,10 +55,10 @@ export default function Layout() {
     api
       .menus()
       .then((data) => {
-        if (alive) setMenus(data.items)
+        if (alive) setRawMenus(data.items)
       })
       .catch(() => {
-        if (alive) setMenus([])
+        if (alive) setRawMenus([])
       })
     return () => {
       alive = false
@@ -323,7 +337,7 @@ export default function Layout() {
         </header>
 
         {/* 标签页栏 */}
-        <TabsBar />
+        <TabsBar menus={menus} />
 
         {/* 主内容区 */}
         <main className="flex-1 min-h-0 overflow-y-auto">

@@ -1,4 +1,22 @@
 {
+  "menu": {
+    "traitors": "Traitor Records",
+    "edit-traitor": "Basic Info Editor",
+    "merge-traitors": "Data Merge",
+    "reviews": "Review Queue",
+    "events": "Event Management",
+    "system": "System Management",
+    "system-logs": "System Logs",
+    "users": "User Management",
+    "roles": "Role Management",
+    "menus": "Menu Management",
+    "web-menus": "Site Menus",
+    "profile": "Profile",
+    "logs-login": "Login Logs",
+    "logs-operation": "Operation Logs",
+    "logs-query": "Query Logs",
+    "logs-error": "Error Logs"
+  },
   "common": {
     "loading": "Loading…",
     "loadFailed": "Failed to load",

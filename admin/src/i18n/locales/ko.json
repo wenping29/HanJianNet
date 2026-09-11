@@ -1,4 +1,22 @@
 {
+  "menu": {
+    "traitors": "명부 관리",
+    "edit-traitor": "기본 정보 편집",
+    "merge-traitors": "데이터 병합",
+    "reviews": "심사 대기",
+    "events": "사건 관리",
+    "system": "시스템 관리",
+    "system-logs": "시스템 로그",
+    "users": "사용자 관리",
+    "roles": "역할 관리",
+    "menus": "메뉴 관리",
+    "web-menus": "프런트 메뉴",
+    "profile": "개인 정보",
+    "logs-login": "로그인 로그",
+    "logs-operation": "작업 로그",
+    "logs-query": "조회 로그",
+    "logs-error": "오류 로그"
+  },
   "common": {
     "loading": "로딩 중…",
     "loadFailed": "로드 실패",
