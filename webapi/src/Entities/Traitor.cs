@@ -22,6 +22,9 @@ public class Traitor
 
     /// <summary>危害度分级：1=特级 2=一级 3=二级 4=三级 5=四级；null=未分级</summary>
     public int? HarmLevel { get; set; }
+
+    /// <summary>伪职：从 Summary 提取的职位，例如「伪县长」「维持会会长」；null=未提取到</summary>
+    public string? Title { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

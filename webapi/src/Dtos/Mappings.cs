@@ -36,6 +36,7 @@ public static class Mappings
         Province = t.Province ?? "",
         IdentityTags = DeserializeList(t.IdentityTagsJson),
         HarmLevel = t.HarmLevel,
+        Title = t.Title,
         PhotoUrl = t.Attachments.FirstOrDefault(a => a.Kind == "photo")?.Url,
     };
 
@@ -58,6 +59,7 @@ public static class Mappings
         Faction = t.Faction,
         Summary = t.Summary,
         HarmLevel = t.HarmLevel,
+        Title = t.Title,
         Spouses = t.Spouses.Select(s => new SpouseInputDto
         {
             Name = s.Name,

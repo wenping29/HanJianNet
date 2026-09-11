@@ -67,6 +67,7 @@ public class TraitorSummaryDto
     public string Province { get; set; } = "";
     public List<string> IdentityTags { get; set; } = [];
     public int? HarmLevel { get; set; }
+    public string? Title { get; set; }
     public string? PhotoUrl { get; set; }
 }
 
@@ -101,6 +102,7 @@ public class TraitorDto : TraitorSnapshotDto
 {
     public string Id { get; set; } = "";
     public int? HarmLevel { get; set; }
+    public string? Title { get; set; }
 }
 
 public class TraitorInputDto : TraitorSnapshotDto
