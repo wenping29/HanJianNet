@@ -2,6 +2,8 @@ import { useAuth } from '../stores/auth'
 import type {
   Attachment,
   AttachmentKind,
+  AtrocityEvent,
+  AtrocityEventInput,
   AuthPayload,
   Period,
   Revision,
@@ -136,6 +138,14 @@ export const api = {
   getProvinceStats: () => request<ProvinceStatsResponse>('/traitors/province-stats'),
 
   getTimeline: () => request<{ items: TimelineNode[] }>('/traitors/timeline'),
+
+  listAtrocityEvents: (era?: string) =>
+    request<{ items: AtrocityEvent[] }>(`/atrocity-events${query({ era })}`),
+
+  getAtrocityEvent: (id: string) => request<{ item: AtrocityEvent }>(`/atrocity-events/${id}`),
+
+  createAtrocityEvent: (input: AtrocityEventInput) =>
+    request<{ item: AtrocityEvent }>('/atrocity-events', { method: 'POST', body: JSON.stringify(input) }),
 
   listWebMenus: () => request<{ items: WebMenu[] }>('/web-menus'),
 

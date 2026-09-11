@@ -22,6 +22,7 @@
     "all": "전체",
     "totalRecords": "총 {{total}}건 · {{page}} / {{totalPages}} 페이지",
     "totalEvents": "총 {{count}}건의 사건",
+    "unknownYear": "연도 불명",
     "pageInfo": "{{page}} / {{totalPages}} 페이지",
     "pagination": "페이지 탐색",
     "noData": "기록 없음",
@@ -312,13 +313,20 @@
     "searching": "검색 중…",
     "totalPeople": "총 {{count}}명",
     "noTraitors": "이 사건과 연결된 매국노 기록이 없습니다",
-    "relatedEvents": "동시기 사건"
+    "relatedEvents": "동시기 사건",
+    "location": "장소: ",
+    "personsTitle": "관련 인물",
+    "personsCount": "등록 {{count}}명",
+    "knownPersons": "사료에는 약 {{count}}명",
+    "personLocation": "출신지/장소: "
   },
   "eventForm": {
     "createTitle": "새 역사적 사건 추가",
     "backToList": "← 목록으로 돌아가기",
     "nameRequired": "사건 이름을 입력하세요",
     "yearRequired": "유효한 연도를 입력하세요",
+    "yearInvalid": "유효한 연도를 입력하세요",
+    "yearOptionalHint": "연도를 모르면 비워 둘 수 있습니다",
     "descRequired": "사건 설명을 입력하세요",
     "eventName": "사건 이름 *",
     "eventNamePlaceholder": "예: 만주사변",
@@ -333,7 +341,10 @@
     "keywordsPlaceholder": "여러 키워드는 쉼표로 구분, 예: 만주사변, 류탸오후, 선양",
     "keywordHint": "사건 상세 페이지에서 관련 매국노 기록을 매칭하는 데 사용됩니다",
     "cancel": "취소",
-    "saveBtn": "저 장"
+    "saveBtn": "저 장",
+    "saving": "저장 중…",
+    "loginRequired": "사건을 추가하려면 로그인이 필요합니다.",
+    "submitFailed": "제출에 실패했습니다. 잠시 후 다시 시도해 주세요."
   },
   "auth": {
     "loginFailed": "로그인 실패",

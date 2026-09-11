@@ -173,3 +173,46 @@ export interface TraitorInput {
   relatedIds: string[]
   attachments: Array<Pick<Attachment, 'id' | 'url' | 'kind' | 'fileType' | 'caption'>>
 }
+
+export interface AtrocityCasePerson {
+  id: string
+  name: string
+  location?: string | null
+  identityTags?: string | null
+  sort: number
+}
+
+/** 历史事件（惨案/宏观事件），对应后端 /api/atrocity-events */
+export interface AtrocityEvent {
+  id: string
+  name: string
+  alias?: string
+  eventType: string
+  era: string
+  year: number | null
+  province: string
+  city: string
+  location: string
+  isGeneral: boolean
+  personCount: number
+  summary: string
+  keywords: string[]
+  persons?: AtrocityCasePerson[]
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface AtrocityEventInput {
+  name: string
+  alias?: string
+  eventType?: string
+  era?: string
+  year: number | null
+  province?: string
+  city?: string
+  location?: string
+  isGeneral?: boolean
+  personCount?: number
+  summary?: string
+  keywords: string[]
+}

@@ -111,6 +111,8 @@ try
     builder.Services.AddScoped<TraitorService>();
     builder.Services.AddScoped<RevisionService>();
     builder.Services.AddScoped<UploadService>();
+    // 历史事件（惨案/宏观事件）
+    builder.Services.AddScoped<AtrocityCaseService>();
     // 分布式缓存服务
     builder.Services.AddScoped<CacheService>();
     // 前台访客统计
@@ -224,28 +226,8 @@ static class DbInitHelpers
     /// </summary>
     public static async Task EnsureMissingTablesAsync(AppDbContext db)
     {
-        bool visitLogsExists;
-        if (db.Database.IsSqlite())
-        {
-            visitLogsExists = await db.Database
-                .SqlQueryRaw<int>("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='VisitLogs'")
-                .AnyAsync();
-        }
-        else
-        {
-            visitLogsExists = await db.Database
-                .SqlQueryRaw<int>("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name='VisitLogs'")
-                .AnyAsync();
-        }
-
-        if (!visitLogsExists)
-        {
-            Log.Information("数据库缺少 VisitLogs 表，执行增量建表");
-            var ddlFile = db.Database.IsSqlite() ? "VisitLogs.sqlite.sql" : "VisitLogs.mysql.sql";
-            var ddlPath = Path.Combine(AppContext.BaseDirectory, "sql", ddlFile);
-            var ddl = await File.ReadAllTextAsync(ddlPath);
-            await db.Database.ExecuteSqlRawAsync(ddl);
-        }
+        await EnsureTableAsync(db, "VisitLogs", "VisitLogs.sqlite.sql", "VisitLogs.mysql.sql");
+        await EnsureTableAsync(db, "atrocitycases", "AtrocityCases.sqlite.sql", "AtrocityCases.mysql.sql");
 
         // 补齐 Traitors 表的新增列（MergedIntoId / MergedAt）
         await EnsureColumnAsync(db, "Traitors", "MergedIntoId",
@@ -260,6 +242,33 @@ static class DbInitHelpers
             db.Database.IsSqlite()
                 ? "ALTER TABLE Traitors ADD COLUMN BirthPlace TEXT NOT NULL DEFAULT '';"
                 : "ALTER TABLE Traitors ADD COLUMN BirthPlace VARCHAR(255) NOT NULL DEFAULT '';");
+    }
+
+    /// <summary>检查表是否存在，不存在则执行对应方言的 DDL 文件建表。</summary>
+    private static async Task EnsureTableAsync(AppDbContext db, string table, string sqliteDdl, string mysqlDdl)
+    {
+        bool exists;
+        if (db.Database.IsSqlite())
+        {
+            exists = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name={0}", table)
+                .AnyAsync();
+        }
+        else
+        {
+            exists = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name={0}", table)
+                .AnyAsync();
+        }
+
+        if (!exists)
+        {
+            Log.Information("数据库缺少 {Table} 表，执行增量建表", table);
+            var ddlFile = db.Database.IsSqlite() ? sqliteDdl : mysqlDdl;
+            var ddlPath = Path.Combine(AppContext.BaseDirectory, "sql", ddlFile);
+            var ddl = await File.ReadAllTextAsync(ddlPath);
+            await db.Database.ExecuteSqlRawAsync(ddl);
+        }
     }
 
     /// <summary>检查表中是否存在某列，不存在则执行 ALTER TABLE 补列。</summary>

@@ -257,6 +257,67 @@ public static class Mappings
         }).ToList();
     }
 
+    public static AtrocityEventDto ToDto(this AtrocityCase c) => new()
+    {
+        Id = c.Id,
+        Name = c.Name,
+        EventType = c.EventType ?? "",
+        Era = c.Era ?? "",
+        Year = c.Year,
+        Province = c.Province ?? "",
+        City = c.City ?? "",
+        IsGeneral = c.IsGeneral,
+        PersonCount = c.PersonCount,
+        Summary = c.Summary ?? "",
+        Keywords = DeserializeList(c.Keywords),
+    };
+
+    public static AtrocityEventDetailDto ToDetailDto(this AtrocityCase c) => new()
+    {
+        Id = c.Id,
+        Name = c.Name,
+        EventType = c.EventType ?? "",
+        Era = c.Era ?? "",
+        Year = c.Year,
+        Province = c.Province ?? "",
+        City = c.City ?? "",
+        Location = c.Location ?? "",
+        IsGeneral = c.IsGeneral,
+        PersonCount = c.PersonCount,
+        Summary = c.Summary ?? "",
+        Keywords = DeserializeList(c.Keywords),
+        CreatedAt = c.CreatedAt,
+        UpdatedAt = c.UpdatedAt,
+        Persons = c.Persons
+            .OrderBy(p => p.Sort)
+            .Select(p => new AtrocityCasePersonDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Location = p.Location,
+                IdentityTags = p.IdentityTags,
+                Sort = p.Sort,
+            }).ToList(),
+    };
+
+    public static AtrocityCase ToEntity(this AtrocityEventInputDto input) => new()
+    {
+        Name = (input.Name ?? "").Trim(),
+        Alias = (input.Alias ?? "").Trim(),
+        EventType = (input.EventType ?? "").Trim(),
+        Era = (input.Era ?? "").Trim(),
+        Year = input.Year,
+        Province = (input.Province ?? "").Trim(),
+        City = (input.City ?? "").Trim(),
+        Location = (input.Location ?? "").Trim(),
+        IsGeneral = input.IsGeneral,
+        PersonCount = input.PersonCount,
+        Summary = input.Summary ?? "",
+        Keywords = JsonSerializer.Serialize(
+            (input.Keywords ?? []).Select(x => (x ?? "").Trim()).Where(x => x.Length > 0).ToList(),
+            JsonOpts.Default),
+    };
+
     public static RevisionDto ToDto(this Revision r)
     {
         var snapshot = JsonSerializer.Deserialize<TraitorSnapshotDto>(r.PayloadJson, JsonOpts.Default)

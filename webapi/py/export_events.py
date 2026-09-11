@@ -268,6 +268,10 @@ def render_batch(events, persons, dialect):
     out = []
     for e in events:
         vals = [e[c] if c in e else "" for c in cols[:13]] + [now, now]
+        # 数值列空值需为 NULL（Year/IsGeneral/PersonCount 不允许 ''）
+        for i, c in enumerate(cols):
+            if c in ("Year",) and vals[i] == "":
+                vals[i] = None
         out.append(f"INSERT INTO {q_mysql('atrocitycases')} ({', '.join(q_mysql(c) for c in cols)}) VALUES ({', '.join(q(v) for v in vals)});")
     for p in persons:
         vals = [p[c] for c in pcols[:6]] + [now]

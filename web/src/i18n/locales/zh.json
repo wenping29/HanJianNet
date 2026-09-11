@@ -22,6 +22,7 @@
     "all": "全部",
     "totalRecords": "共 {{total}} 条档案 · 第 {{page}} / {{totalPages}} 页",
     "totalEvents": "共 {{count}} 条事件",
+    "unknownYear": "年份不详",
     "pageInfo": "第 {{page}} / {{totalPages}} 页",
     "pagination": "分页导航",
     "noData": "暂无记录",
@@ -312,17 +313,24 @@
     "searching": "检索中…",
     "totalPeople": "共 {{count}} 人",
     "noTraitors": "暂无与该事件关联的汉奸档案",
-    "relatedEvents": "同期事件"
+    "relatedEvents": "同期事件",
+    "location": "地点：",
+    "personsTitle": "涉案人员",
+    "personsCount": "已录入 {{count}} 人",
+    "knownPersons": "史载约 {{count}} 人",
+    "personLocation": "籍贯／地点："
   },
   "eventForm": {
     "createTitle": "新增历史事件",
     "backToList": "← 返回列表",
     "nameRequired": "请输入事件名称",
     "yearRequired": "请输入有效年份",
+    "yearInvalid": "请输入有效年份",
+    "yearOptionalHint": "年份不详可留空",
     "descRequired": "请输入事件描述",
     "eventName": "事件名称 *",
     "eventNamePlaceholder": "如：九一八事变",
-    "year": "年份 *",
+    "year": "年份",
     "yearPlaceholder": "如 1937",
     "period": "时期 *",
     "alias": "又称（可选）",
@@ -333,7 +341,10 @@
     "keywordsPlaceholder": "多个关键词以逗号分隔，如：九一八, 柳条湖, 沈阳",
     "keywordHint": "用于在事件详情页匹配涉及该事件的汉奸档案",
     "cancel": "取消",
-    "saveBtn": "保 存"
+    "saveBtn": "保 存",
+    "saving": "保存中…",
+    "loginRequired": "新增事件需先登录，请登录后重试。",
+    "submitFailed": "提交失败，请稍后重试"
   },
   "auth": {
     "loginFailed": "登录失败",

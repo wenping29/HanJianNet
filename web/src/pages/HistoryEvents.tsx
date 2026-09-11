@@ -1,19 +1,35 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getAllHistoryEvents, HISTORY_ERAS } from '../lib/historyEvents'
+import type { HistoryEvent } from '../lib/historyEvents'
+import { eraLabel } from '../lib/format'
 import { containerPageStyle } from '../style'
 
 export default function HistoryEvents() {
   const { t } = useTranslation()
   const [activeEra, setActiveEra] = useState<string>('全部')
-  const [refreshKey] = useState(0)
+  const [items, setItems] = useState<HistoryEvent[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const items = useMemo(() => {
-    const all = getAllHistoryEvents()
-    if (activeEra === '全部') return all
-    return all.filter((e) => e.era === activeEra)
-  }, [activeEra, refreshKey])
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    getAllHistoryEvents(activeEra === '全部' ? undefined : activeEra)
+      .then((list) => {
+        if (cancelled) return
+        setItems(list)
+        setLoading(false)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setItems([])
+        setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [activeEra])
 
   return (
     <div>
@@ -45,7 +61,7 @@ export default function HistoryEvents() {
                     : 'border-paperedge/25 text-paperdim hover:border-bronzelight'
                 }`}
               >
-                {era === '全部' ? t('events.all') : era}
+                {era === '全部' ? t('events.all') : eraLabel(era, t)}
               </button>
             ))}
           </div>
@@ -67,12 +83,12 @@ export default function HistoryEvents() {
             >
               <div className="flex items-baseline justify-between gap-3 border-b border-paperedge/10 pb-3">
                 <div className="flex items-baseline gap-3">
-                  <span className="font-garamond text-3xl font-semibold text-cinnabarlight">{ev.year}</span>
+                  <span className="font-garamond text-3xl font-semibold text-cinnabarlight">{ev.year ?? t('common.unknownYear')}</span>
                   <h2 className="font-song text-xl font-bold tracking-wide text-paper group-hover:text-cinnabarlight">
                     {ev.title}
                   </h2>
                 </div>
-                <span className="badge border-bronze/40 text-bronzelight">{ev.era}</span>
+                <span className="badge border-bronze/40 text-bronzelight">{eraLabel(ev.era, t)}</span>
               </div>
               {ev.alias && ev.alias !== ev.title && (
                 <p className="mt-2 text-xs tracking-widest text-paperdim/70">{t('events.alias')}{ev.alias}</p>
@@ -85,7 +101,9 @@ export default function HistoryEvents() {
           ))}
         </div>
 
-        {items.length === 0 && (
+        {loading && <p className="py-16 text-center text-paperdim">{t('common.loading')}</p>}
+
+        {!loading && items.length === 0 && (
           <p className="py-16 text-center text-paperdim">{t('events.noEvents')}</p>
         )}
       </section>

@@ -4,16 +4,44 @@ import { useTranslation } from 'react-i18next'
 import TraitorCard from '../components/TraitorCard'
 import { api } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
-import { findHistoryEvent, HISTORY_EVENTS } from '../lib/historyEvents'
+import { findHistoryEvent, getAllHistoryEvents } from '../lib/historyEvents'
+import type { HistoryEvent } from '../lib/historyEvents'
+import { eraLabel } from '../lib/format'
 import type { TraitorSummary } from '../types'
 
 export default function HistoryEventDetail() {
   const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
-  const event = id ? findHistoryEvent(id) : undefined
 
+  const [event, setEvent] = useState<HistoryEvent | null>(null)
+  const [loadingEvent, setLoadingEvent] = useState(true)
   const [traitors, setTraitors] = useState<TraitorSummary[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [relatedEvents, setRelatedEvents] = useState<HistoryEvent[]>([])
+
+  useEffect(() => {
+    if (!id) {
+      setLoadingEvent(false)
+      return
+    }
+    let cancelled = false
+    setLoadingEvent(true)
+    setTraitors([])
+    setEvent(null)
+
+    Promise.all([findHistoryEvent(id), getAllHistoryEvents()]).then(([ev, all]) => {
+      if (cancelled) return
+      setEvent(ev)
+      setRelatedEvents(
+        ev ? all.filter((e) => e.id !== ev.id && e.era === ev.era).slice(0, 4) : [],
+      )
+      setLoadingEvent(false)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [id])
 
   useEffect(() => {
     if (!event) {
@@ -43,10 +71,15 @@ export default function HistoryEventDetail() {
     }
   }, [event])
 
-  const relatedEvents = useMemo(() => {
-    if (!event) return []
-    return HISTORY_EVENTS.filter((e) => e.id !== event.id && e.era === event.era).slice(0, 4)
-  }, [event])
+  const persons = useMemo(() => event?.persons?.filter((p) => p.name.trim()).sort((a, b) => a.sort - b.sort) ?? [], [event])
+
+  if (loadingEvent) {
+    return (
+      <section className="container-page py-24 text-center">
+        <p className="text-paperdim">{t('common.loading')}</p>
+      </section>
+    )
+  }
 
   if (!event) {
     return (
@@ -65,8 +98,8 @@ export default function HistoryEventDetail() {
       <section className="ink-hero relative overflow-hidden border-b border-paperedge/10">
         <div className="container-page animate-ink-in flex flex-col items-center py-20 text-center md:py-24">
           <div className="flex items-center gap-3">
-            <span className="font-garamond text-4xl font-semibold text-cinnabarlight">{event.year}</span>
-            <span className="badge border-bronze/40 text-bronzelight">{event.era}</span>
+            <span className="font-garamond text-4xl font-semibold text-cinnabarlight">{event.year ?? t('common.unknownYear')}</span>
+            <span className="badge border-bronze/40 text-bronzelight">{eraLabel(event.era, t)}</span>
           </div>
           <h1 className="mt-5 font-song text-3xl font-bold leading-snug tracking-wide text-paper sm:text-4xl md:text-5xl">
             {event.title}
@@ -74,9 +107,46 @@ export default function HistoryEventDetail() {
           {event.alias && event.alias !== event.title && (
             <p className="mt-3 text-sm tracking-widest text-paperdim/70">{t('eventDetail.alias')}{event.alias}</p>
           )}
+          {event.location && (
+            <p className="mt-2 text-sm tracking-widest text-paperdim/70">{t('eventDetail.location')}{event.location}</p>
+          )}
           <p className="mt-6 max-w-3xl leading-loose text-paperdim">{event.desc}</p>
         </div>
       </section>
+
+      {/* 涉案人员 */}
+      {persons.length > 0 && (
+        <section className="container-page py-16">
+          <div className="mb-8 flex items-baseline justify-between gap-3">
+            <h2 className="section-title">
+              <span className="text-xl font-semibold tracking-[0.25em] text-paper">{t('eventDetail.personsTitle')}</span>
+              <span className="font-garamond text-xs italic text-bronzelight">PERSONS INVOLVED</span>
+            </h2>
+            <span className="text-xs tracking-wider text-paperdim/70">
+              {t('eventDetail.personsCount', { count: persons.length })}
+              {typeof event.personCount === 'number' && event.personCount > persons.length
+                ? ` / ${t('eventDetail.knownPersons', { count: event.personCount })}`
+                : ''}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {persons.map((p) => (
+              <div key={p.id} className="card p-5">
+                <p className="font-song text-lg font-bold tracking-wide text-paper">{p.name}</p>
+                {(p.location || p.identityTags) && (
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {p.location && (
+                      <span className="badge border-paperedge/25 text-paperdim">{t('eventDetail.personLocation')}{p.location}</span>
+                    )}
+                    {p.identityTags && <span className="badge border-bronze/40 text-bronzelight">{p.identityTags}</span>}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 涉及汉奸 */}
       <section className="container-page py-16">
@@ -121,7 +191,7 @@ export default function HistoryEventDetail() {
                   className="card group flex flex-col p-5 transition hover:-translate-y-1 hover:border-bronze/50"
                 >
                   <div className="flex items-baseline gap-3">
-                    <span className="font-garamond text-2xl font-semibold text-cinnabarlight">{ev.year}</span>
+                    <span className="font-garamond text-2xl font-semibold text-cinnabarlight">{ev.year ?? t('common.unknownYear')}</span>
                     <h3 className="font-song text-lg font-bold tracking-wide text-paper group-hover:text-cinnabarlight">
                       {ev.title}
                     </h3>

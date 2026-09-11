@@ -22,6 +22,7 @@
     "all": "All",
     "totalRecords": "{{total}} records · Page {{page}} / {{totalPages}}",
     "totalEvents": "{{count}} events",
+    "unknownYear": "Year unknown",
     "pageInfo": "Page {{page}} / {{totalPages}}",
     "pagination": "Pagination",
     "noData": "No records",
@@ -312,17 +313,24 @@
     "searching": "Searching…",
     "totalPeople": "Total {{count}} individuals",
     "noTraitors": "No traitor archives associated with this event",
-    "relatedEvents": "Contemporary Events"
+    "relatedEvents": "Contemporary Events",
+    "location": "Location: ",
+    "personsTitle": "Persons Involved",
+    "personsCount": "{{count}} recorded",
+    "knownPersons": "~{{count}} per historical records",
+    "personLocation": "Place: "
   },
   "eventForm": {
     "createTitle": "Add New Historical Event",
     "backToList": "← Back to List",
     "nameRequired": "Please enter an event name",
     "yearRequired": "Please enter a valid year",
+    "yearInvalid": "Please enter a valid year",
+    "yearOptionalHint": "Leave blank if the year is unknown",
     "descRequired": "Please enter an event description",
     "eventName": "Event Name *",
     "eventNamePlaceholder": "e.g.: Mukden Incident",
-    "year": "Year *",
+    "year": "Year",
     "yearPlaceholder": "e.g. 1937",
     "period": "Period *",
     "alias": "Also Known As (optional)",
@@ -333,7 +341,10 @@
     "keywordsPlaceholder": "Separate multiple keywords with commas, e.g.: Mukden, Liutiaohu, Shenyang",
     "keywordHint": "Used to match associated traitor archives on the event detail page",
     "cancel": "Cancel",
-    "saveBtn": "Save"
+    "saveBtn": "Save",
+    "saving": "Saving…",
+    "loginRequired": "Please log in to add an event and try again.",
+    "submitFailed": "Submission failed. Please try again later."
   },
   "auth": {
     "loginFailed": "Login failed",

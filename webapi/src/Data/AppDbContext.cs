@@ -25,6 +25,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<QueryLog> QueryLogs => Set<QueryLog>();
     public DbSet<ErrorLog> ErrorLogs => Set<ErrorLog>();
     public DbSet<VisitLog> VisitLogs => Set<VisitLog>();
+    public DbSet<AtrocityCase> AtrocityCases => Set<AtrocityCase>();
+    public DbSet<AtrocityCasePerson> AtrocityCasePersons => Set<AtrocityCasePerson>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -154,6 +156,22 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(v => v.VisitorToken).HasMaxLength(128);
             e.HasIndex(v => v.VisitorToken);
             e.HasIndex(v => v.CreatedAt);
+        });
+
+        // ---------- 历史事件 / 涉案人员 ----------
+        modelBuilder.Entity<AtrocityCase>(e =>
+        {
+            e.ToTable("atrocitycases");
+            e.HasIndex(c => c.Name);
+            e.HasIndex(c => c.Province);
+            e.HasIndex(c => c.Era);
+        });
+        modelBuilder.Entity<AtrocityCasePerson>(e =>
+        {
+            e.ToTable("atrocitycasepersons");
+            e.HasIndex(p => p.AtrocityCaseId);
+            e.HasOne(p => p.Case).WithMany(c => c.Persons)
+                .HasForeignKey(p => p.AtrocityCaseId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

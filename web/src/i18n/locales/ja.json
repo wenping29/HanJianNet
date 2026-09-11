@@ -22,6 +22,7 @@
     "all": "すべて",
     "totalRecords": "全 {{total}} 件 · {{page}} / {{totalPages}} ページ",
     "totalEvents": "全 {{count}} 件のイベント",
+    "unknownYear": "年不明",
     "pageInfo": "{{page}} / {{totalPages}} ページ",
     "pagination": "ページナビゲーション",
     "noData": "記録なし",
@@ -312,17 +313,24 @@
     "searching": "検索中…",
     "totalPeople": "合計 {{count}} 人",
     "noTraitors": "このイベントに関連する漢奸档案はありません",
-    "relatedEvents": "同時期のイベント"
+    "relatedEvents": "同時期のイベント",
+    "location": "場所：",
+    "personsTitle": "関与した人物",
+    "personsCount": "登録済み {{count}} 人",
+    "knownPersons": "史料では約 {{count}} 人",
+    "personLocation": "出身地／場所："
   },
   "eventForm": {
     "createTitle": "新規歴史イベントを追加",
     "backToList": "← 一覧に戻る",
     "nameRequired": "イベント名を入力してください",
     "yearRequired": "有効な年を入力してください",
+    "yearInvalid": "有効な年を入力してください",
+    "yearOptionalHint": "年が不明な場合は空欄で可",
     "descRequired": "イベントの説明を入力してください",
     "eventName": "イベント名 *",
     "eventNamePlaceholder": "例：柳条湖事件",
-    "year": "年 *",
+    "year": "年",
     "yearPlaceholder": "例：1937",
     "period": "時代 *",
     "alias": "別称（任意）",
@@ -333,7 +341,10 @@
     "keywordsPlaceholder": "複数のキーワードはカンマで区切る、例：柳条湖、瀋陽",
     "keywordHint": "イベント詳細ページで関連漢奸档案をマッチングするために使用",
     "cancel": "キャンセル",
-    "saveBtn": "保 存"
+    "saveBtn": "保 存",
+    "saving": "保存中…",
+    "loginRequired": "イベントを追加するにはログインが必要です。",
+    "submitFailed": "送信に失敗しました。後でもう一度お試しください。"
   },
   "auth": {
     "loginFailed": "ログイン失敗",

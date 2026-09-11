@@ -22,7 +22,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\sql\*.sql" Link="sql\%(Filename)%(Extension)">
+    <Content Include="sql\VisitLogs.mysql.sql" Link="sql\VisitLogs.mysql.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sql\VisitLogs.sqlite.sql" Link="sql\VisitLogs.sqlite.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sql\AtrocityCases.mysql.sql" Link="sql\AtrocityCases.mysql.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="sql\AtrocityCases.sqlite.sql" Link="sql\AtrocityCases.sqlite.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
