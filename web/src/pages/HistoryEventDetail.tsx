@@ -36,6 +36,10 @@ export default function HistoryEventDetail() {
         ev ? all.filter((e) => e.id !== ev.id && e.era === ev.era).slice(0, 4) : [],
       )
       setLoadingEvent(false)
+    }).catch(() => {
+      if (cancelled) return
+      setEvent(null)
+      setLoadingEvent(false)
     })
 
     return () => {

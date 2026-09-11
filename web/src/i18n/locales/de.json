@@ -22,6 +22,7 @@
     "all": "Alle",
     "totalRecords": "{{total}} Einträge · Seite {{page}} / {{totalPages}}",
     "totalEvents": "{{count}} Ereignisse",
+    "unknownYear": "Jahr unbekannt",
     "pageInfo": "Seite {{page}} / {{totalPages}}",
     "pagination": "Seitennavigation",
     "noData": "Keine Einträge",
@@ -312,17 +313,24 @@
     "searching": "Suche läuft…",
     "totalPeople": "Insgesamt {{count}} Personen",
     "noTraitors": "Keine Verräterarchive mit diesem Ereignis verknüpft",
-    "relatedEvents": "Zeitgleiche Ereignisse"
+    "relatedEvents": "Zeitgleiche Ereignisse",
+    "location": "Ort: ",
+    "personsTitle": "Beteiligte Personen",
+    "personsCount": "{{count}} erfasst",
+    "knownPersons": "ca. {{count}} laut Quellen",
+    "personLocation": "Herkunftsort: "
   },
   "eventForm": {
     "createTitle": "Neues historisches Ereignis hinzufügen",
     "backToList": "← Zurück zur Liste",
     "nameRequired": "Bitte geben Sie einen Ereignisnamen ein",
     "yearRequired": "Bitte geben Sie ein gültiges Jahr ein",
+    "yearInvalid": "Bitte geben Sie ein gültiges Jahr ein",
+    "yearOptionalHint": "Frei lassen, wenn das Jahr unbekannt ist",
     "descRequired": "Bitte geben Sie eine Ereignisbeschreibung ein",
     "eventName": "Ereignisname *",
     "eventNamePlaceholder": "z. B.: Mukden-Zwischenfall",
-    "year": "Jahr *",
+    "year": "Jahr",
     "yearPlaceholder": "z. B. 1937",
     "period": "Zeitraum *",
     "alias": "Auch bekannt als (optional)",
@@ -333,7 +341,10 @@
     "keywordsPlaceholder": "Mehrere Schlüsselwörter durch Kommas trennen, z. B.: Mukden, Liutiaohu, Shenyang",
     "keywordHint": "Wird verwendet, um auf der Ereignisdetailseite passende Verräterarchive zuzuordnen",
     "cancel": "Abbrechen",
-    "saveBtn": "Speichern"
+    "saveBtn": "Speichern",
+    "saving": "Speichern…",
+    "loginRequired": "Bitte melden Sie sich an, um ein Ereignis hinzuzufügen.",
+    "submitFailed": "Übermittlung fehlgeschlagen. Bitte versuchen Sie es später erneut."
   },
   "auth": {
     "loginFailed": "Anmeldung fehlgeschlagen",

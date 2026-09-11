@@ -22,6 +22,7 @@
     "all": "Todos",
     "totalRecords": "{{total}} registros · Página {{page}} / {{totalPages}}",
     "totalEvents": "{{count}} eventos",
+    "unknownYear": "Año desconocido",
     "pageInfo": "Página {{page}} / {{totalPages}}",
     "pagination": "Navegación de páginas",
     "noData": "Sin registros",
@@ -312,17 +313,24 @@
     "searching": "Buscando…",
     "totalPeople": "Total {{count}} personas",
     "noTraitors": "No hay archivos de traidores asociados con este evento",
-    "relatedEvents": "Eventos contemporáneos"
+    "relatedEvents": "Eventos contemporáneos",
+    "location": "Lugar: ",
+    "personsTitle": "Personas implicadas",
+    "personsCount": "{{count}} registradas",
+    "knownPersons": "~{{count}} según las fuentes",
+    "personLocation": "Lugar de origen: "
   },
   "eventForm": {
     "createTitle": "Agregar nuevo evento histórico",
     "backToList": "← Volver a la lista",
     "nameRequired": "Por favor ingrese el nombre del evento",
     "yearRequired": "Por favor ingrese un año válido",
+    "yearInvalid": "Por favor ingrese un año válido",
+    "yearOptionalHint": "Deje en blanco si el año es desconocido",
     "descRequired": "Por favor ingrese una descripción del evento",
     "eventName": "Nombre del evento *",
     "eventNamePlaceholder": "ej.: Incidente de Mukden",
-    "year": "Año *",
+    "year": "Año",
     "yearPlaceholder": "ej. 1937",
     "period": "Período *",
     "alias": "También conocido como (opcional)",
@@ -333,7 +341,10 @@
     "keywordsPlaceholder": "Separe múltiples palabras clave con comas, ej.: Mukden, Liutiaohu, Shenyang",
     "keywordHint": "Se utiliza para hacer coincidir archivos de traidores en la página de detalles del evento",
     "cancel": "Cancelar",
-    "saveBtn": "Guardar"
+    "saveBtn": "Guardar",
+    "saving": "Guardando…",
+    "loginRequired": "Inicie sesión para agregar un evento.",
+    "submitFailed": "Error al enviar. Por favor intente más tarde."
   },
   "auth": {
     "loginFailed": "Error al iniciar sesión",
