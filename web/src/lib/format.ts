@@ -60,3 +60,15 @@ export function splitList(text: string): string[] {
     .map((s) => s.trim())
     .filter(Boolean)
 }
+
+/**
+ * 加密姓名第二个字：如"张三丰"→"张**丰"，"王二"→"王*"，"李"→"李"
+ */
+export function maskName(name: string): string {
+  if (!name) return name
+  const chars = Array.from(name)
+  if (chars.length <= 1) return name
+  if (chars.length === 2) return `${chars[0]}*`
+  // 第二个字用 ** 替换
+  return `${chars[0]}${'*'.repeat(Math.min(chars.length - 1, 2))}${chars.slice(2).join('')}`
+}

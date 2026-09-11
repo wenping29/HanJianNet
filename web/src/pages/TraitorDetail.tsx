@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Lightbox from '../components/Lightbox'
 import { api, resolveAssetUrl } from '../lib/api'
-import { formatLifeSpan, formatYear } from '../lib/format'
+import { formatLifeSpan, formatYear, maskName } from '../lib/format'
 import { useAuth } from '../stores/auth'
 import type { Traitor, TraitorSummary } from '../types'
 
@@ -190,7 +190,7 @@ export default function TraitorDetail() {
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {traitor.spouses.map((s, i) => (
               <li key={i} className="card flex items-baseline gap-3 px-4 py-3">
-                <span className="font-semibold tracking-widest text-paper">{s.name}</span>
+                <span className="font-semibold tracking-widest text-paper">{maskName(s.name)}</span>
                 {s.remark && <span className="truncate text-xs text-paperdim">{s.remark}</span>}
               </li>
             ))}
@@ -215,7 +215,7 @@ export default function TraitorDetail() {
               <tbody>
                 {traitor.children.map((c, i) => (
                   <tr key={i}>
-                    <td>{c.name}</td>
+                    <td>{maskName(c.name)}</td>
                     <td>{c.gender || '—'}</td>
                     <td>{c.whereabouts || '—'}</td>
                     <td>{c.remark || '—'}</td>
