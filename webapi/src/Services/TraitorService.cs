@@ -51,8 +51,10 @@ public class TraitorService(AppDbContext db, CacheService cache)
         if (!string.IsNullOrWhiteSpace(period))
             q = q.Where(t => t.Period == period);
 
-        // 固定排序：按创建时间倒序（最新录入的在前）
-        q = q.OrderByDescending(t => t.CreatedAt);
+        // 固定排序：危害等级升序（1=特级 最严重在前），未分级排最后；同级按创建时间倒序
+        q = q.OrderBy(t => t.HarmLevel == null ? 1 : 0)
+             .ThenBy(t => t.HarmLevel)
+             .ThenByDescending(t => t.CreatedAt);
 
         var total = await q.CountAsync();
         // 犯罪记录条数在 SQL 侧聚合，避免把明细全部读入内存
