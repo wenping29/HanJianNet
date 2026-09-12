@@ -278,7 +278,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         await api.updateTraitorDirect(id, payload)
         flash(t('traitorEditor.saveSuccess'))
       }
-      navigate('/traitors', { replace: true })
+      navigate('/traitors/list', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : t('traitorEditor.saveFailed'))
     } finally {
