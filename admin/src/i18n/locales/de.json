@@ -1,6 +1,6 @@
 {
   "menu": {
-    "traitors": "Verräterakten",
+    "traitors": "Verräterverwaltung",
     "edit-traitor": "Stammdaten bearbeiten",
     "merge-traitors": "Datenzusammenführung",
     "reviews": "Prüfwarteschlange",
@@ -164,6 +164,9 @@
     "newTraitor": "Neuer Verräter",
     "noArchives": "Keine Archive",
     "edit": "Bearbeiten",
+    "deleteConfirm": "Verräter \"{{name}}\" löschen? Diese Aktion kann nicht rückgängig gemacht werden und löscht auch alle zugehörigen Aufzeichnungen wie Verbrechen.",
+    "deleteSuccess": "Gelöscht",
+    "deleteFailed": "Löschung fehlgeschlagen",
     "totalRecords": "{{total}} Einträge · Seite {{page}} / {{totalPages}}"
   },
   "merge": {

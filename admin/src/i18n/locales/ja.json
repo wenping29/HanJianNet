@@ -1,6 +1,6 @@
 {
   "menu": {
-    "traitors": "名簿管理",
+    "traitors": "漢奸管理",
     "edit-traitor": "基本情報編集",
     "merge-traitors": "データ統合",
     "reviews": "審査待ち",
@@ -164,6 +164,9 @@
     "newTraitor": "新規漢奸",
     "noArchives": "檔案がありません",
     "edit": "編集",
+    "deleteConfirm": "漢奸「{{name}}」を削除しますか？この操作は取り消せません。関連する犯罪などの記録もすべて削除されます。",
+    "deleteSuccess": "削除しました",
+    "deleteFailed": "削除に失敗しました",
     "totalRecords": "{{total}} 件のレコード・ページ {{page}} / {{totalPages}}"
   },
   "merge": {

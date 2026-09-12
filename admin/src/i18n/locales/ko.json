@@ -1,6 +1,6 @@
 {
   "menu": {
-    "traitors": "명부 관리",
+    "traitors": "인물 관리",
     "edit-traitor": "기본 정보 편집",
     "merge-traitors": "데이터 병합",
     "reviews": "심사 대기",
@@ -164,6 +164,9 @@
     "newTraitor": "새 인물",
     "noArchives": "아카이브 없음",
     "edit": "편집",
+    "deleteConfirm": "\"{{name}}\" 인물을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 범죄 등 관련 기록도 모두 삭제됩니다.",
+    "deleteSuccess": "삭제되었습니다",
+    "deleteFailed": "삭제 실패",
     "totalRecords": "{{total}}건 · {{page}} / {{totalPages}} 페이지"
   },
   "merge": {

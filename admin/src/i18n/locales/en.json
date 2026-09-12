@@ -1,6 +1,6 @@
 {
   "menu": {
-    "traitors": "Traitor Records",
+    "traitors": "Traitor Management",
     "edit-traitor": "Basic Info Editor",
     "merge-traitors": "Data Merge",
     "reviews": "Review Queue",
@@ -164,6 +164,9 @@
     "newTraitor": "New Traitor",
     "noArchives": "No archives",
     "edit": "Edit",
+    "deleteConfirm": "Delete traitor \"{{name}}\"? This action cannot be undone and will also delete all related records such as crimes.",
+    "deleteSuccess": "Deleted",
+    "deleteFailed": "Deletion failed",
     "totalRecords": "{{total}} records · Page {{page}} / {{totalPages}}"
   },
   "merge": {

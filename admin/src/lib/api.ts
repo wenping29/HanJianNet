@@ -155,6 +155,9 @@ export const api = {
   updateTraitorDirect: (id: string, input: TraitorInput) =>
     request<{ traitor: TraitorDetail }>(`/admin/traitors/${id}`, { method: 'PUT', body: JSON.stringify(input) }),
 
+  deleteTraitor: (id: string) =>
+    request<{ message: string }>(`/admin/traitors/${id}`, { method: 'DELETE' }),
+
   // ---- 历史事件（惨案/宏观事件） ----
   listAtrocityEvents: (era?: string) => {
     const params = new URLSearchParams()

@@ -263,6 +263,23 @@ public class TraitorService(AppDbContext db, CacheService cache)
     public async Task<TraitorDto> AdminGetAsync(string id) => await GetAsync(id);
 
     /// <summary>
+    /// 删除汉奸档案：其全部子记录（罪行/配偶/子女/住所/生平/附件/来源）由数据库级联删除。
+    /// 若该记录已被其他档案作为合并目标引用（MergedIntoId == id），拒绝删除以保持数据完整。
+    /// </summary>
+    public async Task AdminDeleteAsync(string id)
+    {
+        var traitor = await db.Traitors.FirstOrDefaultAsync(t => t.Id == id)
+                      ?? throw new ApiException(404, "档案不存在");
+
+        if (await db.Traitors.AnyAsync(t => t.MergedIntoId == id))
+            throw new ApiException(409, "该记录已被其他档案合并引用，请先解除合并后再删除");
+
+        db.Traitors.Remove(traitor);
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+    }
+
+    /// <summary>
     /// 查找重复记录：按 Name + NativePlace 分组，仅返回未合并（MergedIntoId == null）且 Count > 1 的组。
     /// 可选 name/nativePlace 过滤。
     /// </summary>

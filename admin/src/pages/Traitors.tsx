@@ -35,6 +35,8 @@ export default function Traitors() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
+  const [notice, setNotice] = useState('')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const reload = useCallback(async (name?: string, p = 1) => {
     setError('')
@@ -92,6 +94,26 @@ export default function Traitors() {
     setLoading(false)
   }
 
+  const flash = (msg: string) => {
+    setNotice(msg)
+    window.setTimeout(() => setNotice(''), 2500)
+  }
+
+  const handleDelete = async (tr: TraitorSummary) => {
+    if (!window.confirm(t('traitors.deleteConfirm', { name: tr.name }))) return
+    setDeletingId(tr.id)
+    setError('')
+    try {
+      await api.deleteTraitor(tr.id)
+      flash(t('traitors.deleteSuccess'))
+      await reload(searched || undefined, page)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t('traitors.deleteFailed'))
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
 
   return (
@@ -137,6 +159,11 @@ export default function Traitors() {
         )}
       </div>
 
+      {notice && (
+        <p className="mt-6 rounded-sm border border-bronze/50 bg-bronze/10 px-3 py-2 text-sm text-bronzelight">
+          {notice}
+        </p>
+      )}
       {error && (
         <p className="mt-6 rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-3 py-2 text-sm text-cinnabarlight">
           {error}
@@ -202,7 +229,7 @@ export default function Traitors() {
                       </div>
                     </td>
                     <td className="px-5 py-3">
-                      <div className="flex justify-end">
+                      <div className="flex justify-end gap-2">
                         {canManageUsers(me.role) && (
                           <button
                             type="button"
@@ -210,6 +237,16 @@ export default function Traitors() {
                             onClick={() => navigate(`/traitors/${tr.id}/edit`)}
                           >
                             {t('traitors.edit')}
+                          </button>
+                        )}
+                        {canManageUsers(me.role) && (
+                          <button
+                            type="button"
+                            className="btn-ghost !px-3 !py-1.5 text-xs !text-cinnabarlight"
+                            disabled={deletingId === tr.id}
+                            onClick={() => void handleDelete(tr)}
+                          >
+                            {t('common.delete')}
                           </button>
                         )}
                       </div>

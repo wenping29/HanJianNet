@@ -86,6 +86,14 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
     [HttpPost("api/admin/traitors/merge")]
     public async Task<IActionResult> AdminMerge([FromBody] MergeRequestDto req)
         => Ok(new { traitor = await traitors.MergeAsync(req.PrimaryId, req.SourceIds) });
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpDelete("api/admin/traitors/{id}")]
+    public async Task<IActionResult> AdminDelete(string id)
+    {
+        await traitors.AdminDeleteAsync(id);
+        return Ok(new { message = "删除成功" });
+    }
 }
 
 /// <summary>TraitorInputDto + ChangeSummary，用于用户提交修订。</summary>

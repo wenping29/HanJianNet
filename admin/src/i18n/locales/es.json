@@ -1,6 +1,6 @@
 {
   "menu": {
-    "traitors": "Registro de traidores",
+    "traitors": "Gestión de traidores",
     "edit-traitor": "Edición de datos básicos",
     "merge-traitors": "Fusión de datos",
     "reviews": "Cola de revisión",
@@ -164,6 +164,9 @@
     "newTraitor": "Nuevo traidor",
     "noArchives": "Sin archivos",
     "edit": "Editar",
+    "deleteConfirm": "¿Eliminar al traidor \"{{name}}\"? Esta acción no se puede deshacer y eliminará también todos los registros relacionados, como los crímenes.",
+    "deleteSuccess": "Eliminado",
+    "deleteFailed": "Error al eliminar",
     "totalRecords": "{{total}} registros · Página {{page}} / {{totalPages}}"
   },
   "merge": {

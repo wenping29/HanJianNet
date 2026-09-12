@@ -89,11 +89,17 @@ export default function Layout() {
     let matched: MenuItem | null = null
     for (const m of menus) {
       if (m.children && m.children.length > 0) {
+        let childMatched = false
         for (const c of m.children) {
           if (path === c.path || path.startsWith(`${c.path}/`)) {
             matched = c
+            childMatched = true
             break
           }
+        }
+        // 分组自身 Path 指向真实页面时（如「汉奸管理」→ /traitors），分组也参与匹配
+        if (!childMatched && (path === m.path || path.startsWith(`${m.path}/`))) {
+          matched = m
         }
       } else if (path === m.path || path.startsWith(`${m.path}/`)) {
         matched = m

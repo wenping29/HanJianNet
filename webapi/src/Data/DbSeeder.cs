@@ -64,7 +64,8 @@ public static class DbSeeder
         // (key, path, label, sort, parent, visibleRoles)
         var defaults = new (string Key, string Path, string Label, int Sort, string? Parent, string[] VisibleRoles)[]
         {
-            ("traitors", "/traitors", "名录管理", 1, null, ["admin", "superadmin"]),
+            ("traitors", "/traitors", "汉奸管理", 1, null, ["admin", "superadmin"]),
+            ("traitors-list", "/traitors/list", "名录管理", 1, null, ["admin", "superadmin"]),
             ("edit-traitor", "/traitors/basic-edit", "基本信息编辑", 2, "traitors", ["admin", "superadmin"]),
             ("merge-traitors", "/traitors/merge", "数据合并", 3, "traitors", ["admin", "superadmin"]),
             ("reviews", "/reviews", "待审队列", 2, null, ["manager", "admin", "superadmin"]),

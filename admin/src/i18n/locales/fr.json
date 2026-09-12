@@ -1,6 +1,6 @@
 {
   "menu": {
-    "traitors": "Fichier des traîtres",
+    "traitors": "Gestion des traîtres",
     "edit-traitor": "Édition des informations de base",
     "merge-traitors": "Fusion de données",
     "reviews": "File de révision",
@@ -164,6 +164,9 @@
     "newTraitor": "Nouveau traître",
     "noArchives": "Aucune archive",
     "edit": "Modifier",
+    "deleteConfirm": "Supprimer le traître « {{name}} » ? Cette action est irréversible et supprimera également tous les enregistrements associés tels que les crimes.",
+    "deleteSuccess": "Supprimé",
+    "deleteFailed": "Échec de la suppression",
     "totalRecords": "{{total}} enregistrements · Page {{page}} / {{totalPages}}"
   },
   "merge": {

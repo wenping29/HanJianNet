@@ -1,6 +1,6 @@
 {
   "menu": {
-    "traitors": "名录管理",
+    "traitors": "汉奸管理",
     "edit-traitor": "基本信息编辑",
     "merge-traitors": "数据合并",
     "reviews": "待审队列",
@@ -164,6 +164,9 @@
     "newTraitor": "新增汉奸",
     "noArchives": "暂无档案",
     "edit": "编辑",
+    "deleteConfirm": "确定删除汉奸「{{name}}」？该操作不可恢复，将一并删除其全部罪行等相关记录。",
+    "deleteSuccess": "已删除",
+    "deleteFailed": "删除失败",
     "totalRecords": "共 {{total}} 条档案 · 第 {{page}} / {{totalPages}} 页"
   },
   "merge": {

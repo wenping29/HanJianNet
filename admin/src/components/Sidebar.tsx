@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next'
 import type { MenuItem } from '../types'
 import { useTabsStore } from '../stores/tabs'
 
+// 分组菜单中，自身 Path 指向真实页面（如「汉奸管理」→ /traitors）的分组，
+// 点击分组头会进入该页面（同时展开/收起子菜单）；纯占位分组已排除以防误入 NotFound。
+const NAVIGABLE_GROUP_PATHS = new Set(['/traitors'])
+
 interface SidebarProps {
   menus: MenuItem[]
   collapsed: boolean
@@ -33,7 +37,7 @@ export default function Sidebar({ menus, collapsed, mobileOpen, onToggleCollapse
   }
 
   const isGroupActive = (m: MenuItem) =>
-    m.children?.some((c) => location.pathname === c.path || location.pathname.startsWith(`${c.path}/`)) ?? false
+    m.children?.some((c) => isItemActive(c.path)) || (m.path ? isItemActive(m.path) : false)
 
   const isItemActive = (path: string) =>
     location.pathname === path || location.pathname.startsWith(`${path}/`)
@@ -92,7 +96,11 @@ export default function Sidebar({ menus, collapsed, mobileOpen, onToggleCollapse
               <div key={m.key} className="mb-1">
                 <button
                   type="button"
-                  onClick={() => !collapsed ? toggleGroup(m.key) : undefined}
+                  onClick={() => {
+                    if (collapsed) return
+                    toggleGroup(m.key)
+                    if (m.path && NAVIGABLE_GROUP_PATHS.has(m.path)) handleClick(m)
+                  }}
                   title={collapsed ? m.label : undefined}
                   className={`group flex w-full items-center gap-3 px-3 py-2.5 text-sm transition ${
                     collapsed ? 'lg:justify-center' : ''
@@ -140,6 +148,16 @@ export default function Sidebar({ menus, collapsed, mobileOpen, onToggleCollapse
                       <div className="border-b border-paperedge/10 px-3 pb-2 mb-1">
                         <span className="text-xs tracking-[0.2em] text-bronzelight">{m.label}</span>
                       </div>
+                      {NAVIGABLE_GROUP_PATHS.has(m.path) && (
+                        <button
+                          type="button"
+                          onClick={() => handleClick(m)}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-sm transition text-paperdim hover:bg-bronze/10 hover:text-paper"
+                        >
+                          <span className="h-1.5 w-1.5 rounded-full bg-cinnabar/60" />
+                          <span className="truncate tracking-[0.15em]">{m.label}</span>
+                        </button>
+                      )}
                       {m.children!.map((c) => {
                         const active = isItemActive(c.path)
                         return (
