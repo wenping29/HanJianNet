@@ -249,7 +249,8 @@ public class TraitorService(AppDbContext db, CacheService cache)
         }
         var total = await q.CountAsync();
         var list = await q
-            .OrderByDescending(t => t.CreatedAt)
+            .OrderBy(t => t.Name)
+            .ThenByDescending(t => t.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
