@@ -1,6 +1,7 @@
 {
   "menu": {
     "traitors": "Traitor Management",
+    "traitors-list": "Roster Management",
     "edit-traitor": "Basic Info Editor",
     "merge-traitors": "Data Merge",
     "reviews": "Review Queue",

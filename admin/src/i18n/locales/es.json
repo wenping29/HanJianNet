@@ -1,6 +1,7 @@
 {
   "menu": {
     "traitors": "Gestión de traidores",
+    "traitors-list": "Gestión de la lista",
     "edit-traitor": "Edición de datos básicos",
     "merge-traitors": "Fusión de datos",
     "reviews": "Cola de revisión",

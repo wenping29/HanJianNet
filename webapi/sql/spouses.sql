@@ -104,3 +104,37 @@ INSERT INTO `spouses` (`Id`, `TraitorId`, `Name`, `Remark`) VALUES
 INSERT INTO `spouses` (`Id`, `TraitorId`, `Name`, `Remark`) VALUES
 ('b1c2d3e4f5a64789b0c1d2e3f4a51501', '3d26e19e007442fd959cae751f00c548', '唐玉凤', '配偶之一'),
 ('b1c2d3e4f5a64789b0c1d2e3f4a51502', '3d26e19e007442fd959cae751f00c548', '全慧文', '配偶之一');
+INSERT INTO `spouses` (`Id`, `TraitorId`, `Name`, `Remark`) VALUES
+-- 汪精卫
+(UUID(), 'wang_jingwei', '陈璧君', '汪精卫妻子'),
+
+-- 陈公博
+(UUID(), 'chen_gongbo', '李励庄', '陈公博妻子'),
+
+-- 梁鸿志
+(UUID(), 'liang_hongzhi', '李氏', '梁鸿志原配，1939年去世'),
+
+-- 王克敏
+(UUID(), 'wang_kemin', '二老婆', '王克敏妻妾之一，姓名未见于公开资料'),
+(UUID(), 'wang_kemin', '四老婆', '王克敏妻妾之一，姓名未见于公开资料'),
+(UUID(), 'wang_kemin', '小阿凤', '王克敏五老婆，外号“小阿凤”'),
+
+-- 褚民谊
+(UUID(), 'chu_minyi', '陈舜贞', '褚民谊妻子，陈璧君母亲的养女'),
+
+-- 张景惠
+(UUID(), 'zhang_jinghui', '徐芷卿', '张景惠宠妻，外号“小菠菜”'),
+
+-- 溥仪
+(UUID(), 'pu_yi', '婉容', '溥仪皇后'),
+(UUID(), 'pu_yi', '文绣', '溥仪淑妃'),
+(UUID(), 'pu_yi', '谭玉龄', '溥仪贵妃'),
+(UUID(), 'pu_yi', '李玉琴', '溥仪贵人'),
+(UUID(), 'pu_yi', '李淑贤', '溥仪继妻'),
+
+-- 张啸林
+(UUID(), 'zhang_xiaolin', '娄丽琴', '张啸林原配'),
+(UUID(), 'zhang_xiaolin', '姨太太', '张啸林另有多房姨太太，姓名未见于公开资料'),
+
+-- 李士群
+(UUID(), 'li_shiqun', '叶吉卿', '李士群妻子');

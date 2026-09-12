@@ -1,6 +1,7 @@
 {
   "menu": {
     "traitors": "信息管理",
+    "traitors-list": "名录管理",
     "edit-traitor": "基本信息编辑",
     "merge-traitors": "数据合并",
     "reviews": "待审队列",

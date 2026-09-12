@@ -1,6 +1,7 @@
 {
   "menu": {
     "traitors": "Gestion des traîtres",
+    "traitors-list": "Gestion de la liste",
     "edit-traitor": "Édition des informations de base",
     "merge-traitors": "Fusion de données",
     "reviews": "File de révision",

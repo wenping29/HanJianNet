@@ -125,3 +125,56 @@ INSERT INTO `children` (`Id`, `TraitorId`, `Name`, `Gender`, `Whereabouts`, `Rem
 ('a1b2c3d4e5f64789a0b1c2d3e4f51504', '3d26e19e007442fd959cae751f00c548', '姓名不详', '女', NULL, '全慧文生'),
 ('a1b2c3d4e5f64789a0b1c2d3e4f51505', '3d26e19e007442fd959cae751f00c548', '姓名不详', '女', NULL, '全慧文生'),
 ('a1b2c3d4e5f64789a0b1c2d3e4f51506', '3d26e19e007442fd959cae751f00c548', '姓名不详', '女', NULL, '小女儿，自幼被收养');
+
+
+
+-- 汪精卫
+(UUID(), 'wang_jingwei', '汪文婴', '男', '晚年定居美国', '长子，妻子谭文素，曾留学德国，后在汪伪政权任职'),
+(UUID(), 'wang_jingwei', '汪文惺', '女', '后定居美国', '长女，丈夫何孟恒，曾在香港任教'),
+(UUID(), 'wang_jingwei', '汪文彬', '女', NULL, '次女，曾任印尼政府医药部门高级主管，后成为修女'),
+(UUID(), 'wang_jingwei', '汪文恂', '女', NULL, '三女，曾任香港大学教育系教授，2002年病故'),
+(UUID(), 'wang_jingwei', '汪文悌', '男', '在香港从事桥梁建筑工作', '次子，毕业于南京中央陆军军官学校'),
+
+-- 陈公博
+(UUID(), 'chen_gongbo', '陈干', NULL, NULL, '陈公博之子'),
+
+-- 梁鸿志
+(UUID(), 'liang_hongzhi', '梁渊若', NULL, NULL, '梁鸿志子女之一'),
+(UUID(), 'liang_hongzhi', '梁秋若', NULL, NULL, '梁鸿志子女之一'),
+(UUID(), 'liang_hongzhi', '梁文若', NULL, NULL, '梁鸿志子女之一'),
+
+-- 王克敏
+(UUID(), 'wang_kemin', '王遵倜', NULL, NULL, '王克敏子女之一'),
+(UUID(), 'wang_kemin', '王遵侗', NULL, NULL, '王克敏子女之一'),
+(UUID(), 'wang_kemin', '王遵悌', NULL, NULL, '王克敏子女之一'),
+(UUID(), 'wang_kemin', '王遵周', NULL, NULL, '王克敏子女之一'),
+(UUID(), 'wang_kemin', '王遵仲', '男', NULL, '王克敏独子'),
+
+-- 褚民谊
+(UUID(), 'chu_minyi', '褚梦媛', '女', NULL, '褚民谊女儿'),
+(UUID(), 'chu_minyi', '褚幼义', '男', NULL, '褚民谊儿子'),
+
+-- 张景惠
+(UUID(), 'zhang_jinghui', '张绍纪', '男', NULL, '张景惠二儿子，后为红色间谍'),
+
+-- 郑孝胥
+(UUID(), 'zheng_xiaoxu', '郑禹', '男', NULL, '郑孝胥次子，曾任伪满奉天市长，1954年以汉奸罪枪决'),
+
+-- 溥仪
+(UUID(), 'pu_yi', '毓嵒', '男', NULL, '溥仪嗣子，堂侄'),
+
+-- 张啸林
+(UUID(), 'zhang_xiaolin', '张法尧', '男', NULL, '张啸林亲生儿子'),
+(UUID(), 'zhang_xiaolin', '张显贵', '男', NULL, '张啸林抱养儿子'),
+(UUID(), 'zhang_xiaolin', '张忠尧', '男', NULL, '张啸林抱养儿子'),
+
+-- 李士群
+(UUID(), 'li_shiqun', '李闻苏', NULL, NULL, '李士群子女之一'),
+(UUID(), 'li_shiqun', '李凯苏', NULL, NULL, '李士群子女之一'),
+(UUID(), 'li_shiqun', '李秀扬', NULL, NULL, '李士群子女之一'),
+
+-- 周佛海
+(UUID(), 'zhou_fohai', '周幼海', '男', NULL, '周佛海儿子，妻子施丹苹'),
+
+-- 傅筱庵
+(UUID(), 'fu_xiaoan', NULL, '男', NULL, '傅筱庵之子，因父亲卖国而精神失常，姓名未见于公开资料');

@@ -1,6 +1,7 @@
 {
   "menu": {
     "traitors": "인물 관리",
+    "traitors-list": "명부 관리",
     "edit-traitor": "기본 정보 편집",
     "merge-traitors": "데이터 병합",
     "reviews": "심사 대기",

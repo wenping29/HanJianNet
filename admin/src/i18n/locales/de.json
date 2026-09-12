@@ -1,6 +1,7 @@
 {
   "menu": {
     "traitors": "Verräterverwaltung",
+    "traitors-list": "Namenslistenverwaltung",
     "edit-traitor": "Stammdaten bearbeiten",
     "merge-traitors": "Datenzusammenführung",
     "reviews": "Prüfwarteschlange",

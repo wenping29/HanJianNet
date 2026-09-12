@@ -1,6 +1,7 @@
 {
   "menu": {
     "traitors": "漢奸管理",
+    "traitors-list": "名鑑管理",
     "edit-traitor": "基本情報編集",
     "merge-traitors": "データ統合",
     "reviews": "審査待ち",
