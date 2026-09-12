@@ -91,8 +91,8 @@ export function splitList(text: string): string[] {
     .filter(Boolean)
 }
 
-/** 危害度分级：1=特级 … 5=四级（最低）；null/undefined 表示未分级 */
-export const HARM_LEVELS = [1, 2, 3, 4, 5] as const
+/** 危害度分级：1=特级 … 7=己级（最低）；null/undefined 表示未分级 */
+export const HARM_LEVELS = [1, 2, 3, 4, 5, 6, 7] as const
 
 export function harmLevelLabel(level: number | null | undefined, t: (key: string) => string): string {
   if (level == null) return ''
@@ -105,6 +105,8 @@ const HARM_LEVEL_CLASS: Record<number, string> = {
   3: 'border-bronze/70 bg-bronze/15 text-bronzelight',
   4: 'border-bronze/40 bg-bronze/10 text-bronzelight/90',
   5: 'border-paperedge/30 text-paperdim',
+  6: 'border-paperedge/25 text-paperdim/80',
+  7: 'border-paperedge/20 text-paperdim/60',
 }
 
 /** 危害等级徽标配色：级别越高越醒目 */

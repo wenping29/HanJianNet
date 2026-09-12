@@ -87,7 +87,7 @@ export interface Traitor {
   period: Period
   faction: string
   summary: string
-  /** 危害度分级：1=特级 2=一级 3=二级 4=三级 5=四级；null=未分级 */
+  /** 危害度分级：1=特级 2=甲级 3=乙级 4=丙级 5=丁级 6=戊级 7=己级；null=未分级 */
   harmLevel?: number | null
   /** 伪职：从摘要提取的职位 */
   title?: string | null
