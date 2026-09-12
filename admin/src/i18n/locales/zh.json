@@ -1,6 +1,6 @@
 {
   "menu": {
-    "traitors": "汉奸管理",
+    "traitors": "信息管理",
     "edit-traitor": "基本信息编辑",
     "merge-traitors": "数据合并",
     "reviews": "待审队列",
@@ -159,7 +159,7 @@
     "noRecords": "暂无记录"
   },
   "traitors": {
-    "title": "汉奸管理",
+    "title": "名录管理",
     "searchPlaceholder": "按姓名 / 别名搜索",
     "newTraitor": "新增汉奸",
     "noArchives": "暂无档案",
