@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList, formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
-import { normalizeAiResult } from '../lib/ai'
+import { normalizeAiResult, clearTraitorLocalData } from '../lib/ai'
 import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
 import type { AiTraitorResult, Child, CrimeRecord, Period, Spouse, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
 
@@ -318,9 +318,14 @@ function ListView() {
                         <button
                           type="button"
                           className="btn-ghost !px-3 !py-1.5 text-xs"
-                          onClick={() =>
-                          window.open(`${window.location.href.split('#')[0]}#/traitors/basic-edit/${tr.id}`, '_blank', 'noopener')
-                        }
+                          onClick={() => {
+                            clearTraitorLocalData(tr.id)
+                            window.open(
+                              `${window.location.href.split('#')[0]}#/traitors/basic-edit/${tr.id}`,
+                              '_blank',
+                              'noopener',
+                            )
+                          }}
                         >
                           {t('basicEdit.editBasicInfo')}
                         </button>

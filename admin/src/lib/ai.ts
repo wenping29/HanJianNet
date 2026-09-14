@@ -9,6 +9,22 @@ import type {
   YearType,
 } from '../types'
 
+/** 清除本地存储（localStorage/sessionStorage）中与该档案 id 相关的残留 key */
+export function clearTraitorLocalData(id: string): void {
+  for (const store of [localStorage, sessionStorage]) {
+    try {
+      const remove: string[] = []
+      for (let i = 0; i < store.length; i++) {
+        const k = store.key(i)
+        if (k && k.includes(id)) remove.push(k)
+      }
+      remove.forEach((k) => store.removeItem(k))
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 const YEAR_TYPES: YearType[] = ['exact', 'approx', 'before', 'after', 'unknown']
 
 export function normalizeYearType(t: string | undefined | null): YearType {
