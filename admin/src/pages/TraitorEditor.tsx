@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList } from '../lib/format'
 import { clearAiResult, normalizeAiResult, readAiResult } from '../lib/ai'
+import type { NormalizedAi } from '../lib/ai'
 import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
 import type {
   Attachment,
@@ -246,6 +247,36 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
     setPhotoAiOnly(photoOnly)
     void aiQuery.run(form.name)
   }
+
+  const originalAi = useMemo<NormalizedAi | null>(
+    () =>
+      mode === 'edit'
+        ? {
+            form: {
+              name: form.name,
+              courtesyName: form.courtesyName,
+              pseudonym: form.pseudonym,
+              birthYear: form.birthYear,
+              deathYear: form.deathYear,
+              birthYearType: form.birthYearType,
+              deathYearType: form.deathYearType,
+              nativePlace: form.nativePlace,
+              birthPlace: form.birthPlace,
+              period: form.period,
+              faction: form.faction,
+              summary: form.summary,
+              aliasesText: form.aliasesText,
+              identityTagsText: form.identityTagsText,
+            },
+            spouses,
+            children,
+            crimeRecords,
+            lifeEvents,
+            photoNote: '',
+          }
+        : null,
+    [mode, form, spouses, children, crimeRecords, lifeEvents],
+  )
 
   const handleAiUploadPhoto = async (url: string) => {
     setAiUploading(true)
@@ -942,6 +973,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         error={aiQuery.error}
         result={aiQuery.result}
         photoOnly={photoAiOnly}
+        original={originalAi}
         uploadingPhoto={aiUploading}
         onUploadPhoto={(url) => void handleAiUploadPhoto(url)}
         onClose={() => {

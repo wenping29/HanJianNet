@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import { api } from '../lib/api'
 import { formatLifeSpan } from '../lib/format'
+import type { NormalizedAi } from '../lib/ai'
 import type { AiPhoto, AiTraitorResult } from '../types'
 
 /** 管理 AI 查询弹窗状态（加载/结果/错误/重试） */
@@ -67,6 +68,8 @@ interface AiQueryModalProps {
   photoOnly?: boolean
   onUploadPhoto?: (url: string) => void
   uploadingPhoto?: boolean
+  /** 当前档案原始数据（用于与 AI 查询结果逐项对比） */
+  original?: NormalizedAi | null
 }
 
 function PhotoThumb({ photo }: { photo: AiPhoto }) {
@@ -86,6 +89,44 @@ function PhotoThumb({ photo }: { photo: AiPhoto }) {
   )
 }
 
+function diffText(ai: unknown, orig: unknown): boolean {
+  const a = Array.isArray(ai) ? ai.join('，') : String(ai ?? '').trim()
+  const b = Array.isArray(orig) ? orig.join('，') : String(orig ?? '').trim()
+  return a.replace(/\s+/g, '') !== b.replace(/\s+/g, '')
+}
+
+/** AI 值 + 原档案值（有差异时以高亮显示 AI 值，并在下方灰字列出原值） */
+function CmpValue({ ai, orig, empty = '—' }: { ai?: React.ReactNode; orig?: string; empty?: string }) {
+  const { t } = useTranslation()
+  const aiText = typeof ai === 'string' || typeof ai === 'number' ? String(ai ?? '').trim() : ''
+  return (
+    <span className="min-w-0">
+      <span className={diffText(aiText, orig) ? 'rounded-sm bg-bronze/20 px-1 py-0.5 text-bronzelight' : 'text-paper'}>
+        {aiText || empty}
+      </span>
+      {diffText(aiText, orig) && (
+        <span className="mt-0.5 block text-xs text-paperdim/70">
+          {t('aiQuery.originalValue')}：{orig?.trim() || empty}
+        </span>
+      )}
+    </span>
+  )
+}
+
+function OriginalBlock({ orig }: { orig?: string }) {
+  const { t } = useTranslation()
+  if (!orig?.trim()) return null
+  return (
+    <div className="mt-2 rounded-sm border border-paperedge/10 bg-inkcard/30 p-2 text-xs text-paperdim/70">
+      {t('aiQuery.originalValue')}：{orig}
+    </div>
+  )
+}
+
+function joinList<T>(items: T[], fmt: (v: T) => string): string {
+  return items.map(fmt).filter(Boolean).join('、')
+}
+
 export default function AiQueryModal({
   open,
   name,
@@ -98,6 +139,7 @@ export default function AiQueryModal({
   photoOnly = false,
   onUploadPhoto,
   uploadingPhoto = false,
+  original = null,
 }: AiQueryModalProps) {
   const { t } = useTranslation()
   const [selectedUrl, setSelectedUrl] = useState('')
@@ -190,21 +232,56 @@ export default function AiQueryModal({
               {t('traitorEditor.basicInfo')}
             </h4>
             <div className="space-y-1.5">
-              <Row label={t('common.name')}>{result.name}</Row>
-              <Row label={t('common.courtesyName')}>{result.courtesyName || t('aiQuery.empty')}</Row>
-              <Row label={t('common.pseudonym')}>{result.pseudonym || t('aiQuery.empty')}</Row>
-              <Row label={t('common.lifespan')}>
-                {formatLifeSpan(result.birthYear, result.deathYear, result.birthYearType, result.deathYearType)}
+              <Row label={t('common.name')}>
+                <CmpValue ai={result.name} orig={original?.form.name} empty={t('aiQuery.empty')} />
               </Row>
-              <Row label={t('common.nativePlace')}>{result.nativePlace || t('aiQuery.empty')}</Row>
-              <Row label={t('common.birthPlace')}>{result.birthPlace || t('aiQuery.empty')}</Row>
-              <Row label={t('common.period')}>{result.period || t('aiQuery.empty')}</Row>
-              <Row label={t('common.faction')}>{result.faction || t('aiQuery.empty')}</Row>
+              <Row label={t('common.courtesyName')}>
+                <CmpValue ai={result.courtesyName ?? ''} orig={original?.form.courtesyName} empty={t('aiQuery.empty')} />
+              </Row>
+              <Row label={t('common.pseudonym')}>
+                <CmpValue ai={result.pseudonym ?? ''} orig={original?.form.pseudonym} empty={t('aiQuery.empty')} />
+              </Row>
+              <Row label={t('common.lifespan')}>
+                <CmpValue
+                  ai={formatLifeSpan(result.birthYear, result.deathYear, result.birthYearType, result.deathYearType)}
+                  orig={
+                    original && (original.form.birthYear || original.form.deathYear)
+                      ? formatLifeSpan(
+                          original.form.birthYear ? Number(original.form.birthYear) : null,
+                          original.form.deathYear ? Number(original.form.deathYear) : null,
+                          original.form.birthYearType,
+                          original.form.deathYearType,
+                        )
+                      : ''
+                  }
+                  empty={t('aiQuery.empty')}
+                />
+              </Row>
+              <Row label={t('common.nativePlace')}>
+                <CmpValue ai={result.nativePlace ?? ''} orig={original?.form.nativePlace} empty={t('aiQuery.empty')} />
+              </Row>
+              <Row label={t('common.birthPlace')}>
+                <CmpValue ai={result.birthPlace ?? ''} orig={original?.form.birthPlace} empty={t('aiQuery.empty')} />
+              </Row>
+              <Row label={t('common.period')}>
+                <CmpValue ai={result.period ?? ''} orig={original?.form.period} empty={t('aiQuery.empty')} />
+              </Row>
+              <Row label={t('common.faction')}>
+                <CmpValue ai={result.faction ?? ''} orig={original?.form.faction} empty={t('aiQuery.empty')} />
+              </Row>
               <Row label={t('common.aliases')}>
-                {(result.aliases ?? []).length > 0 ? result.aliases.join('、') : t('aiQuery.empty')}
+                <CmpValue
+                  ai={(result.aliases ?? []).join('、')}
+                  orig={original?.form.aliasesText}
+                  empty={t('aiQuery.empty')}
+                />
               </Row>
               <Row label={t('common.identityTags')}>
-                {(result.identityTags ?? []).length > 0 ? result.identityTags.join('、') : t('aiQuery.empty')}
+                <CmpValue
+                  ai={(result.identityTags ?? []).join('、')}
+                  orig={original?.form.identityTagsText}
+                  empty={t('aiQuery.empty')}
+                />
               </Row>
             </div>
           </section>
@@ -216,6 +293,7 @@ export default function AiQueryModal({
             <p className="whitespace-pre-wrap rounded-sm border border-paperedge/15 bg-inkcard/50 p-3 text-sm leading-relaxed text-paper">
               {result.summary || t('aiQuery.empty')}
             </p>
+            <OriginalBlock orig={original?.form.summary} />
           </section>
 
           {(result.crimeRecords ?? []).length > 0 && (
@@ -235,6 +313,9 @@ export default function AiQueryModal({
                   </li>
                 ))}
               </ul>
+              <OriginalBlock
+                orig={joinList(original?.crimeRecords ?? [], (c) => `${c.year ?? ''} ${c.title} ${c.process ?? ''}`)}
+              />
             </section>
           )}
 
@@ -246,18 +327,25 @@ export default function AiQueryModal({
               {(result.spouses ?? []).length > 0 && (
                 <div className="space-y-1.5">
                   <Row label={t('traitorEditor.spouse')}>
-                    {result.spouses.map((s, i) => (
-                      <span key={i}>{s.name}{s.remark ? `（${s.remark}）` : ''}</span>
-                    ))}
+                    <CmpValue
+                      ai={(result.spouses ?? []).map((s) => `${s.name}${s.remark ? `（${s.remark}）` : ''}`).join('、')}
+                      orig={joinList(original?.spouses ?? [], (s) => `${s.name}${s.remark ? `（${s.remark}）` : ''}`)}
+                      empty={t('aiQuery.empty')}
+                    />
                   </Row>
                 </div>
               )}
               {(result.children ?? []).length > 0 && (
                 <div className="space-y-1.5">
                   <Row label={t('traitorEditor.children')}>
-                    {result.children.map((c, i) => (
-                      <span key={i}>{c.name}{c.gender ? `（${c.gender}）` : ''}</span>
-                    ))}
+                    <CmpValue
+                      ai={(result.children ?? []).map((c) => `${c.name}${c.gender ? `（${c.gender}）` : ''}`).join('、')}
+                      orig={joinList(
+                        original?.children ?? [],
+                        (c) => `${c.name}${c.gender ? `（${c.gender}）` : ''}`,
+                      )}
+                      empty={t('aiQuery.empty')}
+                    />
                   </Row>
                 </div>
               )}
@@ -277,6 +365,7 @@ export default function AiQueryModal({
                   </li>
                 ))}
               </ul>
+              <OriginalBlock orig={joinList(original?.lifeEvents ?? [], (l) => `${l.year ?? ''} ${l.event}`)} />
             </section>
           )}
 

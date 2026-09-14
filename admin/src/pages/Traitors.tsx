@@ -121,9 +121,6 @@ export default function Traitors() {
 
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
 
-  const editUrl = (id: string) =>
-    `${window.location.origin}${window.location.pathname}#/traitors/${id}/edit`
-
   return (
     <div className="container-page py-10">
       <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
@@ -261,7 +258,7 @@ export default function Traitors() {
                           <button
                             type="button"
                             className="btn-bronze !px-5 !py-2 text-sm"
-                            onClick={() => window.open(editUrl(tr.id), '_blank')}
+                            onClick={() => navigate(`/traitors/${tr.id}/edit`)}
                           >
                             {t('traitors.edit')}
                           </button>

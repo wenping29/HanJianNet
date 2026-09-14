@@ -531,7 +531,8 @@
     "photoSelected": "Ausgewählt. Klicken Sie auf \u201cFoto hochladen\u201d zum Speichern.",
     "uploadPhoto": "Foto hochladen",
     "photoUploaded": "Foto heruntergeladen und zur Fotoliste der Person hinzugefügt. Wirksam nach dem Speichern.",
-    "noPhotoFound": "Kein öffentlich zugängliches Foto für diese Person gefunden."
+    "noPhotoFound": "Kein öffentlich zugängliches Foto für diese Person gefunden.",
+    "originalValue": "Aktuelle Archivdaten"
   },
   "periods": {
     "lateSong": "Späte Song-Dynastie",

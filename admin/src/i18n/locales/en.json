@@ -572,7 +572,8 @@
     "photoSelected": "Selected. Click \u201cUpload photo\u201d to save.",
     "uploadPhoto": "Upload photo",
     "photoUploaded": "Photo downloaded and added to the photo list. It takes effect after saving.",
-    "noPhotoFound": "No publicly accessible photo was found for this person."
+    "noPhotoFound": "No publicly accessible photo was found for this person.",
+    "originalValue": "Current archive data"
   },
   "periods": {
     "lateSong": "Late Song",

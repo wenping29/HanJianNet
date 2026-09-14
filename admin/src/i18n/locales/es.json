@@ -531,7 +531,8 @@
     "photoSelected": "Seleccionada. Haga clic en \u201cSubir foto\u201d para guardar.",
     "uploadPhoto": "Subir foto",
     "photoUploaded": "Foto descargada y añadida a la lista de fotos de la persona. Se aplica al guardar.",
-    "noPhotoFound": "No se encontró ninguna foto de acceso público de esta persona."
+    "noPhotoFound": "No se encontró ninguna foto de acceso público de esta persona.",
+    "originalValue": "Datos de archivo actuales"
   },
   "periods": {
     "lateSong": "Song tardío",
