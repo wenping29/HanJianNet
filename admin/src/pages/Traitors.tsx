@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan } from '../lib/format'
+import { toast } from '../components/Toast'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 import type { TraitorSummary } from '../types'
@@ -35,7 +36,6 @@ export default function Traitors() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const [notice, setNotice] = useState('')
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const reload = useCallback(async (name?: string, p = 1) => {
@@ -94,21 +94,15 @@ export default function Traitors() {
     setLoading(false)
   }
 
-  const flash = (msg: string) => {
-    setNotice(msg)
-    window.setTimeout(() => setNotice(''), 2500)
-  }
-
   const handleDelete = async (tr: TraitorSummary) => {
-    if (!window.confirm(t('traitors.deleteConfirm', { name: tr.name }))) return
     setDeletingId(tr.id)
     setError('')
     try {
       await api.deleteTraitor(tr.id)
-      flash(t('traitors.deleteSuccess'))
+      toast(t('traitors.deleteSuccess'))
       await reload(searched || undefined, page)
     } catch (e) {
-      setError(e instanceof Error ? e.message : t('traitors.deleteFailed'))
+      toast(e instanceof Error ? e.message : t('traitors.deleteFailed'), 'error')
     } finally {
       setDeletingId(null)
     }
@@ -159,11 +153,6 @@ export default function Traitors() {
         )}
       </div>
 
-      {notice && (
-        <p className="mt-6 rounded-sm border border-bronze/50 bg-bronze/10 px-3 py-2 text-sm text-bronzelight">
-          {notice}
-        </p>
-      )}
       {error && (
         <p className="mt-6 rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-3 py-2 text-sm text-cinnabarlight">
           {error}

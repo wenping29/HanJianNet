@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Sidebar from './Sidebar'
 import TabsBar from './TabsBar'
+import ToastHost from './Toast'
 import LanguageSwitcher from './LanguageSwitcher'
 import { api } from '../lib/api'
 import { ROLE_LABELS, canAccessConsole } from '../lib/roles'
@@ -146,6 +147,9 @@ export default function Layout() {
 
   return (
     <div className="paper-texture flex h-screen min-h-screen w-full overflow-hidden bg-ink">
+      {/* 全局轻提示 */}
+      <ToastHost />
+
       {/* 左侧菜单 */}
       <Sidebar
         menus={menus}
