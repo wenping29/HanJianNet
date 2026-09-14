@@ -1,21 +1,27 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { TraitorSummary } from '../types'
 import { formatLifeSpan, harmLevelClass, harmLevelLabel } from '../lib/format'
+import { resolveAssetUrl } from '../lib/api'
 
 export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
   const { t } = useTranslation()
+  const [photoFailed, setPhotoFailed] = useState(false)
+  const hasPhoto = !!traitor.photoUrl && !photoFailed
   return (
     <Link
       to={`/traitor/${traitor.id}`}
       className="card group block overflow-hidden transition hover:-translate-y-1 hover:border-bronze/50"
     >
       <div className="flex h-36 items-center justify-center overflow-hidden border-b border-paperedge/10 bg-gradient-to-br from-inksoft to-ink">
-        {traitor.photoUrl ? (
+        {hasPhoto ? (
           <img
-            src={traitor.photoUrl}
+            src={resolveAssetUrl(traitor.photoUrl!)}
             alt={traitor.name}
+            loading="lazy"
             className="h-full w-full object-cover opacity-90 transition group-hover:opacity-100"
+            onError={() => setPhotoFailed(true)}
           />
         ) : (
           <span className="font-song text-5xl font-bold text-paperedge/20 transition group-hover:text-cinnabar/40">
