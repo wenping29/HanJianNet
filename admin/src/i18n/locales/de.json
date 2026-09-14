@@ -60,6 +60,7 @@
     "faction": "Fraktion",
     "lifespan": "Lebenszeit",
     "identityTags": "Identitätstags",
+    "colHarmLevel": "Gefährdungsgrad",
     "courtesyName": "Stilname",
     "pseudonym": "Pseudonym",
     "birthYear": "Geburtsjahr",
@@ -505,6 +506,15 @@
     "before": "Vor",
     "after": "Nach",
     "unknown": "Unbekannt"
+  },
+  "harmLevel": {
+    "1": "Höchste Stufe",
+    "2": "Stufe I",
+    "3": "Stufe II",
+    "4": "Stufe III",
+    "5": "Stufe IV",
+    "6": "Stufe V",
+    "7": "Stufe VI"
   },
   "periods": {
     "lateSong": "Späte Song-Dynastie",

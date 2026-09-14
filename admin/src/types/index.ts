@@ -252,6 +252,7 @@ export interface TraitorSummary {
   birthYearType: YearType
   deathYearType: YearType
   identityTags: string[]
+  harmLevel?: number | null
   photoUrl?: string | null
 }
 

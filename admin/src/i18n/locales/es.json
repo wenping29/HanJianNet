@@ -60,6 +60,7 @@
     "faction": "Facción",
     "lifespan": "Período de vida",
     "identityTags": "Etiquetas de identidad",
+    "colHarmLevel": "Nivel de peligro",
     "courtesyName": "Nombre de cortesía",
     "pseudonym": "Seudónimo",
     "birthYear": "Año de nacimiento",
@@ -505,6 +506,15 @@
     "before": "Antes de",
     "after": "Después de",
     "unknown": "Desconocido"
+  },
+  "harmLevel": {
+    "1": "Nivel supremo",
+    "2": "Nivel I",
+    "3": "Nivel II",
+    "4": "Nivel III",
+    "5": "Nivel IV",
+    "6": "Nivel V",
+    "7": "Nivel VI"
   },
   "periods": {
     "lateSong": "Song tardío",

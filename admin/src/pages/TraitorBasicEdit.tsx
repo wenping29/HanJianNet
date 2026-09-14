@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
-import { PERIODS, splitList, formatLifeSpan } from '../lib/format'
+import { PERIODS, splitList, formatLifeSpan, harmLevelClass } from '../lib/format'
 import type { Child, CrimeRecord, Period, Spouse, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
 
 const PAGE_SIZE = 10
@@ -230,6 +230,7 @@ function ListView() {
                   <th className="px-5 py-3 font-medium">{t('common.faction')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.lifespan')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.nativePlace')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.colHarmLevel')}</th>
                   <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
                 </tr>
               </thead>
@@ -258,6 +259,15 @@ function ListView() {
                       {formatLifeSpan(tr.birthYear, tr.deathYear, tr.birthYearType, tr.deathYearType)}
                     </td>
                     <td className="px-5 py-3 text-paperdim">—</td>
+                    <td className="px-5 py-3">
+                      {tr.harmLevel ? (
+                        <span className={`badge border-0 ${harmLevelClass(tr.harmLevel)}`}>
+                          {t(`harmLevel.${tr.harmLevel}`)}
+                        </span>
+                      ) : (
+                        <span className="text-paperdim/50">—</span>
+                      )}
+                    </td>
                     <td className="px-5 py-3">
                       <div className="flex justify-end">
                         <button

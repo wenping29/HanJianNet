@@ -248,8 +248,11 @@ public class TraitorService(AppDbContext db, CacheService cache)
             q = q.Where(t => t.Name.Contains(n));
         }
         var total = await q.CountAsync();
+        // 固定排序：危害等级升序（1=特级/S级 最严重在前），未分级排最后；同级按姓名，再按创建时间倒序
         var list = await q
-            .OrderBy(t => t.Name)
+            .OrderBy(t => t.HarmLevel == null ? 1 : 0)
+            .ThenBy(t => t.HarmLevel)
+            .ThenBy(t => t.Name)
             .ThenByDescending(t => t.CreatedAt)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)

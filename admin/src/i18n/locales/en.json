@@ -60,6 +60,7 @@
     "faction": "Faction",
     "lifespan": "Lifespan",
     "identityTags": "Identity Tags",
+    "colHarmLevel": "Harm Level",
     "courtesyName": "Courtesy Name",
     "pseudonym": "Pseudonym",
     "birthYear": "Birth Year",
@@ -546,6 +547,15 @@
     "before": "Before",
     "after": "After",
     "unknown": "Unknown"
+  },
+  "harmLevel": {
+    "1": "Top Tier",
+    "2": "Tier I",
+    "3": "Tier II",
+    "4": "Tier III",
+    "5": "Tier IV",
+    "6": "Tier V",
+    "7": "Tier VI"
   },
   "periods": {
     "lateSong": "Late Song",

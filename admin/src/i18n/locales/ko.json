@@ -60,6 +60,7 @@
     "faction": "정파",
     "lifespan": "생몰년",
     "identityTags": "정체 태그",
+    "colHarmLevel": "위해 등급",
     "courtesyName": "자(字)",
     "pseudonym": "호(號)",
     "birthYear": "출생연도",
@@ -505,6 +506,15 @@
     "before": "이전",
     "after": "이후",
     "unknown": "미상"
+  },
+  "harmLevel": {
+    "1": "특급",
+    "2": "1급",
+    "3": "2급",
+    "4": "3급",
+    "5": "4급",
+    "6": "5급",
+    "7": "6급"
   },
   "periods": {
     "lateSong": "남송",

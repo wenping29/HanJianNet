@@ -60,6 +60,7 @@
     "faction": "政権",
     "lifespan": "生没年",
     "identityTags": "身分タグ",
+    "colHarmLevel": "危害等級",
     "courtesyName": "字",
     "pseudonym": "号",
     "birthYear": "生年",
@@ -505,6 +506,15 @@
     "before": "以前",
     "after": "以降",
     "unknown": "不明"
+  },
+  "harmLevel": {
+    "1": "特級",
+    "2": "一級",
+    "3": "二級",
+    "4": "三級",
+    "5": "四級",
+    "6": "五級",
+    "7": "六級"
   },
   "periods": {
     "lateSong": "南宋末期",

@@ -60,6 +60,7 @@
     "faction": "派系",
     "lifespan": "生卒",
     "identityTags": "身份标签",
+    "colHarmLevel": "危害等级",
     "courtesyName": "字",
     "pseudonym": "号",
     "birthYear": "出生年份",
@@ -546,6 +547,15 @@
     "before": "之前",
     "after": "之后",
     "unknown": "不详"
+  },
+  "harmLevel": {
+    "1": "特级",
+    "2": "甲级",
+    "3": "乙级",
+    "4": "丙级",
+    "5": "丁级",
+    "6": "戊级",
+    "7": "己级"
   },
   "periods": {
     "lateSong": "宋末",

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
-import { formatLifeSpan } from '../lib/format'
+import { formatLifeSpan, harmLevelClass } from '../lib/format'
 import { toast } from '../components/Toast'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -176,6 +176,7 @@ export default function Traitors() {
                   <th className="px-5 py-3 font-medium">{t('common.faction')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.lifespan')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.identityTags')}</th>
+                  <th className="px-5 py-3 font-medium">{t('common.colHarmLevel')}</th>
                   <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
                 </tr>
               </thead>
@@ -216,6 +217,15 @@ export default function Traitors() {
                           </span>
                         )}
                       </div>
+                    </td>
+                    <td className="px-5 py-3">
+                      {tr.harmLevel ? (
+                        <span className={`badge border-0 ${harmLevelClass(tr.harmLevel)}`}>
+                          {t(`harmLevel.${tr.harmLevel}`)}
+                        </span>
+                      ) : (
+                        <span className="text-paperdim/50">—</span>
+                      )}
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex justify-end gap-2">
