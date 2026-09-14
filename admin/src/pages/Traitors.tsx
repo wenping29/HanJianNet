@@ -223,7 +223,7 @@ export default function Traitors() {
                           <button
                             type="button"
                             className="btn-ghost !px-3 !py-1.5 text-xs"
-                            onClick={() => window.open(`/traitors/${tr.id}/edit`, '_blank')}
+                            onClick={() => window.open(`${window.location.origin}${window.location.pathname}#/traitors/${tr.id}/edit`, '_blank')}
                           >
                             {t('traitors.edit')}
                           </button>
