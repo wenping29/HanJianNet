@@ -226,5 +226,6 @@ public class AiService(IOptions<DeepSeekOptions> options, IHttpClientFactory htt
         " \"summary\":\"200-400字人生概述，叙述生平与历史评价\", \"spouses\":[{\"name\":\"\",\"remark\":\"\"}],\"children\":[{\"name\":\"\",\"gender\":\"男\",\"whereabouts\":\"\",\"remark\":\"\"}]," +
         " \"crimeRecords\":[{\"year\":1937,\"title\":\"罪行名称\",\"process\":\"经过\",\"harm\":\"危害后果\"}],\"lifeEvents\":[{\"year\":1932,\"event\":\"事件\"}],\"photoNote\":\"照片一句说明\" }" +
         "要求：1. 基于真实可考史料，宁缺毋滥，宁可留空也不要编造；2. birthYear 用公元年、无法确证填 null，birthYearType 仅可取值 exact(精确)/approx(约)/before(某年前)/after(某年后)/unknown(不详)，deathYear 同理；" +
-        "3. period 仅可取值：宋末、明末、清末、民国、抗日战争时期、其他；4. crimeRecords 刻画该人物投敌卖国、为虎作伥的具体罪行，无可靠记录留空数组；5. 字符串均为纯文本、不用 Markdown；6. 若该姓名无可靠史料或为不知名者，仍按结构输出、不确定字段留空。";
+        "3. period 仅可取值：宋末、明末、清末、民国、抗日战争时期、其他；4. crimeRecords 刻画该人物投敌卖国、为虎作伥的具体罪行，无可靠记录留空数组；5. 字符串均为纯文本、不用 Markdown；6. 若该姓名无可靠史料或为不知名者，仍按结构输出、不确定字段留空；" +
+        "7. 关于配偶子女：凡史料确有其人的配偶与子女必须全部填入 spouses/children 数组，spouse.remark 可写配偶身份背景，child.gender 仅可取值 男/女/不详，child.whereabouts 填人物去向变迁，无确切信息填 null；family 是重要字段，勿因简略而漏填。";
 }

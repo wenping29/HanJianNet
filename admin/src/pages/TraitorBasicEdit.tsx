@@ -261,7 +261,7 @@ function ListView() {
       ) : (
         <>
           <div className="card animate-fade-up mt-6 overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left text-sm">
+            <table className="w-full min-w-[980px] text-left text-sm">
               <thead>
                 <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
                   <th className="px-5 py-3 font-medium">{t('common.name')}</th>
@@ -270,6 +270,7 @@ function ListView() {
                   <th className="px-5 py-3 font-medium">{t('common.lifespan')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.nativePlace')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.colHarmLevel')}</th>
+                  <th className="px-5 py-3 font-medium">{t('traitorEditor.crimes')}</th>
                   <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
                 </tr>
               </thead>
@@ -303,6 +304,27 @@ function ListView() {
                         <span className={`badge border-0 ${harmLevelClass(tr.harmLevel)}`}>
                           {t(`harmLevel.${tr.harmLevel}`)}
                         </span>
+                      ) : (
+                        <span className="text-paperdim/50">—</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3">
+                      {(tr.crimeRecordTitles ?? []).length > 0 ? (
+                        <div className="flex max-w-xs flex-wrap gap-1.5">
+                          {(tr.crimeRecordTitles ?? []).slice(0, 3).map((title, i) => (
+                            <span
+                              key={i}
+                              className="rounded-sm border border-cinnabar/30 bg-cinnabar/10 px-1.5 py-0.5 text-xs text-cinnabarlight/90"
+                            >
+                              {title}
+                            </span>
+                          ))}
+                          {(tr.crimeRecordTitles ?? []).length > 3 && (
+                            <span className="text-xs text-paperdim/60">
+                              +{(tr.crimeRecordTitles ?? []).length - 3}
+                            </span>
+                          )}
+                        </div>
                       ) : (
                         <span className="text-paperdim/50">—</span>
                       )}

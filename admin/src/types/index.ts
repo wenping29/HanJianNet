@@ -277,6 +277,7 @@ export interface TraitorSummary {
   identityTags: string[]
   harmLevel?: number | null
   photoUrl?: string | null
+  crimeRecordTitles?: string[]
 }
 
 export interface TraitorDetail extends TraitorSnapshot {

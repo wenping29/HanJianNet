@@ -72,6 +72,8 @@ public class TraitorSummaryDto
     public string? Title { get; set; }
     /// <summary>犯罪记录条数（列表用，不含明细）</summary>
     public int CrimeRecordCount { get; set; }
+    /// <summary>犯罪记录标题列表（列表用，至多 10 条）</summary>
+    public List<string> CrimeRecordTitles { get; set; } = [];
     public string? PhotoUrl { get; set; }
 }
 

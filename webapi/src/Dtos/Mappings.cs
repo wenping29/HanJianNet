@@ -43,6 +43,13 @@ public static class Mappings
         PhotoUrl = t.Attachments.FirstOrDefault(a => a.Kind == "photo")?.Url,
     };
 
+    public static TraitorSummaryDto ToSummary(this Traitor t, int crimeRecordCount, List<string> crimeRecordTitles)
+    {
+        var dto = t.ToSummary(crimeRecordCount);
+        dto.CrimeRecordTitles = crimeRecordTitles;
+        return dto;
+    }
+
     public static TraitorDto ToDto(this Traitor t) => new()
     {
         Id = t.Id,
