@@ -10,6 +10,13 @@ public class UploadRequestDto
     public string Kind { get; set; } = "";
 }
 
+public class UploadFromUrlRequestDto
+{
+    [Required]
+    public string Url { get; set; } = "";
+    public string Kind { get; set; } = "";
+}
+
 public class UploadResultDto
 {
     public string Id { get; set; } = "";

@@ -196,4 +196,14 @@ public class AiTraitorResultDto
     public List<LifeEventInputDto> LifeEvents { get; set; } = [];
     /// <summary>照片说明：AI 无法生成图片，仅提示人工上传。</summary>
     public string? PhotoNote { get; set; }
+    /// <summary>候选照片图片直链（可从公开图库热链访问的真实地址，至多 5 张）。</summary>
+    public List<AiPhotoDto> Photos { get; set; } = [];
+}
+
+/// <summary>AI 候选照片项。</summary>
+public class AiPhotoDto
+{
+    public string Url { get; set; } = "";
+    public string? Caption { get; set; }
+    public string? Source { get; set; }
 }

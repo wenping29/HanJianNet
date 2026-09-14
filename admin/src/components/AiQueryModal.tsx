@@ -1,9 +1,9 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 import { api } from '../lib/api'
 import { formatLifeSpan } from '../lib/format'
-import type { AiTraitorResult } from '../types'
+import type { AiPhoto, AiTraitorResult } from '../types'
 
 /** 管理 AI 查询弹窗状态（加载/结果/错误/重试） */
 export function useAiQuery() {
@@ -65,6 +65,25 @@ interface AiQueryModalProps {
   onRetry: () => void
   onFill: () => void
   photoOnly?: boolean
+  onUploadPhoto?: (url: string) => void
+  uploadingPhoto?: boolean
+}
+
+function PhotoThumb({ photo }: { photo: AiPhoto }) {
+  const [failed, setFailed] = useState(false)
+  return (
+    <div className="w-full overflow-hidden rounded-sm border border-paperedge/15 bg-inkcard/50">
+      {failed ? (
+        <div className="flex h-28 w-full items-center justify-center text-xs text-paperdim/50">✕</div>
+      ) : (
+        <img src={photo.url} alt="" loading="lazy" className="h-28 w-full object-cover" onError={() => setFailed(true)} />
+      )}
+      <div className="space-y-0.5 px-2 py-1.5 text-left">
+        {photo.caption && <p className="line-clamp-1 text-xs text-paper">{photo.caption}</p>}
+        {photo.source && <p className="line-clamp-1 text-[10px] text-paperdim/60">{photo.source}</p>}
+      </div>
+    </div>
+  )
 }
 
 export default function AiQueryModal({
@@ -77,8 +96,15 @@ export default function AiQueryModal({
   onRetry,
   onFill,
   photoOnly = false,
+  onUploadPhoto,
+  uploadingPhoto = false,
 }: AiQueryModalProps) {
   const { t } = useTranslation()
+  const [selectedUrl, setSelectedUrl] = useState('')
+
+  useEffect(() => {
+    if (open) setSelectedUrl('')
+  }, [open, result])
 
   return (
     <Modal open={open} title={t('aiQuery.queryTitle', { name })} hideFooter onClose={onClose}>
@@ -105,14 +131,56 @@ export default function AiQueryModal({
               <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
                 {t('traitorEditor.photo')}
               </h4>
-              <p className="whitespace-pre-wrap rounded-sm border border-paperedge/15 bg-inkcard/50 p-3 text-sm leading-relaxed text-paper">
-                {result.photoNote || t('aiQuery.photoNote')}
-              </p>
+              {(result.photos ?? []).length > 0 ? (
+                <>
+                  <p className="mb-2 text-xs text-paperdim/70">{t('aiQuery.selectPhoto')}</p>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {(result.photos ?? []).map((p) => (
+                      <button
+                        type="button"
+                        key={p.url}
+                        onClick={() => setSelectedUrl(p.url)}
+                        className={`rounded-sm border transition ${
+                          selectedUrl === p.url
+                            ? 'border-bronzelight shadow-seal'
+                            : 'border-paperedge/15 hover:border-bronze/50'
+                        }`}
+                      >
+                        <PhotoThumb photo={p} />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="whitespace-pre-wrap rounded-sm border border-paperedge/15 bg-inkcard/50 p-3 text-sm leading-relaxed text-paper">
+                  {t('aiQuery.noPhotoFound')}
+                </p>
+              )}
+              {result.photoNote && (
+                <p className="mt-3 rounded-sm border border-bronze/50 bg-bronze/15 px-3 py-2 text-xs text-bronzelight">
+                  {result.photoNote}
+                </p>
+              )}
             </section>
-            <div className="flex justify-end gap-3 border-t border-paperedge/15 pt-4">
-              <button type="button" className="btn-ghost" onClick={onClose}>
-                {t('common.close')}
-              </button>
+            <div className="flex items-center justify-between gap-3 border-t border-paperedge/15 pt-4">
+              <p className="min-w-0 truncate text-xs text-paperdim/70">
+                {selectedUrl ? t('aiQuery.photoSelected') : t('aiQuery.selectPhotoHint')}
+              </p>
+              <div className="flex shrink-0 items-center gap-2">
+                <button type="button" className="btn-ghost" onClick={onClose}>
+                  {t('common.close')}
+                </button>
+                {onUploadPhoto && (
+                  <button
+                    type="button"
+                    className="btn-primary min-w-28"
+                    disabled={!selectedUrl || uploadingPhoto}
+                    onClick={() => selectedUrl && onUploadPhoto(selectedUrl)}
+                  >
+                    {uploadingPhoto ? t('common.saveInProgress') : t('aiQuery.uploadPhoto')}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         ) : (

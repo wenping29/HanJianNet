@@ -525,7 +525,13 @@
     "fillToEditor": "Remplir dans l'éditeur",
     "photoNote": "Les photos ne peuvent pas être générées par IA ; veuillez les téléverser manuellement.",
     "applied": "Résultat IA appliqué au formulaire. Veuillez vérifier avant d'enregistrer.",
-    "empty": "(aucun)"
+    "empty": "(aucun)",
+    "selectPhoto": "Sélectionnez une photo à téléverser",
+    "selectPhotoHint": "Cliquez sur une photo pour la sélectionner",
+    "photoSelected": "Sélectionnée. Cliquez sur \u201cTéléverser la photo\u201d pour enregistrer.",
+    "uploadPhoto": "Téléverser la photo",
+    "photoUploaded": "Photo téléchargée et ajoutée à la liste des photos de la personne. Prise en compte après enregistrement.",
+    "noPhotoFound": "Aucune photo d\u2019accès public n\u2019a été trouvée pour cette personne."
   },
   "periods": {
     "lateSong": "Fin des Song",

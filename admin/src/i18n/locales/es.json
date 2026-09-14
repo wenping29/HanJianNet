@@ -525,7 +525,13 @@
     "fillToEditor": "Rellenar en el editor",
     "photoNote": "Las fotos no pueden generarse por IA; cárguelas manualmente.",
     "applied": "Resultado IA aplicado al formulario. Verifíquelo antes de guardar.",
-    "empty": "(ninguno)"
+    "empty": "(ninguno)",
+    "selectPhoto": "Seleccione una foto para subir",
+    "selectPhotoHint": "Haga clic en una foto para seleccionarla",
+    "photoSelected": "Seleccionada. Haga clic en \u201cSubir foto\u201d para guardar.",
+    "uploadPhoto": "Subir foto",
+    "photoUploaded": "Foto descargada y añadida a la lista de fotos de la persona. Se aplica al guardar.",
+    "noPhotoFound": "No se encontró ninguna foto de acceso público de esta persona."
   },
   "periods": {
     "lateSong": "Song tardío",

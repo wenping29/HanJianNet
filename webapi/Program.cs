@@ -127,6 +127,10 @@ try
         client.BaseAddress = new Uri(deepSeekOptions.BaseUrl.TrimEnd('/') + "/");
         client.Timeout = TimeSpan.FromSeconds(Math.Clamp(deepSeekOptions.TimeoutSeconds, 10, 300));
     });
+    builder.Services.AddHttpClient("UploadFetcher", client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(60);
+    });
     builder.Services.AddScoped<AiService>();
 
     builder.Services.AddControllers(options =>

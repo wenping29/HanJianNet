@@ -262,6 +262,13 @@ export interface AiTraitorResult {
   crimeRecords: CrimeRecord[]
   lifeEvents: LifeEvent[]
   photoNote?: string | null
+  photos?: AiPhoto[]
+}
+
+export interface AiPhoto {
+  url: string
+  caption?: string | null
+  source?: string | null
 }
 
 

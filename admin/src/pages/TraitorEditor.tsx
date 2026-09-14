@@ -126,6 +126,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const [notice, setNotice] = useState('')
   const aiQuery = useAiQuery()
   const [photoAiOnly, setPhotoAiOnly] = useState(false)
+  const [aiUploading, setAiUploading] = useState(false)
 
   const [loading, setLoading] = useState(mode === 'edit')
   const [uploading, setUploading] = useState(false)
@@ -244,6 +245,22 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const openAiQuery = (photoOnly: boolean) => {
     setPhotoAiOnly(photoOnly)
     void aiQuery.run(form.name)
+  }
+
+  const handleAiUploadPhoto = async (url: string) => {
+    setAiUploading(true)
+    setError('')
+    try {
+      const att = await api.uploadFromUrl(url, 'photo')
+      setAttachments((a) => [...a, att])
+      aiQuery.close()
+      setPhotoAiOnly(false)
+      flash(t('aiQuery.photoUploaded'))
+    } catch (e) {
+      flash(e instanceof Error ? e.message : t('common.uploadFailed'))
+    } finally {
+      setAiUploading(false)
+    }
   }
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -925,6 +942,8 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         error={aiQuery.error}
         result={aiQuery.result}
         photoOnly={photoAiOnly}
+        uploadingPhoto={aiUploading}
+        onUploadPhoto={(url) => void handleAiUploadPhoto(url)}
         onClose={() => {
           aiQuery.close()
           setPhotoAiOnly(false)

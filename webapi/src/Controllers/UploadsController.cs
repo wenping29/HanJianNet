@@ -13,4 +13,8 @@ public class UploadsController(UploadService uploads) : ControllerBase
     [HttpPost]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Upload([FromForm] UploadRequestDto request) => Ok(await uploads.SaveAsync(request.File, request.Kind));
+
+    [HttpPost("from-url")]
+    public async Task<IActionResult> UploadFromUrl([FromBody] UploadFromUrlRequestDto request) =>
+        Ok(await uploads.SaveFromUrlAsync(request.Url, request.Kind));
 }

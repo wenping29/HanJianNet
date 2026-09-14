@@ -525,7 +525,13 @@
     "fillToEditor": "In Editor übernehmen",
     "photoNote": "Fotos können von der KI nicht erzeugt werden; bitte manuell hochladen.",
     "applied": "KI-Ergebnis in das Formular übernommen. Bitte vor dem Speichern prüfen.",
-    "empty": "(keine)"
+    "empty": "(keine)",
+    "selectPhoto": "Wählen Sie ein Foto zum Hochladen",
+    "selectPhotoHint": "Klicken Sie auf ein Foto, um es auszuwählen",
+    "photoSelected": "Ausgewählt. Klicken Sie auf \u201cFoto hochladen\u201d zum Speichern.",
+    "uploadPhoto": "Foto hochladen",
+    "photoUploaded": "Foto heruntergeladen und zur Fotoliste der Person hinzugefügt. Wirksam nach dem Speichern.",
+    "noPhotoFound": "Kein öffentlich zugängliches Foto für diese Person gefunden."
   },
   "periods": {
     "lateSong": "Späte Song-Dynastie",

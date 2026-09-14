@@ -206,6 +206,26 @@ export const api = {
     return { ...data, caption: '' }
   },
 
+  uploadFromUrl: async (url: string, kind: AttachmentKind): Promise<Attachment> => {
+    const res = await fetch(`${BASE}/uploads/from-url`, {
+      method: 'POST',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, kind }),
+    })
+    if (!res.ok) {
+      let message = '下载图片失败'
+      try {
+        const data = (await res.json()) as { message?: string; error?: string }
+        message = data.message ?? data.error ?? message
+      } catch {
+        /* ignore */
+      }
+      throw new ApiError(res.status, message)
+    }
+    const data = (await res.json()) as { id: string; url: string; kind: AttachmentKind; fileType: string }
+    return { ...data, caption: '' }
+  },
+
   users: () => request<{ items: User[] }>('/admin/users'),
 
   createUser: (body: { username: string; email: string; password: string; role: Role }) =>
