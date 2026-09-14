@@ -318,7 +318,9 @@ function ListView() {
                         <button
                           type="button"
                           className="btn-ghost !px-3 !py-1.5 text-xs"
-                          onClick={() => window.open(`/traitors/basic-edit/${tr.id}`, '_blank', 'noopener')}
+                          onClick={() =>
+                          window.open(`${window.location.href.split('#')[0]}#/traitors/basic-edit/${tr.id}`, '_blank', 'noopener')
+                        }
                         >
                           {t('basicEdit.editBasicInfo')}
                         </button>
