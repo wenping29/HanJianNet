@@ -256,11 +256,11 @@ export default function Traitors() {
                       )}
                     </td>
                     <td className="px-5 py-3">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex items-center justify-end gap-2">
                         {canManageUsers(me.role) && (
                           <button
                             type="button"
-                            className="btn-ghost !px-3 !py-1.5 text-xs"
+                            className="btn-bronze !px-5 !py-2 text-sm"
                             onClick={() => window.open(editUrl(tr.id), '_blank')}
                           >
                             {t('traitors.edit')}
@@ -269,11 +269,23 @@ export default function Traitors() {
                         {canManageUsers(me.role) && (
                           <button
                             type="button"
-                            className="btn-ghost !px-3 !py-1.5 text-xs !text-cinnabarlight"
+                            className="btn-ghost !p-2 text-xs !text-paperdim hover:!text-cinnabarlight"
                             disabled={deletingId === tr.id}
                             onClick={() => setPendingDelete(tr)}
+                            aria-label={t('common.delete')}
+                            title={t('common.delete')}
                           >
-                            {t('common.delete')}
+                            <svg
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              className="h-4 w-4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M2.5 4h11M6.5 4V2.75h3V4M4 4l.6 8.25h6.8L12 4M6.5 6.5v3.5M9.5 6.5v3.5" />
+                            </svg>
                           </button>
                         )}
                       </div>
