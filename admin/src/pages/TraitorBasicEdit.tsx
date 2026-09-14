@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList, formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
-import { clearAiResult, normalizeAiResult, readAiResult, saveAiResult } from '../lib/ai'
+import { normalizeAiResult } from '../lib/ai'
 import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
 import type { AiTraitorResult, Child, CrimeRecord, Period, Spouse, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
 
@@ -101,7 +101,6 @@ const EMPTY_FORM: BasicForm = {
 
 function ListView() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const [items, setItems] = useState<TraitorSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -111,8 +110,6 @@ function ListView() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  const aiQuery = useAiQuery()
-  const [aiTarget, setAiTarget] = useState<TraitorSummary | null>(null)
 
   const reload = useCallback(async (name?: string, p = 1, lv?: number) => {
     setError('')
@@ -178,19 +175,6 @@ function ListView() {
   }
 
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
-
-  const handleAiQuery = (tr: TraitorSummary) => {
-    setAiTarget(tr)
-    void aiQuery.run(tr.name)
-  }
-
-  const handleAiFill = () => {
-    if (!aiTarget || !aiQuery.result) return
-    saveAiResult(aiTarget.id, aiQuery.result)
-    navigate(`/traitors/basic-edit/${aiTarget.id}`)
-    aiQuery.close()
-    setAiTarget(null)
-  }
 
   return (
     <div className="container-page py-10">
@@ -333,15 +317,8 @@ function ListView() {
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
-                          className="btn-ghost !px-3 !py-1.5 text-xs !text-bronzelight"
-                          onClick={() => handleAiQuery(tr)}
-                        >
-                          {t('aiQuery.queryAction')}
-                        </button>
-                        <button
-                          type="button"
                           className="btn-ghost !px-3 !py-1.5 text-xs"
-                          onClick={() => navigate(`/traitors/basic-edit/${tr.id}`)}
+                          onClick={() => window.open(`/traitors/basic-edit/${tr.id}`, '_blank', 'noopener')}
                         >
                           {t('basicEdit.editBasicInfo')}
                         </button>
@@ -403,20 +380,6 @@ function ListView() {
           </div>
         </>
       )}
-
-      <AiQueryModal
-        open={aiQuery.open}
-        name={aiQuery.name}
-        loading={aiQuery.loading}
-        error={aiQuery.error}
-        result={aiQuery.result}
-        onClose={() => {
-          aiQuery.close()
-          setAiTarget(null)
-        }}
-        onRetry={() => aiQuery.retry()}
-        onFill={() => handleAiFill()}
-      />
     </div>
   )
 }
@@ -481,7 +444,6 @@ function EditView() {
             sourceRef: c.sourceRef ?? '',
           })),
         )
-        applyAiToForm()
       })
       .catch((e) => setError(e instanceof Error ? e.message : t('common.loadFailed')))
       .finally(() => setLoading(false))
@@ -499,14 +461,6 @@ function EditView() {
     childCtl.setAll(n.children)
     crimeCtl.setAll(n.crimeRecords)
     flash(n.photoNote ? `${t('aiQuery.applied')} ${n.photoNote}` : t('aiQuery.applied'))
-  }
-
-  function applyAiToForm() {
-    if (!id) return
-    const ai = readAiResult(id)
-    if (!ai) return
-    fillFromResult(ai)
-    clearAiResult(id)
   }
 
   const handleAiReady = (ai: AiTraitorResult) => {

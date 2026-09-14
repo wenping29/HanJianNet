@@ -9,39 +9,6 @@ import type {
   YearType,
 } from '../types'
 
-const KEY_PREFIX = 'hanjian-ai-query:'
-
-function storageKey(id: string): string {
-  return `${KEY_PREFIX}${id}`
-}
-
-/** 将 AI 查询结果写入 sessionStorage，供编辑器打开后自动填入（新标签页共享） */
-export function saveAiResult(id: string, result: AiTraitorResult): void {
-  try {
-    sessionStorage.setItem(storageKey(id), JSON.stringify(result))
-  } catch {
-    /* ignore */
-  }
-}
-
-export function readAiResult(id: string): AiTraitorResult | null {
-  try {
-    const raw = sessionStorage.getItem(storageKey(id))
-    if (!raw) return null
-    return JSON.parse(raw) as AiTraitorResult
-  } catch {
-    return null
-  }
-}
-
-export function clearAiResult(id: string): void {
-  try {
-    sessionStorage.removeItem(storageKey(id))
-  } catch {
-    /* ignore */
-  }
-}
-
 const YEAR_TYPES: YearType[] = ['exact', 'approx', 'before', 'after', 'unknown']
 
 export function normalizeYearType(t: string | undefined | null): YearType {

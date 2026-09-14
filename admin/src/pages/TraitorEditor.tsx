@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList } from '../lib/format'
-import { clearAiResult, normalizeAiResult, readAiResult } from '../lib/ai'
+import { normalizeAiResult } from '../lib/ai'
 import type { NormalizedAi } from '../lib/ai'
 import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
 import type {
@@ -204,7 +204,6 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         )
         setAttachments(traitor.attachments)
         setRelatedIds(traitor.relatedIds)
-        applyAiToForm(id)
       })
       .catch((e) => setError(e instanceof Error ? e.message : t('common.loadFailed')))
       .finally(() => setLoading(false))
@@ -228,13 +227,6 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
     crimeCtl.setAll(n.crimeRecords)
     lifeCtl.setAll(n.lifeEvents)
     flash(n.photoNote ? `${t('aiQuery.applied')} ${n.photoNote}` : t('aiQuery.applied'))
-  }
-
-  function applyAiToForm(targetId: string) {
-    const ai = readAiResult(targetId)
-    if (!ai) return
-    fillFromResult(ai)
-    clearAiResult(targetId)
   }
 
   const handleAiReady = (ai: AiTraitorResult) => {
