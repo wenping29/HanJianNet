@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
 import { toast } from '../components/Toast'
-import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
-import { saveAiResult } from '../lib/ai'
+import Modal from '../components/Modal'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 import type { TraitorSummary } from '../types'
@@ -40,8 +39,7 @@ export default function Traitors() {
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  const aiQuery = useAiQuery()
-  const [aiTarget, setAiTarget] = useState<TraitorSummary | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<TraitorSummary | null>(null)
 
   const reload = useCallback(async (name?: string, p = 1, lv?: number) => {
     setError('')
@@ -117,6 +115,7 @@ export default function Traitors() {
       toast(e instanceof Error ? e.message : t('traitors.deleteFailed'), 'error')
     } finally {
       setDeletingId(null)
+      setPendingDelete(null)
     }
   }
 
@@ -124,19 +123,6 @@ export default function Traitors() {
 
   const editUrl = (id: string) =>
     `${window.location.origin}${window.location.pathname}#/traitors/${id}/edit`
-
-  const handleAiQuery = (tr: TraitorSummary) => {
-    setAiTarget(tr)
-    void aiQuery.run(tr.name)
-  }
-
-  const handleAiFill = () => {
-    if (!aiTarget || !aiQuery.result) return
-    saveAiResult(aiTarget.id, aiQuery.result)
-    window.open(editUrl(aiTarget.id), '_blank')
-    aiQuery.close()
-    setAiTarget(null)
-  }
 
   return (
     <div className="container-page py-10">
@@ -274,15 +260,6 @@ export default function Traitors() {
                         {canManageUsers(me.role) && (
                           <button
                             type="button"
-                            className="btn-ghost !px-3 !py-1.5 text-xs !text-bronzelight"
-                            onClick={() => handleAiQuery(tr)}
-                          >
-                            {t('aiQuery.queryAction')}
-                          </button>
-                        )}
-                        {canManageUsers(me.role) && (
-                          <button
-                            type="button"
                             className="btn-ghost !px-3 !py-1.5 text-xs"
                             onClick={() => window.open(editUrl(tr.id), '_blank')}
                           >
@@ -294,7 +271,7 @@ export default function Traitors() {
                             type="button"
                             className="btn-ghost !px-3 !py-1.5 text-xs !text-cinnabarlight"
                             disabled={deletingId === tr.id}
-                            onClick={() => void handleDelete(tr)}
+                            onClick={() => setPendingDelete(tr)}
                           >
                             {t('common.delete')}
                           </button>
@@ -358,19 +335,20 @@ export default function Traitors() {
         </>
       )}
 
-      <AiQueryModal
-        open={aiQuery.open}
-        name={aiQuery.name}
-        loading={aiQuery.loading}
-        error={aiQuery.error}
-        result={aiQuery.result}
-        onClose={() => {
-          aiQuery.close()
-          setAiTarget(null)
-        }}
-        onRetry={() => aiQuery.retry()}
-        onFill={() => handleAiFill()}
-      />
+      <Modal
+        open={pendingDelete !== null}
+        title={t('common.delete')}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
+        confirmBusy={deletingId !== null}
+        onConfirm={() => pendingDelete && void handleDelete(pendingDelete)}
+        onCancel={() => setPendingDelete(null)}
+        onClose={() => setPendingDelete(null)}
+      >
+        <p className="text-sm leading-relaxed text-paperdim">
+          {pendingDelete && t('traitors.deleteConfirm', { name: pendingDelete.name })}
+        </p>
+      </Modal>
     </div>
   )
 }
