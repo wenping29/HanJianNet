@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
@@ -10,7 +10,6 @@ import type { TraitorSummary } from '../types'
 import { containerPageStyle } from '../style'
 
 const PAGE_SIZE = 20
-const EMPTY_FILTERS: TraitorFilters = { name: '', period: undefined }
 
 /** 生成分页按钮上显示的页码列表：首尾页 + 当前页附近 + 省略号 */
 function buildPageList(current: number, total: number): (number | '...')[] {
@@ -34,7 +33,12 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 
 export default function Roster() {
   const { t } = useTranslation()
-  const [filters, setFilters] = useState<TraitorFilters>(EMPTY_FILTERS)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [filters, setFilters] = useState<TraitorFilters>(() => ({
+    name: '',
+    period: undefined,
+    province: (searchParams.get('province') ?? '') || undefined,
+  }))
   const [items, setItems] = useState<TraitorSummary[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -61,8 +65,18 @@ export default function Roster() {
   }, [t])
 
   useEffect(() => {
-    loadList(EMPTY_FILTERS, 1)
-  }, [loadList])
+    const province = searchParams.get('province') ?? ''
+    const next: TraitorFilters = { name: '', period: undefined, province: province || undefined }
+    setFilters(next)
+    loadList(next, 1)
+  }, [searchParams, loadList])
+
+  function clearProvince() {
+    const next: TraitorFilters = { name: filters.name, period: filters.period, province: undefined }
+    setFilters(next)
+    loadList(next, 1)
+    setSearchParams({})
+  }
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -122,6 +136,15 @@ export default function Roster() {
             {t('roster.newTraitor')}
           </Link>
         </form>
+
+        {filters.province && (
+          <div className="mb-6 flex flex-wrap items-center gap-2 rounded-sm border border-bronze/40 bg-bronze/10 px-4 py-3">
+            <span className="text-sm text-paper">{t('roster.provinceFilter', { province: filters.province })}</span>
+            <button type="button" onClick={clearProvince} className="btn-ghost !px-2 !py-1 text-xs">
+              {t('roster.clearProvince')}
+            </button>
+          </div>
+        )}
 
         {/* 时期切换 */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">

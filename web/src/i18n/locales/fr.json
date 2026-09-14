@@ -144,7 +144,9 @@
     "colTitle": "Fonction",
     "colHarmLevel": "Niveau de danger",
     "colCrimes": "Crimes",
-    "colTags": "Étiquettes d'identité"
+    "colTags": "Étiquettes d'identité",
+    "provinceFilter": "Filtré par province : {{province}}",
+    "clearProvince": "Effacer le filtre"
   },
   "about": {
     "title": "À propos des archives",

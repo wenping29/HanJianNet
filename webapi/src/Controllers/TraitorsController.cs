@@ -16,9 +16,9 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
 
     [HttpGet("api/traitors")]
     public async Task<IActionResult> List([FromQuery] string? name,[FromQuery] int? yearFrom,[FromQuery] int? yearTo,
-        [FromQuery] string? @event,[FromQuery] string? period,[FromQuery] string? nativePlace,[FromQuery] int? page = null,[FromQuery] int? pageSize = null)
+        [FromQuery] string? @event,[FromQuery] string? period,[FromQuery] string? province,[FromQuery] int? page = null,[FromQuery] int? pageSize = null)
     {
-        var paged = await traitors.ListAsync(name, yearFrom, yearTo, @event, period, nativePlace, page, pageSize);
+        var paged = await traitors.ListAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize);
         return Ok(new { items = paged.Items, total = paged.Total, page = paged.Page, pageSize = paged.PageSize, totalPages = paged.TotalPages });
     }
 

@@ -144,7 +144,9 @@
     "colTitle": "Position",
     "colHarmLevel": "Harm Level",
     "colCrimes": "Crimes",
-    "colTags": "Identity Tags"
+    "colTags": "Identity Tags",
+    "provinceFilter": "Filtered by province: {{province}}",
+    "clearProvince": "Clear filter"
   },
   "about": {
     "title": "About the Archive",

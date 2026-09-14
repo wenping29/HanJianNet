@@ -144,7 +144,9 @@
     "colTitle": "직위",
     "colHarmLevel": "위해 등급",
     "colCrimes": "범죄 기록",
-    "colTags": "신분 태그"
+    "colTags": "신분 태그",
+    "provinceFilter": "성(省) 필터: {{province}}",
+    "clearProvince": "필터 해제"
   },
   "about": {
     "title": "기록관 소개",

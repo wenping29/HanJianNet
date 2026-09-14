@@ -15,17 +15,17 @@ public class TraitorService(AppDbContext db, CacheService cache)
     /// <summary>
     /// 公开列表查询。page/pageSize 未指定时返回全量（供地图统计等场景使用），指定时返回分页结果。
     /// </summary>
-    public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? nativePlace, int? page = null, int? pageSize = null)
+    public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null)
     {
         var key = string.Join("|",
             name ?? "", yearFrom?.ToString() ?? "", yearTo?.ToString() ?? "",
-            @event ?? "", period ?? "", nativePlace ?? "",
+            @event ?? "", period ?? "", province ?? "",
             page?.ToString() ?? "", pageSize?.ToString() ?? "");
-        return await cache.GetOrCreateAsync(CacheGroup, $"list:{key}", () => ListCoreAsync(name, yearFrom, yearTo, @event, period, nativePlace, page, pageSize))
+        return await cache.GetOrCreateAsync(CacheGroup, $"list:{key}", () => ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize))
             ?? new PagedResult<TraitorSummaryDto>([], 0, 1, 10);
     }
 
-    private async Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? nativePlace, int? page = null, int? pageSize = null)
+    private async Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null)
     {
         var q = db.Traitors.AsQueryable();
 
@@ -34,10 +34,10 @@ public class TraitorService(AppDbContext db, CacheService cache)
             var n = name!;
             q = q.Where(t => t.Name.Contains(n));
         }
-        if (!string.IsNullOrWhiteSpace(nativePlace))
+        if (!string.IsNullOrWhiteSpace(province))
         {
-            var np = nativePlace!;
-            q = q.Where(t => t.NativePlace.Contains(np));
+            var pv = province!;
+            q = q.Where(t => t.Province == pv);
         }
         if (yearFrom is int yf)
             q = q.Where(t => (t.BirthYear != null && t.BirthYear >= yf) || (t.DeathYear != null && t.DeathYear >= yf));

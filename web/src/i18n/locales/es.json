@@ -144,7 +144,9 @@
     "colTitle": "Cargo",
     "colHarmLevel": "Nivel de peligro",
     "colCrimes": "Delitos",
-    "colTags": "Etiquetas de identidad"
+    "colTags": "Etiquetas de identidad",
+    "provinceFilter": "Filtrado por provincia: {{province}}",
+    "clearProvince": "Borrar filtro"
   },
   "about": {
     "title": "Sobre el archivo",

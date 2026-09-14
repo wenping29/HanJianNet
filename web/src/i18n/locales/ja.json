@@ -144,7 +144,9 @@
     "colTitle": "役職",
     "colHarmLevel": "危害等級",
     "colCrimes": "犯罪記録",
-    "colTags": "身分タグ"
+    "colTags": "身分タグ",
+    "provinceFilter": "省籍で絞り込み：{{province}}",
+    "clearProvince": "絞り込み解除"
   },
   "about": {
     "title": "本館について",

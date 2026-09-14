@@ -144,7 +144,9 @@
     "colTitle": "职位",
     "colHarmLevel": "危害等级",
     "colCrimes": "犯罪记录",
-    "colTags": "身份标签"
+    "colTags": "身份标签",
+    "provinceFilter": "已筛选省籍：{{province}}",
+    "clearProvince": "清除筛选"
   },
   "about": {
     "title": "关于本馆",

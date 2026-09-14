@@ -144,7 +144,9 @@
     "colTitle": "Должность",
     "colHarmLevel": "Уровень опасности",
     "colCrimes": "Судимости",
-    "colTags": "Теги личности"
+    "colTags": "Теги личности",
+    "provinceFilter": "Фильтр по провинции: {{province}}",
+    "clearProvince": "Сбросить фильтр"
   },
   "about": {
     "title": "Об архиве",

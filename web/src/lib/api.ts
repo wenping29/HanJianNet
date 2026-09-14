@@ -76,7 +76,8 @@ export interface TraitorFilters {
   yearTo?: number
   event?: string
   period?: Period
-  nativePlace?: string
+  /** 省份（档案上的 Province 字段，短名如 广东） */
+  province?: string
   page?: number
   pageSize?: number
 }
@@ -123,7 +124,7 @@ export const api = {
         yearTo: filters.yearTo,
         event: filters.event,
         period: filters.period,
-        nativePlace: filters.nativePlace,
+        province: filters.province,
         page: filters.page,
         pageSize: filters.pageSize,
       })}`,

@@ -143,8 +143,10 @@
     "colLifespan": "Lebensdaten",
     "colTitle": "Position",
     "colHarmLevel": "Gefährdungsgrad",
-    "colCrimes": "Straftaten",
-    "colTags": "Identitätsetiketten"
+"colCrimes": "Straftaten",
+    "colTags": "Identitätstags",
+    "provinceFilter": "Nach Provinz gefiltert: {{province}}",
+    "clearProvince": "Filter löschen"
   },
   "about": {
     "title": "Über das Archiv",

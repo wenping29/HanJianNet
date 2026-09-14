@@ -49,7 +49,7 @@ export default function Lookup() {
     try {
       const data = await api.listTraitors({
         name: qName,
-        nativePlace: qPlace || undefined,
+        province: qPlace || undefined,
         page: p,
         pageSize: PAGE_SIZE,
       })

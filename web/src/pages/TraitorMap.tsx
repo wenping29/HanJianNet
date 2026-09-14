@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import * as echarts from 'echarts'
 import { api } from '../lib/api'
@@ -11,6 +12,7 @@ const CHINA_GEOJSON_URL = '/data/100000_full.json'
 
 export default function TraitorMap() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<echarts.ECharts | null>(null)
   const [loading, setLoading] = useState(true)
@@ -43,12 +45,12 @@ export default function TraitorMap() {
 
         echarts.registerMap('china', geoJson)
 
-        const el = chartRef.current
-        if (el && !cancelled) {
-          const chart = echarts.init(el)
-          chartInstance.current = chart
-          chart.setOption({
-            backgroundColor: 'transparent',
+const el = chartRef.current
+          if (el && !cancelled) {
+            const chart = echarts.init(el)
+            chartInstance.current = chart
+            chart.setOption({
+              backgroundColor: 'transparent',
             tooltip: {
               trigger: 'item',
               backgroundColor: '#1a1410',
@@ -95,6 +97,12 @@ export default function TraitorMap() {
                 data: mapData,
               },
             ],
+          })
+          const shortByFull = new Map(sortedStats.map((s) => [s.fullName, s.province]))
+          chart.on('click', (params) => {
+            const name = (params as { name?: string }).name ?? ''
+            const short = shortByFull.get(name)
+            if (short) navigate(`/roster?province=${encodeURIComponent(short)}`)
           })
         }
       } catch (err) {
@@ -147,9 +155,9 @@ export default function TraitorMap() {
               </h2>
               <div className="flex flex-col gap-2">
                 {stats.map((s, i) => (
-                  <a
+                  <Link
                     key={s.province}
-                    href={`/roster`}
+                    to={`/roster?province=${encodeURIComponent(s.province)}`}
                     className="card flex items-center justify-between px-3 py-2.5 transition-colors hover:border-cinnabar/40"
                   >
                     <span className="flex items-center gap-2">
@@ -157,7 +165,7 @@ export default function TraitorMap() {
                       <span className="text-sm text-paper">{s.province}</span>
                     </span>
                     <span className="font-garamond text-lg font-bold text-cinnabarlight">{s.count}</span>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
