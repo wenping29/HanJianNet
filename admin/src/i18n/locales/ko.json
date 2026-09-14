@@ -194,6 +194,42 @@
       "faction": "정파",
       "lifespan": "생몰년",
       "tags": "정체 태그"
+    },
+    "compareAction": "비교 후 병합",
+    "compareTitle": "비교 후 병합 · {{name}}",
+    "compareHint": "각 필드의 데이터 출처를 선택하세요: 스칼라 필드는 단일 선택, 컬렉션은 다중 선택(체크 시 포함)입니다. 변경하지 않은 필드는 기본 레코드의 기본 데이터를 유지합니다.",
+    "combine": "선택 항목 병합",
+    "resetSelection": "선택 초기화",
+    "compareFailed": "비교 데이터를 불러오지 못했습니다",
+    "scalarHint": "단일: 이 레코드의 값을 사용",
+    "collectionHint": "다중: 이 레코드의 데이터 포함",
+    "itemsCount": "{{count}}개",
+    "sourceColumn": "필드 / 출처",
+    "field": {
+      "name": "이름",
+      "courtesyName": "자",
+      "pseudonym": "호",
+      "birthYear": "생년",
+      "deathYear": "몰년",
+      "nativePlace": "본적",
+      "birthPlace": "출생지",
+      "period": "시대",
+      "faction": "정파",
+      "harmLevel": "위해등급",
+      "title": "괴뢰 직위",
+      "summary": "약력"
+    },
+    "collection": {
+      "aliases": "별명",
+      "identityTags": "정체 태그",
+      "relatedIds": "관련 인물",
+      "spouses": "배우자",
+      "children": "자녀",
+      "residences": "거주지",
+      "crimeRecords": "범죄 기록",
+      "lifeEvents": "생애 사건",
+      "attachments": "첨부파일",
+      "sources": "출처"
     }
   },
   "basicEdit": {

@@ -194,6 +194,42 @@
       "faction": "Facción",
       "lifespan": "Período de vida",
       "tags": "Etiquetas de identidad"
+    },
+    "compareAction": "Comparar y fusionar",
+    "compareTitle": "Comparar y fusionar · {{name}}",
+    "compareHint": "Elija la fuente de cada campo: los campos escalares son de selección única y las colecciones pueden marcarse varias (marcado = incluir). Los campos sin cambios conservan los datos por defecto del registro principal.",
+    "combine": "Fusionar lo seleccionado",
+    "resetSelection": "Restablecer selección",
+    "compareFailed": "No se pudieron cargar los datos de comparación",
+    "scalarHint": "Única: tomar el valor de este registro",
+    "collectionHint": "Múltiple: incluir datos de este registro",
+    "itemsCount": "{{count}} elementos",
+    "sourceColumn": "Campo / Fuente",
+    "field": {
+      "name": "Nombre",
+      "courtesyName": "Nombre de cortesía",
+      "pseudonym": "Seudónimo",
+      "birthYear": "Año de nacimiento",
+      "deathYear": "Año de defunción",
+      "nativePlace": "Lugar de origen",
+      "birthPlace": "Lugar de nacimiento",
+      "period": "Período",
+      "faction": "Facción",
+      "harmLevel": "Nivel de peligro",
+      "title": "Cargo títere",
+      "summary": "Resumen"
+    },
+    "collection": {
+      "aliases": "Alias",
+      "identityTags": "Etiquetas de identidad",
+      "relatedIds": "Figuras relacionadas",
+      "spouses": "Cónyuges",
+      "children": "Hijos",
+      "residences": "Residencias",
+      "crimeRecords": "Delitos",
+      "lifeEvents": "Hitos vitales",
+      "attachments": "Adjuntos",
+      "sources": "Fuentes"
     }
   },
   "basicEdit": {

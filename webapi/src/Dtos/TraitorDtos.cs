@@ -157,11 +157,17 @@ public class DuplicateGroupDto
     public List<TraitorSummaryDto> Items { get; set; } = [];
 }
 
-/// <summary>合并请求：将 sourceIds 的记录全部合并到 primaryId。</summary>
+/// <summary>合并请求：将 sourceIds 的记录合并到 primaryId。</summary>
 public class MergeRequestDto
 {
     public string PrimaryId { get; set; } = "";
     public List<string> SourceIds { get; set; } = [];
+
+    /// <summary>标量字段 → 来源记录 Id（缺省使用合并目标记录自身的值）。字段名见 Merge 字段清单。</summary>
+    public Dictionary<string, string> ScalarSources { get; set; } = [];
+
+    /// <summary>集合字段 → 要纳入合并的记录 Id 列表（缺省包含全部记录）。字段名见 Merge 集合清单。</summary>
+    public Dictionary<string, List<string>> CollectionSources { get; set; } = [];
 }
 
 /// <summary>AI 查询请求：按姓名从 DeepSeek 等平台检索史料并整理。</summary>

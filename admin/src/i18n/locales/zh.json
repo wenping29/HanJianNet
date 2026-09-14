@@ -194,6 +194,41 @@
       "faction": "派系",
       "lifespan": "生卒",
       "tags": "身份标签"
+    },
+    "compareAction": "对比合并",
+    "compareTitle": "对比合并 · {{name}}",
+    "compareHint": "逐行选择合并后的数据来源：标量字段单选来源记录，集合字段可多选（勾选即纳入该记录的数据）。未特殊选择的字段沿用主记录默认数据。",
+    "combine": "合并所选数据",
+    "resetSelection": "重置选择",
+    "compareFailed": "加载对比数据失败",
+    "scalarHint": "单选：取该记录的数值",
+    "collectionHint": "多选：纳入该记录的数据",
+    "itemsCount": "{{count}} 项",
+    "field": {
+      "name": "姓名",
+      "courtesyName": "字",
+      "pseudonym": "号",
+      "birthYear": "生年",
+      "deathYear": "卒年",
+      "nativePlace": "籍贯",
+      "birthPlace": "出生地",
+      "period": "时期",
+      "faction": "派系",
+      "harmLevel": "危害等级",
+      "title": "伪职",
+      "summary": "简介"
+    },
+    "collection": {
+      "aliases": "别名",
+      "identityTags": "身份标签",
+      "relatedIds": "关联人物",
+      "spouses": "配偶",
+      "children": "子女",
+      "residences": "住所",
+      "crimeRecords": "罪行记录",
+      "lifeEvents": "生平事件",
+      "attachments": "附件",
+      "sources": "来源"
     }
   },
   "basicEdit": {

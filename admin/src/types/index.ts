@@ -289,6 +289,8 @@ export interface TraitorSummary {
 
 export interface TraitorDetail extends TraitorSnapshot {
   id: string
+  harmLevel: number | null
+  title: string | null
 }
 
 export interface TraitorInput {

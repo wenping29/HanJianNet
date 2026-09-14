@@ -194,6 +194,42 @@
       "faction": "政権",
       "lifespan": "生没年",
       "tags": "身分タグ"
+    },
+    "compareAction": "比較して統合",
+    "compareTitle": "比較・統合 · {{name}}",
+    "compareHint": "各フィールドのデータソースを選択します：スカラーフィールドは単一選択、コレクションは複数選択（チェック＝含める）。変更しないフィールドはプライマリレコードの既定データを維持します。",
+    "combine": "選択を統合",
+    "resetSelection": "選択をリセット",
+    "compareFailed": "比較データの読み込みに失敗しました",
+    "scalarHint": "単一選択：このレコードの値を採用",
+    "collectionHint": "複数選択：このレコードのデータを含める",
+    "itemsCount": "{{count}} 件",
+    "sourceColumn": "フィールド / ソース",
+    "field": {
+      "name": "名前",
+      "courtesyName": "字",
+      "pseudonym": "号",
+      "birthYear": "生年",
+      "deathYear": "没年",
+      "nativePlace": "本籍地",
+      "birthPlace": "出生地",
+      "period": "時代",
+      "faction": "政権",
+      "harmLevel": "危害等級",
+      "title": "傀儡職",
+      "summary": "略歴"
+    },
+    "collection": {
+      "aliases": "別名",
+      "identityTags": "身分タグ",
+      "relatedIds": "関連人物",
+      "spouses": "配偶者",
+      "children": "子女",
+      "residences": "居住地",
+      "crimeRecords": "犯罪記録",
+      "lifeEvents": "生涯出来事",
+      "attachments": "添付資料",
+      "sources": "出典"
     }
   },
   "basicEdit": {

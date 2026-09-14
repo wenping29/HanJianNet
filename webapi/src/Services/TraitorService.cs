@@ -338,55 +338,118 @@ public class TraitorService(AppDbContext db, CacheService cache)
     }
 
     /// <summary>
-    /// 合并：将 sourceIds 的所有子记录迁移到 primaryId，合并 JSON 数组字段（不去重），标记 source 为已合并。
+    /// 合并：将 sourceIds 的记录合并到 primaryId。
+    /// 标量字段按 ScalarSources 选择来源记录复制（缺省保留主记录值）；
+    /// 集合字段按 CollectionSources 决定纳入哪些记录的数据（缺省全部）；
+    /// 修订记录始终迁移以保留审计链路；子记录被排除时仍留在源记录（该记录随后被标记为已合并，公开展示隐藏）。
     /// </summary>
-    public async Task<TraitorDto> MergeAsync(string primaryId, List<string> sourceIds)
+    public async Task<TraitorDto> MergeAsync(MergeRequestDto req)
     {
+        var primaryId = req.PrimaryId;
+        var sourceIds = req.SourceIds;
         if (sourceIds.Count == 0)
             throw new ApiException(400, "未选择要合并的重复记录");
         if (sourceIds.Contains(primaryId))
             throw new ApiException(400, "主记录不能同时出现在被合并列表中");
+
+        var memberIds = new HashSet<string>(sourceIds) { primaryId };
+        foreach (var (field, rid) in req.ScalarSources)
+        {
+            if (!memberIds.Contains(rid))
+                throw new ApiException(400, $"字段 {field} 指定了无效的来源记录");
+        }
+        foreach (var (field, list) in req.CollectionSources)
+        {
+            foreach (var rid in list)
+            {
+                if (!memberIds.Contains(rid))
+                    throw new ApiException(400, $"集合 {field} 指定了无效的来源记录");
+            }
+        }
 
         var primary = await WithIncludes().FirstOrDefaultAsync(t => t.Id == primaryId)
                       ?? throw new ApiException(404, "主记录不存在");
         if (primary.MergedIntoId != null)
             throw new ApiException(400, "主记录已被合并，不能作为合并目标");
 
-        // 合并 JSON 数组字段（union，不去重）
-        var primaryAliases = DeserializeListSafe(primary.AliasesJson);
-        var primaryTags = DeserializeListSafe(primary.IdentityTagsJson);
-        var primaryRelated = DeserializeListSafe(primary.RelatedIdsJson);
-
+        var sourceRecords = new List<Traitor>();
         foreach (var sid in sourceIds.Distinct())
         {
             var source = await db.Traitors.AsTracking().FirstOrDefaultAsync(t => t.Id == sid)
                          ?? throw new ApiException(404, $"被合并记录 {sid} 不存在");
             if (source.MergedIntoId != null)
                 throw new ApiException(400, $"记录 {source.Name} 已被合并，不能重复合并");
-
-            // 迁移子记录：直接 UPDATE TraitorId（EF Core 跟踪 entity 后改 FK 即可批量 UPDATE）
-            foreach (var s in db.Spouses.Where(x => x.TraitorId == sid)) s.TraitorId = primaryId;
-            foreach (var c in db.Children.Where(x => x.TraitorId == sid)) c.TraitorId = primaryId;
-            foreach (var r in db.Residences.Where(x => x.TraitorId == sid)) r.TraitorId = primaryId;
-            foreach (var c in db.CrimeRecords.Where(x => x.TraitorId == sid)) c.TraitorId = primaryId;
-            foreach (var e in db.LifeEvents.Where(x => x.TraitorId == sid)) e.TraitorId = primaryId;
-            foreach (var a in db.Attachments.Where(x => x.TraitorId == sid)) a.TraitorId = primaryId;
-            foreach (var s in db.Sources.Where(x => x.TraitorId == sid)) s.TraitorId = primaryId;
-            foreach (var r in db.Revisions.Where(x => x.TraitorId == sid)) r.TraitorId = primaryId;
-
-            // 合并 JSON 数组
-            primaryAliases.AddRange(DeserializeListSafe(source.AliasesJson));
-            primaryTags.AddRange(DeserializeListSafe(source.IdentityTagsJson));
-            primaryRelated.AddRange(DeserializeListSafe(source.RelatedIdsJson));
-
-            // 标记为已合并
-            source.MergedIntoId = primaryId;
-            source.MergedAt = DateTime.UtcNow;
+            sourceRecords.Add(source);
         }
 
-        primary.AliasesJson = JsonSerializer.Serialize(primaryAliases, JsonOpts.Default);
-        primary.IdentityTagsJson = JsonSerializer.Serialize(primaryTags, JsonOpts.Default);
-        primary.RelatedIdsJson = JsonSerializer.Serialize(primaryRelated, JsonOpts.Default);
+        var memberById = sourceRecords.ToDictionary(s => s.Id);
+        memberById[primaryId] = primary;
+
+        Traitor Pick(string field) => memberById[req.ScalarSources.GetValueOrDefault(field, primaryId)];
+
+        // ---------- 标量字段：按用户选择复制来源记录的值 ----------
+        primary.Name = Pick("name").Name;
+        primary.CourtesyName = Pick("courtesyName").CourtesyName;
+        primary.Pseudonym = Pick("pseudonym").Pseudonym;
+        var birth = Pick("birthYear");
+        primary.BirthYear = birth.BirthYear;
+        primary.BirthYearType = birth.BirthYearType;
+        var death = Pick("deathYear");
+        primary.DeathYear = death.DeathYear;
+        primary.DeathYearType = death.DeathYearType;
+        primary.NativePlace = Pick("nativePlace").NativePlace;
+        primary.BirthPlace = Pick("birthPlace").BirthPlace;
+        primary.Period = Pick("period").Period;
+        primary.Faction = Pick("faction").Faction;
+        primary.Summary = Pick("summary").Summary;
+        primary.HarmLevel = Pick("harmLevel").HarmLevel;
+        primary.Title = Pick("title").Title;
+        // 省份字段与籍贯保持一致（按选择后的籍贯重新归一化）
+        primary.Province = ProvinceMatcher.TryMatch(primary.NativePlace, out var mp) ? mp : "";
+
+        bool IncludeColl(string coll, string rid) =>
+            !req.CollectionSources.TryGetValue(coll, out var list) || list.Contains(rid);
+
+        // ---------- JSON 数组集合：按用户选择求并集 ----------
+        List<string> UnionColl(string coll, Func<Traitor, string> getter)
+        {
+            var merged = new List<string>();
+            foreach (var member in memberById.Values)
+            {
+                if (IncludeColl(coll, member.Id))
+                    merged.AddRange(DeserializeListSafe(getter(member)));
+            }
+            return merged;
+        }
+
+        primary.AliasesJson = JsonSerializer.Serialize(UnionColl("aliases", t => t.AliasesJson), JsonOpts.Default);
+        primary.IdentityTagsJson = JsonSerializer.Serialize(UnionColl("identityTags", t => t.IdentityTagsJson), JsonOpts.Default);
+        primary.RelatedIdsJson = JsonSerializer.Serialize(UnionColl("relatedIds", t => t.RelatedIdsJson), JsonOpts.Default);
+
+        // ---------- 子记录集合：仅迁移被勾选记录的数据，修订记录始终迁移 ----------
+        foreach (var sourceRecord in sourceRecords)
+        {
+            if (IncludeColl("spouses", sourceRecord.Id))
+                foreach (var s in db.Spouses.Where(x => x.TraitorId == sourceRecord.Id)) s.TraitorId = primaryId;
+            if (IncludeColl("children", sourceRecord.Id))
+                foreach (var c in db.Children.Where(x => x.TraitorId == sourceRecord.Id)) c.TraitorId = primaryId;
+            if (IncludeColl("residences", sourceRecord.Id))
+                foreach (var r in db.Residences.Where(x => x.TraitorId == sourceRecord.Id)) r.TraitorId = primaryId;
+            if (IncludeColl("crimeRecords", sourceRecord.Id))
+                foreach (var c in db.CrimeRecords.Where(x => x.TraitorId == sourceRecord.Id)) c.TraitorId = primaryId;
+            if (IncludeColl("lifeEvents", sourceRecord.Id))
+                foreach (var e in db.LifeEvents.Where(x => x.TraitorId == sourceRecord.Id)) e.TraitorId = primaryId;
+            if (IncludeColl("attachments", sourceRecord.Id))
+                foreach (var a in db.Attachments.Where(x => x.TraitorId == sourceRecord.Id)) a.TraitorId = primaryId;
+            if (IncludeColl("sources", sourceRecord.Id))
+                foreach (var s in db.Sources.Where(x => x.TraitorId == sourceRecord.Id)) s.TraitorId = primaryId;
+            foreach (var r in db.Revisions.Where(x => x.TraitorId == sourceRecord.Id)) r.TraitorId = primaryId;
+
+            // 标记为已合并
+            sourceRecord.MergedIntoId = primaryId;
+            sourceRecord.MergedAt = DateTime.UtcNow;
+        }
+
         primary.UpdatedAt = DateTime.UtcNow;
 
         await db.SaveChangesAsync();

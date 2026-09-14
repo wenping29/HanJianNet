@@ -194,6 +194,42 @@
       "faction": "Faction",
       "lifespan": "Lifespan",
       "tags": "Identity Tags"
+    },
+    "compareAction": "Compare & Merge",
+    "compareTitle": "Compare & Merge · {{name}}",
+    "compareHint": "Choose the data source for each field: scalar fields are single-select, collections can be multi-selected (checked items are included). Fields left untouched keep the primary record's default data.",
+    "combine": "Merge Selected",
+    "resetSelection": "Reset Selection",
+    "compareFailed": "Failed to load comparison data",
+    "scalarHint": "Single: take this record's value",
+    "collectionHint": "Multi: include this record's data",
+    "itemsCount": "{{count}} items",
+    "sourceColumn": "Field / Source",
+    "field": {
+      "name": "Name",
+      "courtesyName": "Courtesy Name",
+      "pseudonym": "Pseudonym",
+      "birthYear": "Birth Year",
+      "deathYear": "Death Year",
+      "nativePlace": "Native Place",
+      "birthPlace": "Birth Place",
+      "period": "Period",
+      "faction": "Faction",
+      "harmLevel": "Harm Level",
+      "title": "Puppet Office",
+      "summary": "Summary"
+    },
+    "collection": {
+      "aliases": "Aliases",
+      "identityTags": "Identity Tags",
+      "relatedIds": "Related Figures",
+      "spouses": "Spouses",
+      "children": "Children",
+      "residences": "Residences",
+      "crimeRecords": "Crime Records",
+      "lifeEvents": "Life Events",
+      "attachments": "Attachments",
+      "sources": "Sources"
     }
   },
   "basicEdit": {

@@ -194,6 +194,42 @@
       "faction": "Fraktion",
       "lifespan": "Lebenszeit",
       "tags": "Identitätstags"
+    },
+    "compareAction": "Vergleichen & Zusammenführen",
+    "compareTitle": "Vergleichen & Zusammenführen · {{name}}",
+    "compareHint": "Wählen Sie die Datenquelle für jedes Feld: Skalarfelder sind Einzelauswahl, Sammlungen können mehrfach ausgewählt werden (angekreuzt = übernehmen). Unveränderte Felder behalten die Daten des Hauptdatensatzes.",
+    "combine": "Ausgewählte zusammenführen",
+    "resetSelection": "Auswahl zurücksetzen",
+    "compareFailed": "Vergleichsdaten konnten nicht geladen werden",
+    "scalarHint": "Einzelauswahl: Wert dieses Datensatzes übernehmen",
+    "collectionHint": "Mehrfachauswahl: Daten dieses Datensatzes übernehmen",
+    "itemsCount": "{{count}} Einträge",
+    "sourceColumn": "Feld / Quelle",
+    "field": {
+      "name": "Name",
+      "courtesyName": "Höflichkeitsname",
+      "pseudonym": "Pseudonym",
+      "birthYear": "Geburtsjahr",
+      "deathYear": "Todesjahr",
+      "nativePlace": "Herkunft",
+      "birthPlace": "Geburtsort",
+      "period": "Zeitraum",
+      "faction": "Fraktion",
+      "harmLevel": "Gefährdungsgrad",
+      "title": "Marionettenamt",
+      "summary": "Kurzprofil"
+    },
+    "collection": {
+      "aliases": "Aliasse",
+      "identityTags": "Identitätstags",
+      "relatedIds": "Verwandte Figuren",
+      "spouses": "Ehepartner",
+      "children": "Kinder",
+      "residences": "Wohnorte",
+      "crimeRecords": "Straftaten",
+      "lifeEvents": "Lebensereignisse",
+      "attachments": "Anhänge",
+      "sources": "Quellen"
     }
   },
   "basicEdit": {

@@ -85,7 +85,7 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
     [Authorize(Roles = "admin,superadmin")]
     [HttpPost("api/admin/traitors/merge")]
     public async Task<IActionResult> AdminMerge([FromBody] MergeRequestDto req)
-        => Ok(new { traitor = await traitors.MergeAsync(req.PrimaryId, req.SourceIds) });
+        => Ok(new { traitor = await traitors.MergeAsync(req) });
 
     [Authorize(Roles = "admin,superadmin")]
     [HttpDelete("api/admin/traitors/{id}")]

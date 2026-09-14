@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan } from '../lib/format'
+import MergeCompareModal from '../components/MergeCompareModal'
 import type { DuplicateGroup } from '../types'
 
 export default function MergeTraitors() {
@@ -16,7 +17,7 @@ export default function MergeTraitors() {
 
   // 每组的主记录选择：groupKey -> selected itemId
   const [primaryMap, setPrimaryMap] = useState<Record<string, string>>({})
-  const [merging, setMerging] = useState<string | null>(null) // groupKey
+  const [compareGroup, setCompareGroup] = useState<DuplicateGroup | null>(null)
 
   const groupKey = (g: DuplicateGroup) => `${g.name}||${g.nativePlace}`
 
@@ -63,35 +64,23 @@ export default function MergeTraitors() {
     window.setTimeout(() => setNotice(''), 3000)
   }
 
-  const handleMerge = async (g: DuplicateGroup) => {
+  const handleCloseCompare = () => {
+    setCompareGroup(null)
+  }
+
+  const handleDone = (sourceCount: number, name: string) => {
+    flash(t('merge.mergeSuccess', { count: sourceCount, name }))
+    void reload(filters)
+  }
+
+  const openCompare = (g: DuplicateGroup) => {
     const key = groupKey(g)
-    const primaryId = primaryMap[key]
-    if (!primaryId) {
+    if (!primaryMap[key]) {
       setError(t('common.pleaseSelectPrimary'))
       return
     }
-    const sourceIds = g.items.filter((t) => t.id !== primaryId).map((t) => t.id)
-    if (sourceIds.length === 0) {
-      setError(t('common.singleRecordNoMerge'))
-      return
-    }
-
-    const primary = g.items.find((t) => t.id === primaryId)
-    if (!window.confirm(
-      t('merge.mergeConfirm', { count: sourceIds.length, name: primary?.name ?? primaryId })
-    )) return
-
-    setMerging(key)
     setError('')
-    try {
-      await api.mergeTraitors(primaryId, sourceIds)
-      flash(t('merge.mergeSuccess', { count: sourceIds.length, name: primary?.name ?? t('merge.primaryRecord') }))
-      await reload(filters)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t('merge.mergeFailed'))
-    } finally {
-      setMerging(null)
-    }
+    setCompareGroup(g)
   }
 
   return (
@@ -162,10 +151,9 @@ export default function MergeTraitors() {
                   <button
                     type="button"
                     className="btn-primary !px-3 !py-1.5 text-xs"
-                    onClick={() => handleMerge(g)}
-                    disabled={merging === key}
+                    onClick={() => openCompare(g)}
                   >
-                    {merging === key ? t('merge.merging') : t('merge.mergeToPrimary')}
+                    {t('merge.compareAction')}
                   </button>
                 </div>
                 <table className="w-full min-w-[760px] text-left text-sm">
@@ -248,6 +236,15 @@ export default function MergeTraitors() {
           })}
         </div>
       )}
+
+      <MergeCompareModal
+        open={!!compareGroup}
+        group={compareGroup}
+        defaultPrimaryId={compareGroup ? (primaryMap[groupKey(compareGroup)] ?? null) : null}
+        onClose={handleCloseCompare}
+        onDone={handleDone}
+        onError={setError}
+      />
     </div>
   )
 }

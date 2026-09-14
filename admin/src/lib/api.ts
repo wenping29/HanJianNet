@@ -190,10 +190,15 @@ export const api = {
     return request<{ items: DuplicateGroup[] }>(`/admin/traitors/duplicates?${params.toString()}`)
   },
 
-  mergeTraitors: (primaryId: string, sourceIds: string[]) =>
+  mergeTraitors: (req: {
+    primaryId: string
+    sourceIds: string[]
+    scalarSources?: Record<string, string>
+    collectionSources?: Record<string, string[]>
+  }) =>
     request<{ traitor: TraitorDetail }>('/admin/traitors/merge', {
       method: 'POST',
-      body: JSON.stringify({ primaryId, sourceIds }),
+      body: JSON.stringify(req),
     }),
 
   upload: async (file: File, kind: AttachmentKind): Promise<Attachment> => {

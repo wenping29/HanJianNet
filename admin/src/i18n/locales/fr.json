@@ -194,6 +194,42 @@
       "faction": "Faction",
       "lifespan": "Dates de vie",
       "tags": "Étiquettes d'identité"
+    },
+    "compareAction": "Comparer et fusionner",
+    "compareTitle": "Comparer et fusionner · {{name}}",
+    "compareHint": "Choisissez la source de chaque champ : les champs scalaires sont à sélection unique, les collections peuvent être multi-sélectionnées (coché = inclus). Les champs non modifiés conservent les données par défaut de l'enregistrement principal.",
+    "combine": "Fusionner la sélection",
+    "resetSelection": "Réinitialiser la sélection",
+    "compareFailed": "Impossible de charger les données de comparaison",
+    "scalarHint": "Unique : prendre la valeur de cet enregistrement",
+    "collectionHint": "Multiple : inclure les données de cet enregistrement",
+    "itemsCount": "{{count}} éléments",
+    "sourceColumn": "Champ / Source",
+    "field": {
+      "name": "Nom",
+      "courtesyName": "Nom de courtoisie",
+      "pseudonym": "Pseudonyme",
+      "birthYear": "Année de naissance",
+      "deathYear": "Année de décès",
+      "nativePlace": "Origine",
+      "birthPlace": "Lieu de naissance",
+      "period": "Période",
+      "faction": "Faction",
+      "harmLevel": "Niveau de danger",
+      "title": "Fonction fantoche",
+      "summary": "Résumé"
+    },
+    "collection": {
+      "aliases": "Alias",
+      "identityTags": "Étiquettes d'identité",
+      "relatedIds": "Personnes liées",
+      "spouses": "Conjoints",
+      "children": "Enfants",
+      "residences": "Domiciles",
+      "crimeRecords": "Délits",
+      "lifeEvents": "Événements de vie",
+      "attachments": "Pièces jointes",
+      "sources": "Sources"
     }
   },
   "basicEdit": {
