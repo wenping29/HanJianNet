@@ -125,6 +125,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const [candidates, setCandidates] = useState<TraitorSummary[]>([])
   const [notice, setNotice] = useState('')
   const aiQuery = useAiQuery()
+  const [photoAiOnly, setPhotoAiOnly] = useState(false)
 
   const [loading, setLoading] = useState(mode === 'edit')
   const [uploading, setUploading] = useState(false)
@@ -240,6 +241,11 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
     aiQuery.close()
   }
 
+  const openAiQuery = (photoOnly: boolean) => {
+    setPhotoAiOnly(photoOnly)
+    void aiQuery.run(form.name)
+  }
+
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }))
   }
@@ -336,7 +342,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
           <button
             type="button"
             className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
-            onClick={() => void aiQuery.run(form.name)}
+            onClick={() => openAiQuery(false)}
             disabled={!form.name.trim()}
           >
             {t('aiQuery.queryAction')}
@@ -729,7 +735,19 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         <Fieldset title={t('traitorEditor.photosAndEvidence')} en="ATTACHMENTS">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <p className="mb-2 text-xs tracking-widest text-paperdim">{t('traitorEditor.photo')}</p>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-xs tracking-widest text-paperdim">{t('traitorEditor.photo')}</p>
+                {mode === 'edit' && (
+                  <button
+                    type="button"
+                    className="btn-ghost !px-3 !py-1.5 text-xs !text-bronzelight"
+                    onClick={() => openAiQuery(true)}
+                    disabled={!form.name.trim()}
+                  >
+                    {t('aiQuery.queryAction')}
+                  </button>
+                )}
+              </div>
               <label className="flex cursor-pointer flex-col items-center justify-center rounded-sm border border-dashed border-paperedge/30 px-4 py-8 text-sm text-paperdim hover:border-bronzelight hover:text-paper">
                 {uploading ? t('traitorEditor.uploading') : t('traitorEditor.selectImages')}
                 <input
@@ -906,7 +924,11 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         loading={aiQuery.loading}
         error={aiQuery.error}
         result={aiQuery.result}
-        onClose={() => aiQuery.close()}
+        photoOnly={photoAiOnly}
+        onClose={() => {
+          aiQuery.close()
+          setPhotoAiOnly(false)
+        }}
         onRetry={() => aiQuery.retry()}
         onFill={() => handleAiReady()}
       />

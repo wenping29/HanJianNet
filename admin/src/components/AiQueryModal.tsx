@@ -64,6 +64,7 @@ interface AiQueryModalProps {
   onClose: () => void
   onRetry: () => void
   onFill: () => void
+  photoOnly?: boolean
 }
 
 export default function AiQueryModal({
@@ -75,6 +76,7 @@ export default function AiQueryModal({
   onClose,
   onRetry,
   onFill,
+  photoOnly = false,
 }: AiQueryModalProps) {
   const { t } = useTranslation()
 
@@ -97,6 +99,23 @@ export default function AiQueryModal({
           </div>
         </div>
       ) : result ? (
+        photoOnly ? (
+          <div className="space-y-4">
+            <section>
+              <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
+                {t('traitorEditor.photo')}
+              </h4>
+              <p className="whitespace-pre-wrap rounded-sm border border-paperedge/15 bg-inkcard/50 p-3 text-sm leading-relaxed text-paper">
+                {result.photoNote || t('aiQuery.photoNote')}
+              </p>
+            </section>
+            <div className="flex justify-end gap-3 border-t border-paperedge/15 pt-4">
+              <button type="button" className="btn-ghost" onClick={onClose}>
+                {t('common.close')}
+              </button>
+            </div>
+          </div>
+        ) : (
         <div className="space-y-6">
           <section>
             <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
@@ -206,6 +225,7 @@ export default function AiQueryModal({
             </button>
           </div>
         </div>
+        )
       ) : null}
     </Modal>
   )
