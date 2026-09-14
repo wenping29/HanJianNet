@@ -351,7 +351,7 @@ export default function TraitorForm({ mode }: { mode: 'create' | 'edit' }) {
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
               <label className="label" htmlFor="summary">{t('traitorForm.form.summary')}</label>
-              <textarea id="summary" rows={5} className="input" value={form.summary} onChange={(e) => update('summary', e.target.value)} />
+              <textarea id="summary" rows={25} className="input" value={form.summary} onChange={(e) => update('summary', e.target.value)} />
             </div>
           </div>
         </Fieldset>

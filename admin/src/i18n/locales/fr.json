@@ -516,6 +516,17 @@
     "6": "Niveau V",
     "7": "Niveau VI"
   },
+  "aiQuery": {
+    "queryAction": "Recherche IA",
+    "queryTitle": "Recherche IA: {{name}}",
+    "querying": "Recherche via DeepSeek (10–60 s), veuillez patienter…",
+    "queryFailed": "Échec de la recherche IA",
+    "retry": "Réessayer",
+    "fillToEditor": "Remplir dans l'éditeur",
+    "photoNote": "Les photos ne peuvent pas être générées par IA ; veuillez les téléverser manuellement.",
+    "applied": "Résultat IA appliqué au formulaire. Veuillez vérifier avant d'enregistrer.",
+    "empty": "(aucun)"
+  },
   "periods": {
     "lateSong": "Fin des Song",
     "lateMing": "Fin des Ming",

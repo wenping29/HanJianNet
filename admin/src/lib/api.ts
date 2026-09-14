@@ -1,6 +1,7 @@
 import { useAuth } from '../stores/auth'
 import type {
   AdminMenuItem,
+  AiTraitorResult,
   AtrocityEventDetail,
   AtrocityEventInput,
   AtrocityEventSummary,
@@ -158,6 +159,12 @@ export const api = {
 
   deleteTraitor: (id: string) =>
     request<{ message: string }>(`/admin/traitors/${id}`, { method: 'DELETE' }),
+
+  aiQueryTraitor: (name: string) =>
+    request<{ result: AiTraitorResult }>('/admin/traitors/ai-query', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    }),
 
   // ---- 历史事件（惨案/宏观事件） ----
   listAtrocityEvents: (era?: string) => {

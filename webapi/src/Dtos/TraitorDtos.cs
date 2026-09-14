@@ -161,3 +161,37 @@ public class MergeRequestDto
     public string PrimaryId { get; set; } = "";
     public List<string> SourceIds { get; set; } = [];
 }
+
+/// <summary>AI 查询请求：按姓名从 DeepSeek 等平台检索史料并整理。</summary>
+public class AiTraitorQueryDto
+{
+    public string Name { get; set; } = "";
+}
+
+/// <summary>
+/// AI 查询结果：由 DeepSeek 返回的 JSON 解析而来。
+/// 字段取值向后端录入口径对齐，无法确证的字段为 null / 空 / unknown。
+/// </summary>
+public class AiTraitorResultDto
+{
+    public string Name { get; set; } = "";
+    public string? CourtesyName { get; set; }
+    public string? Pseudonym { get; set; }
+    public int? BirthYear { get; set; }
+    public int? DeathYear { get; set; }
+    public string BirthYearType { get; set; } = "unknown";
+    public string DeathYearType { get; set; } = "unknown";
+    public string NativePlace { get; set; } = "";
+    public string BirthPlace { get; set; } = "";
+    public string Period { get; set; } = "";
+    public string Faction { get; set; } = "";
+    public string Summary { get; set; } = "";
+    public List<string> Aliases { get; set; } = [];
+    public List<string> IdentityTags { get; set; } = [];
+    public List<SpouseInputDto> Spouses { get; set; } = [];
+    public List<ChildInputDto> Children { get; set; } = [];
+    public List<CrimeRecordInputDto> CrimeRecords { get; set; } = [];
+    public List<LifeEventInputDto> LifeEvents { get; set; } = [];
+    /// <summary>照片说明：AI 无法生成图片，仅提示人工上传。</summary>
+    public string? PhotoNote { get; set; }
+}

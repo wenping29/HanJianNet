@@ -27,6 +27,7 @@ try
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
     builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
     builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
+    builder.Services.Configure<DeepSeekOptions>(builder.Configuration.GetSection("DeepSeek"));
 
     var databaseOptions = builder.Configuration.GetSection("Database").Get<DatabaseOptions>() ?? new DatabaseOptions();
     builder.Services.AddDbContext<AppDbContext>(options =>
@@ -117,6 +118,16 @@ try
     builder.Services.AddScoped<CacheService>();
     // 前台访客统计
     builder.Services.AddScoped<VisitService>();
+    // AI 史料查询（DeepSeek）
+    var deepSeekOptions = builder.Configuration.GetSection("DeepSeek").Get<DeepSeekOptions>() ?? new DeepSeekOptions();
+    if (string.IsNullOrWhiteSpace(deepSeekOptions.BaseUrl))
+        deepSeekOptions.BaseUrl = "https://api.deepseek.com";
+    builder.Services.AddHttpClient("DeepSeek", client =>
+    {
+        client.BaseAddress = new Uri(deepSeekOptions.BaseUrl.TrimEnd('/') + "/");
+        client.Timeout = TimeSpan.FromSeconds(Math.Clamp(deepSeekOptions.TimeoutSeconds, 10, 300));
+    });
+    builder.Services.AddScoped<AiService>();
 
     builder.Services.AddControllers(options =>
     {

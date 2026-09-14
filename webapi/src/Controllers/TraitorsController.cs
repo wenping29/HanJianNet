@@ -10,7 +10,7 @@ namespace HanJianNet.WebApi.Controllers;
 /// 普通用户提交修订经 /api/traitors POST/PUT，管理员直接写入经 /api/admin/traitors。
 /// </summary>
 [ApiController]
-public class TraitorsController(TraitorService traitors) : ControllerBase
+public class TraitorsController(TraitorService traitors, AiService ai) : ControllerBase
 {
     // ---------- 公开接口 ----------
 
@@ -93,6 +93,14 @@ public class TraitorsController(TraitorService traitors) : ControllerBase
     {
         await traitors.AdminDeleteAsync(id);
         return Ok(new { message = "删除成功" });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/traitors/ai-query")]
+    public async Task<IActionResult> AdminAiQuery([FromBody] AiTraitorQueryDto req)
+    {
+        var result = await ai.QueryTraitorAsync(req.Name);
+        return Ok(new { result });
     }
 }
 

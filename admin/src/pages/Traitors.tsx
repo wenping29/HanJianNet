@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
 import { toast } from '../components/Toast'
+import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
+import { saveAiResult } from '../lib/ai'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 import type { TraitorSummary } from '../types'
@@ -38,6 +40,8 @@ export default function Traitors() {
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const aiQuery = useAiQuery()
+  const [aiTarget, setAiTarget] = useState<TraitorSummary | null>(null)
 
   const reload = useCallback(async (name?: string, p = 1, lv?: number) => {
     setError('')
@@ -117,6 +121,22 @@ export default function Traitors() {
   }
 
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
+
+  const editUrl = (id: string) =>
+    `${window.location.origin}${window.location.pathname}#/traitors/${id}/edit`
+
+  const handleAiQuery = (tr: TraitorSummary) => {
+    setAiTarget(tr)
+    void aiQuery.run(tr.name)
+  }
+
+  const handleAiFill = () => {
+    if (!aiTarget || !aiQuery.result) return
+    saveAiResult(aiTarget.id, aiQuery.result)
+    window.open(editUrl(aiTarget.id), '_blank')
+    aiQuery.close()
+    setAiTarget(null)
+  }
 
   return (
     <div className="container-page py-10">
@@ -254,8 +274,17 @@ export default function Traitors() {
                         {canManageUsers(me.role) && (
                           <button
                             type="button"
+                            className="btn-ghost !px-3 !py-1.5 text-xs !text-bronzelight"
+                            onClick={() => handleAiQuery(tr)}
+                          >
+                            {t('aiQuery.queryAction')}
+                          </button>
+                        )}
+                        {canManageUsers(me.role) && (
+                          <button
+                            type="button"
                             className="btn-ghost !px-3 !py-1.5 text-xs"
-                            onClick={() => window.open(`${window.location.origin}${window.location.pathname}#/traitors/${tr.id}/edit`, '_blank')}
+                            onClick={() => window.open(editUrl(tr.id), '_blank')}
                           >
                             {t('traitors.edit')}
                           </button>
@@ -328,6 +357,20 @@ export default function Traitors() {
           </div>
         </>
       )}
+
+      <AiQueryModal
+        open={aiQuery.open}
+        name={aiQuery.name}
+        loading={aiQuery.loading}
+        error={aiQuery.error}
+        result={aiQuery.result}
+        onClose={() => {
+          aiQuery.close()
+          setAiTarget(null)
+        }}
+        onRetry={() => aiQuery.retry()}
+        onFill={() => handleAiFill()}
+      />
     </div>
   )
 }

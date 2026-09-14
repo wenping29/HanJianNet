@@ -516,6 +516,17 @@
     "6": "5급",
     "7": "6급"
   },
+  "aiQuery": {
+    "queryAction": "AI 조회",
+    "queryTitle": "AI 사료 조회: {{name}}",
+    "querying": "DeepSeek로 조회 중입니다(10~60초), 잠시 기다려 주세요…",
+    "queryFailed": "AI 조회 실패",
+    "retry": "다시 시도",
+    "fillToEditor": "편집기에 채우기",
+    "photoNote": "사진은 AI가 생성할 수 없습니다. 수동으로 업로드하세요.",
+    "applied": "AI 조회 결과가 양식에 반영되었습니다. 저장 전에 확인하세요.",
+    "empty": "(없음)"
+  },
   "periods": {
     "lateSong": "남송",
     "lateMing": "명나라 말기",

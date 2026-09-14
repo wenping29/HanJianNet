@@ -38,6 +38,23 @@ public class UploadOptions
     public string[] AllowedTypes { get; set; } = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
 }
 
+public class DeepSeekOptions
+{
+    /// <summary>
+    /// DeepSeek API Key。建议通过环境变量 DEEPSEEK__ApiKey 注入，避免提交到仓库。
+    /// </summary>
+    public string ApiKey { get; set; } = "";
+
+    /// <summary>OpenAI 兼容 BaseUrl，默认 DeepSeek 官方地址。</summary>
+    public string BaseUrl { get; set; } = "https://api.deepseek.com";
+
+    public string Model { get; set; } = "deepseek-chat";
+
+    public int TimeoutSeconds { get; set; } = 120;
+
+    public int MaxTokens { get; set; } = 4096;
+}
+
 public class RedisOptions
 {
     /// <summary>

@@ -241,6 +241,29 @@ export interface DuplicateGroup {
   items: TraitorSummary[]
 }
 
+/** DeepSeek AI 史料查询结果（对应后端 AiTraitorResultDto） */
+export interface AiTraitorResult {
+  name: string
+  courtesyName?: string | null
+  pseudonym?: string | null
+  birthYear: number | null
+  deathYear: number | null
+  birthYearType: YearType
+  deathYearType: YearType
+  nativePlace: string
+  birthPlace: string
+  period: string
+  faction: string
+  summary: string
+  aliases: string[]
+  identityTags: string[]
+  spouses: Spouse[]
+  children: Child[]
+  crimeRecords: CrimeRecord[]
+  lifeEvents: LifeEvent[]
+  photoNote?: string | null
+}
+
 
 export interface TraitorSummary {
   id: string

@@ -516,6 +516,17 @@
     "6": "Stufe V",
     "7": "Stufe VI"
   },
+  "aiQuery": {
+    "queryAction": "KI-Recherche",
+    "queryTitle": "KI-Recherche: {{name}}",
+    "querying": "Recherche über DeepSeek (10–60 s), bitte warten…",
+    "queryFailed": "KI-Recherche fehlgeschlagen",
+    "retry": "Erneut versuchen",
+    "fillToEditor": "In Editor übernehmen",
+    "photoNote": "Fotos können von der KI nicht erzeugt werden; bitte manuell hochladen.",
+    "applied": "KI-Ergebnis in das Formular übernommen. Bitte vor dem Speichern prüfen.",
+    "empty": "(keine)"
+  },
   "periods": {
     "lateSong": "Späte Song-Dynastie",
     "lateMing": "Späte Ming-Dynastie",

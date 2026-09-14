@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList, formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
-import type { Child, CrimeRecord, Period, Spouse, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
+import { clearAiResult, normalizeAiResult, readAiResult, saveAiResult } from '../lib/ai'
+import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
+import type { AiTraitorResult, Child, CrimeRecord, Period, Spouse, TraitorDetail, TraitorInput, TraitorSummary, YearType } from '../types'
 
 const PAGE_SIZE = 10
 
@@ -109,6 +111,8 @@ function ListView() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
+  const aiQuery = useAiQuery()
+  const [aiTarget, setAiTarget] = useState<TraitorSummary | null>(null)
 
   const reload = useCallback(async (name?: string, p = 1, lv?: number) => {
     setError('')
@@ -174,6 +178,19 @@ function ListView() {
   }
 
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
+
+  const handleAiQuery = (tr: TraitorSummary) => {
+    setAiTarget(tr)
+    void aiQuery.run(tr.name)
+  }
+
+  const handleAiFill = () => {
+    if (!aiTarget || !aiQuery.result) return
+    saveAiResult(aiTarget.id, aiQuery.result)
+    navigate(`/traitors/basic-edit/${aiTarget.id}`)
+    aiQuery.close()
+    setAiTarget(null)
+  }
 
   return (
     <div className="container-page py-10">
@@ -291,7 +308,14 @@ function ListView() {
                       )}
                     </td>
                     <td className="px-5 py-3">
-                      <div className="flex justify-end">
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          className="btn-ghost !px-3 !py-1.5 text-xs !text-bronzelight"
+                          onClick={() => handleAiQuery(tr)}
+                        >
+                          {t('aiQuery.queryAction')}
+                        </button>
                         <button
                           type="button"
                           className="btn-ghost !px-3 !py-1.5 text-xs"
@@ -357,6 +381,20 @@ function ListView() {
           </div>
         </>
       )}
+
+      <AiQueryModal
+        open={aiQuery.open}
+        name={aiQuery.name}
+        loading={aiQuery.loading}
+        error={aiQuery.error}
+        result={aiQuery.result}
+        onClose={() => {
+          aiQuery.close()
+          setAiTarget(null)
+        }}
+        onRetry={() => aiQuery.retry()}
+        onFill={() => handleAiFill()}
+      />
     </div>
   )
 }
@@ -377,6 +415,7 @@ function EditView() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const aiQuery = useAiQuery()
 
   useEffect(() => {
     if (!id) return
@@ -420,6 +459,7 @@ function EditView() {
             sourceRef: c.sourceRef ?? '',
           })),
         )
+        applyAiToForm()
       })
       .catch((e) => setError(e instanceof Error ? e.message : t('common.loadFailed')))
       .finally(() => setLoading(false))
@@ -428,6 +468,29 @@ function EditView() {
   const flash = (msg: string) => {
     setNotice(msg)
     window.setTimeout(() => setNotice(''), 3500)
+  }
+
+  function fillFromResult(ai: AiTraitorResult) {
+    const n = normalizeAiResult(ai)
+    setForm((f) => ({ ...f, ...n.form }))
+    spouseCtl.setAll(n.spouses)
+    childCtl.setAll(n.children)
+    crimeCtl.setAll(n.crimeRecords)
+    flash(n.photoNote ? `${t('aiQuery.applied')} ${n.photoNote}` : t('aiQuery.applied'))
+  }
+
+  function applyAiToForm() {
+    if (!id) return
+    const ai = readAiResult(id)
+    if (!ai) return
+    fillFromResult(ai)
+    clearAiResult(id)
+  }
+
+  const handleAiReady = () => {
+    if (!aiQuery.result) return
+    fillFromResult(aiQuery.result)
+    aiQuery.close()
   }
 
   function update<K extends keyof BasicForm>(key: K, value: BasicForm[K]) {
@@ -546,6 +609,14 @@ function EditView() {
             {notice}
           </p>
         )}
+        <button
+          type="button"
+          className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
+          onClick={() => void aiQuery.run(form.name)}
+          disabled={!form.name.trim()}
+        >
+          {t('aiQuery.queryAction')}
+        </button>
       </div>
       <p className="mt-3 text-sm text-paperdim">
         {t('basicEdit.description2')}
@@ -622,7 +693,7 @@ function EditView() {
             </div>
             <div className="sm:col-span-2 lg:col-span-3">
               <label className="label" htmlFor="summary">{t('traitorEditor.form.summary')}</label>
-              <textarea id="summary" rows={5} className="input" value={form.summary} onChange={(e) => update('summary', e.target.value)} />
+              <textarea id="summary" rows={25} className="input" value={form.summary} onChange={(e) => update('summary', e.target.value)} />
             </div>
           </div>
         </fieldset>
@@ -784,6 +855,17 @@ function EditView() {
           </button>
         </div>
       </form>
+
+      <AiQueryModal
+        open={aiQuery.open}
+        name={aiQuery.name}
+        loading={aiQuery.loading}
+        error={aiQuery.error}
+        result={aiQuery.result}
+        onClose={() => aiQuery.close()}
+        onRetry={() => aiQuery.retry()}
+        onFill={() => handleAiReady()}
+      />
     </div>
   )
 }

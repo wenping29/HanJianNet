@@ -3,9 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { PERIODS, splitList } from '../lib/format'
+import { clearAiResult, normalizeAiResult, readAiResult } from '../lib/ai'
+import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
 import type {
   Attachment,
   AttachmentKind,
+  AiTraitorResult,
   Child,
   CrimeRecord,
   LifeEvent,
@@ -121,6 +124,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const [relatedIds, setRelatedIds] = useState<string[]>([])
   const [candidates, setCandidates] = useState<TraitorSummary[]>([])
   const [notice, setNotice] = useState('')
+  const aiQuery = useAiQuery()
 
   const [loading, setLoading] = useState(mode === 'edit')
   const [uploading, setUploading] = useState(false)
@@ -197,6 +201,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         )
         setAttachments(traitor.attachments)
         setRelatedIds(traitor.relatedIds)
+        applyAiToForm(id)
       })
       .catch((e) => setError(e instanceof Error ? e.message : t('common.loadFailed')))
       .finally(() => setLoading(false))
@@ -210,6 +215,29 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const flash = (msg: string) => {
     setNotice(msg)
     window.setTimeout(() => setNotice(''), 3500)
+  }
+
+  function fillFromResult(ai: AiTraitorResult) {
+    const n = normalizeAiResult(ai)
+    setForm((f) => ({ ...f, ...n.form }))
+    spouseCtl.setAll(n.spouses)
+    childCtl.setAll(n.children)
+    crimeCtl.setAll(n.crimeRecords)
+    lifeCtl.setAll(n.lifeEvents)
+    flash(n.photoNote ? `${t('aiQuery.applied')} ${n.photoNote}` : t('aiQuery.applied'))
+  }
+
+  function applyAiToForm(targetId: string) {
+    const ai = readAiResult(targetId)
+    if (!ai) return
+    fillFromResult(ai)
+    clearAiResult(targetId)
+  }
+
+  const handleAiReady = () => {
+    if (!aiQuery.result) return
+    fillFromResult(aiQuery.result)
+    aiQuery.close()
   }
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -303,6 +331,16 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
           <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
             {notice}
           </p>
+        )}
+        {mode === 'edit' && (
+          <button
+            type="button"
+            className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
+            onClick={() => void aiQuery.run(form.name)}
+            disabled={!form.name.trim()}
+          >
+            {t('aiQuery.queryAction')}
+          </button>
         )}
       </div>
       <p className="mt-3 text-sm text-paperdim">
@@ -474,7 +512,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
               </label>
               <textarea
                 id="summary"
-                rows={5}
+                rows={25}
                 className="input"
                 value={form.summary}
                 onChange={(e) => update('summary', e.target.value)}
@@ -861,6 +899,17 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
           </button>
         </div>
       </form>
+
+      <AiQueryModal
+        open={aiQuery.open}
+        name={aiQuery.name}
+        loading={aiQuery.loading}
+        error={aiQuery.error}
+        result={aiQuery.result}
+        onClose={() => aiQuery.close()}
+        onRetry={() => aiQuery.retry()}
+        onFill={() => handleAiReady()}
+      />
     </div>
   )
 }

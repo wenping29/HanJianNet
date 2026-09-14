@@ -516,6 +516,17 @@
     "6": "Nivel V",
     "7": "Nivel VI"
   },
+  "aiQuery": {
+    "queryAction": "Consulta IA",
+    "queryTitle": "Investigación IA: {{name}}",
+    "querying": "Investigando mediante DeepSeek (10–60 s), espere…",
+    "queryFailed": "Error en la consulta IA",
+    "retry": "Reintentar",
+    "fillToEditor": "Rellenar en el editor",
+    "photoNote": "Las fotos no pueden generarse por IA; cárguelas manualmente.",
+    "applied": "Resultado IA aplicado al formulario. Verifíquelo antes de guardar.",
+    "empty": "(ninguno)"
+  },
   "periods": {
     "lateSong": "Song tardío",
     "lateMing": "Ming tardío",
