@@ -236,7 +236,7 @@ public class TraitorService(AppDbContext db, CacheService cache)
         return traitor.ToDto();
     }
 
-    public async Task<PagedResult<TraitorSummaryDto>> AdminListAsync(string? name, int page = 1, int pageSize = 10)
+    public async Task<PagedResult<TraitorSummaryDto>> AdminListAsync(string? name, int? harmLevel, int page = 1, int pageSize = 10)
     {
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;
@@ -247,6 +247,8 @@ public class TraitorService(AppDbContext db, CacheService cache)
             var n = name!;
             q = q.Where(t => t.Name.Contains(n));
         }
+        if (harmLevel is int hl)
+            q = q.Where(t => t.HarmLevel == hl);
         var total = await q.CountAsync();
         // 固定排序：危害等级升序（1=特级/S级 最严重在前），未分级排最后；同级按姓名，再按创建时间倒序
         var list = await q

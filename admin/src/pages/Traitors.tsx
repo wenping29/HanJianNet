@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
-import { formatLifeSpan, harmLevelClass } from '../lib/format'
+import { formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
 import { toast } from '../components/Toast'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -33,15 +33,16 @@ export default function Traitors() {
   const [error, setError] = useState('')
   const [keyword, setKeyword] = useState('')
   const [searched, setSearched] = useState('')
+  const [level, setLevel] = useState('')
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const reload = useCallback(async (name?: string, p = 1) => {
+  const reload = useCallback(async (name?: string, p = 1, lv?: number) => {
     setError('')
     try {
-      const data = await api.adminTraitors(name || undefined, p, PAGE_SIZE)
+      const data = await api.adminTraitors(name || undefined, p, PAGE_SIZE, lv)
       const items = Array.isArray(data.items) ? data.items : []
       const pageNum = typeof data.page === 'number' ? data.page : p
       const totalNum = typeof data.total === 'number' ? data.total : items.length
@@ -74,24 +75,31 @@ export default function Traitors() {
     const q = keyword.trim()
     setSearched(q)
     setLoading(true)
-    await reload(q, 1)
+    await reload(q, 1, level ? Number(level) : undefined)
     setLoading(false)
   }
 
   const handleReset = async () => {
     setKeyword('')
     setSearched('')
+    setLevel('')
     setLoading(true)
-    await reload(undefined, 1)
+    await reload(undefined, 1, undefined)
     setLoading(false)
   }
 
   const goPage = async (next: number) => {
     if (next < 1 || next > totalPages || next === page) return
     setLoading(true)
-    await reload(searched || undefined, next)
+    await reload(searched || undefined, next, level ? Number(level) : undefined)
     window.scrollTo({ top: 0, behavior: 'smooth' })
     setLoading(false)
+  }
+
+  const handleLevelChange = (v: string) => {
+    setLevel(v)
+    setLoading(true)
+    void reload(searched || undefined, 1, v ? Number(v) : undefined).finally(() => setLoading(false))
   }
 
   const handleDelete = async (tr: TraitorSummary) => {
@@ -100,7 +108,7 @@ export default function Traitors() {
     try {
       await api.deleteTraitor(tr.id)
       toast(t('traitors.deleteSuccess'))
-      await reload(searched || undefined, page)
+      await reload(searched || undefined, page, level ? Number(level) : undefined)
     } catch (e) {
       toast(e instanceof Error ? e.message : t('traitors.deleteFailed'), 'error')
     } finally {
@@ -133,6 +141,20 @@ export default function Traitors() {
             onChange={(e) => setKeyword(e.target.value)}
             placeholder={t('traitors.searchPlaceholder')}
           />
+          <select
+            className="input w-32 flex-none"
+            value={level}
+            onChange={(e) => handleLevelChange(e.target.value)}
+            disabled={loading}
+            aria-label={t('common.colHarmLevel')}
+          >
+            <option value="">{t('common.all')}</option>
+            {HARM_LEVELS.map((l) => (
+              <option key={l} value={l}>
+                {t(`harmLevel.${l}`)}
+              </option>
+            ))}
+          </select>
           <button type="submit" className="btn-bronze flex-none" disabled={loading}>
             {t('common.search')}
           </button>
