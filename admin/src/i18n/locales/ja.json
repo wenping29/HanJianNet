@@ -532,6 +532,8 @@
     "uploadPhoto": "写真をアップロード",
     "photoUploaded": "写真をダウンロードして人物の写真リストに追加しました。保存後に反映されます。",
     "noPhotoFound": "この人物の公開アクセス可能な写真は見つかりませんでした。",
+    "originalColumn": "現在のアーカイブデータ",
+    "aiColumn": "AI クエリ結果",
     "originalValue": "現在のアーカイブデータ"
   },
   "periods": {

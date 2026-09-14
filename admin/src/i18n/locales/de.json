@@ -532,6 +532,8 @@
     "uploadPhoto": "Foto hochladen",
     "photoUploaded": "Foto heruntergeladen und zur Fotoliste der Person hinzugefügt. Wirksam nach dem Speichern.",
     "noPhotoFound": "Kein öffentlich zugängliches Foto für diese Person gefunden.",
+    "originalColumn": "Aktuelle Archivdaten",
+    "aiColumn": "AI-Abfrageergebnis",
     "originalValue": "Aktuelle Archivdaten"
   },
   "periods": {

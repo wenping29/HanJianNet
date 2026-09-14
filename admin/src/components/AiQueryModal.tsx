@@ -47,15 +47,6 @@ export function useAiQuery() {
   return { open, name, loading, result, error, run, retry, close }
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="grid grid-cols-[120px_1fr] items-baseline gap-2 text-sm">
-      <span className="shrink-0 text-xs tracking-widest text-paperdim/70">{label}</span>
-      <span className="min-w-0 text-paper">{children}</span>
-    </div>
-  )
-}
-
 interface AiQueryModalProps {
   open: boolean
   name: string
@@ -95,36 +86,43 @@ function diffText(ai: unknown, orig: unknown): boolean {
   return a.replace(/\s+/g, '') !== b.replace(/\s+/g, '')
 }
 
-/** AI 值 + 原档案值（有差异时以高亮显示 AI 值，并在下方灰字列出原值） */
-function CmpValue({ ai, orig, empty = '—' }: { ai?: React.ReactNode; orig?: string; empty?: string }) {
-  const { t } = useTranslation()
-  const aiText = typeof ai === 'string' || typeof ai === 'number' ? String(ai ?? '').trim() : ''
-  return (
-    <span className="min-w-0">
-      <span className={diffText(aiText, orig) ? 'rounded-sm bg-bronze/20 px-1 py-0.5 text-bronzelight' : 'text-paper'}>
-        {aiText || empty}
-      </span>
-      {diffText(aiText, orig) && (
-        <span className="mt-0.5 block text-xs text-paperdim/70">
-          {t('aiQuery.originalValue')}：{orig?.trim() || empty}
-        </span>
-      )}
-    </span>
-  )
+function joinList<T>(items: T[], fmt: (v: T) => string): string {
+  return items.map(fmt).filter(Boolean).join('、')
 }
 
-function OriginalBlock({ orig }: { orig?: string }) {
-  const { t } = useTranslation()
-  if (!orig?.trim()) return null
+function toYear(v: string): number | null {
+  if (!v) return null
+  const n = Number(v)
+  return Number.isNaN(n) || n <= 0 ? null : n
+}
+
+/** 原档案/AI 结果对比的两栏面板：左侧原数据，右侧新数据。 */
+function ComparePanel({ title, accent, children }: { title: string; accent?: boolean; children?: React.ReactNode }) {
   return (
-    <div className="mt-2 rounded-sm border border-paperedge/10 bg-inkcard/30 p-2 text-xs text-paperdim/70">
-      {t('aiQuery.originalValue')}：{orig}
+    <div className={`rounded-sm border p-3 ${accent ? 'border-bronze/40' : 'border-paperedge/15'}`}>
+      <p
+        className={`mb-2 border-b border-paperedge/10 pb-1.5 text-xs font-semibold tracking-[0.2em] ${
+          accent ? 'text-bronzelight' : 'text-paperdim/70'
+        }`}
+      >
+        {title}
+      </p>
+      <div className="space-y-1">{children}</div>
     </div>
   )
 }
 
-function joinList<T>(items: T[], fmt: (v: T) => string): string {
-  return items.map(fmt).filter(Boolean).join('、')
+function CompareItem({ label, value, diff }: { label: string; value: React.ReactNode; diff?: boolean }) {
+  return (
+    <div
+      className={`flex items-baseline justify-between gap-2 text-sm ${
+        diff ? 'rounded-sm bg-bronze/15 px-1.5 py-0.5' : ''
+      }`}
+    >
+      <span className="shrink-0 text-xs tracking-widest text-paperdim/60">{label}</span>
+      <span className={`min-w-0 text-right ${diff ? 'font-medium text-bronzelight' : 'text-paper'}`}>{value}</span>
+    </div>
+  )
 }
 
 export default function AiQueryModal({
@@ -231,58 +229,101 @@ export default function AiQueryModal({
             <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
               {t('traitorEditor.basicInfo')}
             </h4>
-            <div className="space-y-1.5">
-              <Row label={t('common.name')}>
-                <CmpValue ai={result.name} orig={original?.form.name} empty={t('aiQuery.empty')} />
-              </Row>
-              <Row label={t('common.courtesyName')}>
-                <CmpValue ai={result.courtesyName ?? ''} orig={original?.form.courtesyName} empty={t('aiQuery.empty')} />
-              </Row>
-              <Row label={t('common.pseudonym')}>
-                <CmpValue ai={result.pseudonym ?? ''} orig={original?.form.pseudonym} empty={t('aiQuery.empty')} />
-              </Row>
-              <Row label={t('common.lifespan')}>
-                <CmpValue
-                  ai={formatLifeSpan(result.birthYear, result.deathYear, result.birthYearType, result.deathYearType)}
-                  orig={
-                    original && (original.form.birthYear || original.form.deathYear)
-                      ? formatLifeSpan(
-                          original.form.birthYear ? Number(original.form.birthYear) : null,
-                          original.form.deathYear ? Number(original.form.deathYear) : null,
-                          original.form.birthYearType,
-                          original.form.deathYearType,
-                        )
-                      : ''
+            <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <ComparePanel title={t('aiQuery.originalColumn')}>
+                <CompareItem label={t('common.name')} value={original?.form.name || t('aiQuery.empty')} />
+                <CompareItem
+                  label={t('common.courtesyName')}
+                  value={original?.form.courtesyName || t('aiQuery.empty')}
+                />
+                <CompareItem
+                  label={t('common.pseudonym')}
+                  value={original?.form.pseudonym || t('aiQuery.empty')}
+                />
+                <CompareItem
+                  label={t('common.lifespan')}
+                  value={
+                    original?.form.birthYear || original?.form?.deathYear
+                      ? formatLifeSpan(toYear(original?.form.birthYear ?? ''), toYear(original?.form.deathYear ?? ''), original?.form.birthYearType ?? 'unknown', original?.form.deathYearType ?? 'unknown')
+                      : t('aiQuery.empty')
                   }
-                  empty={t('aiQuery.empty')}
                 />
-              </Row>
-              <Row label={t('common.nativePlace')}>
-                <CmpValue ai={result.nativePlace ?? ''} orig={original?.form.nativePlace} empty={t('aiQuery.empty')} />
-              </Row>
-              <Row label={t('common.birthPlace')}>
-                <CmpValue ai={result.birthPlace ?? ''} orig={original?.form.birthPlace} empty={t('aiQuery.empty')} />
-              </Row>
-              <Row label={t('common.period')}>
-                <CmpValue ai={result.period ?? ''} orig={original?.form.period} empty={t('aiQuery.empty')} />
-              </Row>
-              <Row label={t('common.faction')}>
-                <CmpValue ai={result.faction ?? ''} orig={original?.form.faction} empty={t('aiQuery.empty')} />
-              </Row>
-              <Row label={t('common.aliases')}>
-                <CmpValue
-                  ai={(result.aliases ?? []).join('、')}
-                  orig={original?.form.aliasesText}
-                  empty={t('aiQuery.empty')}
+                <CompareItem
+                  label={t('common.nativePlace')}
+                  value={original?.form.nativePlace || t('aiQuery.empty')}
                 />
-              </Row>
-              <Row label={t('common.identityTags')}>
-                <CmpValue
-                  ai={(result.identityTags ?? []).join('、')}
-                  orig={original?.form.identityTagsText}
-                  empty={t('aiQuery.empty')}
+                <CompareItem
+                  label={t('common.birthPlace')}
+                  value={original?.form.birthPlace || t('aiQuery.empty')}
                 />
-              </Row>
+                <CompareItem label={t('common.period')} value={original?.form.period || t('aiQuery.empty')} />
+                <CompareItem label={t('common.faction')} value={original?.form.faction || t('aiQuery.empty')} />
+                <CompareItem
+                  label={t('common.aliases')}
+                  value={original?.form.aliasesText || t('aiQuery.empty')}
+                />
+                <CompareItem
+                  label={t('common.identityTags')}
+                  value={original?.form.identityTagsText || t('aiQuery.empty')}
+                />
+              </ComparePanel>
+              <ComparePanel title={t('aiQuery.aiColumn')} accent>
+                <CompareItem
+                  label={t('common.name')}
+                  value={result.name || t('aiQuery.empty')}
+                  diff={diffText(result.name, original?.form.name)}
+                />
+                <CompareItem
+                  label={t('common.courtesyName')}
+                  value={result.courtesyName || t('aiQuery.empty')}
+                  diff={diffText(result.courtesyName, original?.form.courtesyName)}
+                />
+                <CompareItem
+                  label={t('common.pseudonym')}
+                  value={result.pseudonym || t('aiQuery.empty')}
+                  diff={diffText(result.pseudonym, original?.form.pseudonym)}
+                />
+                <CompareItem
+                  label={t('common.lifespan')}
+                  value={formatLifeSpan(result.birthYear, result.deathYear, result.birthYearType, result.deathYearType)}
+                  diff={diffText(
+                    formatLifeSpan(result.birthYear, result.deathYear, result.birthYearType, result.deathYearType),
+                    original?.form.birthYear || original?.form.deathYear
+                      ? formatLifeSpan(toYear(original?.form.birthYear ?? ''), toYear(original?.form.deathYear ?? ''), original?.form.birthYearType ?? 'unknown', original?.form.deathYearType ?? 'unknown')
+                      : '',
+                  )}
+                />
+                <CompareItem
+                  label={t('common.nativePlace')}
+                  value={result.nativePlace || t('aiQuery.empty')}
+                  diff={diffText(result.nativePlace, original?.form.nativePlace)}
+                />
+                <CompareItem
+                  label={t('common.birthPlace')}
+                  value={result.birthPlace || t('aiQuery.empty')}
+                  diff={diffText(result.birthPlace, original?.form.birthPlace)}
+                />
+                <CompareItem
+                  label={t('common.period')}
+                  value={result.period || t('aiQuery.empty')}
+                  diff={diffText(result.period, original?.form.period)}
+                />
+                <CompareItem
+                  label={t('common.faction')}
+                  value={result.faction || t('aiQuery.empty')}
+                  diff={diffText(result.faction, original?.form.faction)}
+                />
+                <CompareItem
+                  label={t('common.aliases')}
+                  value={(result.aliases ?? []).join('、') || t('aiQuery.empty')}
+                  diff={diffText((result.aliases ?? []).join('、'), original?.form.aliasesText)}
+                />
+                <CompareItem
+                  label={t('common.identityTags')}
+                  value={(result.identityTags ?? []).join('、') || t('aiQuery.empty')}
+                  diff={diffText((result.identityTags ?? []).join('、'), original?.form.identityTagsText)}
+                />
+              </ComparePanel>
             </div>
           </section>
 
@@ -290,84 +331,135 @@ export default function AiQueryModal({
             <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
               {t('common.summary')}
             </h4>
-            <p className="whitespace-pre-wrap rounded-sm border border-paperedge/15 bg-inkcard/50 p-3 text-sm leading-relaxed text-paper">
-              {result.summary || t('aiQuery.empty')}
-            </p>
-            <OriginalBlock orig={original?.form.summary} />
+            <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <ComparePanel title={t('aiQuery.originalColumn')}>
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-paper">
+                  {original?.form.summary || t('aiQuery.empty')}
+                </p>
+              </ComparePanel>
+              <ComparePanel title={t('aiQuery.aiColumn')} accent>
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-paper">
+                  {result.summary || t('aiQuery.empty')}
+                </p>
+              </ComparePanel>
+            </div>
           </section>
 
-          {(result.crimeRecords ?? []).length > 0 && (
-            <section>
-              <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
-                {t('traitorEditor.crimes')}
-              </h4>
-              <ul className="space-y-2">
-                {result.crimeRecords.map((c, i) => (
-                  <li key={i} className="rounded-sm border border-paperedge/15 p-3 text-sm">
-                    <div className="flex items-baseline gap-2">
-                      <span className="font-garamond text-xs text-bronzelight">{c.year ?? ''}</span>
-                      <span className="font-medium text-paper">{c.title}</span>
-                    </div>
-                    {c.process && <p className="mt-1 text-paperdim">{c.process}</p>}
-                    {c.harm && <p className="mt-1 text-paperdim/80">{c.harm}</p>}
-                  </li>
-                ))}
-              </ul>
-              <OriginalBlock
-                orig={joinList(original?.crimeRecords ?? [], (c) => `${c.year ?? ''} ${c.title} ${c.process ?? ''}`)}
-              />
-            </section>
-          )}
+          <section>
+            <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
+              {t('traitorEditor.crimes')}
+            </h4>
+            <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <ComparePanel title={t('aiQuery.originalColumn')}>
+                {(original?.crimeRecords ?? []).length > 0 ? (
+                  <ul className="space-y-2">
+                    {(original?.crimeRecords ?? []).map((c, i) => (
+                      <li key={i} className="rounded-sm border border-paperedge/10 p-2 text-sm">
+                        <div className="flex items-baseline gap-2">
+                          <span className="font-garamond text-xs text-bronzelight">{c.year ?? ''}</span>
+                          <span className="font-medium text-paper">{c.title}</span>
+                        </div>
+                        {c.process && <p className="mt-1 text-paperdim">{c.process}</p>}
+                        {c.harm && <p className="mt-1 text-paperdim/80">{c.harm}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-paperdim/60">{t('aiQuery.empty')}</p>
+                )}
+              </ComparePanel>
+              <ComparePanel title={t('aiQuery.aiColumn')} accent>
+                {(result.crimeRecords ?? []).length > 0 ? (
+                  <ul className="space-y-2">
+                    {result.crimeRecords.map((c, i) => (
+                      <li key={i} className="rounded-sm border border-paperedge/10 p-2 text-sm">
+                        <div className="flex items-baseline gap-2">
+                          <span className="font-garamond text-xs text-bronzelight">{c.year ?? ''}</span>
+                          <span className="font-medium text-paper">{c.title}</span>
+                        </div>
+                        {c.process && <p className="mt-1 text-paperdim">{c.process}</p>}
+                        {c.harm && <p className="mt-1 text-paperdim/80">{c.harm}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-paperdim/60">{t('aiQuery.empty')}</p>
+                )}
+              </ComparePanel>
+            </div>
+          </section>
 
-          {(result.spouses ?? []).length > 0 || (result.children ?? []).length > 0 ? (
-            <section>
-              <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
-                {t('traitorEditor.family')}
-              </h4>
-              {(result.spouses ?? []).length > 0 && (
-                <div className="space-y-1.5">
-                  <Row label={t('traitorEditor.spouse')}>
-                    <CmpValue
-                      ai={(result.spouses ?? []).map((s) => `${s.name}${s.remark ? `（${s.remark}）` : ''}`).join('、')}
-                      orig={joinList(original?.spouses ?? [], (s) => `${s.name}${s.remark ? `（${s.remark}）` : ''}`)}
-                      empty={t('aiQuery.empty')}
-                    />
-                  </Row>
-                </div>
-              )}
-              {(result.children ?? []).length > 0 && (
-                <div className="space-y-1.5">
-                  <Row label={t('traitorEditor.children')}>
-                    <CmpValue
-                      ai={(result.children ?? []).map((c) => `${c.name}${c.gender ? `（${c.gender}）` : ''}`).join('、')}
-                      orig={joinList(
-                        original?.children ?? [],
-                        (c) => `${c.name}${c.gender ? `（${c.gender}）` : ''}`,
-                      )}
-                      empty={t('aiQuery.empty')}
-                    />
-                  </Row>
-                </div>
-              )}
-            </section>
-          ) : null}
+          <section>
+            <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
+              {t('traitorEditor.family')}
+            </h4>
+            <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <ComparePanel title={t('aiQuery.originalColumn')}>
+                <CompareItem
+                  label={t('traitorEditor.spouse')}
+                  value={joinList(original?.spouses ?? [], (s) => `${s.name}${s.remark ? `（${s.remark}）` : ''}`) || t('aiQuery.empty')}
+                />
+                <CompareItem
+                  label={t('traitorEditor.children')}
+                  value={joinList(original?.children ?? [], (c) => `${c.name}${c.gender ? `（${c.gender}）` : ''}`) || t('aiQuery.empty')}
+                />
+              </ComparePanel>
+              <ComparePanel title={t('aiQuery.aiColumn')} accent>
+                <CompareItem
+                  label={t('traitorEditor.spouse')}
+                  value={(result.spouses ?? []).map((s) => `${s.name}${s.remark ? `（${s.remark}）` : ''}`).join('、') || t('aiQuery.empty')}
+                  diff={diffText(
+                    (result.spouses ?? []).map((s) => `${s.name}${s.remark ? `（${s.remark}）` : ''}`).join('、'),
+                    joinList(original?.spouses ?? [], (s) => `${s.name}${s.remark ? `（${s.remark}）` : ''}`),
+                  )}
+                />
+                <CompareItem
+                  label={t('traitorEditor.children')}
+                  value={(result.children ?? []).map((c) => `${c.name}${c.gender ? `（${c.gender}）` : ''}`).join('、') || t('aiQuery.empty')}
+                  diff={diffText(
+                    (result.children ?? []).map((c) => `${c.name}${c.gender ? `（${c.gender}）` : ''}`).join('、'),
+                    joinList(original?.children ?? [], (c) => `${c.name}${c.gender ? `（${c.gender}）` : ''}`),
+                  )}
+                />
+              </ComparePanel>
+            </div>
+          </section>
 
-          {(result.lifeEvents ?? []).length > 0 && (
-            <section>
-              <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
-                {t('traitorEditor.lifeEvents')}
-              </h4>
-              <ul className="space-y-1.5">
-                {result.lifeEvents.map((l, i) => (
-                  <li key={i} className="text-sm text-paperdim">
-                    <span className="mr-2 font-garamond text-xs text-bronzelight">{l.year ?? ''}</span>
-                    {l.event}
-                  </li>
-                ))}
-              </ul>
-              <OriginalBlock orig={joinList(original?.lifeEvents ?? [], (l) => `${l.year ?? ''} ${l.event}`)} />
-            </section>
-          )}
+          <section>
+            <h4 className="mb-2 text-xs font-semibold tracking-[0.2em] text-cinnabarlight">
+              {t('traitorEditor.lifeEvents')}
+            </h4>
+            <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <ComparePanel title={t('aiQuery.originalColumn')}>
+                {(original?.lifeEvents ?? []).length > 0 ? (
+                  <ul className="space-y-1.5">
+                    {(original?.lifeEvents ?? []).map((l, i) => (
+                      <li key={i} className="text-sm text-paper">
+                        <span className="mr-2 font-garamond text-xs text-bronzelight">{l.year ?? ''}</span>
+                        {l.event}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-paperdim/60">{t('aiQuery.empty')}</p>
+                )}
+              </ComparePanel>
+              <ComparePanel title={t('aiQuery.aiColumn')} accent>
+                {(result.lifeEvents ?? []).length > 0 ? (
+                  <ul className="space-y-1.5">
+                    {result.lifeEvents.map((l, i) => (
+                      <li key={i} className="text-sm text-paper">
+                        <span className="mr-2 font-garamond text-xs text-bronzelight">{l.year ?? ''}</span>
+                        {l.event}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-paperdim/60">{t('aiQuery.empty')}</p>
+                )}
+              </ComparePanel>
+            </div>
+          </section>
 
           <p className="rounded-sm border border-bronze/50 bg-bronze/15 px-3 py-2 text-xs text-bronzelight">
             {result.photoNote || t('aiQuery.photoNote')}

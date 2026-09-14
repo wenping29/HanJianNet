@@ -532,6 +532,8 @@
     "uploadPhoto": "Subir foto",
     "photoUploaded": "Foto descargada y añadida a la lista de fotos de la persona. Se aplica al guardar.",
     "noPhotoFound": "No se encontró ninguna foto de acceso público de esta persona.",
+    "originalColumn": "Datos de archivo actuales",
+    "aiColumn": "Resultado de consulta de IA",
     "originalValue": "Datos de archivo actuales"
   },
   "periods": {

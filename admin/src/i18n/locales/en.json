@@ -573,6 +573,8 @@
     "uploadPhoto": "Upload photo",
     "photoUploaded": "Photo downloaded and added to the photo list. It takes effect after saving.",
     "noPhotoFound": "No publicly accessible photo was found for this person.",
+    "originalColumn": "Current archive data",
+    "aiColumn": "AI query result",
     "originalValue": "Current archive data"
   },
   "periods": {

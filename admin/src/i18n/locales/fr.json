@@ -532,6 +532,8 @@
     "uploadPhoto": "Téléverser la photo",
     "photoUploaded": "Photo téléchargée et ajoutée à la liste des photos de la personne. Prise en compte après enregistrement.",
     "noPhotoFound": "Aucune photo d\u2019accès public n\u2019a été trouvée pour cette personne.",
+    "originalColumn": "Données d'archive actuelles",
+    "aiColumn": "Résultat de la requête IA",
     "originalValue": "Données d'archive actuelles"
   },
   "periods": {

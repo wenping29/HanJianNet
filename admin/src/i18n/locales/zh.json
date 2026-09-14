@@ -573,6 +573,8 @@
     "uploadPhoto": "上传照片",
     "photoUploaded": "照片已下载并加入人物照片列表，保存档案后生效。",
     "noPhotoFound": "未查询到该人物的可公开访问照片。",
+    "originalColumn": "原档案数据",
+    "aiColumn": "AI 查询结果",
     "originalValue": "原档案数据"
   },
   "periods": {
