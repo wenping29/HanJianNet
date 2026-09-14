@@ -237,9 +237,8 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
     clearAiResult(targetId)
   }
 
-  const handleAiReady = () => {
-    if (!aiQuery.result) return
-    fillFromResult(aiQuery.result)
+  const handleAiReady = (ai: AiTraitorResult) => {
+    fillFromResult(ai)
     aiQuery.close()
   }
 
@@ -981,7 +980,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
           setPhotoAiOnly(false)
         }}
         onRetry={() => aiQuery.retry()}
-        onFill={() => handleAiReady()}
+        onFill={handleAiReady}
       />
     </div>
   )

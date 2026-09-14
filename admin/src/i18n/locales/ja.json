@@ -534,6 +534,8 @@
     "noPhotoFound": "この人物の公開アクセス可能な写真は見つかりませんでした。",
     "originalColumn": "現在のアーカイブデータ",
     "aiColumn": "AI クエリ結果",
+    "fieldColumn": "項目",
+    "replaceCheck": "置換する?",
     "originalValue": "現在のアーカイブデータ"
   },
   "periods": {

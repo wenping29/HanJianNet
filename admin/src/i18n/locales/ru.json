@@ -534,6 +534,8 @@
     "noPhotoFound": "Не найдено общедоступных фотографий этой персоны.",
     "originalColumn": "Текущие данные архива",
     "aiColumn": "Результат ИИ-запроса",
+    "fieldColumn": "Поле",
+    "replaceCheck": "Заменить?",
     "originalValue": "Текущие данные архива"
   },
   "periods": {

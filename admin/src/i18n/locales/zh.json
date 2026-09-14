@@ -575,6 +575,8 @@
     "noPhotoFound": "未查询到该人物的可公开访问照片。",
     "originalColumn": "原档案数据",
     "aiColumn": "AI 查询结果",
+    "fieldColumn": "字段",
+    "replaceCheck": "替换",
     "originalValue": "原档案数据"
   },
   "periods": {

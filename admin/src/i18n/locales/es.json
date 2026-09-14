@@ -534,6 +534,8 @@
     "noPhotoFound": "No se encontró ninguna foto de acceso público de esta persona.",
     "originalColumn": "Datos de archivo actuales",
     "aiColumn": "Resultado de consulta de IA",
+    "fieldColumn": "Campo",
+    "replaceCheck": "¿Reemplazar?",
     "originalValue": "Datos de archivo actuales"
   },
   "periods": {

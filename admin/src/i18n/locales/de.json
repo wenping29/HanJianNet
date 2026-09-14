@@ -534,6 +534,8 @@
     "noPhotoFound": "Kein öffentlich zugängliches Foto für diese Person gefunden.",
     "originalColumn": "Aktuelle Archivdaten",
     "aiColumn": "AI-Abfrageergebnis",
+    "fieldColumn": "Feld",
+    "replaceCheck": "Ersetzen?",
     "originalValue": "Aktuelle Archivdaten"
   },
   "periods": {

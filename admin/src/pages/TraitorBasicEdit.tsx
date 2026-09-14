@@ -509,9 +509,8 @@ function EditView() {
     clearAiResult(id)
   }
 
-  const handleAiReady = () => {
-    if (!aiQuery.result) return
-    fillFromResult(aiQuery.result)
+  const handleAiReady = (ai: AiTraitorResult) => {
+    fillFromResult(ai)
     aiQuery.close()
   }
 
@@ -886,7 +885,7 @@ function EditView() {
         result={aiQuery.result}
         onClose={() => aiQuery.close()}
         onRetry={() => aiQuery.retry()}
-        onFill={() => handleAiReady()}
+        onFill={handleAiReady}
       />
     </div>
   )

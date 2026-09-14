@@ -534,6 +534,8 @@
     "noPhotoFound": "이 인물의 공개 사진을 찾을 수 없습니다.",
     "originalColumn": "현재 아카이브 데이터",
     "aiColumn": "AI 쿼리 결과",
+    "fieldColumn": "필드",
+    "replaceCheck": "교체할까요?",
     "originalValue": "현재 아카이브 데이터"
   },
   "periods": {

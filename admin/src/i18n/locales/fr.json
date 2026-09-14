@@ -534,6 +534,8 @@
     "noPhotoFound": "Aucune photo d\u2019accès public n\u2019a été trouvée pour cette personne.",
     "originalColumn": "Données d'archive actuelles",
     "aiColumn": "Résultat de la requête IA",
+    "fieldColumn": "Champ",
+    "replaceCheck": "Remplacer ?",
     "originalValue": "Données d'archive actuelles"
   },
   "periods": {
