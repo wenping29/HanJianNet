@@ -1,18 +1,88 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import * as echarts from 'echarts'
 import { api } from '../lib/api'
 import type { ProvinceStat } from '../lib/api'
+import i18n from '../i18n'
 import { containerPageStyle } from '../style'
+import { useTheme } from '../stores/theme'
 
 const CHINA_GEOJSON_URL = '/data/100000_full.json'
 
+/** 读取当前主题的 CSS 变量，使 ECharts 配色随主题切换 */
+function cssVar(name: string, alpha?: number): string {
+  const parts = getComputedStyle(document.documentElement).getPropertyValue(name).trim().split(/\s+/)
+  if (parts.length < 3) return '#000'
+  const rgb = parts.slice(0, 3).join(',')
+  return alpha === undefined ? `rgb(${rgb})` : `rgba(${rgb},${alpha})`
+}
 
+function buildOption(stats: ProvinceStat[], t: TFunction, maxCount: number) {
+  const mapData = stats.map((s) => ({ name: s.fullName, value: s.count }))
+
+  return {
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'item' as const,
+      backgroundColor: cssVar('--c-inkcard'),
+      borderColor: cssVar('--c-bronze'),
+      borderWidth: 1,
+      textStyle: { color: cssVar('--c-paper'), fontSize: 13 },
+      formatter: (p: { name?: string; value?: number }) =>
+        `<b>${p.name}</b><br/>${t('map.tooltipTemplate', { count: p.value && p.value > 0 ? p.value : 0, name: p.value && p.value > 0 ? '' : '' })}`,
+    },
+    visualMap: {
+      min: 0,
+      max: maxCount,
+      left: 20,
+      bottom: 20,
+      calculable: true,
+      text: [t('map.high'), t('map.low')],
+      textStyle: { color: cssVar('--c-paperdim'), fontSize: 11 },
+      inRange: {
+        color: [
+          cssVar('--c-cinnabar', 0.12),
+          cssVar('--c-cinnabar', 0.35),
+          cssVar('--c-cinnabar', 0.55),
+          cssVar('--c-cinnabar', 0.78),
+          cssVar('--c-cinnabar'),
+        ],
+      },
+    },
+    series: [
+      {
+        type: 'map' as const,
+        map: 'china',
+        roam: true,
+        zoom: 1.2,
+        top: 50,
+        bottom: 20,
+        label: {
+          show: true,
+          fontSize: 9,
+          color: cssVar('--c-paperdim'),
+        },
+        emphasis: {
+          label: { color: cssVar('--c-paper'), fontSize: 11 },
+          itemStyle: { areaColor: cssVar('--c-cinnabarlight'), borderColor: cssVar('--c-bronzelight') },
+        },
+        itemStyle: {
+          borderColor: cssVar('--c-paperedge', 0.35),
+          borderWidth: 0.5,
+          areaColor: cssVar('--c-inksoft'),
+        },
+        data: mapData,
+      },
+    ],
+  }
+}
 
 export default function TraitorMap() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const theme = useTheme((s) => s.theme)
   const chartRef = useRef<HTMLDivElement>(null)
   const chartInstance = useRef<echarts.ECharts | null>(null)
   const [loading, setLoading] = useState(true)
@@ -20,6 +90,7 @@ export default function TraitorMap() {
   const [stats, setStats] = useState<ProvinceStat[]>([])
   const [total, setTotal] = useState(0)
 
+  // 拉取地图数据并初始化图表（不随主题/语言重建）
   useEffect(() => {
     let cancelled = false
 
@@ -34,70 +105,15 @@ export default function TraitorMap() {
 
         const sortedStats = statsRes.items
 
+        echarts.registerMap('china', geoJson)
+
         setStats(sortedStats)
         setTotal(statsRes.total)
 
-        const maxCount = Math.max(1, ...sortedStats.map((s) => s.count))
-        const mapData = sortedStats.map((s) => ({
-          name: s.fullName,
-          value: s.count,
-        }))
-
-        echarts.registerMap('china', geoJson)
-
-const el = chartRef.current
-          if (el && !cancelled) {
-            const chart = echarts.init(el)
-            chartInstance.current = chart
-            chart.setOption({
-              backgroundColor: 'transparent',
-            tooltip: {
-              trigger: 'item',
-              backgroundColor: '#1a1410',
-              borderColor: '#8b6914',
-              borderWidth: 1,
-              textStyle: { color: '#e8dcc8', fontSize: 13 },
-              formatter: (p: { name?: string; value?: number }) =>
-                `<b>${p.name}</b><br/>${t('map.tooltipTemplate', { count: p.value && p.value > 0 ? p.value : 0, name: p.value && p.value > 0 ? '' : '' })}`,
-            },
-            visualMap: {
-              min: 0,
-              max: maxCount,
-              left: 20,
-              bottom: 20,
-              calculable: true,
-              text: [t('map.high'), t('map.low')],
-              textStyle: { color: '#9a8870', fontSize: 11 },
-              inRange: {
-                color: ['#dbb50aff', '#bd504aff', '#dd433bff', '#e94113ff', '#fc1205ff'],
-              },
-            },
-            series: [
-              {
-                type: 'map',
-                map: 'china',
-                roam: true,
-                zoom: 1.2,
-                top: 50,
-                bottom: 20,
-                label: {
-                  show: true,
-                  fontSize: 9,
-                  color: '#c4b5a0',
-                },
-                emphasis: {
-                  label: { color: '#fff', fontSize: 11 },
-                  itemStyle: { areaColor: '#c84040', borderColor: '#f0c060' },
-                },
-                itemStyle: {
-                  borderColor: '#5a4030',
-                  borderWidth: 0.5,
-                  areaColor: '#2a1a1a',
-                },
-                data: mapData,
-              },
-            ],
-          })
+        const el = chartRef.current
+        if (el) {
+          const chart = echarts.init(el)
+          chartInstance.current = chart
           const shortByFull = new Map(sortedStats.map((s) => [s.fullName, s.province]))
           chart.on('click', (params) => {
             const name = (params as { name?: string }).name ?? ''
@@ -107,7 +123,7 @@ const el = chartRef.current
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : t('map.loadFailed'))
+          setError(err instanceof Error ? err.message : i18n.t('map.loadFailed'))
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -125,7 +141,15 @@ const el = chartRef.current
       chartInstance.current?.dispose()
       chartInstance.current = null
     }
-  }, [t])
+  }, [navigate])
+
+  // 主题或语言变化时仅重绘样式，保留缩放与平移状态
+  useEffect(() => {
+    const chart = chartInstance.current
+    if (!chart) return
+    const maxCount = Math.max(1, ...stats.map((s) => s.count))
+    chart.setOption(buildOption(stats, t, maxCount))
+  }, [stats, t, theme])
 
   return (
     <section style={containerPageStyle} className="py-12">

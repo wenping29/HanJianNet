@@ -448,5 +448,12 @@
   "notFound": {
     "title": "Dossier non trouvé",
     "message": "La page que vous avez visitée n'existe pas ou a été supprimée."
+  },
+  "theme": {
+    "title": "Thème",
+    "ink": "Encre",
+    "paper": "Papier de Xuan",
+    "cinnabar": "Cinabre",
+    "bamboo": "Bambou"
   }
 }

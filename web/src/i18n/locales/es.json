@@ -448,5 +448,12 @@
   "notFound": {
     "title": "Documento no encontrado",
     "message": "La página que visitó no existe o ha sido eliminada."
+  },
+  "theme": {
+    "title": "Tema",
+    "ink": "Tinta",
+    "paper": "Papel de Xuan",
+    "cinnabar": "Cinabrio",
+    "bamboo": "Bambú"
   }
 }

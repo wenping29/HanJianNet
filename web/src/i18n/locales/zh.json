@@ -462,5 +462,12 @@
   "notFound": {
     "title": "卷宗未寻获",
     "message": "您访问的页面不存在或已被移除。"
+  },
+  "theme": {
+    "title": "主题 / Theme",
+    "ink": "墨色",
+    "paper": "宣纸",
+    "cinnabar": "朱砂",
+    "bamboo": "青竹"
   }
 }

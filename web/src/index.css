@@ -2,6 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== 主题色板 =====
+   每套主题定义同名 CSS 变量，Tailwind 颜色通过 rgb(var(--c-*) / <alpha-value>) 引用。
+   新增主题：复制一个 [data-theme] 块并改写数值，同时在 stores/theme.ts 注册名称。 */
+
+/* 墨色 · 默认深色主题 */
+:root,
+[data-theme='ink'] {
+  color-scheme: dark;
+  --c-ink: 14 11 8;
+  --c-inkcard: 23 19 16;
+  --c-inksoft: 43 38 32;
+  --c-paper: 242 234 216;
+  --c-paperdim: 201 191 166;
+  --c-paperedge: 217 203 168;
+  --c-cinnabar: 155 43 43;
+  --c-cinnabarlight: 192 74 58;
+  --c-bronze: 140 107 58;
+  --c-bronzelight: 185 151 91;
+  --c-bamboo: 62 84 74;
+  --c-bamboolight: 110 143 126;
+  --shadow-card: 0 2px 14px rgba(0, 0, 0, 0.45);
+  --hero-a: rgba(242, 234, 216, 0.09);
+  --hero-b: rgba(155, 43, 43, 0.16);
+  --hero-c: rgba(62, 84, 74, 0.14);
+}
+
+/* 主题无关：位于朱砂等深色填充之上的文字，任何主题下都保持浅色 */
+:root {
+  --c-paperlight: 242 234 216;
+}
+
+/* 宣纸 · 浅色主题 */
+[data-theme='paper'] {
+  color-scheme: light;
+  --c-ink: 244 237 221;
+  --c-inkcard: 251 247 238;
+  --c-inksoft: 232 222 199;
+  --c-paper: 32 26 20;
+  --c-paperdim: 110 98 78;
+  --c-paperedge: 176 157 120;
+  --c-cinnabar: 155 43 43;
+  --c-cinnabarlight: 151 38 30;
+  --c-bronze: 140 107 58;
+  --c-bronzelight: 138 106 47;
+  --c-bamboo: 62 84 74;
+  --c-bamboolight: 79 107 92;
+  --shadow-card: 0 2px 14px rgba(90, 74, 48, 0.18);
+  --hero-a: rgba(155, 43, 43, 0.07);
+  --hero-b: rgba(140, 107, 58, 0.12);
+  --hero-c: rgba(62, 84, 74, 0.09);
+}
+
+/* 朱砂 · 暗红主题 */
+[data-theme='cinnabar'] {
+  color-scheme: dark;
+  --c-ink: 20 8 8;
+  --c-inkcard: 31 15 15;
+  --c-inksoft: 53 26 26;
+  --c-paper: 245 228 220;
+  --c-paperdim: 205 175 166;
+  --c-paperedge: 217 181 168;
+  --c-cinnabar: 193 53 43;
+  --c-cinnabarlight: 224 96 74;
+  --c-bronze: 156 111 62;
+  --c-bronzelight: 203 163 106;
+  --c-bamboo: 90 58 58;
+  --c-bamboolight: 143 100 100;
+  --shadow-card: 0 2px 14px rgba(0, 0, 0, 0.5);
+  --hero-a: rgba(245, 228, 220, 0.08);
+  --hero-b: rgba(193, 53, 43, 0.22);
+  --hero-c: rgba(90, 58, 58, 0.18);
+}
+
+/* 青竹 · 墨绿主题 */
+[data-theme='bamboo'] {
+  color-scheme: dark;
+  --c-ink: 7 16 12;
+  --c-inkcard: 14 26 20;
+  --c-inksoft: 28 46 36;
+  --c-paper: 228 240 230;
+  --c-paperdim: 168 193 173;
+  --c-paperedge: 185 205 182;
+  --c-cinnabar: 47 125 91;
+  --c-cinnabarlight: 79 165 124;
+  --c-bronze: 122 140 74;
+  --c-bronzelight: 168 188 114;
+  --c-bamboo: 62 84 74;
+  --c-bamboolight: 110 143 126;
+  --shadow-card: 0 2px 14px rgba(0, 0, 0, 0.45);
+  --hero-a: rgba(228, 240, 230, 0.08);
+  --hero-b: rgba(47, 125, 91, 0.22);
+  --hero-c: rgba(62, 84, 74, 0.18);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -10,7 +104,7 @@
     @apply bg-ink text-paper font-song antialiased;
   }
   ::selection {
-    @apply bg-cinnabar/70 text-paper;
+    @apply bg-cinnabar/70 text-paperlight;
   }
 }
 
@@ -27,7 +121,7 @@
       focus:outline-none focus-visible:ring-2 focus-visible:ring-bronze disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
-    @apply btn border border-cinnabar bg-cinnabar/90 text-paper hover:bg-cinnabar hover:shadow-seal;
+    @apply btn border border-cinnabar bg-cinnabar/90 text-paperlight hover:bg-cinnabar hover:shadow-seal;
   }
   .btn-ghost {
     @apply btn border border-paperedge/30 text-paperdim hover:border-bronzelight hover:text-paper;
@@ -62,15 +156,15 @@
 @layer utilities {
   .ink-hero {
     background:
-      radial-gradient(1100px 480px at 82% -10%, rgba(242, 234, 216, 0.09), transparent 60%),
-      radial-gradient(900px 420px at 8% 112%, rgba(155, 43, 43, 0.16), transparent 62%),
-      radial-gradient(720px 400px at 48% 46%, rgba(62, 84, 74, 0.14), transparent 65%),
-      #0e0b08;
+      radial-gradient(1100px 480px at 82% -10%, var(--hero-a), transparent 60%),
+      radial-gradient(900px 420px at 8% 112%, var(--hero-b), transparent 62%),
+      radial-gradient(720px 400px at 48% 46%, var(--hero-c), transparent 65%),
+      rgb(var(--c-ink));
   }
   .paper-texture {
     background-image:
-      repeating-linear-gradient(0deg, rgba(217, 203, 168, 0.028) 0 1px, transparent 1px 3px),
-      repeating-linear-gradient(90deg, rgba(217, 203, 168, 0.02) 0 1px, transparent 1px 4px);
+      repeating-linear-gradient(0deg, rgb(var(--c-paperedge) / 0.028) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgb(var(--c-paperedge) / 0.02) 0 1px, transparent 1px 4px);
   }
   .animate-fade-up {
     animation: fadeUp 0.7s ease both;

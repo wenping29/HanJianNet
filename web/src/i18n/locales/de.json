@@ -448,5 +448,12 @@
   "notFound": {
     "title": "Seite nicht gefunden",
     "message": "Die angeforderte Seite existiert nicht oder wurde entfernt."
+  },
+  "theme": {
+    "title": "Design",
+    "ink": "Tusche",
+    "paper": "Xuan-Papier",
+    "cinnabar": "Zinnober",
+    "bamboo": "Bambus"
   }
 }
