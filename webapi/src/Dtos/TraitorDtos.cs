@@ -119,6 +119,12 @@ public class TraitorInputDto : TraitorSnapshotDto
 public class TraitorStatsDto
 {
     public int Total { get; set; }
+    /// <summary>被判刑人数：有 ≥1 条犯罪记录的档案数</summary>
+    public int Sentenced { get; set; }
+    /// <summary>子女信息数：有 ≥1 条子女记录的档案数</summary>
+    public int ChildrenInfo { get; set; }
+    /// <summary>后代现状数：子女去向（Whereabouts）不为空的记录数</summary>
+    public int DescendantsStatus { get; set; }
     public Dictionary<string, int> Periods { get; set; } = [];
     public int? EarliestYear { get; set; }
     public int? LatestYear { get; set; }

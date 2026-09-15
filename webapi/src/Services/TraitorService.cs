@@ -129,7 +129,24 @@ public class TraitorService(AppDbContext db, CacheService cache)
             .ToList();
         int? earliestYear = years.Count > 0 ? years.Min() : null;
         int? latestYear = years.Count > 0 ? years.Max() : null;
-        return new TraitorStatsDto { Total = total, Periods = periods, EarliestYear = earliestYear, LatestYear = latestYear };
+
+        // 被判刑人数：有犯罪记录的档案数
+        var sentenced = await db.Traitors.CountAsync(t => t.CrimeRecords.Any());
+        // 子女信息数：有子女记录的档案数
+        var childrenInfo = await db.Traitors.CountAsync(t => t.Children.Any());
+        // 后代现状数：子女去向（Whereabouts）不为空的记录数
+        var descendantsStatus = await db.Children.CountAsync(c => c.Whereabouts != null && c.Whereabouts.Trim() != "");
+
+        return new TraitorStatsDto
+        {
+            Total = total,
+            Sentenced = sentenced,
+            ChildrenInfo = childrenInfo,
+            DescendantsStatus = descendantsStatus,
+            Periods = periods,
+            EarliestYear = earliestYear,
+            LatestYear = latestYear
+        };
     }
 
     /// <summary>

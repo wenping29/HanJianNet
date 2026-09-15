@@ -219,9 +219,11 @@ Base URL 示例：`http://localhost:3000`。鉴权头：`Authorization: Bearer <
 
 成功响应：`{ revisionId }`，不是更新后的档案对象。
 
-### 6.2 统计字段注意
+### 6.2 统计字段
 
-当前 WebApi `GET /api/traitors/stats` 返回 `total`、`periods`、`earliestYear`、`latestYear`。现有 Flutter `TraitorStats` 仍按旧字段 `sentenced/childrenInfo/descendantsStatus` 解析，**实现时必须改模型**，否则首页数量可能一直为 0。
+WebApi `GET /api/traitors/stats` 返回：`total`（档案总数）、`sentenced`（有犯罪记录的档案数）、`childrenInfo`（有子女记录的档案数）、`descendantsStatus`（子女去向不为空的记录数）、`periods`（分时期统计）、`earliestYear`、`latestYear`。
+
+Flutter  `TraitorStats` 应包含 `total`、`sentenced`、`childrenInfo`、`descendantsStatus` 字段；`periods`/`earliestYear`/`latestYear` 可按需选用。
 
 ---
 
