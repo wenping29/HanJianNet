@@ -365,12 +365,9 @@ function EditView() {
     setBusy(true)
     try {
       await api.updateAtrocityEvent(id, payload)
-      flash(t('eventsAdmin.saved'))
-      const { item } = await api.getAtrocityEvent(id)
-      fill(item)
+      navigate('/events')
     } catch (err) {
       setError(err instanceof Error ? err.message : t('common.saveFailed'))
-    } finally {
       setBusy(false)
     }
   }
