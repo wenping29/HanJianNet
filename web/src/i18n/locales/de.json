@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} Einträge · Seite {{page}} / {{totalPages}}",
     "empty": "Keine Einträge gefunden",
     "colIndex": "Nr.",
+    "colAvatar": "Porträt",
     "colName": "Name",
     "colPeriod": "Zeitraum",
     "colFaction": "Fraktion",

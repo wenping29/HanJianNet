@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { api } from '../lib/api'
+import { api, resolveAssetUrl } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
 import { PERIODS, periodLabel } from '../lib/format'
 import { formatLifeSpan } from '../lib/format'
@@ -28,6 +28,27 @@ function buildPageList(current: number, total: number): (number | '...')[] {
   if (total > 1) windows.push(total)
 
   return windows
+}
+
+/** 名录表格中的头像单元格：有照片显示照片，加载失败或无照片时回退为姓名首字 */
+function RosterAvatar({ traitor }: { traitor: TraitorSummary }) {
+  const [photoFailed, setPhotoFailed] = useState(false)
+  if (traitor.photoUrl && !photoFailed) {
+    return (
+      <img
+        src={resolveAssetUrl(traitor.photoUrl)}
+        alt={traitor.name}
+        loading="lazy"
+        className="h-12 w-12 rounded-full border border-paperedge/20 object-cover"
+        onError={() => setPhotoFailed(true)}
+      />
+    )
+  }
+  return (
+    <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-bronze/40 bg-inksoft/60">
+      <span className="font-song text-lg font-bold text-bronzelight/80">{traitor.name.slice(0, 1)}</span>
+    </div>
+  )
 }
 
 export default function Roster() {
@@ -194,6 +215,7 @@ export default function Roster() {
               <thead>
                 <tr>
                   <th className="w-10 text-center">{t('roster.colIndex')}</th>
+                  <th className="text-center">{t('roster.colAvatar')}</th>
                   <th>{t('roster.colName')}</th>
                   <th>{t('roster.colTitle')}</th>
                   <th>{t('roster.colHarmLevel')}</th>
@@ -208,6 +230,9 @@ export default function Roster() {
                 {items.map((tr, i) => (
                   <tr key={tr.id}>
                     <td className="text-center font-garamond text-paperdim">{i + 1 + (page - 1) * pageSize}</td>
+                    <td className="px-3 py-2 text-center">
+                      <RosterAvatar traitor={tr} />
+                    </td>
                     <td>
                       <Link
                         to={`/traitor/${tr.id}`}

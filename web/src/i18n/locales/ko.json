@@ -137,6 +137,7 @@
     "totalRecords": "총 {{total}}건 · {{page}} / {{totalPages}} 페이지",
     "empty": "조건에 맞는 기록이 없습니다",
     "colIndex": "순번",
+    "colAvatar": "초상",
     "colName": "이름",
     "colPeriod": "시기",
     "colFaction": "파벌",

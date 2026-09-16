@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} records · Page {{page}} / {{totalPages}}",
     "empty": "No records match the criteria",
     "colIndex": "#",
+    "colAvatar": "Portrait",
     "colName": "Name",
     "colPeriod": "Period",
     "colFaction": "Faction",

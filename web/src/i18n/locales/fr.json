@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} dossiers · Page {{page}} / {{totalPages}}",
     "empty": "Aucun dossier ne correspond aux critères",
     "colIndex": "N°",
+    "colAvatar": "Portrait",
     "colName": "Nom",
     "colPeriod": "Période",
     "colFaction": "Faction",

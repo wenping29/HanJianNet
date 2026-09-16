@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} записей · Страница {{page}} / {{totalPages}}",
     "empty": "Записи не найдены",
     "colIndex": "№",
+    "colAvatar": "Портрет",
     "colName": "Имя",
     "colPeriod": "Период",
     "colFaction": "Фракция",

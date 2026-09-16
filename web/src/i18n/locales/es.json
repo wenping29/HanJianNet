@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} registros · Página {{page}} / {{totalPages}}",
     "empty": "No hay registros que coincidan con los criterios",
     "colIndex": "N°",
+    "colAvatar": "Retrato",
     "colName": "Nombre",
     "colPeriod": "Período",
     "colFaction": "Facción",

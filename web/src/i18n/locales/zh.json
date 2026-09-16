@@ -137,6 +137,7 @@
     "totalRecords": "共 {{total}} 条档案 · 第 {{page}} / {{totalPages}} 页",
     "empty": "暂无符合条件的档案",
     "colIndex": "序",
+    "colAvatar": "头像",
     "colName": "姓名",
     "colPeriod": "时期",
     "colFaction": "派系",
