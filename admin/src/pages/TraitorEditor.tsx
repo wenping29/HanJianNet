@@ -1265,7 +1265,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         )}
 
         <div className="flex items-center justify-end gap-3 pb-6">
-          <button type="button" onClick={() => navigate(-1)} className="btn-ghost">
+          <button type="button" onClick={() => (mode === 'edit' ? navigate('/traitors/list') : navigate(-1))} className="btn-ghost">
             {t('common.cancel')}
           </button>
           <button type="submit" className="btn-primary min-w-36" disabled={busy || uploading}>

@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
 import { formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
-import { clearTraitorLocalData } from '../lib/ai'
 import { toast } from '../components/Toast'
 import Modal from '../components/Modal'
 import { canManageUsers } from '../lib/roles'
@@ -462,7 +461,6 @@ export default function Traitors() {
                             type="button"
                             className="btn-bronze !px-5 !py-2 text-sm !w-20"
                             onClick={() => {
-                              //clearTraitorLocalData(tr.id)
                               window.open(`${window.location.href.split('#')[0]}#/traitors/${tr.id}/edit`, '_blank', 'noopener')
                             }}
                           >

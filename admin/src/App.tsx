@@ -44,16 +44,19 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedRoute />}>
+        <Route element={<AdminOnlyRoute />}>
+          {/* 编辑档案页：独立新页签打开，不含后台菜单（Layout） */}
+          <Route path="/traitors/:id/edit" element={<TraitorEditor mode="edit" />} />
+        </Route>
         <Route element={<Layout />}>
           <Route path="/" element={<Navigate to="/reviews" replace />} />
-         
+          
           <Route element={<AdminOnlyRoute />}>
             <Route path="/traitors/new" element={<TraitorEditor mode="create" />} />
             <Route path="/traitors/merge" element={<MergeTraitors />} />
             <Route path="/traitors/list" element={<TraitorsList />} />
             <Route path="/traitors/basic-edit" element={<TraitorBasicEdit />} />
             <Route path="/traitors/basic-edit/:id" element={<TraitorBasicEdit />} />
-            <Route path="/traitors/:id/edit" element={<TraitorEditor mode="edit" />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id/edit" element={<Events />} />
           </Route>

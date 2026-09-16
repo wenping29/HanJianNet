@@ -278,7 +278,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     {
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;
-        if (pageSize > 200) pageSize = 200;
+        if (pageSize > 1000) pageSize = 1000;
         var q = db.Traitors.AsQueryable();
         if (!string.IsNullOrWhiteSpace(name))
         {
