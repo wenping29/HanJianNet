@@ -22,6 +22,7 @@ public class AuditActionFilter(LogService logService) : IAsyncActionFilter
     {
         "/swagger",
         "/api/admin/logs",
+        "/api/admin/dashboard",  // 看板自身不记日志，否则「查询数量」会被刷新看板的请求污染
         "/uploads",
         "/data/",  // 前端地图静态数据
     };

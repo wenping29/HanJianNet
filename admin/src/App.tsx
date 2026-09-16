@@ -6,6 +6,7 @@ import LoginLogs from './pages/Logs/LoginLogs'
 import OperationLogs from './pages/Logs/OperationLogs'
 import QueryLogs from './pages/Logs/QueryLogs'
 import ErrorLogs from './pages/Logs/ErrorLogs'
+import Dashboard from './pages/Dashboard'
 import Events from './pages/Events'
 import Menus from './pages/Menus'
 import NotFound from './pages/NotFound'
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/menus" element={<Menus />} />
           <Route path="/web-menus" element={<WebMenus />} />
           <Route element={<AdminOnlyRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/settings" element={<SystemConfig />} />
             <Route path="/logs/login" element={<LoginLogs />} />
             <Route path="/logs/operation" element={<OperationLogs />} />

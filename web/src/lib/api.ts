@@ -150,8 +150,8 @@ export const api = {
 
   listWebMenus: () => request<{ items: WebMenu[] }>('/web-menus'),
 
-  trackVisit: (token: string) =>
-    request<{ ok: boolean }>('/visits/track', { method: 'POST', body: JSON.stringify({ token }) }),
+  trackVisit: (token: string, path: string) =>
+    request<{ ok: boolean }>('/visits/track', { method: 'POST', body: JSON.stringify({ token, path }) }),
 
   getVisitStats: () => request<{ totalVisits: number; totalVisitors: number }>('/visits/stats'),
 

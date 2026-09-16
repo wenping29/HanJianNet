@@ -9,9 +9,11 @@ import type {
   Attachment,
   AttachmentKind,
   AuthPayload,
+  DashboardOverview,
   DuplicateGroup,
   ErrorLogItem,
   LoginLogItem,
+  LoginTrendPoint,
   MenuItem,
   OperationLogItem,
   Paginated,
@@ -381,4 +383,10 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(body),
     }),
+
+  // ---- 数据看板 ----
+  dashboardOverview: () => request<DashboardOverview>('/admin/dashboard/overview'),
+
+  loginTrend: (days: number) =>
+    request<{ items: LoginTrendPoint[] }>(`/admin/dashboard/login-trend?days=${days}`),
 }

@@ -46,6 +46,8 @@ export default function Layout() {
   const [menus, setMenus] = useState<WebMenu[]>(FALLBACK_MENUS)
   const [visitStats, setVisitStats] = useState<{ totalVisits: number; totalVisitors: number }>({ totalVisits: 123456, totalVisitors: 56789 })
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const visitorToken = useRef<string | null>(null)
+  const lastTrackedPath = useRef<string | null>(null)
 
   // 路由切换时自动收起移动端菜单
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function Layout() {
     }
   }, [user])
 
-  // 访客统计：生成/读取访客 token，同会话只计一次访问，并加载统计
+  // 访客标识：生成/读取访客 token 并加载累计统计
   useEffect(() => {
     let cancelled = false
     let token = localStorage.getItem('hanjian_visitor')
@@ -109,10 +111,7 @@ export default function Layout() {
           : `v-${Date.now()}-${Math.random().toString(36).slice(2)}`
       localStorage.setItem('hanjian_visitor', token)
     }
-    if (!sessionStorage.getItem('hanjian_visit_tracked')) {
-      sessionStorage.setItem('hanjian_visit_tracked', '1')
-      api.trackVisit(token).catch(() => {})
-    }
+    visitorToken.current = token
     api
       .getVisitStats()
       .then((r) => {
@@ -123,6 +122,16 @@ export default function Layout() {
       cancelled = true
     }
   }, [])
+
+  // 浏览量（PV）：每次路由切换上报一次；只记 pathname，不带 query，
+  // 避免筛选条件把同一页面拆成多条。ref 去重是为了抵消 StrictMode 下的重复执行。
+  useEffect(() => {
+    const token = visitorToken.current
+    if (!token) return
+    if (lastTrackedPath.current === location.pathname) return
+    lastTrackedPath.current = location.pathname
+    api.trackVisit(token, location.pathname).catch(() => {})
+  }, [location.pathname])
 
   function openMenu() {
     if (closeTimer.current) {

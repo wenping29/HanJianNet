@@ -1,6 +1,7 @@
 CREATE TABLE "VisitLogs" (
     "Id" INTEGER NOT NULL CONSTRAINT "PK_VisitLogs" PRIMARY KEY AUTOINCREMENT,
     "VisitorToken" TEXT NOT NULL,
+    "Path" TEXT NOT NULL DEFAULT '',
     "CreatedAt" TEXT NOT NULL
 );
 CREATE INDEX "IX_VisitLogs_CreatedAt" ON "VisitLogs" ("CreatedAt");

@@ -119,6 +119,8 @@ try
     // 前台访客统计
     builder.Services.AddScoped<VisitService>();
     builder.Services.AddScoped<SystemConfigService>();
+    // 后台数据看板
+    builder.Services.AddScoped<DashboardService>();
     // AI 史料查询（DeepSeek）
     var deepSeekOptions = builder.Configuration.GetSection("DeepSeek").Get<DeepSeekOptions>() ?? new DeepSeekOptions();
     if (string.IsNullOrWhiteSpace(deepSeekOptions.BaseUrl))
@@ -244,6 +246,12 @@ static class DbInitHelpers
     {
         await EnsureTableAsync(db, "VisitLogs", "VisitLogs.sqlite.sql", "VisitLogs.mysql.sql");
         await EnsureTableAsync(db, "atrocitycases", "AtrocityCases.sqlite.sql", "AtrocityCases.mysql.sql");
+
+        // 补齐 VisitLogs 表的新增列（Path：真实 PV 需要按页面统计）
+        await EnsureColumnAsync(db, "VisitLogs", "Path",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE VisitLogs ADD COLUMN Path TEXT NOT NULL DEFAULT '';"
+                : "ALTER TABLE VisitLogs ADD COLUMN Path VARCHAR(256) NOT NULL DEFAULT '';");
 
         // 补齐 Traitors 表的新增列（MergedIntoId / MergedAt）
         await EnsureColumnAsync(db, "Traitors", "MergedIntoId",

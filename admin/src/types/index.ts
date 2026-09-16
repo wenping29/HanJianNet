@@ -394,3 +394,61 @@ export interface SystemConfig {
   createdAt: string
   updatedAt: string | null
 }
+
+// ---------- 数据看板 ----------
+
+/** 服务器运行状态 */
+export interface ServerStatus {
+  machineName: string
+  osDescription: string
+  environment: string
+  framework: string
+  processId: number
+  processorCount: number
+  /** 进程内存占用（MB） */
+  workingSetMb: number
+  /** .NET 托管内存（MB） */
+  managedMemoryMb: number
+  /** 系统（OS）已运行秒数 */
+  osUptimeSeconds: number
+  /** 进程启动时间，取不到时为 null */
+  startedAt: string | null
+  /** 进程已运行秒数，取不到时为 null */
+  uptimeSeconds: number | null
+}
+
+/** 数据库运行状态 */
+export interface DatabaseStatus {
+  /** 友好名：MySQL / SQLite */
+  provider: string
+  providerName: string
+  connected: boolean
+  /** 连接耗时（毫秒），连接失败时为 null */
+  latencyMs: number | null
+  databaseName: string | null
+  serverVersion: string | null
+}
+
+/** 看板计数（口径见后端 DashboardService） */
+export interface DashboardCounts {
+  traitorCount: number
+  visitorCount: number
+  pageViewCount: number
+  userCount: number
+  /** 近 7 日登录成功去重用户数 */
+  activeUserCount: number
+  queryCount: number
+}
+
+export interface DashboardOverview {
+  server: ServerStatus
+  database: DatabaseStatus
+  counts: DashboardCounts
+}
+
+/** 每日登录用户趋势的一个数据点 */
+export interface LoginTrendPoint {
+  /** yyyy-MM-dd（本地日期） */
+  date: string
+  count: number
+}

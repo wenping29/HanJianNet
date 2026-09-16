@@ -12,13 +12,15 @@ public class VisitService(AppDbContext db)
 {
     public record VisitStats(long TotalVisits, long TotalVisitors);
 
-    /// <summary>记录一次前台访问。token 为空或同会话已记录时忽略去重前的重复计次（由调用方控制）。</summary>
-    public async Task TrackAsync(string? visitorToken)
+    /// <summary>记录一次前台页面访问。token 为空则忽略；是否去重由调用方控制。</summary>
+    public async Task TrackAsync(string? visitorToken, string? path)
     {
         if (string.IsNullOrWhiteSpace(visitorToken)) return;
         if (visitorToken.Length > 128) visitorToken = visitorToken[..128];
+        if (string.IsNullOrWhiteSpace(path)) path = "";
+        else if (path.Length > 256) path = path[..256];
 
-        db.VisitLogs.Add(new VisitLog { VisitorToken = visitorToken });
+        db.VisitLogs.Add(new VisitLog { VisitorToken = visitorToken, Path = path });
         await db.SaveChangesAsync();
     }
 
