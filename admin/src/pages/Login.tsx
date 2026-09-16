@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
-import { canAccessConsole } from '../lib/roles'
+import { canAccessConsole, defaultLandingPath } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 
 export default function Login() {
@@ -26,7 +26,8 @@ export default function Login() {
         return
       }
       setAuth(data.token, data.user)
-      const from = (location.state as { from?: string } | null)?.from ?? '/reviews'
+      const from =
+        (location.state as { from?: string } | null)?.from ?? defaultLandingPath(data.user.role)
       navigate(from, { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : t('login.loginFailed'))

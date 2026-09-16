@@ -32,6 +32,11 @@ export function canManageUsers(role: Role): boolean {
   return roleRank(role) >= roleRank('admin')
 }
 
+/** 登录后默认落地页：能进数据看板的角色进看板，其余进审核列表 */
+export function defaultLandingPath(role: Role): string {
+  return canManageUsers(role) ? '/dashboard' : '/reviews'
+}
+
 /**
  * 能否把某账号改为某角色（与后端规则一致）：
  * 不能改自己；只能操作层级低于自己的账号；不能授予不低于自己的角色。

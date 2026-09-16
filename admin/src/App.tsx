@@ -22,8 +22,14 @@ import TraitorsList from './pages/Traitors'
 import MergeTraitors from './pages/MergeTraitors'
 import Users from './pages/Users'
 import WebMenus from './pages/WebMenus'
-import { canManageUsers } from './lib/roles'
+import { canManageUsers, defaultLandingPath } from './lib/roles'
 import { useAuth } from './stores/auth'
+
+/** 根路径按角色分流：管理员进数据看板，其余进审核列表 */
+function HomeRedirect() {
+  const user = useAuth((s) => s.user)
+  return <Navigate to={user ? defaultLandingPath(user.role) : '/reviews'} replace />
+}
 
 function AdminOnlyRoute() {
   const user = useAuth((s) => s.user)
@@ -51,7 +57,7 @@ export default function App() {
           <Route path="/events/:id/edit" element={<Events />} />
         </Route>
         <Route element={<Layout />}>
-          <Route path="/" element={<Navigate to="/reviews" replace />} />
+          <Route path="/" element={<HomeRedirect />} />
           
           <Route element={<AdminOnlyRoute />}>
             <Route path="/traitors/new" element={<TraitorEditor mode="create" />} />
