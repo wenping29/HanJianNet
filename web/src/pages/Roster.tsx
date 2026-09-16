@@ -31,9 +31,9 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 }
 
 /** 名录表格中的头像单元格：有照片显示照片，加载失败或无照片时回退为姓名首字 */
-function RosterAvatar({ traitor }: { traitor: TraitorSummary }) {
+function RosterAvatar({ traitor, showAvatar = true }: { traitor: TraitorSummary; showAvatar?: boolean }) {
   const [photoFailed, setPhotoFailed] = useState(false)
-  if (traitor.photoUrl && !photoFailed) {
+  if (showAvatar && traitor.photoUrl && !photoFailed) {
     return (
       <img
         src={resolveAssetUrl(traitor.photoUrl)}
@@ -54,6 +54,7 @@ function RosterAvatar({ traitor }: { traitor: TraitorSummary }) {
 export default function Roster() {
   const { t } = useTranslation()
   const pageSize = useConfig((s) => s.getPageSize('web.roster.pageSize', 20))
+  const showAvatar = useConfig((s) => s.getBoolean('web.roster.showAvatar', true))
   const [searchParams, setSearchParams] = useSearchParams()
   const [filters, setFilters] = useState<TraitorFilters>(() => ({
     name: '',
@@ -231,7 +232,7 @@ export default function Roster() {
                   <tr key={tr.id}>
                     <td className="text-center font-garamond text-paperdim">{i + 1 + (page - 1) * pageSize}</td>
                     <td className="px-3 py-2 text-center">
-                      <RosterAvatar traitor={tr} />
+                      <RosterAvatar traitor={tr} showAvatar={showAvatar} />
                     </td>
                     <td>
                       <Link

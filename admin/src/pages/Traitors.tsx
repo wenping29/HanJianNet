@@ -54,6 +54,7 @@ export default function Traitors() {
   const me = useAuth((s) => s.user)!
   const navigate = useNavigate()
   const pageSize = useConfig((s) => s.getNumber('web.admin.traitors.pageSize', DEFAULT_PAGE_SIZE))
+  const showAvatar = useConfig((s) => s.getBoolean('web.admin.traitors.showAvatar', true))
   const [items, setItems] = useState<TraitorSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -452,17 +453,18 @@ export default function Traitors() {
                     </td>
                     <td className="px-5 py-3 w-[200px]">
                       <div className="flex items-center gap-3">
-                        {tr.photoUrl ? (
-                          <img
-                            src={resolveAssetUrl(tr.photoUrl)}
-                            alt=""
-                            className="h-10 w-10 shrink-0 rounded-sm object-cover"
-                          />
-                        ) : (
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-paperedge/20 font-song text-xs text-paperdim/60">
-                            {t('common.none')}
-                          </span>
-                        )}
+                        {showAvatar &&
+                          (tr.photoUrl ? (
+                            <img
+                              src={resolveAssetUrl(tr.photoUrl)}
+                              alt=""
+                              className="h-10 w-10 shrink-0 rounded-sm object-cover"
+                            />
+                          ) : (
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-paperedge/20 font-song text-xs text-paperdim/60">
+                              {t('common.none')}
+                            </span>
+                          ))}
                         <span className="font-medium tracking-wider text-paper">{tr.name}</span>
                       </div>
                     </td>
