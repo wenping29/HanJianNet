@@ -59,9 +59,9 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
 
     [Authorize(Roles = "admin,superadmin")]
     [HttpGet("api/admin/traitors")]
-    public async Task<IActionResult> AdminList([FromQuery] string? name, [FromQuery] int? harmLevel, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> AdminList([FromQuery] string? name, [FromQuery] int? harmLevel, [FromQuery] bool? hasPhoto, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var paged = await traitors.AdminListAsync(name, harmLevel, page, pageSize);
+        var paged = await traitors.AdminListAsync(name, harmLevel, hasPhoto, page, pageSize);
         return Ok(new { paged.Items, paged.Total, paged.Page, paged.PageSize, paged.TotalPages });
     }
 

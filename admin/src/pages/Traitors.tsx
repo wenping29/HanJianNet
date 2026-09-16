@@ -60,6 +60,7 @@ export default function Traitors() {
   const [keyword, setKeyword] = useState('')
   const [searched, setSearched] = useState('')
   const [level, setLevel] = useState('')
+  const [hasPhoto, setHasPhoto] = useState('')
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
@@ -75,10 +76,10 @@ export default function Traitors() {
   const [batchExporting, setBatchExporting] = useState(false)
   const selectAllRef = useRef<HTMLInputElement>(null)
 
-  const reload = useCallback(async (name?: string, p = 1, lv?: number) => {
+  const reload = useCallback(async (name?: string, p = 1, lv?: number, hp?: boolean) => {
     setError('')
     try {
-      const data = await api.adminTraitors(name || undefined, p, pageSize, lv)
+      const data = await api.adminTraitors(name || undefined, p, pageSize, lv, hp)
       const items = Array.isArray(data.items) ? data.items : []
       const pageNum = typeof data.page === 'number' ? data.page : p
       const totalNum = typeof data.total === 'number' ? data.total : items.length
@@ -111,7 +112,7 @@ export default function Traitors() {
     const q = keyword.trim()
     setSearched(q)
     setLoading(true)
-    await reload(q, 1, level ? Number(level) : undefined)
+    await reload(q, 1, level ? Number(level) : undefined, hasPhoto ? hasPhoto === '1' : undefined)
     setLoading(false)
   }
 
@@ -119,15 +120,16 @@ export default function Traitors() {
     setKeyword('')
     setSearched('')
     setLevel('')
+    setHasPhoto('')
     setLoading(true)
-    await reload(undefined, 1, undefined)
+    await reload(undefined, 1, undefined, undefined)
     setLoading(false)
   }
 
   const goPage = async (next: number) => {
     if (next < 1 || next > totalPages || next === page) return
     setLoading(true)
-    await reload(searched || undefined, next, level ? Number(level) : undefined)
+    await reload(searched || undefined, next, level ? Number(level) : undefined, hasPhoto ? hasPhoto === '1' : undefined)
     window.scrollTo({ top: 0, behavior: 'smooth' })
     setLoading(false)
   }
@@ -135,7 +137,13 @@ export default function Traitors() {
   const handleLevelChange = (v: string) => {
     setLevel(v)
     setLoading(true)
-    void reload(searched || undefined, 1, v ? Number(v) : undefined).finally(() => setLoading(false))
+    void reload(searched || undefined, 1, v ? Number(v) : undefined, hasPhoto ? hasPhoto === '1' : undefined).finally(() => setLoading(false))
+  }
+
+  const handlePhotoChange = (v: string) => {
+    setHasPhoto(v)
+    setLoading(true)
+    void reload(searched || undefined, 1, level ? Number(level) : undefined, v ? v === '1' : undefined).finally(() => setLoading(false))
   }
 
   const handleDelete = async (tr: TraitorSummary) => {
@@ -144,7 +152,7 @@ export default function Traitors() {
     try {
       await api.deleteTraitor(tr.id)
       toast(t('traitors.deleteSuccess'))
-      await reload(searched || undefined, page, level ? Number(level) : undefined)
+      await reload(searched || undefined, page, level ? Number(level) : undefined, hasPhoto ? hasPhoto === '1' : undefined)
     } catch (e) {
       toast(e instanceof Error ? e.message : t('traitors.deleteFailed'), 'error')
     } finally {
@@ -159,7 +167,7 @@ export default function Traitors() {
     try {
       await api.deleteTraitorPhotos(tr.id)
       toast(t('traitors.deletePhotosSuccess'))
-      await reload(searched || undefined, page, level ? Number(level) : undefined)
+      await reload(searched || undefined, page, level ? Number(level) : undefined, hasPhoto ? hasPhoto === '1' : undefined)
     } catch (e) {
       toast(e instanceof Error ? e.message : t('traitors.deletePhotosFailed'), 'error')
     } finally {
@@ -225,7 +233,7 @@ export default function Traitors() {
       const data = await api.batchDeleteTraitorPhotos(ids)
       toast(t('traitors.batchDeletePhotosSuccess', { count: data.count }))
       setPendingBatchPhotoDelete(false)
-      await reload(searched || undefined, page, level ? Number(level) : undefined)
+      await reload(searched || undefined, page, level ? Number(level) : undefined, hasPhoto ? hasPhoto === '1' : undefined)
     } catch (e) {
       toast(e instanceof Error ? e.message : t('traitors.batchDeletePhotosFailed'), 'error')
     } finally {
@@ -308,10 +316,21 @@ export default function Traitors() {
               </option>
             ))}
           </select>
+          <select
+            className="input w-28 flex-none"
+            value={hasPhoto}
+            onChange={(e) => handlePhotoChange(e.target.value)}
+            disabled={loading}
+            aria-label={t('traitors.hasPhoto')}
+          >
+            <option value="">{t('common.all')}</option>
+            <option value="1">{t('traitors.withPhoto')}</option>
+            <option value="0">{t('traitors.withoutPhoto')}</option>
+          </select>
           <button type="submit" className="btn-bronze flex-none" disabled={loading}>
             {t('common.search')}
           </button>
-          {searched && (
+          {(searched || level || hasPhoto) && (
             <button type="button" className="btn-ghost flex-none" onClick={handleReset}>
               {t('common.reset')}
             </button>

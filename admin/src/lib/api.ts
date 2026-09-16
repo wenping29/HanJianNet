@@ -141,10 +141,11 @@ export const api = {
 
   getTraitor: (id: string) => request<{ traitor: TraitorSnapshot }>(`/traitors/${id}`),
 
-  adminTraitors: (name?: string, page = 1, pageSize = 10, harmLevel?: number) => {
+  adminTraitors: (name?: string, page = 1, pageSize = 10, harmLevel?: number, hasPhoto?: boolean) => {
     const params = new URLSearchParams()
     if (name) params.set('name', name)
     if (harmLevel != null) params.set('harmLevel', String(harmLevel))
+    if (hasPhoto != null) params.set('hasPhoto', String(hasPhoto))
     params.set('page', String(page))
     params.set('pageSize', String(pageSize))
     return request<{ items: TraitorSummary[] } & Paginated<TraitorSummary>>(`/admin/traitors?${params.toString()}`)
