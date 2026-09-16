@@ -13,6 +13,7 @@ import Profile from './pages/Profile'
 import ReviewDetail from './pages/ReviewDetail'
 import Reviews from './pages/Reviews'
 import Roles from './pages/Roles'
+import SystemConfig from './pages/SystemConfig'
 import TraitorBasicEdit from './pages/TraitorBasicEdit'
 import TraitorEditor from './pages/TraitorEditor'
 // import Traitors from './pages/Traitors'
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/menus" element={<Menus />} />
           <Route path="/web-menus" element={<WebMenus />} />
           <Route element={<AdminOnlyRoute />}>
+            <Route path="/settings" element={<SystemConfig />} />
             <Route path="/logs/login" element={<LoginLogs />} />
             <Route path="/logs/operation" element={<OperationLogs />} />
             <Route path="/logs/query" element={<QueryLogs />} />

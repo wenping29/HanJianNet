@@ -12,6 +12,7 @@
     "roles": "ロール管理",
     "menus": "メニュー管理",
     "web-menus": "フロントメニュー",
+    "system-config": "システム設定",
     "profile": "個人情報",
     "logs-login": "ログインログ",
     "logs-operation": "操作ログ",
@@ -330,6 +331,24 @@
     "disableSuccess": "メニュー「{{label}}」を無効にしました",
     "operationFailed": "操作に失敗しました",
     "updateSuccess": "メニュー「{{label}}」を更新しました",
+    "updateFailed": "保存に失敗しました"
+  },
+  "systemConfig": {
+    "title": "システム設定",
+    "description": "web、webapi、mobileappのキー値設定項目を管理します。",
+    "hint": "変更はすぐに有効になり、フロントエンドの再起動は不要です。",
+    "noData": "システム設定データがありません",
+    "startBackend": "バックエンドサービスを起動してください。シードデータが自動作成されます",
+    "key": "キー",
+    "value": "値",
+    "description": "説明",
+    "updatedAt": "更新日時",
+    "edit": "編集",
+    "editTitle": "システム設定を変更",
+    "keyNotModifiable": "キー {{key}} は変更できません",
+    "valuePlaceholder": "設定値を入力",
+    "descriptionPlaceholder": "説明を入力（任意）",
+    "updateSuccess": "設定 {{key}} を更新しました",
     "updateFailed": "保存に失敗しました"
   },
   "profile": {

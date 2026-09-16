@@ -15,6 +15,7 @@ public static class DbSeeder
         await SeedRolesAsync(db);
         await SeedMenusAndPermissionsAsync(db);
         await SeedWebMenusAsync(db);
+        await SeedSystemConfigsAsync(db);
         await SeedAdminAsync(db,
             config["Seed:AdminUsername"] ?? "admin",
             config["Seed:AdminEmail"] ?? "admin@hanjiannet.local",
@@ -81,6 +82,7 @@ public static class DbSeeder
             ("logs-operation", "/logs/operation", "操作日志", 2, "system-logs", ["admin", "superadmin"]),
             ("logs-query", "/logs/query", "查询日志", 3, "system-logs", ["admin", "superadmin"]),
             ("logs-error", "/logs/error", "错误日志", 4, "system-logs", ["admin", "superadmin"]),
+            ("system-config", "/settings", "系统配置", 6, "system", ["admin", "superadmin"]),
         };
 
         // 1) 菜单：缺则补，存在则修正 Parent/Sort（不改 Label/Path，尊重用户修改）
@@ -211,6 +213,39 @@ public static class DbSeeder
             {
                 existing.Sort = menu.Sort;
                 // 不覆盖 IsEnabled，尊重用户在数据库中的启停配置
+            }
+        }
+        await db.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// 种子系统配置项：按 Key 幂等，缺则补，已存在只修正 Description（不覆盖 Value）。
+    /// </summary>
+    private static async Task SeedSystemConfigsAsync(AppDbContext db)
+    {
+        var defaults = new[]
+        {
+            new { Key = "web.home.pageSize",   Value = "20", Category = "web", Description = "Web 首页每页条数" },
+            new { Key = "web.roster.pageSize", Value = "20", Category = "web", Description = "Web 名录每页条数" },
+            new { Key = "web.lookup.pageSize", Value = "20", Category = "web", Description = "Web 查询每页条数" },
+        };
+
+        foreach (var d in defaults)
+        {
+            var existing = await db.SystemConfigs.FirstOrDefaultAsync(c => c.Key == d.Key);
+            if (existing is null)
+            {
+                db.SystemConfigs.Add(new SystemConfig
+                {
+                    Key = d.Key,
+                    Value = d.Value,
+                    Category = d.Category,
+                    Description = d.Description,
+                });
+            }
+            else
+            {
+                existing.Description = d.Description;
             }
         }
         await db.SaveChangesAsync();

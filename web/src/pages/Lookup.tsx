@@ -4,8 +4,7 @@ import TraitorCard from '../components/TraitorCard'
 import { api } from '../lib/api'
 import type { TraitorSummary } from '../types'
 import { containerPageStyle } from "../style"
-
-const PAGE_SIZE = 20
+import { useConfig } from '../stores/config'
 
 type ResultState = 'idle' | 'loading' | 'done'
 
@@ -31,6 +30,7 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 
 export default function Lookup() {
   const { t } = useTranslation()
+  const pageSize = useConfig((s) => s.getPageSize('web.lookup.pageSize', 20))
   const [name, setName] = useState('')
   const [nativePlace, setNativePlace] = useState('')
   const [results, setResults] = useState<TraitorSummary[]>([])
@@ -41,7 +41,7 @@ export default function Lookup() {
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const resultRef = useRef<HTMLDivElement>(null)
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   async function runQuery(qName: string, qPlace: string, p: number) {
     setState('loading')
@@ -51,7 +51,7 @@ export default function Lookup() {
         name: qName,
         province: qPlace || undefined,
         page: p,
-        pageSize: PAGE_SIZE,
+        pageSize: pageSize,
       })
       setResults(data.items)
       setTotal(data.total)

@@ -8,8 +8,7 @@ import { formatLifeSpan } from '../lib/format'
 import { harmLevelClass, harmLevelLabel } from '../lib/format'
 import type { TraitorSummary } from '../types'
 import { containerPageStyle } from '../style'
-
-const PAGE_SIZE = 20
+import { useConfig } from '../stores/config'
 
 /** 生成分页按钮上显示的页码列表：首尾页 + 当前页附近 + 省略号 */
 function buildPageList(current: number, total: number): (number | '...')[] {
@@ -33,6 +32,7 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 
 export default function Roster() {
   const { t } = useTranslation()
+  const pageSize = useConfig((s) => s.getPageSize('web.roster.pageSize', 20))
   const [searchParams, setSearchParams] = useSearchParams()
   const [filters, setFilters] = useState<TraitorFilters>(() => ({
     name: '',
@@ -45,13 +45,13 @@ export default function Roster() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   const loadList = useCallback(async (f: TraitorFilters, p: number) => {
     setLoading(true)
     setError('')
     try {
-      const data = await api.listTraitors({ ...f, page: p, pageSize: PAGE_SIZE })
+      const data = await api.listTraitors({ ...f, page: p, pageSize: pageSize })
       setItems(data.items)
       setTotal(data.total)
       setPage(data.page)
@@ -62,7 +62,7 @@ export default function Roster() {
     } finally {
       setLoading(false)
     }
-  }, [t])
+  }, [t, pageSize])
 
   useEffect(() => {
     const province = searchParams.get('province') ?? ''
@@ -207,7 +207,7 @@ export default function Roster() {
               <tbody>
                 {items.map((tr, i) => (
                   <tr key={tr.id}>
-                    <td className="text-center font-garamond text-paperdim">{i + 1 + (page - 1) * PAGE_SIZE}</td>
+                    <td className="text-center font-garamond text-paperdim">{i + 1 + (page - 1) * pageSize}</td>
                     <td>
                       <Link
                         to={`/traitor/${tr.id}`}

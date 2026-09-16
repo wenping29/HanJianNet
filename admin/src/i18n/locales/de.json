@@ -12,6 +12,7 @@
     "roles": "Rollenverwaltung",
     "menus": "Menüverwaltung",
     "web-menus": "Frontend-Menüs",
+    "system-config": "Systemkonfiguration",
     "profile": "Profil",
     "logs-login": "Anmeldeprotokolle",
     "logs-operation": "Vorgangsprotokolle",
@@ -330,6 +331,24 @@
     "disableSuccess": "Menü \"{{label}}\" deaktiviert",
     "operationFailed": "Operation fehlgeschlagen",
     "updateSuccess": "Menü \"{{label}}\" aktualisiert",
+    "updateFailed": "Speichern fehlgeschlagen"
+  },
+  "systemConfig": {
+    "title": "Systemkonfiguration",
+    "description": "Schlüssel-Wert-Konfigurationen für web, webapi, mobileapp verwalten.",
+    "hint": "Änderungen werden sofort wirksam, ohne Frontend-Neustart.",
+    "noData": "Keine Systemkonfigurationsdaten",
+    "startBackend": "Bitte starten Sie das Backend, Seed-Daten werden automatisch erstellt",
+    "key": "Schlüssel",
+    "value": "Wert",
+    "description": "Beschreibung",
+    "updatedAt": "Aktualisiert am",
+    "edit": "Bearbeiten",
+    "editTitle": "Systemkonfiguration ändern",
+    "keyNotModifiable": "Schlüssel {{key}} kann nicht geändert werden",
+    "valuePlaceholder": "Konfigurationswert eingeben",
+    "descriptionPlaceholder": "Beschreibung eingeben (optional)",
+    "updateSuccess": "Konfiguration {{key}} aktualisiert",
     "updateFailed": "Speichern fehlgeschlagen"
   },
   "profile": {

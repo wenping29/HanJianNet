@@ -155,6 +155,8 @@ export const api = {
 
   getVisitStats: () => request<{ totalVisits: number; totalVisitors: number }>('/visits/stats'),
 
+  getPublicConfig: () => request<{ items: Record<string, string> }>('/config'),
+
   createTraitor: (input: TraitorInput & { changeSummary: string }) =>
     request<{ revisionId: string }>('/traitors', { method: 'POST', body: JSON.stringify(input) }),
 

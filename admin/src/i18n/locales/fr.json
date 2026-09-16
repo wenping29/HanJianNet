@@ -12,6 +12,7 @@
     "roles": "Gestion des rôles",
     "menus": "Gestion des menus",
     "web-menus": "Menus du site",
+    "system-config": "Configuration du système",
     "profile": "Profil",
     "logs-login": "Journaux de connexion",
     "logs-operation": "Journaux d'opérations",
@@ -330,6 +331,24 @@
     "disableSuccess": "Menu « {{label}} » désactivé",
     "operationFailed": "Opération échouée",
     "updateSuccess": "Menu « {{label}} » mis à jour",
+    "updateFailed": "Échec de l'enregistrement"
+  },
+  "systemConfig": {
+    "title": "Configuration du système",
+    "description": "Gérer les éléments de configuration clé-valeur pour web, webapi, mobileapp.",
+    "hint": "Les modifications sont effectives immédiatement sans redémarrer le frontend.",
+    "noData": "Aucune donnée de configuration système",
+    "startBackend": "Veuillez démarrer le backend, les données seed seront créées automatiquement",
+    "key": "Clé",
+    "value": "Valeur",
+    "description": "Description",
+    "updatedAt": "Mis à jour le",
+    "edit": "Modifier",
+    "editTitle": "Modifier la configuration système",
+    "keyNotModifiable": "La clé {{key}} ne peut pas être modifiée",
+    "valuePlaceholder": "Saisir la valeur de configuration",
+    "descriptionPlaceholder": "Saisir une description (facultatif)",
+    "updateSuccess": "Configuration {{key}} mise à jour",
     "updateFailed": "Échec de l'enregistrement"
   },
   "profile": {

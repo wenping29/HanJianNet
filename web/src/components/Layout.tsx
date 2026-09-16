@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
+import { useConfig } from '../stores/config'
 import type { Revision, WebMenu } from '../types'
 import { headerMenuItemStyle,footerContainerPageStyle } from '../style'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -66,6 +67,11 @@ export default function Layout() {
     return () => {
       cancelled = true
     }
+  }, [])
+
+  // 加载系统配置（web 端公开配置，后端不可用时静默降级到 fallback）
+  useEffect(() => {
+    useConfig.getState().load()
   }, [])
 
   // 获取通知数量：已审核（approved/rejected）的提交记录数

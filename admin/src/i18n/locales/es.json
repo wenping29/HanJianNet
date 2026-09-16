@@ -12,6 +12,7 @@
     "roles": "Gestión de roles",
     "menus": "Gestión de menús",
     "web-menus": "Menús del sitio",
+    "system-config": "Configuración del sistema",
     "profile": "Perfil",
     "logs-login": "Registros de inicio de sesión",
     "logs-operation": "Registros de operaciones",
@@ -330,6 +331,24 @@
     "disableSuccess": "Menü \"{{label}}\" deshabilitado",
     "operationFailed": "Error en la operación",
     "updateSuccess": "Menü \"{{label}}\" actualizado",
+    "updateFailed": "Error al guardar"
+  },
+  "systemConfig": {
+    "title": "Configuración del sistema",
+    "description": "Administrar elementos de configuración clave-valor para web, webapi, mobileapp.",
+    "hint": "Los cambios surten efecto inmediatamente sin reiniciar el frontend.",
+    "noData": "Sin datos de configuración del sistema",
+    "startBackend": "Inicie el backend, los datos seed se crearán automáticamente",
+    "key": "Clave",
+    "value": "Valor",
+    "description": "Descripción",
+    "updatedAt": "Actualizado el",
+    "edit": "Editar",
+    "editTitle": "Modificar configuración del sistema",
+    "keyNotModifiable": "La clave {{key}} no se puede modificar",
+    "valuePlaceholder": "Ingrese el valor de configuración",
+    "descriptionPlaceholder": "Ingrese descripción (opcional)",
+    "updateSuccess": "Configuración {{key}} actualizada",
     "updateFailed": "Error al guardar"
   },
   "profile": {

@@ -118,6 +118,7 @@ try
     builder.Services.AddScoped<CacheService>();
     // 前台访客统计
     builder.Services.AddScoped<VisitService>();
+    builder.Services.AddScoped<SystemConfigService>();
     // AI 史料查询（DeepSeek）
     var deepSeekOptions = builder.Configuration.GetSection("DeepSeek").Get<DeepSeekOptions>() ?? new DeepSeekOptions();
     if (string.IsNullOrWhiteSpace(deepSeekOptions.BaseUrl))
@@ -257,6 +258,12 @@ static class DbInitHelpers
             db.Database.IsSqlite()
                 ? "ALTER TABLE Traitors ADD COLUMN BirthPlace TEXT NOT NULL DEFAULT '';"
                 : "ALTER TABLE Traitors ADD COLUMN BirthPlace VARCHAR(255) NOT NULL DEFAULT '';");
+
+        // 系统配置表（EnsureCreated 会为新库自动建表，此处兼容旧库）
+        await db.Database.ExecuteSqlRawAsync(
+            db.Database.IsSqlite()
+                ? """CREATE TABLE IF NOT EXISTS "SystemConfigs" ("Id" TEXT NOT NULL PRIMARY KEY, "Key" TEXT NOT NULL, "Value" TEXT NOT NULL DEFAULT '', "Category" TEXT NOT NULL DEFAULT '', "Description" TEXT, "CreatedAt" TEXT NOT NULL, "UpdatedAt" TEXT); CREATE UNIQUE INDEX IF NOT EXISTS "IX_SystemConfigs_Key" ON "SystemConfigs" ("Key"); CREATE INDEX IF NOT EXISTS "IX_SystemConfigs_Category" ON "SystemConfigs" ("Category");"""
+                : "CREATE TABLE IF NOT EXISTS `SystemConfigs` (`Id` VARCHAR(64) NOT NULL PRIMARY KEY, `Key` VARCHAR(128) NOT NULL, `Value` TEXT NOT NULL, `Category` VARCHAR(64) NOT NULL, `Description` TEXT, `CreatedAt` DATETIME NOT NULL, `UpdatedAt` DATETIME NULL, UNIQUE INDEX `IX_SystemConfigs_Key` (`Key`), INDEX `IX_SystemConfigs_Category` (`Category`));");
     }
 
     /// <summary>检查表是否存在，不存在则执行对应方言的 DDL 文件建表。</summary>

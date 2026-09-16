@@ -366,3 +366,14 @@ export interface AtrocityEventInput {
   summary?: string
   keywords: string[]
 }
+
+/** 系统配置项（对应后端 SystemConfigDto） */
+export interface SystemConfig {
+  id: string
+  key: string
+  value: string
+  category: string
+  description: string | null
+  createdAt: string
+  updatedAt: string | null
+}

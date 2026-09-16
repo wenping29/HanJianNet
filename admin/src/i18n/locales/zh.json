@@ -12,6 +12,7 @@
     "roles": "角色管理",
     "menus": "菜单管理",
     "web-menus": "前台菜单",
+    "system-config": "系统配置",
     "profile": "个人信息",
     "logs-login": "登录日志",
     "logs-operation": "操作日志",
@@ -370,6 +371,24 @@
     "disableSuccess": "菜单「{{label}}」已停用",
     "operationFailed": "操作失败",
     "updateSuccess": "菜单「{{label}}」已更新",
+    "updateFailed": "保存失败"
+  },
+  "systemConfig": {
+    "title": "系统配置",
+    "description": "管理 web、webapi、mobileapp 各端点的键值配置项。",
+    "hint": "修改后立即生效，前台无需重启。",
+    "noData": "暂无系统配置数据",
+    "startBackend": "请启动后端服务，种子数据将自动创建",
+    "key": "键",
+    "value": "值",
+    "description": "描述",
+    "updatedAt": "更新时间",
+    "edit": "编辑",
+    "editTitle": "修改系统配置",
+    "keyNotModifiable": "键 {{key}} 不可修改",
+    "valuePlaceholder": "输入配置值",
+    "descriptionPlaceholder": "输入描述（可选）",
+    "updateSuccess": "配置 {{key}} 已更新",
     "updateFailed": "保存失败"
   },
   "profile": {

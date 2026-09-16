@@ -12,6 +12,7 @@
     "roles": "Role Management",
     "menus": "Menu Management",
     "web-menus": "Site Menus",
+    "system-config": "System Configuration",
     "profile": "Profile",
     "logs-login": "Login Logs",
     "logs-operation": "Operation Logs",
@@ -371,6 +372,24 @@
     "disableSuccess": "Menu \"{{label}}\" disabled",
     "operationFailed": "Operation failed",
     "updateSuccess": "Menu \"{{label}}\" updated",
+    "updateFailed": "Save failed"
+  },
+  "systemConfig": {
+    "title": "System Configuration",
+    "description": "Manage key-value configuration items for web, webapi, mobileapp.",
+    "hint": "Changes take effect immediately without restarting the frontend.",
+    "noData": "No system configuration data",
+    "startBackend": "Please start the backend service, seed data will be created automatically",
+    "key": "Key",
+    "value": "Value",
+    "description": "Description",
+    "updatedAt": "Updated At",
+    "edit": "Edit",
+    "editTitle": "Modify System Configuration",
+    "keyNotModifiable": "Key {{key}} cannot be modified",
+    "valuePlaceholder": "Enter config value",
+    "descriptionPlaceholder": "Enter description (optional)",
+    "updateSuccess": "Config {{key}} updated",
     "updateFailed": "Save failed"
   },
   "profile": {

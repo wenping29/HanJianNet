@@ -20,6 +20,7 @@ import type {
   RevisionStatusStats,
   Role,
   RoleMenuConfig,
+  SystemConfig,
   TraitorDetail,
   TraitorInput,
   TraitorSnapshot,
@@ -336,4 +337,13 @@ export const api = {
     params.set('pageSize', String(q.pageSize ?? 20))
     return request<Paginated<ErrorLogItem>>(`/admin/logs/error-logs?${params.toString()}`)
   },
+
+  // ---- 系统配置 ----
+  listSystemConfigs: () => request<{ items: SystemConfig[] }>('/admin/system-configs'),
+
+  updateSystemConfig: (id: string, body: { value: string; description?: string | null }) =>
+    request<{ item: SystemConfig }>(`/admin/system-configs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }),
 }

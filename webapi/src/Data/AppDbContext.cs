@@ -27,6 +27,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<VisitLog> VisitLogs => Set<VisitLog>();
     public DbSet<AtrocityCase> AtrocityCases => Set<AtrocityCase>();
     public DbSet<AtrocityCasePerson> AtrocityCasePersons => Set<AtrocityCasePerson>();
+    public DbSet<SystemConfig> SystemConfigs => Set<SystemConfig>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -172,6 +173,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(p => p.AtrocityCaseId);
             e.HasOne(p => p.Case).WithMany(c => c.Persons)
                 .HasForeignKey(p => p.AtrocityCaseId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ---------- 系统配置 ----------
+        modelBuilder.Entity<SystemConfig>(e =>
+        {
+            e.HasIndex(c => c.Key).IsUnique();
+            e.HasIndex(c => c.Category);
         });
     }
 }
