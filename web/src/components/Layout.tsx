@@ -6,6 +6,7 @@ import { useAuth } from '../stores/auth'
 import type { Revision, WebMenu } from '../types'
 import { headerMenuItemStyle,footerContainerPageStyle } from '../style'
 import LanguageSwitcher from './LanguageSwitcher'
+import ThemeSwitcher from './ThemeSwitcher'
 /** 后端不可用时的兜底菜单 */
 const FALLBACK_MENUS: WebMenu[] = [
   { id: 'fb1', key: 'home', path: '/', label: '首页', sort: 1, isEnabled: true },
@@ -171,6 +172,7 @@ export default function Layout() {
 
           {/* 右：桌面用户区（≥1024px 显示） */}
           <div className="hidden shrink-0 items-center justify-end gap-3 lg:flex">
+            <ThemeSwitcher />
             <LanguageSwitcher />
             {user ? (
               <div
@@ -184,7 +186,7 @@ export default function Layout() {
                     {user.username.slice(0, 1).toUpperCase()}
                     {/* 通知数量徽标 */}
                     {notifCount > 0 && (
-                      <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-ink bg-cinnabar px-1 font-garamond text-[10px] font-bold leading-none text-paper">
+                      <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-ink bg-cinnabar px-1 font-garamond text-[10px] font-bold leading-none text-paperlight">
                         {notifCount > 99 ? '99+' : notifCount}
                       </span>
                     )}
@@ -279,7 +281,8 @@ export default function Layout() {
           />
           <div className="fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-paperedge/15 bg-inkcard shadow-card animate-fade-up">
             <nav className="container-page flex flex-col py-2">
-              <div className="flex justify-end px-2 py-1.5">
+              <div className="flex justify-end gap-2 px-2 py-1.5">
+                <ThemeSwitcher />
                 <LanguageSwitcher />
               </div>
               {menus.map((m) => (

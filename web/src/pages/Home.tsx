@@ -148,7 +148,7 @@ export default function Home() {
         </div>
       </section>
                   {/* 统计看板 */}
-      <section className="container-page -mt-2 py-2">
+      <section className="container-page -mt-2 py-4">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard label={t('home.statTotal')} value={stats?.total ?? 0} />
           <StatCard label={t('home.statConvicted')} value={stats?.sentenced ?? 0} />
@@ -257,7 +257,7 @@ export default function Home() {
           <p className="py-16 text-center text-paperdim">{t('home.noResults')}</p>
         )}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {items.map((t) => (
             <TraitorCard key={t.id} traitor={t} />
           ))}

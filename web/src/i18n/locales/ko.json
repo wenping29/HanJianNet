@@ -448,5 +448,12 @@
   "notFound": {
     "title": "문서를 찾을 수 없습니다",
     "message": "요청하신 페이지가 존재하지 않거나 삭제되었습니다."
+  },
+  "theme": {
+    "title": "테마",
+    "ink": "먹색",
+    "paper": "선지",
+    "cinnabar": "주사",
+    "bamboo": "청죽"
   }
 }
