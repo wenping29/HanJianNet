@@ -93,7 +93,7 @@ export default function QueryLogs() {
   }
 
   return (
-    <div className="container-page py-10">
+    <div className="container-page py-5">
       <SectionTitle zh={t('logs.queryLogs.title')} en="Query Audits" />
 
       <form

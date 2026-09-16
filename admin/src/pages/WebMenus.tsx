@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import PageHeader from '../components/PageHeader'
 import { api } from '../lib/api'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -113,19 +114,18 @@ export default function WebMenus() {
 
   const manageable = canManageUsers(me.role)
 
-  return (
-    <div className="container-page py-10">
-      <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('webMenus.title')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Web Menu Configuration</p>
-        </div>
+return (
+    <div className="container-page py-5">
+      <PageHeader
+        title={t('webMenus.title')}
+        subtitle="Web Menu Configuration"
+      >
         <p className="text-xs leading-relaxed text-paperdim/70">
           {t('webMenus.description')}
           <br />
           {t('webMenus.hint')}
         </p>
-      </header>
+      </PageHeader>
 
       {notice && (
         <p className="mt-6 rounded-sm border border-bronze/50 bg-bronze/10 px-3 py-2 text-sm text-bronzelight">{notice}</p>

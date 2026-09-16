@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
+import PageHeader from '../components/PageHeader'
 import { PERIODS, splitList, formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
 import { normalizeAiResult, clearTraitorLocalData } from '../lib/ai'
 import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
@@ -177,19 +178,10 @@ function ListView() {
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
 
   return (
-    <div className="container-page py-10">
-      <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('basicEdit.title')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
-            Basic Info Editor
-          </p>
-        </div>
-      </header>
-
-      <p className="mt-3 text-sm text-paperdim">
-        {t('basicEdit.description')}
-      </p>
+    <div className="container-page py-5">
+      <PageHeader title={t('basicEdit.title')} subtitle="Basic Info Editor">
+        <p className="text-sm text-paperdim">{t('basicEdit.description')}</p>
+      </PageHeader>
 
       <div className="animate-fade-up mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
         <form
@@ -578,31 +570,30 @@ function EditView() {
   if (loading) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
 
   return (
-    <div className="container-page max-w-3xl py-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <header>
-          <h1 className="text-xl font-semibold tracking-[0.25em] text-paper">{t('basicEdit.editBasicInfo')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
-            BASIC INFO · ADMIN DIRECT
-          </p>
-        </header>
-        {notice && (
-          <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
-            {notice}
-          </p>
-        )}
-        <button
-          type="button"
-          className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
-          onClick={() => void aiQuery.run(form.name)}
-          disabled={!form.name.trim()}
-        >
-          {t('aiQuery.queryAction')}
-        </button>
-      </div>
-      <p className="mt-3 text-sm text-paperdim">
-        {t('basicEdit.description2')}
-      </p>
+    <div className="container-page max-w-3xl py-5">
+      <PageHeader
+        title={t('basicEdit.editBasicInfo')}
+        subtitle="BASIC INFO · ADMIN DIRECT"
+        actions={
+          <>
+            {notice && (
+              <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
+                {notice}
+              </p>
+            )}
+            <button
+              type="button"
+              className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
+              onClick={() => void aiQuery.run(form.name)}
+              disabled={!form.name.trim()}
+            >
+              {t('aiQuery.queryAction')}
+            </button>
+          </>
+        }
+      >
+        <p className="text-sm text-paperdim">{t('basicEdit.description2')}</p>
+      </PageHeader>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
         <fieldset className="card p-6">

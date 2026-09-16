@@ -95,7 +95,7 @@ export default function ErrorLogs() {
   }
 
   return (
-    <div className="container-page py-10">
+    <div className="container-page py-5">
       <SectionTitle zh={t('logs.errorLogs.title')} en="Error Audits" />
 
       <form

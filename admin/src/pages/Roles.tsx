@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import MenuPicker from '../components/MenuPicker'
 import Modal from '../components/Modal'
+import PageHeader from '../components/PageHeader'
 import { api } from '../lib/api'
 import { ROLE_LABELS, roleRank } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -92,17 +93,11 @@ export default function Roles() {
     ? editing.cfg.role !== 'superadmin' && canEditRole(editing.cfg.role as Role)
     : false
 
-  return (
-    <div className="container-page py-10">
-      <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('roles.title')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Role Management</p>
-        </div>
-        <p className="text-xs tracking-wider text-paperdim/70">
-          {t('roles.description')}
-        </p>
-      </header>
+return (
+    <div className="container-page py-5">
+      <PageHeader title={t('roles.title')} subtitle="Role Management">
+        <p className="text-xs tracking-wider text-paperdim/70">{t('roles.description')}</p>
+      </PageHeader>
 
       {notice && (
         <p className="mt-6 rounded-sm border border-bronze/50 bg-bronze/10 px-3 py-2 text-sm text-bronzelight">

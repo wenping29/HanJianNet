@@ -68,7 +68,7 @@ export default function TraitorDetail() {
   const photoUrl = (a: { url: string }) => resolveAssetUrl(a.url)
 
   return (
-    <div className="container-page py-10">
+    <div className="container-page py-5">
       {/* 人物头部 */}
       <header className="card animate-fade-up flex flex-col gap-6 p-6 md:flex-row md:p-8">
         <div className="flex h-56 w-full shrink-0 items-center justify-center overflow-hidden rounded-sm border border-paperedge/15 bg-inksoft md:w-44">

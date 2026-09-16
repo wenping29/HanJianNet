@@ -7,6 +7,7 @@ import { normalizeAiResult } from '../lib/ai'
 import type { NormalizedAi } from '../lib/ai'
 import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
 import Modal from '../components/Modal'
+import PageHeader from '../components/PageHeader'
 import { ROLE_LABELS } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 import type {
@@ -719,44 +720,41 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         </div>
       </header>
 
-      <div className="container-page max-w-7xl py-10 pt-24">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <header>
-          <h1 className="text-xl font-semibold tracking-[0.25em] text-paper">
-            {mode === 'create' ? t('traitorEditor.createTitle') : t('traitorEditor.editTitle')}
-          </h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
-            {mode === 'create' ? 'NEW ARCHIVE · ADMIN DIRECT' : 'EDIT ARCHIVE · ADMIN DIRECT'}
-          </p>
-        </header>
-        {notice && (
-          <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
-            {notice}
-          </p>
-        )}
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="btn-ghost !px-4 !py-2 text-xs !text-bronzelight"
-            onClick={() => setPreviewOpen(true)}
-          >
-            {t('traitorEditor.preview')}
-          </button>
-          {mode === 'edit' && (
-            <button
-              type="button"
-              className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
-              onClick={() => openAiQuery(false)}
-              disabled={!form.name.trim()}
-            >
-              {t('aiQuery.queryAction')}
-            </button>
-          )}
-        </div>
-      </div>
-      <p className="mt-3 text-sm text-paperdim">
-        {t('traitorEditor.adminHint')}
-      </p>
+      <div className="container-page max-w-7xl py-5 pt-24">
+        <PageHeader
+          title={mode === 'create' ? t('traitorEditor.createTitle') : t('traitorEditor.editTitle')}
+          subtitle={mode === 'create' ? 'NEW ARCHIVE · ADMIN DIRECT' : 'EDIT ARCHIVE · ADMIN DIRECT'}
+          actions={
+            <>
+              {notice && (
+                <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
+                  {notice}
+                </p>
+              )}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  className="btn-ghost !px-4 !py-2 text-xs !text-bronzelight"
+                  onClick={() => setPreviewOpen(true)}
+                >
+                  {t('traitorEditor.preview')}
+                </button>
+                {mode === 'edit' && (
+                  <button
+                    type="button"
+                    className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
+                    onClick={() => openAiQuery(false)}
+                    disabled={!form.name.trim()}
+                  >
+                    {t('aiQuery.queryAction')}
+                  </button>
+                )}
+              </div>
+            </>
+          }
+        >
+          <p className="text-sm text-paperdim">{t('traitorEditor.adminHint')}</p>
+        </PageHeader>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
           <Fieldset title={t('traitorEditor.basicInfo')} en="BASIC">

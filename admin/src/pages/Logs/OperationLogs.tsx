@@ -95,7 +95,7 @@ export default function OperationLogs() {
   }
 
   return (
-    <div className="container-page py-10">
+    <div className="container-page py-5">
       <SectionTitle zh={t('logs.operationLogs.title')} en="Operation Audits" />
 
       <form

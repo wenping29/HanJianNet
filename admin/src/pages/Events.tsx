@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import PageHeader from '../components/PageHeader'
 import { PERIODS, splitList } from '../lib/format'
 import type { AtrocityEventDetail, AtrocityEventInput, AtrocityEventSummary } from '../types'
 
@@ -114,17 +115,10 @@ function ListView() {
   }
 
   return (
-    <div className="container-page py-10">
-      <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('eventsAdmin.title')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
-            {t('eventsAdmin.subtitle')}
-          </p>
-        </div>
-      </header>
-
-      <p className="mt-3 text-sm text-paperdim">{t('eventsAdmin.description')}</p>
+    <div className="container-page py-5">
+      <PageHeader title={t('eventsAdmin.title')} subtitle={t('eventsAdmin.subtitle')}>
+        <p className="text-sm text-paperdim">{t('eventsAdmin.description')}</p>
+      </PageHeader>
 
       <div className="animate-fade-up mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-2 md:gap-3">
@@ -342,21 +336,20 @@ function EditView() {
   if (loading) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
 
   return (
-    <div className="container-page max-w-3xl py-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <header>
-          <h1 className="text-xl font-semibold tracking-[0.25em] text-paper">{t('eventsAdmin.editTitle')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
-            {t('eventsAdmin.editSubtitle')}
-          </p>
-        </header>
-        {notice && (
-          <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
-            {notice}
-          </p>
-        )}
-      </div>
-      <p className="mt-3 text-sm text-paperdim">{t('eventsAdmin.description2')}</p>
+    <div className="container-page max-w-3xl py-5">
+      <PageHeader
+        title={t('eventsAdmin.editTitle')}
+        subtitle={t('eventsAdmin.editSubtitle')}
+        actions={
+          notice ? (
+            <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
+              {notice}
+            </p>
+          ) : null
+        }
+      >
+        <p className="text-sm text-paperdim">{t('eventsAdmin.description2')}</p>
+      </PageHeader>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
         <fieldset className="card p-6">

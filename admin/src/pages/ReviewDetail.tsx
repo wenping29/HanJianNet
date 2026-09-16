@@ -96,7 +96,7 @@ export default function ReviewDetail() {
   const pending = revision.status === ('pending' satisfies ReviewStatus)
 
   return (
-    <div className="container-page py-10">
+    <div className="container-page py-5">
       <header className="animate-fade-up card p-6">
         <div className="flex flex-wrap items-center gap-3">
           <Link to="/reviews" className="btn-ghost !px-3 !py-1.5 text-xs">{t('reviews.queue')}</Link>

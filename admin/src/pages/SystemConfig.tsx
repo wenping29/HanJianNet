@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import PageHeader from '../components/PageHeader'
 import { api } from '../lib/api'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
@@ -121,19 +122,18 @@ export default function SystemConfigPage() {
 
   const manageable = canManageUsers(me.role)
 
-  return (
-    <div className="container-page py-10">
-      <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('systemConfig.title')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">System Configuration</p>
-        </div>
+return (
+    <div className="container-page py-5">
+      <PageHeader
+        title={t('systemConfig.title')}
+        subtitle="System Configuration"
+      >
         <p className="text-xs leading-relaxed text-paperdim/70">
           {t('systemConfig.description')}
           <br />
           {t('systemConfig.hint')}
         </p>
-      </header>
+      </PageHeader>
 
       {notice && (
         <p className="mt-6 rounded-sm border border-bronze/50 bg-bronze/10 px-3 py-2 text-sm text-bronzelight">{notice}</p>

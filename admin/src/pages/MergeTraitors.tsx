@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api, resolveAssetUrl } from '../lib/api'
+import PageHeader from '../components/PageHeader'
 import { formatLifeSpan } from '../lib/format'
 import MergeCompareModal from '../components/MergeCompareModal'
 import type { DuplicateGroup } from '../types'
@@ -84,13 +85,8 @@ export default function MergeTraitors() {
   }
 
   return (
-    <div className="container-page py-10">
-      <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('merge.title')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">{t('merge.subtitle')}</p>
-        </div>
-      </header>
+    <div className="container-page py-5">
+      <PageHeader title={t('merge.title')} subtitle={t('merge.subtitle')} />
 
       <form
         className="animate-fade-up mt-6 flex flex-col gap-3 md:flex-row md:items-center md:gap-4"

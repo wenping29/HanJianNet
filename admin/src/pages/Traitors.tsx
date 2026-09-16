@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
+import PageHeader from '../components/PageHeader'
 import { formatLifeSpan, harmLevelClass, HARM_LEVELS } from '../lib/format'
 import { toast } from '../components/Toast'
 import Modal from '../components/Modal'
@@ -266,13 +267,18 @@ export default function Traitors() {
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
 
   return (
-    <div className="container-page py-10">
-      <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('traitors.title')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Archive Management</p>
-        </div>
-      </header>
+    <div className="container-page py-1 px-1">
+      <PageHeader
+        title={t('traitors.title')}
+        subtitle="Archive Management"
+        actions={
+          canManageUsers(me.role) ? (
+            <button type="button" className="btn-primary" onClick={() => navigate('/traitors/new')}>
+              {t('traitors.newTraitor')}
+            </button>
+          ) : null
+        }
+      />
 
       <div className="animate-fade-up mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
         <form
@@ -311,7 +317,7 @@ export default function Traitors() {
             </button>
           )}
         </form>
-        {canManageUsers(me.role) && (
+        {/* {canManageUsers(me.role) && (
           <button
             type="button"
             className="btn-primary flex-none md:ml-2"
@@ -319,7 +325,7 @@ export default function Traitors() {
           >
             {t('traitors.newTraitor')}
           </button>
-        )}
+        )} */}
       </div>
 
       {selectedIds.size > 0 && (
