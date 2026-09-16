@@ -94,7 +94,9 @@
     "registeredAt": "Registrado el",
     "resetFailed": "Error al restablecer",
     "requestFailed": "Solicitud fallida ({{status}})",
-    "uploadFailed": "Error al subir"
+    "uploadFailed": "Error al subir",
+    "select": "Seleccionar «{{name}}»",
+    "view": "Ver"
   },
   "sidebar": {
     "archives": "Archivos",
@@ -521,7 +523,9 @@
       "changeSummaryPlaceholder": "Describa brevemente el contenido de esta entrega/modificación para referencia de la revisión"
     },
     "saveDraft": "Guardar archivo directamente",
-    "saveChanges": "Guardar cambios"
+    "saveChanges": "Guardar cambios",
+    "previewLive": "Vista previa en vivo",
+    "previewHint": "Rellene el formulario de la izquierda: el archivo se previsualiza en tiempo real a la derecha."
   },
   "profileTab": {
     "title": "Perfil"

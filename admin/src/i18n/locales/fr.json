@@ -94,7 +94,9 @@
     "registeredAt": "Inscrit le",
     "resetFailed": "Échec de la réinitialisation",
     "requestFailed": "Requête échouée ({{status}})",
-    "uploadFailed": "Échec de l'envoi"
+    "uploadFailed": "Échec de l'envoi",
+    "select": "Sélectionner « {{name}} »",
+    "view": "Voir"
   },
   "sidebar": {
     "archives": "Archives",
@@ -521,7 +523,9 @@
       "changeSummaryPlaceholder": "Décrivez brièvement le contenu de cette soumission/modification pour référence de la révision"
     },
     "saveDraft": "Enregistrer l'archive directement",
-    "saveChanges": "Enregistrer les modifications"
+    "saveChanges": "Enregistrer les modifications",
+    "previewLive": "Aperçu en direct",
+    "previewHint": "Remplissez le formulaire à gauche : l'archive est prévisualisée en temps réel à droite."
   },
   "profileTab": {
     "title": "Profil"

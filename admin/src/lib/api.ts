@@ -164,6 +164,24 @@ export const api = {
   deleteTraitorPhotos: (id: string) =>
     request<{ message: string; count: number }>(`/admin/traitors/${id}/photos`, { method: 'DELETE' }),
 
+  batchDeleteTraitors: (ids: string[]) =>
+    request<{ message: string; count: number }>('/admin/traitors/batch-delete', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    }),
+
+  batchDeleteTraitorPhotos: (ids: string[]) =>
+    request<{ message: string; count: number }>('/admin/traitors/batch-delete-photos', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    }),
+
+  batchExportTraitors: (ids: string[]) =>
+    request<{ items: TraitorSummary[] }>('/admin/traitors/batch-export', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    }),
+
   aiQueryTraitor: (name: string) =>
     request<{ result: AiTraitorResult }>('/admin/traitors/ai-query', {
       method: 'POST',

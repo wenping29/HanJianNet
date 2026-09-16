@@ -104,6 +104,30 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
     }
 
     [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/traitors/batch-delete")]
+    public async Task<IActionResult> AdminBatchDelete([FromBody] BatchIdsRequest req)
+    {
+        var count = await traitors.AdminBatchDeleteAsync(req.Ids);
+        return Ok(new { message = "批量删除成功", count });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/traitors/batch-delete-photos")]
+    public async Task<IActionResult> AdminBatchDeletePhotos([FromBody] BatchIdsRequest req)
+    {
+        var count = await traitors.AdminBatchDeletePhotosAsync(req.Ids);
+        return Ok(new { message = "照片已删除", count });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/traitors/batch-export")]
+    public async Task<IActionResult> AdminBatchExport([FromBody] BatchIdsRequest req)
+    {
+        var items = await traitors.AdminExportAsync(req.Ids);
+        return Ok(new { items });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
     [HttpPost("api/admin/traitors/ai-query")]
     public async Task<IActionResult> AdminAiQuery([FromBody] AiTraitorQueryDto req)
     {
@@ -116,4 +140,10 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
 public class TraitorSubmitRequest : TraitorInputDto
 {
     public string ChangeSummary { get; set; } = "";
+}
+
+/// <summary>批量操作请求：Id 列表。</summary>
+public class BatchIdsRequest
+{
+    public List<string> Ids { get; set; } = [];
 }

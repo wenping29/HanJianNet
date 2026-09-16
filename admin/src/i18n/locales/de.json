@@ -94,7 +94,9 @@
     "registeredAt": "Registriert am",
     "resetFailed": "Zurücksetzen fehlgeschlagen",
     "requestFailed": "Anfrage fehlgeschlagen ({{status}})",
-    "uploadFailed": "Upload fehlgeschlagen"
+    "uploadFailed": "Upload fehlgeschlagen",
+    "select": "\"{{name}}\" auswählen",
+    "view": "Ansehen"
   },
   "sidebar": {
     "archives": "Archiv",
@@ -521,7 +523,9 @@
       "changeSummaryPlaceholder": "Beschreiben Sie kurz den Inhalt dieser Einreichung/Änderung zur Referenz für die Prüfung"
     },
     "saveDraft": "Archiv direkt speichern",
-    "saveChanges": "Änderungen speichern"
+    "saveChanges": "Änderungen speichern",
+    "previewLive": "Live-Vorschau",
+    "previewHint": "Füllen Sie das linke Formular aus – das Archiv wird rechts in Echtzeit angezeigt."
   },
   "profileTab": {
     "title": "Profil"

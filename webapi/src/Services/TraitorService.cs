@@ -377,6 +377,111 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     }
 
     /// <summary>
+    /// 批量删除档案：仅删除指定的 Id 列表中实际存在的记录；任一被选记录作为合并目标被引用（MergedIntoId）时整批拒绝。
+    /// 子记录由数据库级联删除。
+    /// </summary>
+    public async Task<int> AdminBatchDeleteAsync(IReadOnlyCollection<string> ids)
+    {
+        var idSet = (ids ?? []).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToHashSet();
+        if (idSet.Count == 0)
+            throw new ApiException(400, "未选择任何档案");
+
+        var traitors = await db.Traitors.Where(t => idSet.Contains(t.Id)).ToListAsync();
+        if (traitors.Count == 0)
+            throw new ApiException(404, "档案不存在");
+
+        // 任一被选记录被其他档案作为合并目标引用时拒绝整批删除，保持数据完整
+        var referenced = await db.Traitors
+            .Where(t => t.MergedIntoId != null && idSet.Contains(t.MergedIntoId))
+            .Select(t => t.MergedIntoId)
+            .Distinct()
+            .ToListAsync();
+        if (referenced.Count > 0)
+            throw new ApiException(409, "所选档案中有被其他档案合并引用的记录，请先解除合并后再删除");
+
+        db.Traitors.RemoveRange(traitors);
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+        return traitors.Count;
+    }
+
+    /// <summary>
+    /// 批量删除所选档案的全部照片：清除 Attachments 中 kind=photo 的记录并删除 uploads 目录下的本地文件。
+    /// 返回受影响（至少删除了一张照片）的档案数。
+    /// </summary>
+    public async Task<int> AdminBatchDeletePhotosAsync(IReadOnlyCollection<string> ids)
+    {
+        var idSet = (ids ?? []).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToHashSet();
+        if (idSet.Count == 0)
+            throw new ApiException(400, "未选择任何档案");
+
+        var photos = await db.Attachments
+            .Where(a => a.Kind == "photo" && idSet.Contains(a.TraitorId))
+            .ToListAsync();
+        if (photos.Count == 0)
+            throw new ApiException(404, "所选档案均无照片");
+
+        db.Attachments.RemoveRange(photos);
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+
+        var uploadRoot = Path.Combine(env.ContentRootPath, "uploads");
+        var fileName = "";
+        foreach (var photo in photos)
+        {
+            if (string.IsNullOrWhiteSpace(photo.Url) || !photo.Url.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+                continue;
+            fileName = Path.GetFileName(photo.Url);
+            if (string.IsNullOrWhiteSpace(fileName))
+                continue;
+            var filePath = Path.Combine(uploadRoot, fileName);
+            try
+            {
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+            }
+            catch
+            {
+                // 文件删除失败不影响数据库记录清理
+            }
+        }
+        return photos.Select(p => p.TraitorId).Distinct().Count();
+    }
+
+    /// <summary>
+    /// 批量导出：按 Id 列表返回包含照片地址的档案概要。ids 为空时返回全量（供无选择场景全量导出）。
+    /// </summary>
+    public async Task<List<TraitorSummaryDto>> AdminExportAsync(IReadOnlyCollection<string> ids)
+    {
+        var idSet = (ids ?? []).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToHashSet();
+        var q = db.Traitors.AsQueryable();
+        if (idSet.Count > 0)
+            q = q.Where(t => idSet.Contains(t.Id));
+        var rows = await q
+            .OrderBy(t => t.HarmLevel == null ? 1 : 0)
+            .ThenBy(t => t.HarmLevel)
+            .ThenBy(t => t.Name)
+            .ThenByDescending(t => t.CreatedAt)
+            .Select(t => new
+            {
+                T = t,
+                PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
+                Titles = t.CrimeRecords
+                    .Where(c => !string.IsNullOrWhiteSpace(c.Title))
+                    .Select(c => c.Title)
+                    .Take(10)
+                    .ToList(),
+            })
+            .ToListAsync();
+        return rows.Select(r =>
+        {
+            var dto = r.T.ToSummary(r.Titles.Count, r.Titles);
+            dto.PhotoUrl = r.PhotoUrl;
+            return dto;
+        }).ToList();
+    }
+
+    /// <summary>
     /// 查找重复记录：按 Name + NativePlace 分组，仅返回未合并（MergedIntoId == null）且 Count > 1 的组。
     /// 可选 name/nativePlace 过滤。
     /// </summary>

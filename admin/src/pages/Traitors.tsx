@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
@@ -27,6 +27,28 @@ function pageWindow(page: number, totalPages: number): Array<number | '…'> {
   return pages
 }
 
+function csvQuote(value: string | number): string {
+  const s = String(value ?? '').replace(/"/g, '""')
+  return /[",\r\n]/.test(s) ? `"${s}"` : s
+}
+
+function downloadCsv(content: string, filename: string): void {
+  const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+function buildCsv(rows: TraitorSummary[], rowCsv: (r: TraitorSummary) => string): string {
+  const header = ['姓名', '生年', '卒年', '时期', '派系', '籍贯', '身份标签', '危害等级', '照片地址']
+  return [header.map(csvQuote).join(','), ...rows.map(rowCsv)].join('\n')
+}
+
 export default function Traitors() {
   const { t } = useTranslation()
   const me = useAuth((s) => s.user)!
@@ -45,6 +67,13 @@ export default function Traitors() {
   const [pendingDelete, setPendingDelete] = useState<TraitorSummary | null>(null)
   const [photoDeletingId, setPhotoDeletingId] = useState<string | null>(null)
   const [pendingPhotoDelete, setPendingPhotoDelete] = useState<TraitorSummary | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [pendingBatchDelete, setPendingBatchDelete] = useState(false)
+  const [batchDeleting, setBatchDeleting] = useState(false)
+  const [pendingBatchPhotoDelete, setPendingBatchPhotoDelete] = useState(false)
+  const [batchPhotoDeleting, setBatchPhotoDeleting] = useState(false)
+  const [batchExporting, setBatchExporting] = useState(false)
+  const selectAllRef = useRef<HTMLInputElement>(null)
 
   const reload = useCallback(async (name?: string, p = 1, lv?: number) => {
     setError('')
@@ -139,6 +168,102 @@ export default function Traitors() {
     }
   }
 
+  const allOnPageSelected = items.length > 0 && items.every((it) => selectedIds.has(it.id))
+  const someOnPageSelected = items.some((it) => selectedIds.has(it.id))
+
+  useEffect(() => {
+    if (selectAllRef.current) selectAllRef.current.indeterminate = someOnPageSelected && !allOnPageSelected
+  }, [someOnPageSelected, allOnPageSelected])
+
+  const toggleSelectAll = (checked: boolean) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      for (const it of items) {
+        if (checked) next.add(it.id)
+        else next.delete(it.id)
+      }
+      return next
+    })
+  }
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const clearSelection = () => setSelectedIds(new Set())
+
+  const handleBatchDelete = async () => {
+    const ids = Array.from(selectedIds)
+    if (ids.length === 0) return
+    setBatchDeleting(true)
+    setError('')
+    try {
+      const data = await api.batchDeleteTraitors(ids)
+      toast(t('traitors.batchDeleteSuccess', { count: data.count }))
+      clearSelection()
+      setPendingBatchDelete(false)
+      // 当前页可能已全被删除，回到第一页
+      await reload(searched || undefined, 1, level ? Number(level) : undefined)
+    } catch (e) {
+      toast(e instanceof Error ? e.message : t('traitors.batchDeleteFailed'), 'error')
+    } finally {
+      setBatchDeleting(false)
+    }
+  }
+
+  const handleBatchDeletePhotos = async () => {
+    const ids = Array.from(selectedIds)
+    if (ids.length === 0) return
+    setBatchPhotoDeleting(true)
+    setError('')
+    try {
+      const data = await api.batchDeleteTraitorPhotos(ids)
+      toast(t('traitors.batchDeletePhotosSuccess', { count: data.count }))
+      setPendingBatchPhotoDelete(false)
+      await reload(searched || undefined, page, level ? Number(level) : undefined)
+    } catch (e) {
+      toast(e instanceof Error ? e.message : t('traitors.batchDeletePhotosFailed'), 'error')
+    } finally {
+      setBatchPhotoDeleting(false)
+    }
+  }
+
+  const handleBatchExport = async () => {
+    const ids = Array.from(selectedIds)
+    if (ids.length === 0) return
+    setBatchExporting(true)
+    setError('')
+    try {
+      const data = await api.batchExportTraitors(ids)
+      const rows = Array.isArray(data.items) ? data.items : []
+      const csv = buildCsv(rows, (r) => {
+        const cells = [
+          r.name,
+          r.birthYear ?? '',
+          r.deathYear ?? '',
+          r.period,
+          r.faction,
+          r.nativePlace ?? '',
+          (r.identityTags ?? []).join(' / '),
+          r.harmLevel != null ? t(`harmLevel.${r.harmLevel}`) : '',
+          r.photoUrl ? resolveAssetUrl(r.photoUrl) : '',
+        ]
+        return cells.map(csvQuote).join(',')
+      })
+      downloadCsv(csv, `traitors-export-${new Date().toISOString().slice(0, 10)}.csv`)
+      toast(t('traitors.batchExportSuccess', { count: rows.length }))
+    } catch (e) {
+      toast(e instanceof Error ? e.message : t('traitors.batchExportFailed'), 'error')
+    } finally {
+      setBatchExporting(false)
+    }
+  }
+
   const pages = useMemo(() => pageWindow(page, totalPages), [page, totalPages])
 
   return (
@@ -198,6 +323,45 @@ export default function Traitors() {
         )}
       </div>
 
+      {selectedIds.size > 0 && (
+        <div className="animate-fade-up mt-4 flex flex-wrap items-center gap-2 rounded-sm border border-bronze/25 bg-bronze/5 px-4 py-3">
+          <span className="mr-1 text-sm tracking-wider text-paperdim/80">
+            {t('traitors.selectedCount', { count: selectedIds.size })}
+          </span>
+          {canManageUsers(me.role) && (
+            <>
+              <button
+                type="button"
+                className="btn-ghost !px-3 !py-1.5 text-xs text-paperdim hover:!text-cinnabar"
+                disabled={batchPhotoDeleting}
+                onClick={() => setPendingBatchPhotoDelete(true)}
+              >
+                {t('traitors.batchDeletePhotos')}
+              </button>
+              <button
+                type="button"
+                className="btn-ghost !px-3 !py-1.5 text-xs text-cinnabarlight/90 hover:!text-cinnabar"
+                disabled={batchDeleting}
+                onClick={() => setPendingBatchDelete(true)}
+              >
+                {t('traitors.batchDelete')}
+              </button>
+            </>
+          )}
+          <button
+            type="button"
+            className="btn-ghost !px-3 !py-1.5 text-xs text-paperdim hover:!text-paper"
+            disabled={batchExporting}
+            onClick={() => void handleBatchExport()}
+          >
+            {t('traitors.batchExport')}
+          </button>
+          <button type="button" className="btn-ghost !px-3 !py-1.5 text-xs text-paperdim/60 hover:!text-paper" onClick={clearSelection}>
+            {t('traitors.clearSelection')}
+          </button>
+        </div>
+      )}
+
       {error && (
         <p className="mt-6 rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-3 py-2 text-sm text-cinnabarlight">
           {error}
@@ -216,6 +380,16 @@ export default function Traitors() {
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead>
                 <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
+                  <th className="px-5 py-3 font-medium">
+                    <input
+                      ref={selectAllRef}
+                      type="checkbox"
+                      className="h-4 w-4 cursor-pointer accent-cinnabar"
+                      checked={allOnPageSelected}
+                      onChange={(e) => toggleSelectAll(e.target.checked)}
+                      aria-label={t('traitors.selectAll')}
+                    />
+                  </th>
                   <th className="px-5 py-3 font-medium">{t('common.name')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.period')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.faction')}</th>
@@ -228,6 +402,15 @@ export default function Traitors() {
               <tbody>
                 {items.map((tr) => (
                   <tr key={tr.id} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
+                    <td className="px-5 py-3">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 cursor-pointer accent-cinnabar"
+                        checked={selectedIds.has(tr.id)}
+                        onChange={() => toggleSelect(tr.id)}
+                        aria-label={t('common.select', { name: tr.name })}
+                      />
+                    </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
                         {tr.photoUrl ? (
@@ -417,6 +600,36 @@ export default function Traitors() {
       >
         <p className="text-sm leading-relaxed text-paperdim">
           {pendingPhotoDelete && t('traitors.deletePhotosConfirm', { name: pendingPhotoDelete.name })}
+        </p>
+      </Modal>
+
+      <Modal
+        open={pendingBatchDelete}
+        title={t('traitors.batchDelete')}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
+        confirmBusy={batchDeleting}
+        onConfirm={() => void handleBatchDelete()}
+        onCancel={() => setPendingBatchDelete(false)}
+        onClose={() => setPendingBatchDelete(false)}
+      >
+        <p className="text-sm leading-relaxed text-paperdim">
+          {t('traitors.batchDeleteConfirm', { count: selectedIds.size })}
+        </p>
+      </Modal>
+
+      <Modal
+        open={pendingBatchPhotoDelete}
+        title={t('traitors.batchDeletePhotos')}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
+        confirmBusy={batchPhotoDeleting}
+        onConfirm={() => void handleBatchDeletePhotos()}
+        onCancel={() => setPendingBatchPhotoDelete(false)}
+        onClose={() => setPendingBatchPhotoDelete(false)}
+      >
+        <p className="text-sm leading-relaxed text-paperdim">
+          {t('traitors.batchDeletePhotosConfirm', { count: selectedIds.size })}
         </p>
       </Modal>
     </div>

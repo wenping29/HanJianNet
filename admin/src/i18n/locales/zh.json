@@ -94,7 +94,9 @@
     "registeredAt": "注册时间",
     "resetFailed": "重置失败",
     "requestFailed": "请求失败（{{status}}）",
-    "uploadFailed": "上传失败"
+    "uploadFailed": "上传失败",
+    "select": "选择「{{name}}」",
+    "view": "查看"
   },
   "sidebar": {
     "archives": "史册",
@@ -167,6 +169,20 @@
     "newTraitor": "新增汉奸",
     "noArchives": "暂无档案",
     "edit": "编辑",
+    "selectAll": "全选",
+    "selectedCount": "已选 {{count}} 条",
+    "batchDelete": "批量删除",
+    "batchDeleteConfirm": "确定删除所选 {{count}} 条汉奸档案？该操作不可恢复，将一并删除其全部罪行等相关记录。",
+    "batchDeleteSuccess": "已删除 {{count}} 条档案",
+    "batchDeleteFailed": "批量删除失败",
+    "batchDeletePhotos": "批量删除图片",
+    "batchDeletePhotosConfirm": "确定删除所选 {{count}} 条档案的全部照片？该操作不可恢复，将同时清除本地上传的图片文件。",
+    "batchDeletePhotosSuccess": "已清除 {{count}} 条档案的照片",
+    "batchDeletePhotosFailed": "批量删除照片失败",
+    "batchExport": "批量导出",
+    "batchExportSuccess": "已导出 {{count}} 条档案",
+    "batchExportFailed": "导出失败",
+    "clearSelection": "清除选择",
     "deleteConfirm": "确定删除汉奸「{{name}}」？该操作不可恢复，将一并删除其全部罪行等相关记录。",
     "deleteSuccess": "已删除",
     "deleteFailed": "删除失败",
@@ -561,7 +577,9 @@
       "changeSummaryPlaceholder": "简述本次提交/修改的内容，供审核参考"
     },
     "saveDraft": "直接保存档案",
-    "saveChanges": "保存修改"
+    "saveChanges": "保存修改",
+    "previewLive": "实时预览",
+    "previewHint": "填写左侧表单后，右侧将实时显示档案效果。"
   },
   "profileTab": {
     "title": "个人信息"

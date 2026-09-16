@@ -94,7 +94,9 @@
     "registeredAt": "Registered At",
     "resetFailed": "Reset failed",
     "requestFailed": "Request failed ({{status}})",
-    "uploadFailed": "Upload failed"
+    "uploadFailed": "Upload failed",
+    "select": "Select \"{{name}}\"",
+    "view": "View"
   },
   "sidebar": {
     "archives": "Archives",
@@ -562,7 +564,9 @@
       "changeSummaryPlaceholder": "Briefly describe the content of this submission/modification for review reference"
     },
     "saveDraft": "Save Archive Directly",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "previewLive": "Live Preview",
+    "previewHint": "Fill the left form and the archive will preview in real time on the right."
   },
   "profileTab": {
     "title": "Profile"
