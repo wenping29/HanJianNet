@@ -170,6 +170,10 @@
     "deleteConfirm": "确定删除汉奸「{{name}}」？该操作不可恢复，将一并删除其全部罪行等相关记录。",
     "deleteSuccess": "已删除",
     "deleteFailed": "删除失败",
+    "deletePhotos": "删除图片",
+    "deletePhotosConfirm": "确定删除汉奸「{{name}}」的全部照片？该操作不可恢复，将同时清除本地上传的图片文件。",
+    "deletePhotosSuccess": "照片已删除",
+    "deletePhotosFailed": "照片删除失败",
     "totalRecords": "共 {{total}} 条档案 · 第 {{page}} / {{totalPages}} 页"
   },
   "merge": {

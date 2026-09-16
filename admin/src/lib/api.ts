@@ -161,6 +161,9 @@ export const api = {
   deleteTraitor: (id: string) =>
     request<{ message: string }>(`/admin/traitors/${id}`, { method: 'DELETE' }),
 
+  deleteTraitorPhotos: (id: string) =>
+    request<{ message: string; count: number }>(`/admin/traitors/${id}/photos`, { method: 'DELETE' }),
+
   aiQueryTraitor: (name: string) =>
     request<{ result: AiTraitorResult }>('/admin/traitors/ai-query', {
       method: 'POST',

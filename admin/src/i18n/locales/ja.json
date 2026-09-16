@@ -170,6 +170,10 @@
     "deleteConfirm": "漢奸「{{name}}」を削除しますか？この操作は取り消せません。関連する犯罪などの記録もすべて削除されます。",
     "deleteSuccess": "削除しました",
     "deleteFailed": "削除に失敗しました",
+    "deletePhotos": "写真を削除",
+    "deletePhotosConfirm": "漢奸「{{name}}」のすべての写真を削除しますか？この操作は取り消せません。ローカルにアップロードされた画像ファイルも削除されます。",
+    "deletePhotosSuccess": "写真を削除しました",
+    "deletePhotosFailed": "写真の削除に失敗しました",
     "totalRecords": "{{total}} 件のレコード・ページ {{page}} / {{totalPages}}"
   },
   "merge": {

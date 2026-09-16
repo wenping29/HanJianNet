@@ -170,6 +170,10 @@
     "deleteConfirm": "¿Eliminar al traidor \"{{name}}\"? Esta acción no se puede deshacer y eliminará también todos los registros relacionados, como los crímenes.",
     "deleteSuccess": "Eliminado",
     "deleteFailed": "Error al eliminar",
+    "deletePhotos": "Eliminar fotos",
+    "deletePhotosConfirm": "¿Eliminar todas las fotos del traidor \"{{name}}\"? Esta acción no se puede deshacer y también eliminará los archivos de imagen subidos localmente.",
+    "deletePhotosSuccess": "Fotos eliminadas",
+    "deletePhotosFailed": "Error al eliminar las fotos",
     "totalRecords": "{{total}} registros · Página {{page}} / {{totalPages}}"
   },
   "merge": {

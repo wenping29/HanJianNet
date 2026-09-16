@@ -228,6 +228,7 @@ public static class DbSeeder
             new { Key = "web.home.pageSize",   Value = "20", Category = "web", Description = "Web 首页每页条数" },
             new { Key = "web.roster.pageSize", Value = "20", Category = "web", Description = "Web 名录每页条数" },
             new { Key = "web.lookup.pageSize", Value = "20", Category = "web", Description = "Web 查询每页条数" },
+            new { Key = "web.admin.traitors.pageSize", Value = "10", Category = "web", Description = "Admin 名录每页条数" },
         };
 
         foreach (var d in defaults)

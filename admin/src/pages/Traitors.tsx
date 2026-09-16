@@ -8,9 +8,10 @@ import { toast } from '../components/Toast'
 import Modal from '../components/Modal'
 import { canManageUsers } from '../lib/roles'
 import { useAuth } from '../stores/auth'
+import { useConfig } from '../stores/config'
 import type { TraitorSummary } from '../types'
 
-const PAGE_SIZE = 10
+const DEFAULT_PAGE_SIZE = 10
 
 function pageWindow(page: number, totalPages: number): Array<number | '…'> {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -30,6 +31,7 @@ export default function Traitors() {
   const { t } = useTranslation()
   const me = useAuth((s) => s.user)!
   const navigate = useNavigate()
+  const pageSize = useConfig((s) => s.getNumber('web.admin.traitors.pageSize', DEFAULT_PAGE_SIZE))
   const [items, setItems] = useState<TraitorSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -41,15 +43,17 @@ export default function Traitors() {
   const [totalPages, setTotalPages] = useState(0)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [pendingDelete, setPendingDelete] = useState<TraitorSummary | null>(null)
+  const [photoDeletingId, setPhotoDeletingId] = useState<string | null>(null)
+  const [pendingPhotoDelete, setPendingPhotoDelete] = useState<TraitorSummary | null>(null)
 
   const reload = useCallback(async (name?: string, p = 1, lv?: number) => {
     setError('')
     try {
-      const data = await api.adminTraitors(name || undefined, p, PAGE_SIZE, lv)
+      const data = await api.adminTraitors(name || undefined, p, pageSize, lv)
       const items = Array.isArray(data.items) ? data.items : []
       const pageNum = typeof data.page === 'number' ? data.page : p
       const totalNum = typeof data.total === 'number' ? data.total : items.length
-      const pageSizeNum = typeof data.pageSize === 'number' ? data.pageSize : PAGE_SIZE
+      const pageSizeNum = typeof data.pageSize === 'number' ? data.pageSize : pageSize
       const totalPagesNum =
         typeof data.totalPages === 'number'
           ? data.totalPages
@@ -61,7 +65,7 @@ export default function Traitors() {
     } catch (e) {
       setError(e instanceof Error ? e.message : t('common.loadFailed'))
     }
-  }, [t])
+  }, [t, pageSize])
 
   useEffect(() => {
     let alive = true
@@ -117,6 +121,21 @@ export default function Traitors() {
     } finally {
       setDeletingId(null)
       setPendingDelete(null)
+    }
+  }
+
+  const handleDeletePhotos = async (tr: TraitorSummary) => {
+    setPhotoDeletingId(tr.id)
+    setError('')
+    try {
+      await api.deleteTraitorPhotos(tr.id)
+      toast(t('traitors.deletePhotosSuccess'))
+      await reload(searched || undefined, page, level ? Number(level) : undefined)
+    } catch (e) {
+      toast(e instanceof Error ? e.message : t('traitors.deletePhotosFailed'), 'error')
+    } finally {
+      setPhotoDeletingId(null)
+      setPendingPhotoDelete(null)
     }
   }
 
@@ -258,7 +277,7 @@ export default function Traitors() {
                         {canManageUsers(me.role) && (
                           <button
                             type="button"
-                            className="btn-bronze !px-5 !py-2 text-sm"
+                            className="btn-bronze !px-5 !py-2 text-sm !w-20"
                             onClick={() => {
                               clearTraitorLocalData(tr.id)
                               window.open(`${window.location.href.split('#')[0]}#/traitors/${tr.id}/edit`, '_blank', 'noopener')
@@ -286,6 +305,29 @@ export default function Traitors() {
                               strokeLinejoin="round"
                             >
                               <path d="M2.5 4h11M6.5 4V2.75h3V4M4 4l.6 8.25h6.8L12 4M6.5 6.5v3.5M9.5 6.5v3.5" />
+                            </svg>
+                          </button>
+                        )}
+                        {canManageUsers(me.role) && (
+                          <button
+                            type="button"
+                            className="btn-ghost !p-2 text-xs text-paperdim hover:!text-cinnabar disabled:cursor-not-allowed disabled:opacity-30"
+                            disabled={!tr.photoUrl || photoDeletingId === tr.id}
+                            onClick={() => setPendingPhotoDelete(tr)}
+                            aria-label={t('traitors.deletePhotos')}
+                            title={t('traitors.deletePhotos')}
+                          >
+                            <svg
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.4"
+                              className="h-4 w-4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M2 3.5h12M6.5 3.5V2.75h3V3.5M3.25 3.5l.5 9.25c.06 1.1.9 1.5 2 1.5h2.5c1.1 0 1.94-.4 2-1.5l.5-9.25" />
+                              <path d="M10.25 6.75l-4.5 4.5M5.75 6.75l4.5 4.5" />
                             </svg>
                           </button>
                         )}
@@ -360,6 +402,21 @@ export default function Traitors() {
       >
         <p className="text-sm leading-relaxed text-paperdim">
           {pendingDelete && t('traitors.deleteConfirm', { name: pendingDelete.name })}
+        </p>
+      </Modal>
+
+      <Modal
+        open={pendingPhotoDelete !== null}
+        title={t('traitors.deletePhotos')}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
+        confirmBusy={photoDeletingId !== null}
+        onConfirm={() => pendingPhotoDelete && void handleDeletePhotos(pendingPhotoDelete)}
+        onCancel={() => setPendingPhotoDelete(null)}
+        onClose={() => setPendingPhotoDelete(null)}
+      >
+        <p className="text-sm leading-relaxed text-paperdim">
+          {pendingPhotoDelete && t('traitors.deletePhotosConfirm', { name: pendingPhotoDelete.name })}
         </p>
       </Modal>
     </div>

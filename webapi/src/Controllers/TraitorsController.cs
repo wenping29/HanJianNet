@@ -96,6 +96,14 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
     }
 
     [Authorize(Roles = "admin,superadmin")]
+    [HttpDelete("api/admin/traitors/{id}/photos")]
+    public async Task<IActionResult> AdminDeletePhotos(string id)
+    {
+        var count = await traitors.AdminDeletePhotosAsync(id);
+        return Ok(new { message = "照片已删除", count });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
     [HttpPost("api/admin/traitors/ai-query")]
     public async Task<IActionResult> AdminAiQuery([FromBody] AiTraitorQueryDto req)
     {

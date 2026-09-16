@@ -3,12 +3,13 @@ using HanJianNet.WebApi.Common;
 using HanJianNet.WebApi.Data;
 using HanJianNet.WebApi.Dtos;
 using HanJianNet.WebApi.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 namespace HanJianNet.WebApi.Services;
 
 /// <summary>档案相关操作。公开读取（列表/详情/统计）启用分布式缓存，写入时自动失效。</summary>
-public class TraitorService(AppDbContext db, CacheService cache)
+public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheService cache)
 {
     private const string CacheGroup = "traitors";
 
@@ -298,6 +299,7 @@ public class TraitorService(AppDbContext db, CacheService cache)
             .Select(t => new
             {
                 T = t,
+                PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
                 Titles = t.CrimeRecords
                     .Where(c => !string.IsNullOrWhiteSpace(c.Title))
                     .Select(c => c.Title)
@@ -306,7 +308,12 @@ public class TraitorService(AppDbContext db, CacheService cache)
             })
             .ToListAsync();
         return new PagedResult<TraitorSummaryDto>(
-            Items: rows.Select(r => r.T.ToSummary(r.Titles.Count, r.Titles)).ToList(),
+            Items: rows.Select(r =>
+            {
+                var dto = r.T.ToSummary(r.Titles.Count, r.Titles);
+                dto.PhotoUrl = r.PhotoUrl;
+                return dto;
+            }).ToList(),
             Total: total,
             Page: page,
             PageSize: pageSize);
@@ -329,6 +336,44 @@ public class TraitorService(AppDbContext db, CacheService cache)
         db.Traitors.Remove(traitor);
         await db.SaveChangesAsync();
         await cache.InvalidateAsync(CacheGroup);
+    }
+
+    /// <summary>
+    /// 删除指定档案的全部照片：清除 Attachments 中 kind=photo 的记录，并同步删除 uploads 目录下对应的本地文件。
+    /// </summary>
+    public async Task<int> AdminDeletePhotosAsync(string id)
+    {
+        var traitor = await db.Traitors.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id)
+                      ?? throw new ApiException(404, "档案不存在");
+        var photos = await db.Attachments.Where(a => a.TraitorId == id && a.Kind == "photo").ToListAsync();
+        if (photos.Count == 0)
+            return 0;
+
+        db.Attachments.RemoveRange(photos);
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+
+        var uploadRoot = Path.Combine(env.ContentRootPath, "uploads");
+        foreach (var photo in photos)
+        {
+            // 仅清理本地上传文件（/uploads/xxx），远程直链（http(s)://）无法也不应删除
+            if (string.IsNullOrWhiteSpace(photo.Url) || !photo.Url.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+                continue;
+            var fileName = Path.GetFileName(photo.Url);
+            if (string.IsNullOrWhiteSpace(fileName))
+                continue;
+            var filePath = Path.Combine(uploadRoot, fileName);
+            try
+            {
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+            }
+            catch
+            {
+                // 文件删除失败不影响数据库记录清理
+            }
+        }
+        return photos.Count;
     }
 
     /// <summary>

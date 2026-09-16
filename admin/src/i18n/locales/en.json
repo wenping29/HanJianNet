@@ -170,6 +170,10 @@
     "deleteConfirm": "Delete traitor \"{{name}}\"? This action cannot be undone and will also delete all related records such as crimes.",
     "deleteSuccess": "Deleted",
     "deleteFailed": "Deletion failed",
+    "deletePhotos": "Delete Photos",
+    "deletePhotosConfirm": "Delete all photos of traitor \"{{name}}\"? This cannot be undone and will also remove locally uploaded image files.",
+    "deletePhotosSuccess": "Photos deleted",
+    "deletePhotosFailed": "Failed to delete photos",
     "totalRecords": "{{total}} records · Page {{page}} / {{totalPages}}"
   },
   "merge": {

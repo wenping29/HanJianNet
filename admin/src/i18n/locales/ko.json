@@ -170,6 +170,10 @@
     "deleteConfirm": "\"{{name}}\" 인물을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 범죄 등 관련 기록도 모두 삭제됩니다.",
     "deleteSuccess": "삭제되었습니다",
     "deleteFailed": "삭제 실패",
+    "deletePhotos": "사진 삭제",
+    "deletePhotosConfirm": "\"{{name}}\" 인물의 모든 사진을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 로컬에 업로드된 이미지 파일도 삭제됩니다.",
+    "deletePhotosSuccess": "사진이 삭제되었습니다",
+    "deletePhotosFailed": "사진 삭제 실패",
     "totalRecords": "{{total}}건 · {{page}} / {{totalPages}} 페이지"
   },
   "merge": {

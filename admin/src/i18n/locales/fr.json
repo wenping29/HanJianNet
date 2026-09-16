@@ -170,6 +170,10 @@
     "deleteConfirm": "Supprimer le traître « {{name}} » ? Cette action est irréversible et supprimera également tous les enregistrements associés tels que les crimes.",
     "deleteSuccess": "Supprimé",
     "deleteFailed": "Échec de la suppression",
+    "deletePhotos": "Supprimer les photos",
+    "deletePhotosConfirm": "Supprimer toutes les photos du traître « {{name}} » ? Cette action est irréversible et supprimera également les fichiers image téléchargés localement.",
+    "deletePhotosSuccess": "Photos supprimées",
+    "deletePhotosFailed": "Échec de la suppression des photos",
     "totalRecords": "{{total}} enregistrements · Page {{page}} / {{totalPages}}"
   },
   "merge": {

@@ -8,6 +8,7 @@ import LanguageSwitcher from './LanguageSwitcher'
 import { api } from '../lib/api'
 import { ROLE_LABELS, canAccessConsole } from '../lib/roles'
 import { useAuth } from '../stores/auth'
+import { useConfig } from '../stores/config'
 import { useTabsStore } from '../stores/tabs'
 import type { MenuItem, RevisionStatusStats } from '../types'
 
@@ -64,6 +65,11 @@ export default function Layout() {
     return () => {
       alive = false
     }
+  }, [])
+
+  // 加载系统配置（名录每页条数等）
+  useEffect(() => {
+    void useConfig.getState().load()
   }, [])
 
   // 加载待审统计
