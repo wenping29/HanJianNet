@@ -14,7 +14,7 @@ export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
       to={`/traitor/${traitor.id}`}
       className="card group block overflow-hidden transition hover:-translate-y-1 hover:border-bronze/50"
     >
-      <div className="flex h-36 items-center justify-center overflow-hidden border-b border-paperedge/10 bg-gradient-to-br from-inksoft to-ink">
+      <div className="flex aspect-square items-center justify-center overflow-hidden border-b border-paperedge/10 bg-gradient-to-br from-inksoft to-ink">
         {hasPhoto ? (
           <img
             src={resolveAssetUrl(traitor.photoUrl!)}
