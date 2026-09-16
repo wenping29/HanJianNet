@@ -578,8 +578,9 @@
     },
     "saveDraft": "直接保存档案",
     "saveChanges": "保存修改",
+    "preview": "预览",
     "previewLive": "实时预览",
-    "previewHint": "填写左侧表单后，右侧将实时显示档案效果。"
+    "previewHint": "点击「预览」按钮可在弹框中查看档案效果。"
   },
   "profileTab": {
     "title": "个人信息"

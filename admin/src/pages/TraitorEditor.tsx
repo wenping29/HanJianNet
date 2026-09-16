@@ -6,6 +6,9 @@ import { PERIODS, formatLifeSpan, formatYear, splitList } from '../lib/format'
 import { normalizeAiResult } from '../lib/ai'
 import type { NormalizedAi } from '../lib/ai'
 import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
+import Modal from '../components/Modal'
+import { ROLE_LABELS } from '../lib/roles'
+import { useAuth } from '../stores/auth'
 import type {
   Attachment,
   AttachmentKind,
@@ -122,7 +125,6 @@ function PreviewSection({ title, en, children }: { title: string; en: string; ch
 }
 
 interface PreviewPaneProps {
-  mode: 'create' | 'edit'
   form: FormState
   spouses: Spouse[]
   children: Child[]
@@ -136,7 +138,6 @@ interface PreviewPaneProps {
 }
 
 function PreviewPane({
-  mode,
   form,
   spouses,
   children,
@@ -416,11 +417,9 @@ function PreviewPane({
         </PreviewSection>
       )}
 
-      {mode === 'create' && (
-        <p className="mt-6 text-center text-[10px] tracking-widest text-paperdim/50">
-          {t('traitorEditor.previewHint')}
-        </p>
-      )}
+      <p className="mt-6 text-center text-[10px] tracking-widest text-paperdim/50">
+        {t('traitorEditor.previewHint')}
+      </p>
     </div>
   )
 }
@@ -429,6 +428,8 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const me = useAuth((s) => s.user)
+  const clear = useAuth((s) => s.clear)
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [spouses, spouseCtl] = useRowList<Spouse>([])
@@ -440,6 +441,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [relatedIds, setRelatedIds] = useState<string[]>([])
   const [candidates, setCandidates] = useState<TraitorSummary[]>([])
+  const [previewOpen, setPreviewOpen] = useState(false)
   const [notice, setNotice] = useState('')
   const aiQuery = useAiQuery()
   const [photoAiOnly, setPhotoAiOnly] = useState(false)
@@ -675,10 +677,49 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
     }
   }
 
-  if (loading) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
+  if (loading) return <div className="min-h-screen pt-24"><div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div></div>
 
   return (
-    <div className="container-page max-w-7xl py-10">
+    <div className="min-h-screen">
+      {/* 独立页顶栏（不含侧边菜单） */}
+      <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-paperedge/15 bg-ink/85 px-4 backdrop-blur sm:px-6">
+        <button
+          type="button"
+          onClick={() => navigate('/traitors/list')}
+          className="flex items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 transition hover:text-paper"
+        >
+          <span aria-hidden="true">←</span>
+          {t('traitors.title')}
+        </button>
+        <span className="hidden items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 sm:flex">
+          {t('layout.brand')}
+        </span>
+        <div className="flex items-center gap-4">
+          {me && (
+            <span className="hidden items-center gap-2 text-sm text-paper md:flex">
+              <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-bronze/50 bg-bronze/15 font-song text-sm font-bold text-bronzelight">
+                {me.username.slice(0, 1).toUpperCase()}
+              </span>
+              <span className="flex flex-col items-start leading-tight">
+                <span className="text-sm">{me.username}</span>
+                <span className="text-[11px] tracking-[0.2em] text-bronzelight">{ROLE_LABELS[me.role]}</span>
+              </span>
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              clear()
+              navigate('/login', { replace: true })
+            }}
+            className="btn-ghost !px-3 !py-1.5 text-xs"
+          >
+            {t('header.logout')}
+          </button>
+        </div>
+      </header>
+
+      <div className="container-page max-w-7xl py-10 pt-24">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <header>
           <h1 className="text-xl font-semibold tracking-[0.25em] text-paper">
@@ -693,23 +734,31 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
             {notice}
           </p>
         )}
-        {mode === 'edit' && (
+        <div className="flex items-center gap-3">
           <button
             type="button"
-            className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
-            onClick={() => openAiQuery(false)}
-            disabled={!form.name.trim()}
+            className="btn-ghost !px-4 !py-2 text-xs !text-bronzelight"
+            onClick={() => setPreviewOpen(true)}
           >
-            {t('aiQuery.queryAction')}
+            {t('traitorEditor.preview')}
           </button>
-        )}
+          {mode === 'edit' && (
+            <button
+              type="button"
+              className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
+              onClick={() => openAiQuery(false)}
+              disabled={!form.name.trim()}
+            >
+              {t('aiQuery.queryAction')}
+            </button>
+          )}
+        </div>
       </div>
       <p className="mt-3 text-sm text-paperdim">
         {t('traitorEditor.adminHint')}
       </p>
 
-      <div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-[1fr_380px]">
-        <form onSubmit={submit} className="space-y-6">
+      <form onSubmit={submit} className="mt-8 space-y-6">
           <Fieldset title={t('traitorEditor.basicInfo')} en="BASIC">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
@@ -1274,25 +1323,27 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         </div>
       </form>
 
-      {/* 右侧实时预览（桌面端可见） */}
-      <aside className="mt-10 xl:mt-0">
-        <div className="xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto">
-          <PreviewPane
-            mode={mode}
-            form={form}
-            spouses={spouses}
-            children={children}
-            residences={residences}
-            crimeRecords={crimeRecords}
-            lifeEvents={lifeEvents}
-            sources={sources}
-            attachments={attachments}
-            relatedIds={relatedIds}
-            candidates={candidates}
-          />
-        </div>
-      </aside>
-      </div>
+      {/* 预览弹框 */}
+      <Modal
+        open={previewOpen}
+        title={t('traitorEditor.preview')}
+        hideFooter
+        widthClassName="max-w-4xl"
+        onClose={() => setPreviewOpen(false)}
+      >
+        <PreviewPane
+          form={form}
+          spouses={spouses}
+          children={children}
+          residences={residences}
+          crimeRecords={crimeRecords}
+          lifeEvents={lifeEvents}
+          sources={sources}
+          attachments={attachments}
+          relatedIds={relatedIds}
+          candidates={candidates}
+        />
+      </Modal>
 
       <AiQueryModal
         open={aiQuery.open}
@@ -1311,6 +1362,15 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         onRetry={() => aiQuery.retry()}
         onFill={handleAiReady}
       />
+      </div>
+
+      {/* 页脚 */}
+      <footer className="flex-shrink-0 border-t border-paperedge/15 bg-inksoft/60">
+        <div className="container-page flex flex-col items-center justify-between gap-2 py-4 text-xs tracking-wider text-paperdim/70 sm:flex-row">
+          <span>{t('layout.title')}</span>
+          <span className="font-garamond italic">Editorial Console · Est. 2026</span>
+        </div>
+      </footer>
     </div>
   )
 }

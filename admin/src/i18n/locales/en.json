@@ -565,8 +565,9 @@
     },
     "saveDraft": "Save Archive Directly",
     "saveChanges": "Save Changes",
+    "preview": "Preview",
     "previewLive": "Live Preview",
-    "previewHint": "Fill the left form and the archive will preview in real time on the right."
+    "previewHint": "Click the \"Preview\" button to view the archive in a popup."
   },
   "profileTab": {
     "title": "Profile"

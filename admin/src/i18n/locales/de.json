@@ -524,8 +524,9 @@
     },
     "saveDraft": "Archiv direkt speichern",
     "saveChanges": "Änderungen speichern",
+    "preview": "Vorschau",
     "previewLive": "Live-Vorschau",
-    "previewHint": "Füllen Sie das linke Formular aus – das Archiv wird rechts in Echtzeit angezeigt."
+    "previewHint": "Klicken Sie auf \"Vorschau\", um das Archiv in einem Popup anzuzeigen."
   },
   "profileTab": {
     "title": "Profil"

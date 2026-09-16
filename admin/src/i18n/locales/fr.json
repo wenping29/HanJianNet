@@ -524,8 +524,9 @@
     },
     "saveDraft": "Enregistrer l'archive directement",
     "saveChanges": "Enregistrer les modifications",
+    "preview": "Aperçu",
     "previewLive": "Aperçu en direct",
-    "previewHint": "Remplissez le formulaire à gauche : l'archive est prévisualisée en temps réel à droite."
+    "previewHint": "Cliquez sur « Aperçu » pour visualiser l'archive dans une fenêtre contextuelle."
   },
   "profileTab": {
     "title": "Profil"

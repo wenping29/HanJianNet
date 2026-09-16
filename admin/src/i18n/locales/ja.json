@@ -524,8 +524,9 @@
     },
     "saveDraft": "檔案を直接保存",
     "saveChanges": "変更を保存",
+    "preview": "プレビュー",
     "previewLive": "ライブプレビュー",
-    "previewHint": "左側のフォームを入力すると、右側にリアルタイムで反映されます。"
+    "previewHint": "「プレビュー」ボタンをクリックすると、ポップアップでアーカイブを表示できます。"
   },
   "profileTab": {
     "title": "プロフィール"

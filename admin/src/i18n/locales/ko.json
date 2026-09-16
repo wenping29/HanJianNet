@@ -524,8 +524,9 @@
     },
     "saveDraft": "아카이브 직접 저장",
     "saveChanges": "변경 사항 저장",
+    "preview": "미리보기",
     "previewLive": "실시간 미리보기",
-    "previewHint": "왼쪽 양식을 작성하면 오른쪽에 실시간으로 반영됩니다."
+    "previewHint": "「미리보기」버튼을 클릭하면 팝업에서 아카이브를 확인할 수 있습니다."
   },
   "profileTab": {
     "title": "프로필"
