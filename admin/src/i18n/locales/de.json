@@ -179,6 +179,9 @@
     "deletePhotosConfirm": "Alle Fotos von Verräter \"{{name}}\" löschen? Dies kann nicht rückgängig gemacht werden und entfernt auch lokal hochgeladene Bilddateien.",
     "deletePhotosSuccess": "Fotos gelöscht",
     "deletePhotosFailed": "Löschen der Fotos fehlgeschlagen",
+    "updateHarmLevel": "Gefährdungsgrad ändern",
+    "harmLevelUpdated": "Gefährdungsgrad aktualisiert",
+    "harmLevelUpdateFailed": "Aktualisierung fehlgeschlagen",
     "totalRecords": "{{total}} Einträge · Seite {{page}} / {{totalPages}}"
   },
   "merge": {

@@ -112,6 +112,14 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
     }
 
     [Authorize(Roles = "admin,superadmin")]
+    [HttpPatch("api/admin/traitors/{id}/harm-level")]
+    public async Task<IActionResult> AdminUpdateHarmLevel(string id, [FromBody] UpdateHarmLevelRequest req)
+    {
+        await traitors.AdminUpdateHarmLevelAsync(id, req.HarmLevel);
+        return Ok(new { message = "危害等级已更新" });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
     [HttpPost("api/admin/traitors/batch-delete-photos")]
     public async Task<IActionResult> AdminBatchDeletePhotos([FromBody] BatchIdsRequest req)
     {
@@ -146,4 +154,11 @@ public class TraitorSubmitRequest : TraitorInputDto
 public class BatchIdsRequest
 {
     public List<string> Ids { get; set; } = [];
+}
+
+/// <summary>更新危害等级请求。</summary>
+public class UpdateHarmLevelRequest
+{
+    /// <summary>危害度分级：1=特级 … 7=己级；null=未分级</summary>
+    public int? HarmLevel { get; set; }
 }

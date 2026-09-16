@@ -74,6 +74,7 @@ export default function Traitors() {
   const [pendingBatchPhotoDelete, setPendingBatchPhotoDelete] = useState(false)
   const [batchPhotoDeleting, setBatchPhotoDeleting] = useState(false)
   const [batchExporting, setBatchExporting] = useState(false)
+  const [levelUpdatingId, setLevelUpdatingId] = useState<string | null>(null)
   const selectAllRef = useRef<HTMLInputElement>(null)
 
   const reload = useCallback(async (name?: string, p = 1, lv?: number, hp?: boolean) => {
@@ -144,6 +145,20 @@ export default function Traitors() {
     setHasPhoto(v)
     setLoading(true)
     void reload(searched || undefined, 1, level ? Number(level) : undefined, v ? v === '1' : undefined).finally(() => setLoading(false))
+  }
+
+  const handleUpdateHarmLevel = async (tr: TraitorSummary, value: string) => {
+    setLevelUpdatingId(tr.id)
+    setError('')
+    try {
+      await api.updateTraitorHarmLevel(tr.id, value ? Number(value) : null)
+      toast(t('traitors.harmLevelUpdated'))
+      await reload(searched || undefined, page, level ? Number(level) : undefined, hasPhoto ? hasPhoto === '1' : undefined)
+    } catch (e) {
+      toast(e instanceof Error ? e.message : t('traitors.harmLevelUpdateFailed'), 'error')
+    } finally {
+      setLevelUpdatingId(null)
+    }
   }
 
   const handleDelete = async (tr: TraitorSummary) => {
@@ -414,8 +429,8 @@ export default function Traitors() {
                       aria-label={t('traitors.selectAll')}
                     />
                   </th>
-                  <th className="px-5 py-3 font-medium">{t('common.name')}</th>
-                  <th className="px-5 py-3 font-medium">{t('common.period')}</th>
+                  <th className="px-5 py-3 font-medium w-[200px]">{t('common.name')}</th>
+                  <th className="px-5 py-3 font-medium  w-[150px]">{t('common.period')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.faction')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.lifespan')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.identityTags')}</th>
@@ -429,13 +444,13 @@ export default function Traitors() {
                     <td className="px-5 py-3">
                       <input
                         type="checkbox"
-                        className="h-4 w-4 cursor-pointer accent-cinnabar"
+                        className="h-6 w-6 cursor-pointer accent-cinnabar"
                         checked={selectedIds.has(tr.id)}
                         onChange={() => toggleSelect(tr.id)}
                         aria-label={t('common.select', { name: tr.name })}
                       />
                     </td>
-                    <td className="px-5 py-3">
+                    <td className="px-5 py-3 w-[200px]">
                       <div className="flex items-center gap-3">
                         {tr.photoUrl ? (
                           <img
@@ -451,7 +466,7 @@ export default function Traitors() {
                         <span className="font-medium tracking-wider text-paper">{tr.name}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-paperdim">{tr.period}</td>
+                    <td className="px-5 py-3  w-[150px] text-paperdim">{tr.period}</td>
                     <td className="px-5 py-3 text-paperdim">{tr.faction || '—'}</td>
                     <td className="px-5 py-3 font-garamond text-xs text-paperdim/80">
                       {formatLifeSpan(tr.birthYear, tr.deathYear, tr.birthYearType, tr.deathYearType)}
@@ -470,8 +485,23 @@ export default function Traitors() {
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-3">
-                      {tr.harmLevel ? (
+                    <td className="px-1 py-1">
+                      {canManageUsers(me.role) ? (
+                        <select
+                          className={`input mr-auto w-24 flex-none !py-1.5 px-2 text-xs ${harmLevelClass(tr.harmLevel)}`}
+                          value={tr.harmLevel != null ? String(tr.harmLevel) : ''}
+                          disabled={levelUpdatingId === tr.id}
+                          onChange={(e) => void handleUpdateHarmLevel(tr, e.target.value)}
+                          aria-label={t('traitors.updateHarmLevel')}
+                        >
+                          <option value="">{t('common.none')}</option>
+                          {HARM_LEVELS.map((l) => (
+                            <option key={l} value={l}>
+                              {t(`harmLevel.${l}`)}
+                            </option>
+                          ))}
+                        </select>
+                      ) : tr.harmLevel ? (
                         <span className={`badge border-0 ${harmLevelClass(tr.harmLevel)}`}>
                           {t(`harmLevel.${tr.harmLevel}`)}
                         </span>

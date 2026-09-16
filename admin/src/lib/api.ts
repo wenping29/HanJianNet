@@ -165,6 +165,12 @@ export const api = {
   deleteTraitorPhotos: (id: string) =>
     request<{ message: string; count: number }>(`/admin/traitors/${id}/photos`, { method: 'DELETE' }),
 
+  updateTraitorHarmLevel: (id: string, harmLevel: number | null) =>
+    request<{ message: string }>(`/admin/traitors/${id}/harm-level`, {
+      method: 'PATCH',
+      body: JSON.stringify({ harmLevel }),
+    }),
+
   batchDeleteTraitors: (ids: string[]) =>
     request<{ message: string; count: number }>('/admin/traitors/batch-delete', {
       method: 'POST',

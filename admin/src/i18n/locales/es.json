@@ -179,6 +179,9 @@
     "deletePhotosConfirm": "¿Eliminar todas las fotos del traidor \"{{name}}\"? Esta acción no se puede deshacer y también eliminará los archivos de imagen subidos localmente.",
     "deletePhotosSuccess": "Fotos eliminadas",
     "deletePhotosFailed": "Error al eliminar las fotos",
+    "updateHarmLevel": "Cambiar nivel de peligro",
+    "harmLevelUpdated": "Nivel de peligro actualizado",
+    "harmLevelUpdateFailed": "Error al actualizar el nivel",
     "totalRecords": "{{total}} registros · Página {{page}} / {{totalPages}}"
   },
   "merge": {

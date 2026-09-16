@@ -383,6 +383,19 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         return photos.Count;
     }
 
+    /// <summary>更新档案危害等级。</summary>
+    public async Task AdminUpdateHarmLevelAsync(string id, int? harmLevel)
+    {
+        var traitor = await db.Traitors.FirstOrDefaultAsync(t => t.Id == id)
+                      ?? throw new ApiException(404, "档案不存在");
+        if (harmLevel is int hl && (hl < 1 || hl > 7))
+            throw new ApiException(400, "危害等级取值应为 1-7 或留空");
+        traitor.HarmLevel = harmLevel;
+        traitor.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+    }
+
     /// <summary>
     /// 批量删除档案：仅删除指定的 Id 列表中实际存在的记录；任一被选记录作为合并目标被引用（MergedIntoId）时整批拒绝。
     /// 子记录由数据库级联删除。

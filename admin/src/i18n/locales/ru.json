@@ -179,6 +179,9 @@
     "deletePhotosConfirm": "Удалить все фотографии предателя «{{name}}»? Это действие нельзя отменить, будут также удалены локально загруженные файлы изображений.",
     "deletePhotosSuccess": "Фотографии удалены",
     "deletePhotosFailed": "Не удалось удалить фотографии",
+    "updateHarmLevel": "Изменить уровень опасности",
+    "harmLevelUpdated": "Уровень опасности обновлён",
+    "harmLevelUpdateFailed": "Ошибка обновления уровня",
     "totalRecords": "{{total}} записей · Страница {{page}} / {{totalPages}}"
   },
   "merge": {

@@ -179,6 +179,9 @@
     "deletePhotosConfirm": "Delete all photos of traitor \"{{name}}\"? This cannot be undone and will also remove locally uploaded image files.",
     "deletePhotosSuccess": "Photos deleted",
     "deletePhotosFailed": "Failed to delete photos",
+    "updateHarmLevel": "Update Harm Level",
+    "harmLevelUpdated": "Harm level updated",
+    "harmLevelUpdateFailed": "Failed to update harm level",
     "totalRecords": "{{total}} records · Page {{page}} / {{totalPages}}"
   },
   "merge": {

@@ -179,6 +179,9 @@
     "deletePhotosConfirm": "Supprimer toutes les photos du traître « {{name}} » ? Cette action est irréversible et supprimera également les fichiers image téléchargés localement.",
     "deletePhotosSuccess": "Photos supprimées",
     "deletePhotosFailed": "Échec de la suppression des photos",
+    "updateHarmLevel": "Modifier le niveau de danger",
+    "harmLevelUpdated": "Niveau de danger mis à jour",
+    "harmLevelUpdateFailed": "Échec de la mise à jour du niveau",
     "totalRecords": "{{total}} enregistrements · Page {{page}} / {{totalPages}}"
   },
   "merge": {

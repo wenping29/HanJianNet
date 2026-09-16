@@ -179,6 +179,9 @@
     "deletePhotosConfirm": "漢奸「{{name}}」のすべての写真を削除しますか？この操作は取り消せません。ローカルにアップロードされた画像ファイルも削除されます。",
     "deletePhotosSuccess": "写真を削除しました",
     "deletePhotosFailed": "写真の削除に失敗しました",
+    "updateHarmLevel": "危害度を変更",
+    "harmLevelUpdated": "危害度を更新しました",
+    "harmLevelUpdateFailed": "危害度の更新に失敗しました",
     "totalRecords": "{{total}} 件のレコード・ページ {{page}} / {{totalPages}}"
   },
   "merge": {
