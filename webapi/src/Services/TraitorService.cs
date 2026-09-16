@@ -57,16 +57,26 @@ public class TraitorService(AppDbContext db, CacheService cache)
              .ThenByDescending(t => t.CreatedAt);
 
         var total = await q.CountAsync();
-        // 犯罪记录条数在 SQL 侧聚合，避免把明细全部读入内存
+        // 犯罪记录条数与头像 URL 在 SQL 侧聚合，避免把明细全部读入内存与 N+1 查询
         if (page.HasValue && pageSize.HasValue)
         {
             var p = Math.Max(1, page.Value);
             var ps = Math.Clamp(pageSize.Value, 1, 200);
             var rows = await q.Skip((p - 1) * ps).Take(ps)
-                .Select(t => new { Traitor = t, CrimeCount = t.CrimeRecords.Count })
+                .Select(t => new
+                {
+                    Traitor = t,
+                    CrimeCount = t.CrimeRecords.Count,
+                    PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
+                })
                 .ToListAsync();
             return new PagedResult<TraitorSummaryDto>(
-                Items: rows.Select(r => r.Traitor.ToSummary(r.CrimeCount)).ToList(),
+                Items: rows.Select(r =>
+                {
+                    var dto = r.Traitor.ToSummary(r.CrimeCount);
+                    dto.PhotoUrl = r.PhotoUrl;
+                    return dto;
+                }).ToList(),
                 Total: total,
                 Page: p,
                 PageSize: ps);
@@ -74,10 +84,20 @@ public class TraitorService(AppDbContext db, CacheService cache)
         else
         {
             var rows = await q
-                .Select(t => new { Traitor = t, CrimeCount = t.CrimeRecords.Count })
+                .Select(t => new
+                {
+                    Traitor = t,
+                    CrimeCount = t.CrimeRecords.Count,
+                    PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
+                })
                 .ToListAsync();
             return new PagedResult<TraitorSummaryDto>(
-                Items: rows.Select(r => r.Traitor.ToSummary(r.CrimeCount)).ToList(),
+                Items: rows.Select(r =>
+                {
+                    var dto = r.Traitor.ToSummary(r.CrimeCount);
+                    dto.PhotoUrl = r.PhotoUrl;
+                    return dto;
+                }).ToList(),
                 Total: total,
                 Page: 1,
                 PageSize: Math.Max(1, total));
