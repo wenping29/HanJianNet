@@ -358,6 +358,8 @@
     "edit": "Modifier",
     "editTitle": "Modifier la configuration système",
     "keyNotModifiable": "La clé {{key}} ne peut pas être modifiée",
+    "toggleOn": "Cliquer pour activer",
+    "toggleOff": "Cliquer pour désactiver",
     "valuePlaceholder": "Saisir la valeur de configuration",
     "descriptionPlaceholder": "Saisir une description (facultatif)",
     "updateSuccess": "Configuration {{key}} mise à jour",

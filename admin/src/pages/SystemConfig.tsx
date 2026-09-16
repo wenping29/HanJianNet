@@ -8,6 +8,11 @@ import type { SystemConfig } from '../types'
 
 const CATEGORY_ORDER = ['web', 'webapi', 'mobileapp']
 
+/** 布尔型配置：取值仅 true/false，用开关渲染而非纯文本 */
+function isBooleanValue(value: string): boolean {
+  return value === 'true' || value === 'false'
+}
+
 function categoryLabel(category: string): string {
   switch (category) {
     case 'web':
@@ -101,6 +106,20 @@ export default function SystemConfigPage() {
     setShowForm(false)
   }
 
+  // 布尔型配置：点击开关即时保存（乐观更新，失败回滚）
+  const toggleBoolean = async (c: SystemConfig) => {
+    const next = c.value === 'true' ? 'false' : 'true'
+    const prev = items
+    setItems((arr) => arr.map((i) => (i.id === c.id ? { ...i, value: next } : i)))
+    try {
+      await api.updateSystemConfig(c.id, { value: next })
+      flash(t('systemConfig.updateSuccess', { key: c.key }))
+    } catch (e) {
+      setItems(prev)
+      setError(e instanceof Error ? e.message : t('systemConfig.updateFailed'))
+    }
+  }
+
   const handleSave = async () => {
     if (!editing) return
     setSaving(true)
@@ -171,7 +190,42 @@ return (
                   {g.rows.map((c) => (
                     <tr key={c.id} className="border-b border-paperedge/10 last:border-0 hover:bg-inkcard/60">
                       <td className="px-5 py-3 font-garamond tracking-wider text-paperdim/80">{c.key}</td>
-                      <td className="px-5 py-3 font-medium tracking-wider text-paper">{c.value}</td>
+                      <td className="px-5 py-3">
+                        {isBooleanValue(c.value) ? (
+                          manageable ? (
+                            <button
+                              type="button"
+                              onClick={() => toggleBoolean(c)}
+                              className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${
+                                c.value === 'true' ? 'bg-cinnabar/70' : 'bg-paperedge/30'
+                              }`}
+                              title={
+                                c.value === 'true'
+                                  ? t('systemConfig.toggleOff')
+                                  : t('systemConfig.toggleOn')
+                              }
+                            >
+                              <span
+                                className={`inline-block h-4 w-4 transform rounded-full bg-paper transition-transform ${
+                                  c.value === 'true' ? 'translate-x-5' : 'translate-x-0.5'
+                                }`}
+                              />
+                            </button>
+                          ) : (
+                            <span
+                              className={`badge ${
+                                c.value === 'true'
+                                  ? 'border-bronze/60 bg-bronze/15 text-bronzelight'
+                                  : 'border-paperedge/40 bg-inkcard text-paperdim/50'
+                              }`}
+                            >
+                              {c.value === 'true' ? t('common.enable') : t('common.disable')}
+                            </span>
+                          )
+                        ) : (
+                          <span className="font-medium tracking-wider text-paper">{c.value}</span>
+                        )}
+                      </td>
                       <td className="px-5 py-3 text-paperdim">{c.description ?? '—'}</td>
                       <td className="px-5 py-3 font-garamond text-xs text-paperdim/70">
                         {c.updatedAt ?? c.createdAt}

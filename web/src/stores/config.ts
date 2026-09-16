@@ -9,6 +9,8 @@ interface ConfigState {
   load: () => Promise<void>
   /** 按 key 取数字型配置，解析失败或未加载时降级到 fallback */
   getPageSize: (key: string, fallback: number) => number
+  /** 按 key 取布尔型配置，非 "true"/"false" 或未加载时降级到 fallback */
+  getBoolean: (key: string, fallback: boolean) => boolean
 }
 
 export const useConfig = create<ConfigState>((set, get) => ({
@@ -28,5 +30,11 @@ export const useConfig = create<ConfigState>((set, get) => ({
     if (raw == null) return fallback
     const n = Number(raw)
     return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback
+  },
+  getBoolean: (key, fallback) => {
+    const raw = get().items[key]
+    if (raw === 'true') return true
+    if (raw === 'false') return false
+    return fallback
   },
 }))

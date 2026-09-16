@@ -70,6 +70,7 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 export default function Home() {
   const { t } = useTranslation()
   const pageSize = useConfig((s) => s.getPageSize('web.home.pageSize', 20))
+  const showCardPhoto = useConfig((s) => s.getBoolean('web.home.cardShowPhoto', true))
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [stats, setStats] = useState<TraitorStats | null>(null)
   const [filters, setFilters] = useState<TraitorFilters>(EMPTY_FILTERS)
@@ -260,7 +261,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {items.map((t) => (
-            <TraitorCard key={t.id} traitor={t} />
+            <TraitorCard key={t.id} traitor={t} showPhoto={showCardPhoto} />
           ))}
         </div>
 

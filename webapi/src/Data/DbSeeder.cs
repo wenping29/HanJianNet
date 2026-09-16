@@ -226,6 +226,7 @@ public static class DbSeeder
         var defaults = new[]
         {
             new { Key = "web.home.pageSize",   Value = "20", Category = "web", Description = "Web 首页每页条数" },
+            new { Key = "web.home.cardShowPhoto", Value = "true", Category = "web", Description = "Web 首页汉奸卡片是否展示照片（true/false）" },
             new { Key = "web.roster.pageSize", Value = "20", Category = "web", Description = "Web 名录每页条数" },
             new { Key = "web.lookup.pageSize", Value = "20", Category = "web", Description = "Web 查询每页条数" },
             new { Key = "web.admin.traitors.pageSize", Value = "10", Category = "web", Description = "Admin 名录每页条数" },

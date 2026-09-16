@@ -399,6 +399,8 @@
     "edit": "Edit",
     "editTitle": "Modify System Configuration",
     "keyNotModifiable": "Key {{key}} cannot be modified",
+    "toggleOn": "Click to turn on",
+    "toggleOff": "Click to turn off",
     "valuePlaceholder": "Enter config value",
     "descriptionPlaceholder": "Enter description (optional)",
     "updateSuccess": "Config {{key}} updated",

@@ -358,6 +358,8 @@
     "edit": "編集",
     "editTitle": "システム設定を変更",
     "keyNotModifiable": "キー {{key}} は変更できません",
+    "toggleOn": "クリックしてオン",
+    "toggleOff": "クリックしてオフ",
     "valuePlaceholder": "設定値を入力",
     "descriptionPlaceholder": "説明を入力（任意）",
     "updateSuccess": "設定 {{key}} を更新しました",

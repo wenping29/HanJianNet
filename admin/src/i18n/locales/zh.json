@@ -412,6 +412,8 @@
     "edit": "编辑",
     "editTitle": "修改系统配置",
     "keyNotModifiable": "键 {{key}} 不可修改",
+    "toggleOn": "点击开启",
+    "toggleOff": "点击关闭",
     "valuePlaceholder": "输入配置值",
     "descriptionPlaceholder": "输入描述（可选）",
     "updateSuccess": "配置 {{key}} 已更新",

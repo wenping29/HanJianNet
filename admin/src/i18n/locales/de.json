@@ -358,6 +358,8 @@
     "edit": "Bearbeiten",
     "editTitle": "Systemkonfiguration ändern",
     "keyNotModifiable": "Schlüssel {{key}} kann nicht geändert werden",
+    "toggleOn": "Zum Einschalten klicken",
+    "toggleOff": "Zum Ausschalten klicken",
     "valuePlaceholder": "Konfigurationswert eingeben",
     "descriptionPlaceholder": "Beschreibung eingeben (optional)",
     "updateSuccess": "Konfiguration {{key}} aktualisiert",

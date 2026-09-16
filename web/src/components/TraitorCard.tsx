@@ -5,10 +5,17 @@ import type { TraitorSummary } from '../types'
 import { formatLifeSpan, harmLevelClass, harmLevelLabel } from '../lib/format'
 import { resolveAssetUrl } from '../lib/api'
 
-export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
+export default function TraitorCard({
+  traitor,
+  showPhoto = true,
+}: {
+  traitor: TraitorSummary
+  /** 是否展示照片；关闭时回退到姓名首字占位（由系统配置 web.home.cardShowPhoto 控制） */
+  showPhoto?: boolean
+}) {
   const { t } = useTranslation()
   const [photoFailed, setPhotoFailed] = useState(false)
-  const hasPhoto = !!traitor.photoUrl && !photoFailed
+  const hasPhoto = showPhoto && !!traitor.photoUrl && !photoFailed
   return (
     <Link
       to={`/traitor/${traitor.id}`}
