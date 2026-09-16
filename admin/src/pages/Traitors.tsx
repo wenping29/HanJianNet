@@ -462,7 +462,7 @@ export default function Traitors() {
                             type="button"
                             className="btn-bronze !px-5 !py-2 text-sm !w-20"
                             onClick={() => {
-                              clearTraitorLocalData(tr.id)
+                              //clearTraitorLocalData(tr.id)
                               window.open(`${window.location.href.split('#')[0]}#/traitors/${tr.id}/edit`, '_blank', 'noopener')
                             }}
                           >
