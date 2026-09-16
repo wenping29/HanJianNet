@@ -608,6 +608,20 @@
     "replaceCheck": "Remplacer ?",
     "originalValue": "Données d'archive actuelles"
   },
+  "aiQueryEvent": {
+    "queryAction": "Recherche IA",
+    "queryTitle": "Recherche IA: {{name}}",
+    "querying": "Recherche de l\u2019histoire de l\u2019événement via DeepSeek (10–60 s), veuillez patienter…",
+    "queryFailed": "Échec de la recherche IA",
+    "retry": "Réessayer",
+    "fillToEditor": "Remplir dans l'éditeur",
+    "applied": "Résultat IA appliqué au formulaire. Veuillez vérifier avant d'enregistrer.",
+    "empty": "(aucun)",
+    "originalColumn": "Données d'archive actuelles",
+    "aiColumn": "Résultat de la requête IA",
+    "fieldColumn": "Champ",
+    "replaceCheck": "Remplacer ?"
+  },
   "periods": {
     "lateSong": "Fin des Song",
     "lateMing": "Fin des Ming",

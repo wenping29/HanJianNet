@@ -662,6 +662,20 @@
     "replaceCheck": "替换",
     "originalValue": "原档案数据"
   },
+  "aiQueryEvent": {
+    "queryAction": "AI 查询",
+    "queryTitle": "AI 史料查询：{{name}}",
+    "querying": "正在通过 DeepSeek 检索事件史料（约需 10-60 秒），请稍候…",
+    "queryFailed": "AI 查询失败",
+    "retry": "重试",
+    "fillToEditor": "填入编辑器",
+    "applied": "已应用 AI 查询结果到表单，请人工核对后再保存。",
+    "empty": "（无）",
+    "originalColumn": "原档案数据",
+    "aiColumn": "AI 查询结果",
+    "fieldColumn": "字段",
+    "replaceCheck": "替换"
+  },
   "periods": {
     "lateSong": "宋末",
     "lateMing": "明末",

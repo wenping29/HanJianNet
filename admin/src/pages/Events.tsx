@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import EventAiQueryModal, { useAiEventQuery } from '../components/EventAiQueryModal'
 import PageHeader from '../components/PageHeader'
 import { PERIODS, splitList } from '../lib/format'
 import type { AtrocityEventDetail, AtrocityEventInput, AtrocityEventSummary } from '../types'
@@ -261,6 +262,7 @@ function EditView() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const aiQuery = useAiEventQuery()
 
   const fill = (ev: AtrocityEventDetail) => {
     setForm({
@@ -293,6 +295,41 @@ function EditView() {
   const flash = (msg: string) => {
     setNotice(msg)
     window.setTimeout(() => setNotice(''), 3500)
+  }
+
+  const originalInput: AtrocityEventInput = useMemo(
+    () => ({
+      name: form.name,
+      alias: form.alias,
+      eventType: form.eventType,
+      era: form.era,
+      year: form.year.trim() === '' ? null : Number(form.year),
+      province: form.province,
+      city: form.city,
+      location: form.location,
+      isGeneral: form.isGeneral,
+      personCount: form.personCount.trim() === '' ? 0 : Number(form.personCount),
+      summary: form.summary,
+      keywords: splitList(form.keywordsText),
+    }),
+    [form],
+  )
+
+  const handleAiFill = (ai: Partial<AtrocityEventInput>) => {
+    if (ai.name !== undefined) update('name', ai.name)
+    if (ai.alias !== undefined) update('alias', ai.alias)
+    if (ai.eventType !== undefined) update('eventType', ai.eventType)
+    if (ai.era !== undefined) update('era', ai.era)
+    if (ai.year !== undefined) update('year', ai.year === null ? '' : String(ai.year))
+    if (ai.province !== undefined) update('province', ai.province)
+    if (ai.city !== undefined) update('city', ai.city)
+    if (ai.location !== undefined) update('location', ai.location)
+    if (ai.isGeneral !== undefined) update('isGeneral', ai.isGeneral)
+    if (ai.personCount !== undefined) update('personCount', ai.personCount === null ? '0' : String(ai.personCount))
+    if (ai.keywords !== undefined) update('keywordsText', ai.keywords.join('，'))
+    if (ai.summary !== undefined) update('summary', ai.summary)
+    aiQuery.close()
+    flash(t('aiQueryEvent.applied'))
   }
 
   function update<K extends keyof EventForm>(key: K, value: EventForm[K]) {
@@ -341,11 +378,21 @@ function EditView() {
         title={t('eventsAdmin.editTitle')}
         subtitle={t('eventsAdmin.editSubtitle')}
         actions={
-          notice ? (
-            <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
-              {notice}
-            </p>
-          ) : null
+          <div className="flex items-center gap-3">
+            {notice && (
+              <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
+                {notice}
+              </p>
+            )}
+            <button
+              type="button"
+              className="btn-bronze shrink-0"
+              onClick={() => void aiQuery.run(form.name)}
+              disabled={!form.name.trim()}
+            >
+              {t('aiQueryEvent.queryAction')}
+            </button>
+          </div>
         }
       >
         <p className="text-sm text-paperdim">{t('eventsAdmin.description2')}</p>
@@ -469,6 +516,18 @@ function EditView() {
           </button>
         </div>
       </form>
+
+      <EventAiQueryModal
+        open={aiQuery.open}
+        name={aiQuery.name}
+        loading={aiQuery.loading}
+        error={aiQuery.error}
+        result={aiQuery.result}
+        original={originalInput}
+        onClose={() => aiQuery.close()}
+        onRetry={() => aiQuery.retry()}
+        onFill={handleAiFill}
+      />
     </div>
   )
 }

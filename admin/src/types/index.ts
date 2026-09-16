@@ -368,6 +368,22 @@ export interface AtrocityEventInput {
   keywords: string[]
 }
 
+/** DeepSeek AI 历史事件查询结果（对应后端 AiEventResultDto） */
+export interface AiEventResult {
+  name: string
+  alias?: string | null
+  eventType?: string | null
+  era?: string | null
+  year: number | null
+  province?: string | null
+  city?: string | null
+  location?: string | null
+  isGeneral: boolean
+  personCount: number | null
+  summary?: string | null
+  keywords: string[]
+}
+
 /** 系统配置项（对应后端 SystemConfigDto） */
 export interface SystemConfig {
   id: string

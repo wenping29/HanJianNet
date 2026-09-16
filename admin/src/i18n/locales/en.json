@@ -649,6 +649,20 @@
     "replaceCheck": "Replace?",
     "originalValue": "Current archive data"
   },
+  "aiQueryEvent": {
+    "queryAction": "AI Query",
+    "queryTitle": "AI research: {{name}}",
+    "querying": "Researching event history via DeepSeek (10–60 s), please wait…",
+    "queryFailed": "AI query failed",
+    "retry": "Retry",
+    "fillToEditor": "Fill into editor",
+    "applied": "AI result applied to the form. Please verify before saving.",
+    "empty": "(none)",
+    "originalColumn": "Current archive data",
+    "aiColumn": "AI query result",
+    "fieldColumn": "Field",
+    "replaceCheck": "Replace?"
+  },
   "periods": {
     "lateSong": "Late Song",
     "lateMing": "Late Ming",

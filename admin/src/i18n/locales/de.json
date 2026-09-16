@@ -608,6 +608,20 @@
     "replaceCheck": "Ersetzen?",
     "originalValue": "Aktuelle Archivdaten"
   },
+  "aiQueryEvent": {
+    "queryAction": "KI-Recherche",
+    "queryTitle": "KI-Recherche: {{name}}",
+    "querying": "Recherche der Ereignisgeschichte über DeepSeek (10–60 s), bitte warten…",
+    "queryFailed": "KI-Recherche fehlgeschlagen",
+    "retry": "Erneut versuchen",
+    "fillToEditor": "In Editor übernehmen",
+    "applied": "KI-Ergebnis in das Formular übernommen. Bitte vor dem Speichern prüfen.",
+    "empty": "(keine)",
+    "originalColumn": "Aktuelle Archivdaten",
+    "aiColumn": "AI-Abfrageergebnis",
+    "fieldColumn": "Feld",
+    "replaceCheck": "Ersetzen?"
+  },
   "periods": {
     "lateSong": "Späte Song-Dynastie",
     "lateMing": "Späte Ming-Dynastie",

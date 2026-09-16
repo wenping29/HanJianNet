@@ -1,6 +1,7 @@
 import { useAuth } from '../stores/auth'
 import type {
   AdminMenuItem,
+  AiEventResult,
   AiTraitorResult,
   AtrocityEventDetail,
   AtrocityEventInput,
@@ -196,6 +197,12 @@ export const api = {
     }),
 
   // ---- 历史事件（惨案/宏观事件） ----
+  aiQueryEvent: (name: string) =>
+    request<{ result: AiEventResult }>('/admin/atrocity-events/ai-query', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    }),
+
   listAtrocityEvents: (era?: string) => {
     const params = new URLSearchParams()
     if (era) params.set('era', era)

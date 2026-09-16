@@ -608,6 +608,20 @@
     "replaceCheck": "置換する?",
     "originalValue": "現在のアーカイブデータ"
   },
+  "aiQueryEvent": {
+    "queryAction": "AI 調査",
+    "queryTitle": "AI 史料調査：{{name}}",
+    "querying": "DeepSeek による事件史料の調査中（10～60秒）、お待ちください…",
+    "queryFailed": "AI 調査に失敗しました",
+    "retry": "再試行",
+    "fillToEditor": "エディタに反映",
+    "applied": "AI 調査結果をフォームに反映しました。保存前に必ず確認してください。",
+    "empty": "（なし）",
+    "originalColumn": "現在のアーカイブデータ",
+    "aiColumn": "AI クエリ結果",
+    "fieldColumn": "項目",
+    "replaceCheck": "置換する?"
+  },
   "periods": {
     "lateSong": "南宋末期",
     "lateMing": "明末",

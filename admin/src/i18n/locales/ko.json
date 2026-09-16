@@ -608,6 +608,20 @@
     "replaceCheck": "교체할까요?",
     "originalValue": "현재 아카이브 데이터"
   },
+  "aiQueryEvent": {
+    "queryAction": "AI 조회",
+    "queryTitle": "AI 사료 조회: {{name}}",
+    "querying": "DeepSeek로 사건 사료를 조회 중입니다(10~60초), 잠시 기다려 주세요…",
+    "queryFailed": "AI 조회 실패",
+    "retry": "다시 시도",
+    "fillToEditor": "편집기에 채우기",
+    "applied": "AI 조회 결과가 양식에 반영되었습니다. 저장 전에 확인하세요.",
+    "empty": "(없음)",
+    "originalColumn": "현재 아카이브 데이터",
+    "aiColumn": "AI 쿼리 결과",
+    "fieldColumn": "필드",
+    "replaceCheck": "교체할까요?"
+  },
   "periods": {
     "lateSong": "남송",
     "lateMing": "명나라 말기",

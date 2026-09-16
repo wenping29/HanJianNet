@@ -608,6 +608,20 @@
     "replaceCheck": "Заменить?",
     "originalValue": "Текущие данные архива"
   },
+  "aiQueryEvent": {
+    "queryAction": "AI-запрос",
+    "queryTitle": "AI-исследование: {{name}}",
+    "querying": "Идёт исследование истории события через DeepSeek (10–60 с), подождите…",
+    "queryFailed": "Не удалось выполнить AI-запрос",
+    "retry": "Повторить",
+    "fillToEditor": "Заполнить в редакторе",
+    "applied": "Результат ИИ применён к форме. Проверьте перед сохранением.",
+    "empty": "(нет)",
+    "originalColumn": "Текущие данные архива",
+    "aiColumn": "Результат ИИ-запроса",
+    "fieldColumn": "Поле",
+    "replaceCheck": "Заменить?"
+  },
   "periods": {
     "lateSong": "Поздняя Сун",
     "lateMing": "Поздняя Мин",
