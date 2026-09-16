@@ -5,6 +5,8 @@ import { api } from '../lib/api'
 import EventAiQueryModal, { useAiEventQuery } from '../components/EventAiQueryModal'
 import PageHeader from '../components/PageHeader'
 import { PERIODS, splitList } from '../lib/format'
+import { ROLE_LABELS } from '../lib/roles'
+import { useAuth } from '../stores/auth'
 import type { AtrocityEventDetail, AtrocityEventInput, AtrocityEventSummary } from '../types'
 
 const PAGE_SIZE = 10
@@ -66,7 +68,6 @@ const EMPTY_FORM: EventForm = {
 
 function ListView() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const [items, setItems] = useState<AtrocityEventSummary[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -184,8 +185,10 @@ function ListView() {
                       <div className="flex justify-end">
                         <button
                           type="button"
-                          className="btn-ghost !px-3 !py-1.5 text-xs"
-                          onClick={() => navigate(`/events/${ev.id}/edit`)}
+                          className="btn-bronze !px-4 !py-2 text-xs"
+                          onClick={() => {
+                            window.open(`${window.location.href.split('#')[0]}#/events/${ev.id}/edit`, '_blank', 'noopener')
+                          }}
                         >
                           {t('eventsAdmin.editBasicInfo')}
                         </button>
@@ -256,6 +259,8 @@ function EditView() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const me = useAuth((s) => s.user)
+  const clear = useAuth((s) => s.clear)
 
   const [form, setForm] = useState<EventForm>(EMPTY_FORM)
   const [loading, setLoading] = useState(true)
@@ -370,10 +375,49 @@ function EditView() {
     }
   }
 
-  if (loading) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
+  if (loading) return <div className="min-h-screen pt-24"><div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div></div>
 
   return (
-    <div className="container-page max-w-3xl py-5">
+    <div className="min-h-screen">
+      {/* 独立页顶栏（不含侧边菜单） */}
+      <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-paperedge/15 bg-ink/85 px-4 backdrop-blur sm:px-6">
+        <button
+          type="button"
+          onClick={() => navigate('/events')}
+          className="flex items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 transition hover:text-paper"
+        >
+          <span aria-hidden="true">←</span>
+          {t('eventsAdmin.title')}
+        </button>
+        <span className="hidden items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 sm:flex">
+          {t('layout.brand')}
+        </span>
+        <div className="flex items-center gap-4">
+          {me && (
+            <span className="hidden items-center gap-2 text-sm text-paper md:flex">
+              <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-bronze/50 bg-bronze/15 font-song text-sm font-bold text-bronzelight">
+                {me.username.slice(0, 1).toUpperCase()}
+              </span>
+              <span className="flex flex-col items-start leading-tight">
+                <span className="text-sm">{me.username}</span>
+                <span className="text-[11px] tracking-[0.2em] text-bronzelight">{ROLE_LABELS[me.role]}</span>
+              </span>
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              clear()
+              navigate('/login', { replace: true })
+            }}
+            className="btn-ghost !px-3 !py-1.5 text-xs"
+          >
+            {t('header.logout')}
+          </button>
+        </div>
+      </header>
+
+      <div className="container-page max-w-3xl py-5 pt-24">
       <PageHeader
         title={t('eventsAdmin.editTitle')}
         subtitle={t('eventsAdmin.editSubtitle')}
@@ -528,6 +572,15 @@ function EditView() {
         onRetry={() => aiQuery.retry()}
         onFill={handleAiFill}
       />
+      </div>
+
+      {/* 页脚 */}
+      <footer className="flex-shrink-0 border-t border-paperedge/15 bg-inksoft/60">
+        <div className="container-page flex flex-col items-center justify-between gap-2 py-4 text-xs tracking-wider text-paperdim/70 sm:flex-row">
+          <span>{t('layout.title')}</span>
+          <span className="font-garamond italic">Editorial Console · Est. 2026</span>
+        </div>
+      </footer>
     </div>
   )
 }
