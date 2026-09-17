@@ -474,7 +474,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get submitFailed => 'Échec de l\'envoi';
 
   @override
-  String get searchPrompt => 'Saisissez les critères puis appuyez sur « Rechercher »';
+  String get searchPrompt =>
+      'Saisissez les critères puis appuyez sur « Rechercher »';
 
   @override
   String get settings => 'Paramètres';

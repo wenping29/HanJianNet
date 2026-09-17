@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
 
 import '../models/models.dart';
-import '../services/api_client.dart';
 import '../services/session.dart';
-import '../widgets/common.dart';
 import '../widgets/theme.dart';
 import 'login_screen.dart';
+import 'my_submissions_screen.dart';
 import 'settings_screen.dart';
 import 'traitor_form_screen.dart';
 
@@ -19,31 +18,6 @@ class MineScreen extends StatefulWidget {
 }
 
 class _MineScreenState extends State<MineScreen> {
-  List<Revision>? _submissions;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    if (!Session.instance.isLogin) return;
-    setState(() {
-      _error = null;
-      _submissions = null;
-    });
-    try {
-      final items = await ApiClient.instance.mySubmissions();
-      if (!mounted) return;
-      setState(() => _submissions = items);
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      setState(() => _error = e.message);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -67,33 +41,26 @@ class _MineScreenState extends State<MineScreen> {
               style: TextStyle(color: AppTheme.paperDim, fontSize: 13)),
           const SizedBox(height: 24),
           FilledButton(
-            onPressed: () async {
-              final ok = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
-              if (ok == true) {
-                setState(() {});
-                _load();
-              }
-            },
+            onPressed: () => _goLogin(),
             child: Text(l10n.goToLogin),
           ),
           const SizedBox(height: 12),
           OutlinedButton(
-            onPressed: () async {
-              final ok = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
-              if (ok == true) {
-                setState(() {});
-                _load();
-              }
-            },
+            onPressed: () => _goLogin(),
             child: Text(l10n.register),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _goLogin() async {
+    final ok = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+    if (ok == true) {
+      setState(() {});
+    }
   }
 
   Widget _loggedInView(User? user) {
@@ -150,9 +117,18 @@ class _MineScreenState extends State<MineScreen> {
             },
           ),
         ),
-        SectionHeader(title: l10n.mySubmissions, en: 'MY SUBMISSIONS'),
-        _submissionsView(),
-        const SizedBox(height: 12),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.history_edu, color: AppTheme.cinnabarLight),
+            title: Text(l10n.mySubmissions, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const MySubmissionsScreen(),
+              ));
+            },
+          ),
+        ),
         Card(
           child: ListTile(
             leading: const Icon(Icons.settings_outlined, color: AppTheme.cinnabarLight),
@@ -172,81 +148,11 @@ class _MineScreenState extends State<MineScreen> {
             onTap: () async {
               await Session.instance.logout();
               if (!mounted) return;
-              setState(() {
-                _submissions = null;
-              });
+              setState(() {});
             },
           ),
         ),
         const SizedBox(height: 32),
-      ],
-    );
-  }
-
-  Widget _submissionsView() {
-    final l10n = AppLocalizations.of(context)!;
-    if (_error != null) return ErrorRetry(message: _error!, onRetry: _load);
-    final items = _submissions;
-    if (items == null) return const LoadingView();
-    if (items.isEmpty) return EmptyView(text: l10n.noSubmissions);
-    return Column(
-      children: [
-        for (final r in items)
-          Card(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: r.isNewArchive
-                                ? AppTheme.cinnabarLight
-                                : AppTheme.paperDim.withValues(alpha: 0.3),
-                          ),
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: Text(r.isNewArchive ? l10n.submitNewArchive : l10n.modifyArchive,
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: r.isNewArchive
-                                    ? AppTheme.cinnabarLight
-                                    : AppTheme.paperDim)),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(r.payload.name,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 2)),
-                      ),
-                      StatusChip(status: r.status),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(l10n.changeContent(r.changeSummary),
-                      style: TextStyle(
-                          fontSize: 12.5, height: 1.5, color: AppTheme.paper.withValues(alpha: 0.85))),
-                  const SizedBox(height: 6),
-                  Text(l10n.submittedAt(formatDateTime(r.submittedAt)),
-                      style:
-                          TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.7))),
-                  if (r.reviewedAt != null)
-                    Text(
-                      l10n.reviewedAt(formatDateTime(r.reviewedAt)) +
-                          (r.reviewer != null ? l10n.reviewer(r.reviewer!.username) : '') +
-                          (r.reviewComment?.isNotEmpty == true ? l10n.reviewComment(r.reviewComment!) : ''),
-                      style:
-                          TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.7)),
-                    ),
-                ],
-              ),
-            ),
-          ),
       ],
     );
   }
