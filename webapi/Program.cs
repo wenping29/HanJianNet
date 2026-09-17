@@ -206,6 +206,9 @@ try
     // 异常 → 响应 + 写错误日志
     app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+    // CORS 必须放在 UseStaticFiles 之前，否则 /uploads 静态资源被短路、缺少跨域响应头（Flutter Web 图片以 XHR 加载会报错）
+    app.UseCors("frontend");
+
     Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "uploads"));
     app.UseStaticFiles(new StaticFileOptions
     {
@@ -217,7 +220,6 @@ try
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    app.UseCors("frontend");
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
