@@ -16,6 +16,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocaleController.instance.load();
   await ThemeController.instance.load();
+  // 恢复本地持久化的登录会话（token + 用户），并静默校验 token 有效性
+  await Session.instance.load();
   runApp(const HanJianApp());
 }
 
