@@ -107,18 +107,6 @@ class _MineScreenState extends State<MineScreen> {
         const SizedBox(height: 12),
         Card(
           child: ListTile(
-            leading: Icon(Icons.add_circle_outline, color: AppTheme.cinnabarLight),
-            title: Text(l10n.submitNewArchive, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
-            trailing: const Icon(Icons.chevron_right, size: 20),
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => const TraitorFormScreen(mode: TraitorFormMode.create),
-              ));
-            },
-          ),
-        ),
-        Card(
-          child: ListTile(
             leading: const Icon(Icons.history_edu, color: AppTheme.cinnabarLight),
             title: Text(l10n.mySubmissions, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
             trailing: const Icon(Icons.chevron_right, size: 20),
@@ -137,6 +125,18 @@ class _MineScreenState extends State<MineScreen> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => const SettingsScreen(),
+              ));
+            },
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: Icon(Icons.add_circle_outline, color: AppTheme.cinnabarLight),
+            title: Text(l10n.submitNewArchive, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const TraitorFormScreen(mode: TraitorFormMode.create),
               ));
             },
           ),
