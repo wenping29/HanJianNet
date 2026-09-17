@@ -119,6 +119,9 @@ class Session extends ChangeNotifier {
         'birthday': u.birthday,
         'address': u.address,
         'phone': u.phone,
+        'nickname': u.nickname,
+        'signature': u.signature,
+        'region': u.region,
       });
 
   Future<void> _persistAll() async {

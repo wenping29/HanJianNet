@@ -13,6 +13,9 @@ class User {
   final String? birthday; // yyyy-MM-dd
   final String? address;
   final String? phone;
+  final String? nickname; // 可修改的显示名
+  final String? signature;
+  final String? region;
   final String? createdAt;
 
   const User({
@@ -25,6 +28,9 @@ class User {
     this.birthday,
     this.address,
     this.phone,
+    this.nickname,
+    this.signature,
+    this.region,
     this.createdAt,
   });
 
@@ -38,6 +44,9 @@ class User {
         birthday: j['birthday'] as String?,
         address: j['address'] as String?,
         phone: j['phone'] as String?,
+        nickname: j['nickname'] as String?,
+        signature: j['signature'] as String?,
+        region: j['region'] as String?,
         createdAt: j['createdAt'] as String?,
       );
 }

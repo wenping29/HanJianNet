@@ -294,5 +294,9 @@
   "invalidPhone": "Número de teléfono no válido",
   "profileAccountFixed": "El nombre de usuario y el correo no se pueden modificar",
   "optional": "Opcional",
-  "tapToChangeAvatar": "Toque el avatar para cambiarlo"
+  "tapToChangeAvatar": "Toque el avatar para cambiarlo",
+  "nickname": "Apodo",
+  "signature": "Firma",
+  "region": "Región",
+  "myQrCode": "Mi código QR"
 }

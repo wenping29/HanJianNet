@@ -567,4 +567,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tapToChangeAvatar => 'Нажмите на аватар, чтобы изменить';
+
+  @override
+  String get nickname => 'Никнейм';
+
+  @override
+  String get signature => 'Подпись';
+
+  @override
+  String get region => 'Регион';
+
+  @override
+  String get myQrCode => 'Мой QR-код';
 }

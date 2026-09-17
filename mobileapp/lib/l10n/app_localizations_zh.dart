@@ -563,4 +563,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tapToChangeAvatar => '点击头像更换';
+
+  @override
+  String get nickname => '昵称';
+
+  @override
+  String get signature => '个性签名';
+
+  @override
+  String get region => '地区';
+
+  @override
+  String get myQrCode => '我的二维码';
 }

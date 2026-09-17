@@ -1153,6 +1153,30 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'点击头像更换'**
   String get tapToChangeAvatar;
+
+  /// No description provided for @nickname.
+  ///
+  /// In zh, this message translates to:
+  /// **'昵称'**
+  String get nickname;
+
+  /// No description provided for @signature.
+  ///
+  /// In zh, this message translates to:
+  /// **'个性签名'**
+  String get signature;
+
+  /// No description provided for @region.
+  ///
+  /// In zh, this message translates to:
+  /// **'地区'**
+  String get region;
+
+  /// No description provided for @myQrCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的二维码'**
+  String get myQrCode;
 }
 
 class _AppLocalizationsDelegate

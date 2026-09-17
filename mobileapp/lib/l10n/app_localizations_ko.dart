@@ -551,7 +551,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get address => '주소';
 
   @override
-  String get phone => '휴전화 번호';
+  String get phone => '전화번호';
 
   @override
   String get invalidPhone => '전화번호 형식이 올바르지 않습니다';
@@ -564,4 +564,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tapToChangeAvatar => '아바타를 탭하여 변경';
+
+  @override
+  String get nickname => '닉네임';
+
+  @override
+  String get signature => '상태 메시지';
+
+  @override
+  String get region => '지역';
+
+  @override
+  String get myQrCode => '내 QR 코드';
 }

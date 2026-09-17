@@ -122,7 +122,10 @@ class _MineScreenState extends State<MineScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user?.username ?? '',
+                      Text(
+                          (user?.nickname?.isNotEmpty == true)
+                              ? user!.nickname!
+                              : (user?.username ?? ''),
                           style: const TextStyle(
                               fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: 1)),
                       const SizedBox(height: 4),
@@ -131,6 +134,16 @@ class _MineScreenState extends State<MineScreen> {
                       const SizedBox(height: 2),
                       Text(user?.email ?? '',
                           style: TextStyle(fontSize: 12, color: AppTheme.paperDim)),
+                      if (user?.signature?.isNotEmpty == true) ...[
+                        const SizedBox(height: 2),
+                        Text(user!.signature!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: AppTheme.paperDim,
+                                fontStyle: FontStyle.italic)),
+                      ],
                     ],
                   ),
                 ),

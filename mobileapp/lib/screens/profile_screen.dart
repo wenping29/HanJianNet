@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
 
@@ -7,7 +8,8 @@ import '../services/api_client.dart';
 import '../services/session.dart';
 import '../widgets/theme.dart';
 
-/// 编辑个人信息页：用户名与邮箱只读；可修改头像、性别、生日、地址、手机号。
+/// 编辑个人信息页：用户名与邮箱只读；可修改头像、昵称、性别、生日、地区、地址、手机号、签名；
+/// 并可查看个人二维码。
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -16,12 +18,26 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  /// 省级地区选项（与地图数据口径一致）。
+  static const _kRegions = [
+    '北京市', '天津市', '上海市', '重庆市',
+    '河北省', '山西省', '辽宁省', '吉林省', '黑龙江省',
+    '江苏省', '浙江省', '安徽省', '福建省', '江西省', '山东省',
+    '河南省', '湖北省', '湖南省', '广东省', '海南省',
+    '四川省', '贵州省', '云南省', '陕西省', '甘肃省', '青海省', '台湾省',
+    '内蒙古自治区', '广西壮族自治区', '西藏自治区', '宁夏回族自治区', '新疆维吾尔自治区',
+    '香港特别行政区', '澳门特别行政区',
+  ];
+
   final _formKey = GlobalKey<FormState>();
+  final _nicknameCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _addressCtrl = TextEditingController();
+  final _signatureCtrl = TextEditingController();
 
   String _gender = 'secret';
   String? _birthday; // yyyy-MM-dd
+  String _region = ''; // 空串表示未设置
 
   bool _busy = false;
   bool _avatarBusy = false;
@@ -31,19 +47,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     final user = Session.instance.user;
+    _nicknameCtrl.text = user?.nickname ?? '';
     _phoneCtrl.text = user?.phone ?? '';
     _addressCtrl.text = user?.address ?? '';
+    _signatureCtrl.text = user?.signature ?? '';
     _gender = switch (user?.gender) {
       'male' || 'female' => user!.gender!,
       _ => 'secret',
     };
     _birthday = (user?.birthday?.isNotEmpty == true) ? user!.birthday : null;
+    _region = user?.region ?? '';
   }
 
   @override
   void dispose() {
+    _nicknameCtrl.dispose();
     _phoneCtrl.dispose();
     _addressCtrl.dispose();
+    _signatureCtrl.dispose();
     super.dispose();
   }
 
@@ -59,7 +80,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             _avatarSection(l10n, user?.avatarUrl, user?.username),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.qr_code_2, color: AppTheme.cinnabarLight),
+                title: Text(l10n.myQrCode,
+                    style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+                trailing: const Icon(Icons.chevron_right, size: 20),
+                onTap: () => _showQrCode(l10n),
+              ),
+            ),
+            const SizedBox(height: 12),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -89,6 +120,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
+                    TextFormField(
+                      controller: _nicknameCtrl,
+                      maxLength: 32,
+                      decoration: InputDecoration(labelText: l10n.nickname),
+                    ),
+                    const SizedBox(height: 14),
                     DropdownButtonFormField<String>(
                       initialValue: _gender,
                       decoration: InputDecoration(labelText: l10n.gender),
@@ -120,6 +157,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 14),
+                    DropdownButtonFormField<String>(
+                      initialValue: _region,
+                      decoration: InputDecoration(labelText: l10n.region),
+                      items: [
+                        DropdownMenuItem(value: '', child: Text(l10n.optional)),
+                        // 兼容历史保存的非标准地区值
+                        if (_region.isNotEmpty && !_kRegions.contains(_region))
+                          DropdownMenuItem(value: _region, child: Text(_region)),
+                        ..._kRegions.map((r) => DropdownMenuItem(value: r, child: Text(r))),
+                      ],
+                      onChanged: (v) => setState(() => _region = v ?? ''),
+                    ),
+                    const SizedBox(height: 14),
                     TextFormField(
                       controller: _phoneCtrl,
                       keyboardType: TextInputType.phone,
@@ -138,6 +188,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       controller: _addressCtrl,
                       maxLength: 200,
                       decoration: InputDecoration(labelText: l10n.address),
+                    ),
+                    const SizedBox(height: 14),
+                    TextFormField(
+                      controller: _signatureCtrl,
+                      maxLength: 200,
+                      maxLines: 2,
+                      decoration: InputDecoration(labelText: l10n.signature),
                     ),
                   ],
                 ),
@@ -217,6 +274,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  /// 个人二维码：内容为用户标识，供其他端扫码识别。
+  void _showQrCode(AppLocalizations l10n) {
+    final user = Session.instance.user;
+    if (user == null) return;
+    final displayName =
+        (user.nickname?.isNotEmpty == true) ? user.nickname! : user.username;
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.myQrCode, textAlign: TextAlign.center),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(12),
+              child: QrImageView(
+                data: 'hanjiannet://u/${user.id}',
+                version: QrVersions.auto,
+                size: 220,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(displayName,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            Text('@${user.username}',
+                style: TextStyle(fontSize: 12, color: AppTheme.paperDim)),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _changeAvatar() async {
     final l10n = AppLocalizations.of(context)!;
     final picked = await ImagePicker().pickImage(
@@ -278,10 +368,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
     try {
       final user = await ApiClient.instance.updateProfile(
+        nickname: _nicknameCtrl.text.trim(),
         gender: _gender,
         birthday: _birthday ?? '',
         phone: _phoneCtrl.text.trim(),
         address: _addressCtrl.text.trim(),
+        signature: _signatureCtrl.text.trim(),
+        region: _region,
       );
       await Session.instance.updateUser(user);
       if (!mounted) return;

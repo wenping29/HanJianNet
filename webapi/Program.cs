@@ -298,6 +298,18 @@ static class DbInitHelpers
             db.Database.IsSqlite()
                 ? "ALTER TABLE Users ADD COLUMN Phone TEXT;"
                 : "ALTER TABLE Users ADD COLUMN Phone VARCHAR(32) NULL;");
+        await EnsureColumnAsync(db, "Users", "Nickname",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Nickname TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Nickname VARCHAR(64) NULL;");
+        await EnsureColumnAsync(db, "Users", "Signature",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Signature TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Signature VARCHAR(255) NULL;");
+        await EnsureColumnAsync(db, "Users", "Region",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Region TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Region VARCHAR(64) NULL;");
 
         // 站内通知表（EnsureCreated 会为新库自动建表，此处兼容旧库）
         await db.Database.ExecuteSqlRawAsync(

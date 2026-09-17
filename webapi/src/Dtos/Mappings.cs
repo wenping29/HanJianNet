@@ -17,6 +17,9 @@ public static class Mappings
         Birthday = u.Birthday,
         Address = u.Address,
         Phone = u.Phone,
+        Nickname = u.Nickname,
+        Signature = u.Signature,
+        Region = u.Region,
         CreatedAt = u.CreatedAt,
     };
 

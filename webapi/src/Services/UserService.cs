@@ -174,6 +174,24 @@ public class UserService(AppDbContext db)
             if (address.Length > 200) throw new ApiException(400, "地址不能超过 200 字");
             user.Address = address == "" ? null : address;
         }
+        if (req.Nickname is not null)
+        {
+            var nickname = req.Nickname.Trim();
+            if (nickname.Length > 32) throw new ApiException(400, "昵称不能超过 32 字");
+            user.Nickname = nickname == "" ? null : nickname;
+        }
+        if (req.Signature is not null)
+        {
+            var signature = req.Signature.Trim();
+            if (signature.Length > 200) throw new ApiException(400, "签名不能超过 200 字");
+            user.Signature = signature == "" ? null : signature;
+        }
+        if (req.Region is not null)
+        {
+            var region = req.Region.Trim();
+            if (region.Length > 64) throw new ApiException(400, "地区不能超过 64 字");
+            user.Region = region == "" ? null : region;
+        }
 
         await db.SaveChangesAsync();
         return user.ToDto();

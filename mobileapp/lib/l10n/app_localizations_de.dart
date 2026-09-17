@@ -568,4 +568,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tapToChangeAvatar => 'Zum Ändern auf den Avatar tippen';
+
+  @override
+  String get nickname => 'Spitzname';
+
+  @override
+  String get signature => 'Signatur';
+
+  @override
+  String get region => 'Region';
+
+  @override
+  String get myQrCode => 'Mein QR-Code';
 }

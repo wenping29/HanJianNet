@@ -294,5 +294,9 @@
   "invalidPhone": "Неверный номер телефона",
   "profileAccountFixed": "Имя пользователя и email нельзя изменить",
   "optional": "Необязательно",
-  "tapToChangeAvatar": "Нажмите на аватар, чтобы изменить"
+  "tapToChangeAvatar": "Нажмите на аватар, чтобы изменить",
+  "nickname": "Никнейм",
+  "signature": "Подпись",
+  "region": "Регион",
+  "myQrCode": "Мой QR-код"
 }

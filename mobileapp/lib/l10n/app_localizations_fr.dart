@@ -571,4 +571,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get tapToChangeAvatar => 'Touchez l\'avatar pour le changer';
+
+  @override
+  String get nickname => 'Pseudo';
+
+  @override
+  String get signature => 'Signature';
+
+  @override
+  String get region => 'Région';
+
+  @override
+  String get myQrCode => 'Mon code QR';
 }

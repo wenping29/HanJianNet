@@ -34,6 +34,12 @@ public class UpdateProfileRequest
     public string? Address { get; set; }
     /// <summary>手机号；null 不修改，空串清除</summary>
     public string? Phone { get; set; }
+    /// <summary>昵称（可修改的显示名）；null 不修改，空串清除</summary>
+    public string? Nickname { get; set; }
+    /// <summary>个性签名；null 不修改，空串清除</summary>
+    public string? Signature { get; set; }
+    /// <summary>所在地区；null 不修改，空串清除</summary>
+    public string? Region { get; set; }
 }
 
 public class UpdateAvatarRequest

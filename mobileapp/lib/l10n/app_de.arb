@@ -294,5 +294,9 @@
   "invalidPhone": "Ungültige Telefonnummer",
   "profileAccountFixed": "Benutzername und E-Mail können nicht geändert werden",
   "optional": "Optional",
-  "tapToChangeAvatar": "Zum Ändern auf den Avatar tippen"
+  "tapToChangeAvatar": "Zum Ändern auf den Avatar tippen",
+  "nickname": "Spitzname",
+  "signature": "Signatur",
+  "region": "Region",
+  "myQrCode": "Mein QR-Code"
 }

@@ -564,4 +564,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get tapToChangeAvatar => 'アバターをタップして変更';
+
+  @override
+  String get nickname => 'ニックネーム';
+
+  @override
+  String get signature => 'ひとこと';
+
+  @override
+  String get region => '地域';
+
+  @override
+  String get myQrCode => 'マイQRコード';
 }

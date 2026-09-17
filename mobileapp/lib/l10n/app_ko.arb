@@ -294,5 +294,9 @@
   "invalidPhone": "전화번호 형식이 올바르지 않습니다",
   "profileAccountFixed": "사용자 이름과 이메일은 변경할 수 없습니다",
   "optional": "선택 사항",
-  "tapToChangeAvatar": "아바타를 탭하여 변경"
+  "tapToChangeAvatar": "아바타를 탭하여 변경",
+  "nickname": "닉네임",
+  "signature": "상태 메시지",
+  "region": "지역",
+  "myQrCode": "내 QR 코드"
 }

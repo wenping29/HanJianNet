@@ -30,6 +30,9 @@ public class UserDto
     public string? Birthday { get; set; }
     public string? Address { get; set; }
     public string? Phone { get; set; }
+    public string? Nickname { get; set; }
+    public string? Signature { get; set; }
+    public string? Region { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 

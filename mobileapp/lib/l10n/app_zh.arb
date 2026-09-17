@@ -294,5 +294,9 @@
   "invalidPhone": "手机号格式不正确",
   "profileAccountFixed": "用户名和邮箱不可修改",
   "optional": "选填",
-  "tapToChangeAvatar": "点击头像更换"
+  "tapToChangeAvatar": "点击头像更换",
+  "nickname": "昵称",
+  "signature": "个性签名",
+  "region": "地区",
+  "myQrCode": "我的二维码"
 }

@@ -294,5 +294,9 @@
   "invalidPhone": "電話番号の形式が正しくありません",
   "profileAccountFixed": "ユーザー名とメールアドレスは変更できません",
   "optional": "任意",
-  "tapToChangeAvatar": "アバターをタップして変更"
+  "tapToChangeAvatar": "アバターをタップして変更",
+  "nickname": "ニックネーム",
+  "signature": "ひとこと",
+  "region": "地域",
+  "myQrCode": "マイQRコード"
 }
