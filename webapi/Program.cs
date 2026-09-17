@@ -275,6 +275,12 @@ static class DbInitHelpers
                 ? "ALTER TABLE Traitors ADD COLUMN BirthPlace TEXT NOT NULL DEFAULT '';"
                 : "ALTER TABLE Traitors ADD COLUMN BirthPlace VARCHAR(255) NOT NULL DEFAULT '';");
 
+        // 补齐 Users 表的新增列（AvatarUrl：用户头像）
+        await EnsureColumnAsync(db, "Users", "AvatarUrl",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN AvatarUrl TEXT;"
+                : "ALTER TABLE Users ADD COLUMN AvatarUrl VARCHAR(512) NULL;");
+
         // 系统配置表（EnsureCreated 会为新库自动建表，此处兼容旧库）
         await db.Database.ExecuteSqlRawAsync(
             db.Database.IsSqlite()

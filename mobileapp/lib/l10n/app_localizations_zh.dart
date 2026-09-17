@@ -478,4 +478,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get profileUpdated => '个人信息已更新';
+
+  @override
+  String get editAvatar => '修改头像';
+
+  @override
+  String get avatarUpdated => '头像已更新';
 }

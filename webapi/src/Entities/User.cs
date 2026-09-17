@@ -7,5 +7,7 @@ public class User
     public string Email { get; set; } = "";
     public string PasswordHash { get; set; } = "";
     public string Role { get; set; } = "user";
+    /// <summary>头像地址（/uploads/ 下的相对路径），null 表示未设置。</summary>
+    public string? AvatarUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

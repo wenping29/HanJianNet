@@ -479,4 +479,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get profileUpdated => '개인 정보가 업데이트되었습니다';
+
+  @override
+  String get editAvatar => '프로필 사진 변경';
+
+  @override
+  String get avatarUpdated => '프로필 사진이 업데이트되었습니다';
 }

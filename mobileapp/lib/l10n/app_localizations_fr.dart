@@ -485,4 +485,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get profileUpdated => 'Profil mis à jour';
+
+  @override
+  String get editAvatar => 'Modifier l\'avatar';
+
+  @override
+  String get avatarUpdated => 'Avatar mis à jour';
 }

@@ -482,4 +482,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileUpdated => 'Профиль обновлён';
+
+  @override
+  String get editAvatar => 'Изменить аватар';
+
+  @override
+  String get avatarUpdated => 'Аватар обновлён';
 }

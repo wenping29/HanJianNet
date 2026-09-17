@@ -479,4 +479,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get profileUpdated => '個人情報を更新しました';
+
+  @override
+  String get editAvatar => 'アバターの変更';
+
+  @override
+  String get avatarUpdated => 'アバターを更新しました';
 }

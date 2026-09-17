@@ -253,5 +253,7 @@
   "searchPrompt": "条件を入力して「検索」をタップしてください",
   "settings": "設定",
   "editProfile": "個人情報の編集",
-  "profileUpdated": "個人情報を更新しました"
+  "profileUpdated": "個人情報を更新しました",
+  "editAvatar": "アバターの変更",
+  "avatarUpdated": "アバターを更新しました"
 }

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
 
 import '../models/models.dart';
+import '../services/api_client.dart';
 import '../services/session.dart';
 import '../widgets/theme.dart';
+import 'avatar_screen.dart';
 import 'login_screen.dart';
 import 'my_submissions_screen.dart';
 import 'profile_screen.dart';
@@ -74,14 +76,27 @@ class _MineScreenState extends State<MineScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: AppTheme.cinnabar.withValues(alpha: 0.3),
-                  child: Text(
-                    (user?.username.isNotEmpty == true)
-                        ? user!.username.characters.first.toUpperCase()
-                        : '?',
-                    style: const TextStyle(fontSize: 20, color: AppTheme.paper),
+                GestureDetector(
+                  onTap: () async {
+                    final updated = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(builder: (_) => const EditAvatarScreen()),
+                    );
+                    if (updated == true) setState(() {});
+                  },
+                  child: CircleAvatar(
+                    radius: 26,
+                    backgroundColor: AppTheme.cinnabar.withValues(alpha: 0.3),
+                    backgroundImage: (user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty)
+                        ? NetworkImage(resolveAssetUrl(user.avatarUrl!))
+                        : null,
+                    child: (user?.avatarUrl == null || user!.avatarUrl!.isEmpty)
+                        ? Text(
+                            (user?.username.isNotEmpty == true)
+                                ? user!.username.characters.first.toUpperCase()
+                                : '?',
+                            style: const TextStyle(fontSize: 20, color: AppTheme.paper),
+                          )
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 14),

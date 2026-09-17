@@ -253,5 +253,7 @@
   "searchPrompt": "Saisissez les critères puis appuyez sur « Rechercher »",
   "settings": "Paramètres",
   "editProfile": "Modifier le profil",
-  "profileUpdated": "Profil mis à jour"
+  "profileUpdated": "Profil mis à jour",
+  "editAvatar": "Modifier l'avatar",
+  "avatarUpdated": "Avatar mis à jour"
 }

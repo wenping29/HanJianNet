@@ -8,6 +8,7 @@ class User {
   final String username;
   final String email;
   final String role;
+  final String? avatarUrl;
   final String? createdAt;
 
   const User({
@@ -15,6 +16,7 @@ class User {
     required this.username,
     required this.email,
     required this.role,
+    this.avatarUrl,
     this.createdAt,
   });
 
@@ -23,6 +25,7 @@ class User {
         username: j['username'] as String,
         email: (j['email'] as String?) ?? '',
         role: (j['role'] as String?) ?? 'user',
+        avatarUrl: j['avatarUrl'] as String?,
         createdAt: j['createdAt'] as String?,
       );
 }

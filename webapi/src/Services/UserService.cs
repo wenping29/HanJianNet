@@ -140,6 +140,21 @@ public class UserService(AppDbContext db)
         return user.ToDto();
     }
 
+    /// <summary>更新本人头像。仅允许指向本站 /uploads/ 下的文件（先经上传接口落盘）。</summary>
+    public async Task<UserDto> UpdateAvatarAsync(string selfId, UpdateAvatarRequest req)
+    {
+        var user = await db.Users.FindAsync(selfId)
+                   ?? throw new ApiException(401, "无法识别当前用户");
+
+        var url = req.AvatarUrl.Trim();
+        if (!url.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+            throw new ApiException(400, "头像地址无效，请先上传图片");
+
+        user.AvatarUrl = url;
+        await db.SaveChangesAsync();
+        return user.ToDto();
+    }
+
     public async Task ChangePasswordAsync(string selfId, ChangePasswordRequest req)
     {
         var user = await db.Users.FindAsync(selfId)

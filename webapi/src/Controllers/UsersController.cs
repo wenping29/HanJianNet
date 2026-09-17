@@ -43,6 +43,10 @@ public class MeController(UserService users) : ControllerBase
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest req)
         => Ok(new { user = await users.UpdateProfileAsync(CurrentUser.GetId(User), req) });
 
+    [HttpPut("avatar")]
+    public async Task<IActionResult> UpdateAvatar([FromBody] UpdateAvatarRequest req)
+        => Ok(new { user = await users.UpdateAvatarAsync(CurrentUser.GetId(User), req) });
+
     [HttpPut("password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req)
     {

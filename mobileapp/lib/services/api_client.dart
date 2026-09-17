@@ -114,6 +114,16 @@ class ApiClient {
     return User.fromJson(data['user'] as Map<String, dynamic>);
   }
 
+  /// 更新本人头像：avatarUrl 为上传接口返回的 /uploads/ 相对路径。
+  Future<User> updateAvatar(String avatarUrl) async {
+    final data = await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/me/avatar'),
+          headers: _headers,
+          body: jsonEncode({'avatarUrl': avatarUrl}),
+        )) as Map<String, dynamic>;
+    return User.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
   // ---- 档案（公开） ----
 
   Future<PaginatedTraitors> listTraitors({

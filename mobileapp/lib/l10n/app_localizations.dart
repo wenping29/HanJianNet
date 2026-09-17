@@ -991,6 +991,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'个人信息已更新'**
   String get profileUpdated;
+
+  /// No description provided for @editAvatar.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改头像'**
+  String get editAvatar;
+
+  /// No description provided for @avatarUpdated.
+  ///
+  /// In zh, this message translates to:
+  /// **'头像已更新'**
+  String get avatarUpdated;
 }
 
 class _AppLocalizationsDelegate

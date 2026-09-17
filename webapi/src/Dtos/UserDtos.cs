@@ -26,6 +26,11 @@ public class UpdateProfileRequest
     public string Email { get; set; } = "";
 }
 
+public class UpdateAvatarRequest
+{
+    public string AvatarUrl { get; set; } = "";
+}
+
 public class ChangePasswordRequest
 {
     public string CurrentPassword { get; set; } = "";

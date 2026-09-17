@@ -484,4 +484,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileUpdated => 'Perfil actualizado';
+
+  @override
+  String get editAvatar => 'Cambiar avatar';
+
+  @override
+  String get avatarUpdated => 'Avatar actualizado';
 }

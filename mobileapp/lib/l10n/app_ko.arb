@@ -253,5 +253,7 @@
   "searchPrompt": "조건을 입력하고 「조회」를 탭하세요",
   "settings": "설정",
   "editProfile": "개인 정보 수정",
-  "profileUpdated": "개인 정보가 업데이트되었습니다"
+  "profileUpdated": "개인 정보가 업데이트되었습니다",
+  "editAvatar": "프로필 사진 변경",
+  "avatarUpdated": "프로필 사진이 업데이트되었습니다"
 }

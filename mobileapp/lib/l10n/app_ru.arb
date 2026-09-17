@@ -253,5 +253,7 @@
   "searchPrompt": "Введите условия и нажмите «Поиск»",
   "settings": "Настройки",
   "editProfile": "Редактировать профиль",
-  "profileUpdated": "Профиль обновлён"
+  "profileUpdated": "Профиль обновлён",
+  "editAvatar": "Изменить аватар",
+  "avatarUpdated": "Аватар обновлён"
 }

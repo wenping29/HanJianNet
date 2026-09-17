@@ -12,6 +12,7 @@ public static class Mappings
         Username = u.Username,
         Email = u.Email,
         Role = u.Role,
+        AvatarUrl = u.AvatarUrl,
         CreatedAt = u.CreatedAt,
     };
 

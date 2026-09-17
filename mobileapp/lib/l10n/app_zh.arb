@@ -253,5 +253,7 @@
   "searchPrompt": "输入条件后点击「查询」",
   "settings": "设置",
   "editProfile": "编辑个人信息",
-  "profileUpdated": "个人信息已更新"
+  "profileUpdated": "个人信息已更新",
+  "editAvatar": "修改头像",
+  "avatarUpdated": "头像已更新"
 }

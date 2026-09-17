@@ -482,4 +482,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileUpdated => 'Profile updated';
+
+  @override
+  String get editAvatar => 'Edit Avatar';
+
+  @override
+  String get avatarUpdated => 'Avatar updated';
 }
