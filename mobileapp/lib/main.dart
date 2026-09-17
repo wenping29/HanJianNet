@@ -9,11 +9,13 @@ import 'screens/search_screen.dart';
 import 'screens/traitor_form_screen.dart';
 import 'services/locale_controller.dart';
 import 'services/session.dart';
+import 'services/theme_controller.dart';
 import 'widgets/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocaleController.instance.load();
+  await ThemeController.instance.load();
   runApp(const HanJianApp());
 }
 
@@ -25,14 +27,28 @@ class HanJianApp extends StatelessWidget {
     return ValueListenableBuilder<Locale>(
       valueListenable: LocaleController.instance.locale,
       builder: (context, locale, _) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.dark,
-          locale: locale,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          onGenerateTitle: (ctx) => AppLocalizations.of(ctx)!.appTitle,
-          home: const RootNav(),
+        return ValueListenableBuilder<ThemeMode>(
+          valueListenable: ThemeController.instance.mode,
+          builder: (context, mode, _) {
+            // 解析实际明暗并同步语义色，供组件中硬编码的 AppTheme.paper/ink 等使用
+            final brightness = switch (mode) {
+              ThemeMode.dark => Brightness.dark,
+              ThemeMode.light => Brightness.light,
+              _ => MediaQuery.platformBrightnessOf(context),
+            };
+            AppTheme.applyBrightness(brightness);
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: mode,
+              locale: locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              onGenerateTitle: (ctx) => AppLocalizations.of(ctx)!.appTitle,
+              home: const RootNav(),
+            );
+          },
         );
       },
     );

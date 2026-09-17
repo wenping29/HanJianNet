@@ -1033,6 +1033,36 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'您提交的「{name}」未通过审核'**
   String notificationRejected(String name);
+
+  /// No description provided for @theme.
+  ///
+  /// In zh, this message translates to:
+  /// **'主题'**
+  String get theme;
+
+  /// No description provided for @chooseTheme.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择主题'**
+  String get chooseTheme;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get themeSystem;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In zh, this message translates to:
+  /// **'黑夜'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In zh, this message translates to:
+  /// **'白天'**
+  String get themeLight;
 }
 
 class _AppLocalizationsDelegate

@@ -274,5 +274,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "theme": "テーマ",
+  "chooseTheme": "テーマを選択",
+  "themeSystem": "システムに従う",
+  "themeDark": "ダーク",
+  "themeLight": "ライト"
 }

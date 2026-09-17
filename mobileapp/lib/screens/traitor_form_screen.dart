@@ -260,7 +260,7 @@ class _TraitorFormScreenState extends State<TraitorFormScreen> {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.editArchive)),
         body: Center(
-          child: Text(l10n.pleaseLoginFirst, style: const TextStyle(color: AppTheme.paperDim)),
+          child: Text(l10n.pleaseLoginFirst, style: TextStyle(color: AppTheme.paperDim)),
         ),
       );
     }
@@ -506,7 +506,7 @@ class _TraitorFormScreenState extends State<TraitorFormScreen> {
                         height: 96,
                         color: AppTheme.inkSoft,
                         alignment: Alignment.center,
-                        child: Text(a.fileType, style: const TextStyle(color: AppTheme.paperDim, fontSize: 11)),
+                        child: Text(a.fileType, style: TextStyle(color: AppTheme.paperDim, fontSize: 11)),
                       ),
                     ),
                   ),
@@ -515,7 +515,7 @@ class _TraitorFormScreenState extends State<TraitorFormScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(a.url.split('/').last,
-                      style: const TextStyle(color: AppTheme.paperDim, fontSize: 12)),
+                      style: TextStyle(color: AppTheme.paperDim, fontSize: 12)),
                 ),
               const SizedBox(height: 8),
               _field(l10n.rowCaption, a.caption),

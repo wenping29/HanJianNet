@@ -504,4 +504,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String notificationRejected(String name) {
     return '제출한 「$name」이(가) 반려되었습니다';
   }
+
+  @override
+  String get theme => '테마';
+
+  @override
+  String get chooseTheme => '테마 선택';
+
+  @override
+  String get themeSystem => '시스템 설정 따르기';
+
+  @override
+  String get themeDark => '다크';
+
+  @override
+  String get themeLight => '라이트';
 }

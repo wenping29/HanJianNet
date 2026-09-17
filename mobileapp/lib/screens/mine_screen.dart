@@ -112,7 +112,7 @@ class _MineScreenState extends State<MineScreen> {
                             (user?.username.isNotEmpty == true)
                                 ? user!.username.characters.first.toUpperCase()
                                 : '?',
-                            style: const TextStyle(fontSize: 20, color: AppTheme.paper),
+                            style: TextStyle(fontSize: 20, color: AppTheme.paper),
                           )
                         : null,
                   ),
@@ -180,7 +180,8 @@ class _MineScreenState extends State<MineScreen> {
                     ),
                     child: Text(
                       _unreadNotifications > 99 ? '99+' : '$_unreadNotifications',
-                      style: const TextStyle(fontSize: 11, color: AppTheme.paper),
+                      // 角标底色为朱砂，两种主题下都用固定浅色字
+                      style: const TextStyle(fontSize: 11, color: Color(0xFFF2EAD8)),
                     ),
                   ),
                 const SizedBox(width: 4),

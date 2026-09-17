@@ -507,4 +507,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String notificationRejected(String name) {
     return 'Your submission \"$name\" was rejected';
   }
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get chooseTheme => 'Select theme';
+
+  @override
+  String get themeSystem => 'Follow system';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeLight => 'Light';
 }

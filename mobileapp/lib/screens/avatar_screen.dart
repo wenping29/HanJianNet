@@ -65,7 +65,7 @@ class _EditAvatarScreenState extends State<EditAvatarScreen> {
           ? NetworkImage(resolveAssetUrl(avatarUrl))
           : null,
       child: (avatarUrl == null || avatarUrl.isEmpty)
-          ? Text(letter, style: const TextStyle(fontSize: 40, color: AppTheme.paper))
+          ? Text(letter, style: TextStyle(fontSize: 40, color: AppTheme.paper))
           : null,
     );
   }

@@ -504,4 +504,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String notificationRejected(String name) {
     return '提出した「$name」は却下されました';
   }
+
+  @override
+  String get theme => 'テーマ';
+
+  @override
+  String get chooseTheme => 'テーマを選択';
+
+  @override
+  String get themeSystem => 'システムに従う';
+
+  @override
+  String get themeDark => 'ダーク';
+
+  @override
+  String get themeLight => 'ライト';
 }

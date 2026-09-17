@@ -503,4 +503,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String notificationRejected(String name) {
     return '您提交的「$name」未通过审核';
   }
+
+  @override
+  String get theme => '主题';
+
+  @override
+  String get chooseTheme => '选择主题';
+
+  @override
+  String get themeSystem => '跟随系统';
+
+  @override
+  String get themeDark => '黑夜';
+
+  @override
+  String get themeLight => '白天';
 }

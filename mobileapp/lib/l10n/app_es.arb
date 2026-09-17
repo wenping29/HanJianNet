@@ -274,5 +274,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "theme": "Tema",
+  "chooseTheme": "Elegir tema",
+  "themeSystem": "Seguir el sistema",
+  "themeDark": "Oscuro",
+  "themeLight": "Claro"
 }

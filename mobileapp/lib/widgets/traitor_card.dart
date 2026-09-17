@@ -43,7 +43,7 @@ class TraitorCard extends StatelessWidget {
                           t.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 2, color: AppTheme.paper),
                         ),
                       ),

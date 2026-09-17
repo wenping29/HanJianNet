@@ -510,4 +510,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String notificationRejected(String name) {
     return 'Votre soumission « $name » a été rejetée';
   }
+
+  @override
+  String get theme => 'Thème';
+
+  @override
+  String get chooseTheme => 'Choisir le thème';
+
+  @override
+  String get themeSystem => 'Suivre le système';
+
+  @override
+  String get themeDark => 'Sombre';
+
+  @override
+  String get themeLight => 'Clair';
 }

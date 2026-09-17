@@ -274,5 +274,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "theme": "Тема",
+  "chooseTheme": "Выбрать тему",
+  "themeSystem": "Как в системе",
+  "themeDark": "Тёмная",
+  "themeLight": "Светлая"
 }

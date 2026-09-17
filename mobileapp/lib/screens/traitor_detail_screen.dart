@@ -119,7 +119,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                     children: [
                       Flexible(
                         child: Text(t.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 3, color: AppTheme.paper)),
                       ),
                       const SizedBox(width: 8),
@@ -533,7 +533,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                         ),
                   title: Text(ev.caption?.isNotEmpty == true ? ev.caption! : l10n.evidence,
                       maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13, color: AppTheme.paper)),
+                      style: TextStyle(fontSize: 13, color: AppTheme.paper)),
                   subtitle: Text(ev.fileType, style: TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.7))),
                   trailing: Icon(Icons.open_in_new, size: 16, color: AppTheme.paperDim),
                   onTap: () {/* 移动端暂不内置文件预览 */},

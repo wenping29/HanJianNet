@@ -509,4 +509,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String notificationRejected(String name) {
     return 'Su envío «$name» fue rechazado';
   }
+
+  @override
+  String get theme => 'Tema';
+
+  @override
+  String get chooseTheme => 'Elegir tema';
+
+  @override
+  String get themeSystem => 'Seguir el sistema';
+
+  @override
+  String get themeDark => 'Oscuro';
+
+  @override
+  String get themeLight => 'Claro';
 }

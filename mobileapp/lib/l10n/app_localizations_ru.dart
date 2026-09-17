@@ -507,4 +507,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String notificationRejected(String name) {
     return 'Ваша заявка «$name» отклонена';
   }
+
+  @override
+  String get theme => 'Тема';
+
+  @override
+  String get chooseTheme => 'Выбрать тему';
+
+  @override
+  String get themeSystem => 'Как в системе';
+
+  @override
+  String get themeDark => 'Тёмная';
+
+  @override
+  String get themeLight => 'Светлая';
 }
