@@ -28,6 +28,7 @@ try
     builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
     builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
     builder.Services.Configure<DeepSeekOptions>(builder.Configuration.GetSection("DeepSeek"));
+    builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection("Security"));
 
     var databaseOptions = builder.Configuration.GetSection("Database").Get<DatabaseOptions>() ?? new DatabaseOptions();
     builder.Services.AddDbContext<AppDbContext>(options =>
@@ -97,7 +98,8 @@ try
     builder.Services.AddCors(o => o.AddPolicy("frontend", p => p
         .WithOrigins(corsOrigins)
         .AllowAnyHeader()
-        .AllowAnyMethod()));
+        .AllowAnyMethod()
+        .WithExposedHeaders("X-Encrypted")));
 
     // --- 审计/日志 ---
     // 允许服务层（如 AuthService）直接访问 HttpContext
@@ -135,6 +137,8 @@ try
         client.Timeout = TimeSpan.FromSeconds(60);
     });
     builder.Services.AddScoped<AiService>();
+    // 通讯加密服务（AES-GCM/AES-CBC，密钥来自 Security:EncryptionKey）
+    builder.Services.AddSingleton<CryptoService>();
 
     builder.Services.AddControllers(options =>
     {
@@ -195,6 +199,8 @@ try
 
     // 先启用请求体缓冲（允许审计过滤器和错误中间件重读 body）
     app.UseMiddleware<RequestBodyBufferingMiddleware>();
+    // 通讯加密：按 X-Encrypted 头解密请求体、加密 JSON 响应体
+    app.UseMiddleware<CryptoMiddleware>();
     // 提取请求级审计上下文（IP/UA/用户信息 + 计时器）
     app.UseMiddleware<AuditEnrichmentMiddleware>();
     // 异常 → 响应 + 写错误日志

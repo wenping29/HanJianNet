@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { api } from '../lib/api'
+import { ENCRYPTION_CONFIG_KEY, setCryptoEnabled } from '../lib/crypto'
 
 interface ConfigState {
   /** 全部配置（category 任意）键值对 */
@@ -22,6 +23,7 @@ export const useConfig = create<ConfigState>((set, get) => ({
       const items: Record<string, string> = {}
       for (const it of data.items ?? []) items[it.key] = it.value
       set({ items, loaded: true })
+      if (items[ENCRYPTION_CONFIG_KEY] === 'true') setCryptoEnabled(true)
     } catch {
       // 后端不可用时保留空配置，调用方使用 fallback
       set({ loaded: true })

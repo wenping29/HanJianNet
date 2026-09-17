@@ -233,6 +233,7 @@ public static class DbSeeder
             new { Key = "web.lookup.pageSize", Value = "20", Category = "web", Description = "Web 查询每页条数" },
             new { Key = "web.admin.traitors.pageSize", Value = "10", Category = "web", Description = "Admin 名录每页条数" },
             new { Key = "web.admin.traitors.showAvatar", Value = "true", Category = "web", Description = "Admin 名录管理页是否展示头像（true/false）" },
+            new { Key = "web.api.encryptionEnabled", Value = "false", Category = "web", Description = "Web/Admin 前端与 WebApi 通讯是否启用加密（true/false，需前后端密钥一致）" },
         };
 
         foreach (var d in defaults)
