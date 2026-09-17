@@ -106,7 +106,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                 height: 128,
                 color: AppTheme.inkSoft,
                 child: photo != null
-                    ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, _, _) => _initial(t.name))
+                    ? Image.network(resolveAssetUrl(photo), fit: BoxFit.cover, errorBuilder: (_, _, _) => _initial(t.name))
                     : _initial(t.name),
               ),
             ),
@@ -449,7 +449,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(photos[i].url, fit: BoxFit.cover,
+                  Image.network(resolveAssetUrl(photos[i].url), fit: BoxFit.cover,
                       errorBuilder: (_, _, _) => Container(color: AppTheme.inkSoft)),
                   if (photos[i].caption?.isNotEmpty == true)
                     Align(
@@ -483,7 +483,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
           children: [
             Center(
               child: InteractiveViewer(
-                child: Image.network(a.url, fit: BoxFit.contain,
+                child: Image.network(resolveAssetUrl(a.url), fit: BoxFit.contain,
                     errorBuilder: (_, _, _) => const Icon(Icons.broken_image, color: Colors.white24, size: 64)),
               ),
             ),
@@ -517,7 +517,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                   leading: ev.fileType.startsWith('image')
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(3),
-                          child: Image.network(ev.url, width: 48, height: 48, fit: BoxFit.cover,
+                          child: Image.network(resolveAssetUrl(ev.url), width: 48, height: 48, fit: BoxFit.cover,
                               errorBuilder: (_, _, _) =>
                                   Container(width: 48, height: 48, color: AppTheme.inkSoft)),
                         )

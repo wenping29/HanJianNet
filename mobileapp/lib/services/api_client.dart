@@ -15,6 +15,13 @@ class ApiException implements Exception {
   String toString() => message;
 }
 
+/// 将后端返回的资源路径解析为完整 URL：相对路径（如 /uploads/x.jpg）拼接当前 API 根地址。
+String resolveAssetUrl(String url) {
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  final base = ApiClient.instance.baseUrl;
+  return url.startsWith('/') ? '$base$url' : '$base/$url';
+}
+
 /// Web API 客户端：REST + JWT。
 class ApiClient {
   ApiClient._();

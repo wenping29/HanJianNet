@@ -163,6 +163,9 @@ class Traitor {
   final List<LifeEvent> lifeEvents;
   final List<String> relatedIds;
 
+  /// 列表/摘要接口直接下发的头像 URL；详情接口无此字段，回退到 attachments 推导。
+  final String? photo;
+
   const Traitor({
     required this.id,
     required this.name,
@@ -186,9 +189,11 @@ class Traitor {
     this.sources = const [],
     this.lifeEvents = const [],
     this.relatedIds = const [],
+    this.photo,
   });
 
   String? get photoUrl {
+    if (photo != null && photo!.isNotEmpty) return photo;
     for (final a in attachments) {
       if (a.isPhoto) return a.url;
     }
@@ -232,6 +237,7 @@ class Traitor {
             .map((e) => LifeEvent.fromJson(e as Json))
             .toList(),
         relatedIds: ((j['relatedIds'] as List?) ?? const []).cast<String>(),
+        photo: j['photoUrl'] as String?,
       );
 }
 
