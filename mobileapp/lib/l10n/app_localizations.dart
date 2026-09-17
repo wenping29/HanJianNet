@@ -799,6 +799,174 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'选择语言'**
   String get chooseLanguage;
+
+  /// No description provided for @basicInfo.
+  ///
+  /// In zh, this message translates to:
+  /// **'基本信息'**
+  String get basicInfo;
+
+  /// No description provided for @birthYearLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'出生年份'**
+  String get birthYearLabel;
+
+  /// No description provided for @deathYearLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'卒于年份'**
+  String get deathYearLabel;
+
+  /// No description provided for @yearExact.
+  ///
+  /// In zh, this message translates to:
+  /// **'确'**
+  String get yearExact;
+
+  /// No description provided for @birthPlaceLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'出生地'**
+  String get birthPlaceLabel;
+
+  /// No description provided for @officialTitleLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'官职（伪职）'**
+  String get officialTitleLabel;
+
+  /// No description provided for @tagsLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'身份标签'**
+  String get tagsLabel;
+
+  /// No description provided for @tagsHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'多个标签用「，」或英文逗号分隔'**
+  String get tagsHint;
+
+  /// No description provided for @rowYear.
+  ///
+  /// In zh, this message translates to:
+  /// **'年份'**
+  String get rowYear;
+
+  /// No description provided for @rowEvent.
+  ///
+  /// In zh, this message translates to:
+  /// **'事件'**
+  String get rowEvent;
+
+  /// No description provided for @rowTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'标题'**
+  String get rowTitle;
+
+  /// No description provided for @rowProcess.
+  ///
+  /// In zh, this message translates to:
+  /// **'经过'**
+  String get rowProcess;
+
+  /// No description provided for @rowHarm.
+  ///
+  /// In zh, this message translates to:
+  /// **'危害'**
+  String get rowHarm;
+
+  /// No description provided for @rowSourceRef.
+  ///
+  /// In zh, this message translates to:
+  /// **'史料出处'**
+  String get rowSourceRef;
+
+  /// No description provided for @rowRemark.
+  ///
+  /// In zh, this message translates to:
+  /// **'备注'**
+  String get rowRemark;
+
+  /// No description provided for @rowPlace.
+  ///
+  /// In zh, this message translates to:
+  /// **'地点'**
+  String get rowPlace;
+
+  /// No description provided for @rowPeriod.
+  ///
+  /// In zh, this message translates to:
+  /// **'时期'**
+  String get rowPeriod;
+
+  /// No description provided for @rowCitation.
+  ///
+  /// In zh, this message translates to:
+  /// **'引用文献'**
+  String get rowCitation;
+
+  /// No description provided for @rowCredibility.
+  ///
+  /// In zh, this message translates to:
+  /// **'可信度（1-5）'**
+  String get rowCredibility;
+
+  /// No description provided for @rowCaption.
+  ///
+  /// In zh, this message translates to:
+  /// **'图片说明'**
+  String get rowCaption;
+
+  /// No description provided for @addItem.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加'**
+  String get addItem;
+
+  /// No description provided for @deleteItem.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get deleteItem;
+
+  /// No description provided for @uploadPhoto.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传照片'**
+  String get uploadPhoto;
+
+  /// No description provided for @uploadEvidence.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传罪证'**
+  String get uploadEvidence;
+
+  /// No description provided for @uploading.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传中…'**
+  String get uploading;
+
+  /// No description provided for @summaryRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请填写人物概述'**
+  String get summaryRequired;
+
+  /// No description provided for @submitSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'提交成功，等待审核'**
+  String get submitSuccess;
+
+  /// No description provided for @submitFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'提交失败'**
+  String get submitFailed;
 }
 
 class _AppLocalizationsDelegate

@@ -388,4 +388,88 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Elegir idioma';
+
+  @override
+  String get basicInfo => 'Información básica';
+
+  @override
+  String get birthYearLabel => 'Año de nacimiento';
+
+  @override
+  String get deathYearLabel => 'Año de fallecimiento';
+
+  @override
+  String get yearExact => 'Exacto';
+
+  @override
+  String get birthPlaceLabel => 'Lugar de nacimiento';
+
+  @override
+  String get officialTitleLabel => 'Título oficial (régimen títere)';
+
+  @override
+  String get tagsLabel => 'Etiquetas';
+
+  @override
+  String get tagsHint => 'Separe las etiquetas con comas';
+
+  @override
+  String get rowYear => 'Año';
+
+  @override
+  String get rowEvent => 'Evento';
+
+  @override
+  String get rowTitle => 'Título';
+
+  @override
+  String get rowProcess => 'Proceso';
+
+  @override
+  String get rowHarm => 'Daño';
+
+  @override
+  String get rowSourceRef => 'Fuente';
+
+  @override
+  String get rowRemark => 'Observación';
+
+  @override
+  String get rowPlace => 'Lugar';
+
+  @override
+  String get rowPeriod => 'Período';
+
+  @override
+  String get rowCitation => 'Referencia';
+
+  @override
+  String get rowCredibility => 'Credibilidad (1-5)';
+
+  @override
+  String get rowCaption => 'Descripción de la imagen';
+
+  @override
+  String get addItem => 'Añadir';
+
+  @override
+  String get deleteItem => 'Eliminar';
+
+  @override
+  String get uploadPhoto => 'Subir foto';
+
+  @override
+  String get uploadEvidence => 'Subir evidencia';
+
+  @override
+  String get uploading => 'Subiendo…';
+
+  @override
+  String get summaryRequired => 'Ingrese el resumen';
+
+  @override
+  String get submitSuccess => 'Enviado, pendiente de revisión';
+
+  @override
+  String get submitFailed => 'Error al enviar';
 }

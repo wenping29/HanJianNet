@@ -382,4 +382,88 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get chooseLanguage => '选择语言';
+
+  @override
+  String get basicInfo => '基本信息';
+
+  @override
+  String get birthYearLabel => '出生年份';
+
+  @override
+  String get deathYearLabel => '卒于年份';
+
+  @override
+  String get yearExact => '确';
+
+  @override
+  String get birthPlaceLabel => '出生地';
+
+  @override
+  String get officialTitleLabel => '官职（伪职）';
+
+  @override
+  String get tagsLabel => '身份标签';
+
+  @override
+  String get tagsHint => '多个标签用「，」或英文逗号分隔';
+
+  @override
+  String get rowYear => '年份';
+
+  @override
+  String get rowEvent => '事件';
+
+  @override
+  String get rowTitle => '标题';
+
+  @override
+  String get rowProcess => '经过';
+
+  @override
+  String get rowHarm => '危害';
+
+  @override
+  String get rowSourceRef => '史料出处';
+
+  @override
+  String get rowRemark => '备注';
+
+  @override
+  String get rowPlace => '地点';
+
+  @override
+  String get rowPeriod => '时期';
+
+  @override
+  String get rowCitation => '引用文献';
+
+  @override
+  String get rowCredibility => '可信度（1-5）';
+
+  @override
+  String get rowCaption => '图片说明';
+
+  @override
+  String get addItem => '添加';
+
+  @override
+  String get deleteItem => '删除';
+
+  @override
+  String get uploadPhoto => '上传照片';
+
+  @override
+  String get uploadEvidence => '上传罪证';
+
+  @override
+  String get uploading => '上传中…';
+
+  @override
+  String get summaryRequired => '请填写人物概述';
+
+  @override
+  String get submitSuccess => '提交成功，等待审核';
+
+  @override
+  String get submitFailed => '提交失败';
 }

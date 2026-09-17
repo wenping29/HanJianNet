@@ -207,6 +207,26 @@ class ApiClient {
       })
       ..files.add(await http.MultipartFile.fromPath('file', filePath))
       ..fields['kind'] = kind;
+    return _sendUpload(request);
+  }
+
+  /// 字节上传：Web 平台没有文件路径，统一走内存字节（image_picker 的 XFile.readAsBytes）。
+  Future<Map<String, dynamic>> uploadBytes({
+    required List<int> bytes,
+    required String filename,
+    required String kind,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/api/uploads');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers.addAll({
+        if (hasToken) 'Authorization': 'Bearer $_token',
+      })
+      ..files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename))
+      ..fields['kind'] = kind;
+    return _sendUpload(request);
+  }
+
+  Future<Map<String, dynamic>> _sendUpload(http.MultipartRequest request) async {
     final streamed = await request.send().timeout(const Duration(seconds: 30));
     final response = await http.Response.fromStream(streamed);
     if (response.statusCode >= 200 && response.statusCode < 300) {

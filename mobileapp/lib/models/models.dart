@@ -149,6 +149,9 @@ class Traitor {
   final String birthYearType;
   final String deathYearType;
   final String nativePlace;
+  final String birthPlace;
+  final String province;
+  final String? title;
   final List<String> aliases;
   final List<String> identityTags;
   final String period;
@@ -176,6 +179,9 @@ class Traitor {
     this.birthYearType = 'exact',
     this.deathYearType = 'exact',
     this.nativePlace = '',
+    this.birthPlace = '',
+    this.province = '',
+    this.title,
     this.aliases = const [],
     this.identityTags = const [],
     this.period = '',
@@ -210,6 +216,9 @@ class Traitor {
         birthYearType: (j['birthYearType'] as String?) ?? 'exact',
         deathYearType: (j['deathYearType'] as String?) ?? 'exact',
         nativePlace: (j['nativePlace'] as String?) ?? '',
+        birthPlace: (j['birthPlace'] as String?) ?? '',
+        province: (j['province'] as String?) ?? '',
+        title: j['title'] as String?,
         aliases: ((j['aliases'] as List?) ?? const []).cast<String>(),
         identityTags: ((j['identityTags'] as List?) ?? const []).cast<String>(),
         period: (j['period'] as String?) ?? '',

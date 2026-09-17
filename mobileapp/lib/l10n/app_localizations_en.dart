@@ -386,4 +386,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Choose language';
+
+  @override
+  String get basicInfo => 'Basic Info';
+
+  @override
+  String get birthYearLabel => 'Birth Year';
+
+  @override
+  String get deathYearLabel => 'Death Year';
+
+  @override
+  String get yearExact => 'Exact';
+
+  @override
+  String get birthPlaceLabel => 'Birthplace';
+
+  @override
+  String get officialTitleLabel => 'Official Title (puppet regime)';
+
+  @override
+  String get tagsLabel => 'Identity Tags';
+
+  @override
+  String get tagsHint => 'Separate multiple tags with commas';
+
+  @override
+  String get rowYear => 'Year';
+
+  @override
+  String get rowEvent => 'Event';
+
+  @override
+  String get rowTitle => 'Title';
+
+  @override
+  String get rowProcess => 'Process';
+
+  @override
+  String get rowHarm => 'Harm';
+
+  @override
+  String get rowSourceRef => 'Source';
+
+  @override
+  String get rowRemark => 'Remark';
+
+  @override
+  String get rowPlace => 'Place';
+
+  @override
+  String get rowPeriod => 'Period';
+
+  @override
+  String get rowCitation => 'Citation';
+
+  @override
+  String get rowCredibility => 'Credibility (1-5)';
+
+  @override
+  String get rowCaption => 'Caption';
+
+  @override
+  String get addItem => 'Add';
+
+  @override
+  String get deleteItem => 'Delete';
+
+  @override
+  String get uploadPhoto => 'Upload Photo';
+
+  @override
+  String get uploadEvidence => 'Upload Evidence';
+
+  @override
+  String get uploading => 'Uploading…';
+
+  @override
+  String get summaryRequired => 'Please enter the summary';
+
+  @override
+  String get submitSuccess => 'Submitted, pending review';
+
+  @override
+  String get submitFailed => 'Submit failed';
 }

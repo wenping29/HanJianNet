@@ -94,6 +94,8 @@ public class TraitorSnapshotDto
     public string Period { get; set; } = "";
     public string Faction { get; set; } = "";
     public string Summary { get; set; } = "";
+    /// <summary>官职（伪职）。用户提交修订时可修改；未提供（null）时后端保留原值。</summary>
+    public string? Title { get; set; }
     public List<SpouseInputDto> Spouses { get; set; } = [];
     public List<ChildInputDto> Children { get; set; } = [];
     public List<ResidenceInputDto> Residences { get; set; } = [];

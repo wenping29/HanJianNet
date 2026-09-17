@@ -386,4 +386,88 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Sprache wählen';
+
+  @override
+  String get basicInfo => 'Basisdaten';
+
+  @override
+  String get birthYearLabel => 'Geburtsjahr';
+
+  @override
+  String get deathYearLabel => 'Todesjahr';
+
+  @override
+  String get yearExact => 'Genau';
+
+  @override
+  String get birthPlaceLabel => 'Geburtsort';
+
+  @override
+  String get officialTitleLabel => 'Amtstitel (Marionettenregime)';
+
+  @override
+  String get tagsLabel => 'Tags';
+
+  @override
+  String get tagsHint => 'Mehrere Tags mit Komma trennen';
+
+  @override
+  String get rowYear => 'Jahr';
+
+  @override
+  String get rowEvent => 'Ereignis';
+
+  @override
+  String get rowTitle => 'Titel';
+
+  @override
+  String get rowProcess => 'Verlauf';
+
+  @override
+  String get rowHarm => 'Schaden';
+
+  @override
+  String get rowSourceRef => 'Quelle';
+
+  @override
+  String get rowRemark => 'Anmerkung';
+
+  @override
+  String get rowPlace => 'Ort';
+
+  @override
+  String get rowPeriod => 'Zeitraum';
+
+  @override
+  String get rowCitation => 'Quellennachweis';
+
+  @override
+  String get rowCredibility => 'Glaubwürdigkeit (1-5)';
+
+  @override
+  String get rowCaption => 'Bildbeschreibung';
+
+  @override
+  String get addItem => 'Hinzufügen';
+
+  @override
+  String get deleteItem => 'Löschen';
+
+  @override
+  String get uploadPhoto => 'Foto hochladen';
+
+  @override
+  String get uploadEvidence => 'Beweismittel hochladen';
+
+  @override
+  String get uploading => 'Wird hochgeladen…';
+
+  @override
+  String get summaryRequired => 'Bitte Beschreibung eingeben';
+
+  @override
+  String get submitSuccess => 'Eingereicht, wartet auf Prüfung';
+
+  @override
+  String get submitFailed => 'Senden fehlgeschlagen';
 }

@@ -383,4 +383,88 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get chooseLanguage => '言語を選択';
+
+  @override
+  String get basicInfo => '基本情報';
+
+  @override
+  String get birthYearLabel => '出生年';
+
+  @override
+  String get deathYearLabel => '没年';
+
+  @override
+  String get yearExact => '確';
+
+  @override
+  String get birthPlaceLabel => '出生地';
+
+  @override
+  String get officialTitleLabel => '官職（傀儡政権）';
+
+  @override
+  String get tagsLabel => '身份タグ';
+
+  @override
+  String get tagsHint => '複数のタグは「、」またはカンマで区切ってください';
+
+  @override
+  String get rowYear => '年';
+
+  @override
+  String get rowEvent => '出来事';
+
+  @override
+  String get rowTitle => '件名';
+
+  @override
+  String get rowProcess => '経過';
+
+  @override
+  String get rowHarm => '危害';
+
+  @override
+  String get rowSourceRef => '出典';
+
+  @override
+  String get rowRemark => '備考';
+
+  @override
+  String get rowPlace => '場所';
+
+  @override
+  String get rowPeriod => '時期';
+
+  @override
+  String get rowCitation => '引用文献';
+
+  @override
+  String get rowCredibility => '信頼度（1-5）';
+
+  @override
+  String get rowCaption => '画像の説明';
+
+  @override
+  String get addItem => '追加';
+
+  @override
+  String get deleteItem => '削除';
+
+  @override
+  String get uploadPhoto => '写真をアップロード';
+
+  @override
+  String get uploadEvidence => '罪証をアップロード';
+
+  @override
+  String get uploading => 'アップロード中…';
+
+  @override
+  String get summaryRequired => '人物概要を入力してください';
+
+  @override
+  String get submitSuccess => '送信しました。審査をお待ちください';
+
+  @override
+  String get submitFailed => '送信に失敗しました';
 }

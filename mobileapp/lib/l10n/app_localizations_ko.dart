@@ -383,4 +383,88 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get chooseLanguage => '언어 선택';
+
+  @override
+  String get basicInfo => '기본 정보';
+
+  @override
+  String get birthYearLabel => '출생 연도';
+
+  @override
+  String get deathYearLabel => '사망 연도';
+
+  @override
+  String get yearExact => '확실';
+
+  @override
+  String get birthPlaceLabel => '출생지';
+
+  @override
+  String get officialTitleLabel => '관직(괴외(傀儡) 정권)';
+
+  @override
+  String get tagsLabel => '신분 태그';
+
+  @override
+  String get tagsHint => '여러 태그는 쉼표로 구분하세요';
+
+  @override
+  String get rowYear => '연도';
+
+  @override
+  String get rowEvent => '사건';
+
+  @override
+  String get rowTitle => '제목';
+
+  @override
+  String get rowProcess => '경과';
+
+  @override
+  String get rowHarm => '피해';
+
+  @override
+  String get rowSourceRef => '출처';
+
+  @override
+  String get rowRemark => '비고';
+
+  @override
+  String get rowPlace => '장소';
+
+  @override
+  String get rowPeriod => '시기';
+
+  @override
+  String get rowCitation => '인용 문헌';
+
+  @override
+  String get rowCredibility => '신뢰도(1-5)';
+
+  @override
+  String get rowCaption => '이미지 설명';
+
+  @override
+  String get addItem => '추가';
+
+  @override
+  String get deleteItem => '삭제';
+
+  @override
+  String get uploadPhoto => '사진 업로드';
+
+  @override
+  String get uploadEvidence => '죄증 업로드';
+
+  @override
+  String get uploading => '업로드 중…';
+
+  @override
+  String get summaryRequired => '인물 개요를 입력하세요';
+
+  @override
+  String get submitSuccess => '제출되었습니다. 심사를 기다려 주세요';
+
+  @override
+  String get submitFailed => '제출에 실패했습니다';
 }

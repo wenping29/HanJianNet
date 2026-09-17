@@ -386,4 +386,88 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Выбрать язык';
+
+  @override
+  String get basicInfo => 'Основная информация';
+
+  @override
+  String get birthYearLabel => 'Год рождения';
+
+  @override
+  String get deathYearLabel => 'Год смерти';
+
+  @override
+  String get yearExact => 'Точно';
+
+  @override
+  String get birthPlaceLabel => 'Место рождения';
+
+  @override
+  String get officialTitleLabel => 'Должность (марионеточный режим)';
+
+  @override
+  String get tagsLabel => 'Метки';
+
+  @override
+  String get tagsHint => 'Перечисляйте метки через запятую';
+
+  @override
+  String get rowYear => 'Год';
+
+  @override
+  String get rowEvent => 'Событие';
+
+  @override
+  String get rowTitle => 'Заголовок';
+
+  @override
+  String get rowProcess => 'Ход событий';
+
+  @override
+  String get rowHarm => 'Ущерб';
+
+  @override
+  String get rowSourceRef => 'Источник';
+
+  @override
+  String get rowRemark => 'Примечание';
+
+  @override
+  String get rowPlace => 'Место';
+
+  @override
+  String get rowPeriod => 'Период';
+
+  @override
+  String get rowCitation => 'Цитата';
+
+  @override
+  String get rowCredibility => 'Достоверность (1-5)';
+
+  @override
+  String get rowCaption => 'Подпись к фото';
+
+  @override
+  String get addItem => 'Добавить';
+
+  @override
+  String get deleteItem => 'Удалить';
+
+  @override
+  String get uploadPhoto => 'Загрузить фото';
+
+  @override
+  String get uploadEvidence => 'Загрузить улику';
+
+  @override
+  String get uploading => 'Загрузка…';
+
+  @override
+  String get summaryRequired => 'Введите описание личности';
+
+  @override
+  String get submitSuccess => 'Отправлено, ожидает проверки';
+
+  @override
+  String get submitFailed => 'Ошибка отправки';
 }
