@@ -22,7 +22,7 @@ export const useConfig = create<ConfigState>((set, get) => ({
       const data = await api.getPublicConfig()
       const items = data.items ?? {}
       set({ items, loaded: true })
-      if (items[ENCRYPTION_CONFIG_KEY] === 'true') setCryptoEnabled(true)
+      if (items[ENCRYPTION_CONFIG_KEY] === 'false') setCryptoEnabled(false)
     } catch {
       // 后端不可用时保留空配置，调用方使用 fallback
       set({ loaded: true })

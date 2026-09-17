@@ -6,7 +6,9 @@ export const ENCRYPTION_CONFIG_KEY = 'web.api.encryptionEnabled'
 /** 通讯加密共享密钥：Base64 编码的 16/24/32 字节 AES 密钥，需与后端 Security:EncryptionKey 保持一致 */
 const KEY_B64: string = (import.meta.env.VITE_API_ENCRYPTION_KEY as string | undefined) ?? ''
 
-let enabled = false
+// 配置了共享密钥即默认启用加密，避免首屏配置返回前的那批请求走明文；
+// 数据库 web.api.encryptionEnabled 仅作为“强制关闭”开关（false 时关闭）。
+let enabled = true
 
 export function setCryptoEnabled(v: boolean): void {
   enabled = v
