@@ -284,6 +284,10 @@ lib/
 - iOS：`mobileapp/ios`；最低建议 iOS 13+。  
 - 图标与启动图沿用现有 Runner 资源，本轮可不换品牌图。  
 - 运行：先起 `webapi`（:3000），再 `cd mobileapp && flutter run`。
+- Web 调试固定端口 **5175**（与 web:5173 / admin:5174 对齐，已加入 webapi CORS 白名单）：
+  - 命令行：`flutter run -d web-server --web-port=5175`，或直接运行 `run_web.bat`；
+  - VS Code：F5 选择 `mobileapp (web, fixed port 5175)`；
+  - Android Studio：编辑运行配置，在 Additional run args 中加 `--web-port=5175`。
 
 ---
 
