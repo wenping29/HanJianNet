@@ -484,4 +484,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get avatarUpdated => '头像已更新';
+
+  @override
+  String get notifications => '通知消息';
+
+  @override
+  String get noNotifications => '暂无通知消息';
+
+  @override
+  String get markAllRead => '全部已读';
+
+  @override
+  String notificationApproved(String name) {
+    return '您提交的「$name」已通过审核';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return '您提交的「$name」未通过审核';
+  }
 }

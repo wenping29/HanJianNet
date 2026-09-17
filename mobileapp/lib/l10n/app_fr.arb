@@ -255,5 +255,24 @@
   "editProfile": "Modifier le profil",
   "profileUpdated": "Profil mis à jour",
   "editAvatar": "Modifier l'avatar",
-  "avatarUpdated": "Avatar mis à jour"
+  "avatarUpdated": "Avatar mis à jour",
+  "notifications": "Notifications",
+  "noNotifications": "Aucune notification",
+  "markAllRead": "Tout marquer comme lu",
+  "notificationApproved": "Votre soumission « {name} » a été approuvée",
+  "@notificationApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRejected": "Votre soumission « {name} » a été rejetée",
+  "@notificationRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

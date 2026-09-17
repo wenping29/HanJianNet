@@ -255,5 +255,24 @@
   "editProfile": "Edit Profile",
   "profileUpdated": "Profile updated",
   "editAvatar": "Edit Avatar",
-  "avatarUpdated": "Avatar updated"
+  "avatarUpdated": "Avatar updated",
+  "notifications": "Notifications",
+  "noNotifications": "No notifications",
+  "markAllRead": "Mark all read",
+  "notificationApproved": "Your submission \"{name}\" was approved",
+  "@notificationApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRejected": "Your submission \"{name}\" was rejected",
+  "@notificationRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

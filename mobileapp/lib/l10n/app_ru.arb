@@ -255,5 +255,24 @@
   "editProfile": "Редактировать профиль",
   "profileUpdated": "Профиль обновлён",
   "editAvatar": "Изменить аватар",
-  "avatarUpdated": "Аватар обновлён"
+  "avatarUpdated": "Аватар обновлён",
+  "notifications": "Уведомления",
+  "noNotifications": "Нет уведомлений",
+  "markAllRead": "Отметить все прочитанными",
+  "notificationApproved": "Ваша заявка «{name}» одобрена",
+  "@notificationApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRejected": "Ваша заявка «{name}» отклонена",
+  "@notificationRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

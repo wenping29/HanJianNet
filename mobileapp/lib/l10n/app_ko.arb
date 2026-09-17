@@ -255,5 +255,24 @@
   "editProfile": "개인 정보 수정",
   "profileUpdated": "개인 정보가 업데이트되었습니다",
   "editAvatar": "프로필 사진 변경",
-  "avatarUpdated": "프로필 사진이 업데이트되었습니다"
+  "avatarUpdated": "프로필 사진이 업데이트되었습니다",
+  "notifications": "알림",
+  "noNotifications": "알림이 없습니다",
+  "markAllRead": "모두 읽음으로 표시",
+  "notificationApproved": "제출한 「{name}」이(가) 승인되었습니다",
+  "@notificationApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRejected": "제출한 「{name}」이(가) 반려되었습니다",
+  "@notificationRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

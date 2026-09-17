@@ -28,6 +28,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<AtrocityCase> AtrocityCases => Set<AtrocityCase>();
     public DbSet<AtrocityCasePerson> AtrocityCasePersons => Set<AtrocityCasePerson>();
     public DbSet<SystemConfig> SystemConfigs => Set<SystemConfig>();
+    public DbSet<AppNotification> Notifications => Set<AppNotification>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -174,6 +175,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasIndex(p => p.AtrocityCaseId);
             e.HasOne(p => p.Case).WithMany(c => c.Persons)
                 .HasForeignKey(p => p.AtrocityCaseId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ---------- 站内通知 ----------
+        modelBuilder.Entity<AppNotification>(e =>
+        {
+            e.HasIndex(n => n.UserId);
+            e.HasIndex(n => n.CreatedAt);
+            e.HasOne(n => n.User).WithMany()
+                .HasForeignKey(n => n.UserId).OnDelete(DeleteBehavior.Cascade);
         });
 
         // ---------- 系统配置 ----------

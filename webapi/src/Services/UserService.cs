@@ -168,6 +168,35 @@ public class UserService(AppDbContext db)
         await db.SaveChangesAsync();
     }
 
+    // ---------- 站内通知（本人） ----------
+
+    /// <summary>我的通知列表（最新 100 条）及未读数。</summary>
+    public async Task<(List<NotificationDto> Items, int UnreadCount)> MyNotificationsAsync(string selfId)
+    {
+        var items = await db.Notifications
+            .Where(n => n.UserId == selfId)
+            .OrderByDescending(n => n.CreatedAt)
+            .Take(100)
+            .ToListAsync();
+        return (items.Select(n => n.ToDto()).ToList(), items.Count(n => !n.IsRead));
+    }
+
+    public async Task MarkNotificationReadAsync(string selfId, string id)
+    {
+        var n = await db.Notifications.FirstOrDefaultAsync(n => n.Id == id && n.UserId == selfId)
+                ?? throw new ApiException(404, "通知不存在");
+        if (n.IsRead) return;
+        n.IsRead = true;
+        await db.SaveChangesAsync();
+    }
+
+    public async Task MarkAllNotificationsReadAsync(string selfId)
+    {
+        await db.Notifications
+            .Where(n => n.UserId == selfId && !n.IsRead)
+            .ExecuteUpdateAsync(s => s.SetProperty(n => n.IsRead, true));
+    }
+
     public async Task<List<RevisionDto>> MySubmissionsAsync(string selfId)
     {
         var items = await db.Revisions

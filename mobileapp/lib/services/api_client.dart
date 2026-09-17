@@ -124,6 +124,37 @@ class ApiClient {
     return User.fromJson(data['user'] as Map<String, dynamic>);
   }
 
+  // ---- 站内通知 ----
+
+  /// 我的通知列表（最新 100 条）与未读数。
+  Future<NotificationListResult> myNotifications() async {
+    final data = await _run(() => http.get(
+          Uri.parse('$_baseUrl/api/me/notifications'),
+          headers: _headers,
+        )) as Map<String, dynamic>;
+    final items = (data['items'] as List? ?? [])
+        .map((e) => NoticeItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return NotificationListResult(
+      items: items,
+      unreadCount: (data['unreadCount'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  Future<void> markNotificationRead(String id) async {
+    await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/me/notifications/$id/read'),
+          headers: _headers,
+        ));
+  }
+
+  Future<void> markAllNotificationsRead() async {
+    await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/me/notifications/read-all'),
+          headers: _headers,
+        ));
+  }
+
   // ---- 档案（公开） ----
 
   Future<PaginatedTraitors> listTraitors({

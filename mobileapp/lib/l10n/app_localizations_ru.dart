@@ -488,4 +488,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get avatarUpdated => 'Аватар обновлён';
+
+  @override
+  String get notifications => 'Уведомления';
+
+  @override
+  String get noNotifications => 'Нет уведомлений';
+
+  @override
+  String get markAllRead => 'Отметить все прочитанными';
+
+  @override
+  String notificationApproved(String name) {
+    return 'Ваша заявка «$name» одобрена';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return 'Ваша заявка «$name» отклонена';
+  }
 }

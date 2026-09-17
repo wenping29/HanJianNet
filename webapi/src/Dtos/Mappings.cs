@@ -16,6 +16,17 @@ public static class Mappings
         CreatedAt = u.CreatedAt,
     };
 
+    public static NotificationDto ToDto(this AppNotification n) => new()
+    {
+        Id = n.Id,
+        Type = n.Type,
+        ReferenceName = n.ReferenceName,
+        Comment = n.Comment,
+        RevisionId = n.RevisionId,
+        IsRead = n.IsRead,
+        CreatedAt = n.CreatedAt,
+    };
+
     public static UserBriefDto ToBrief(this User u) => new()
     {
         Id = u.Id,

@@ -61,10 +61,11 @@ public class RevisionService(AppDbContext db, CacheService cache)
             ?? throw new ApiException(404, "修订不存在");
         if (r.Status != "pending") throw new ApiException(400, "该修订已审核");
 
+        var snap = JsonSerializer.Deserialize<TraitorSnapshotDto>(r.PayloadJson, JsonOpts.Default)
+                   ?? new TraitorSnapshotDto();
+
         if (result == "approved")
         {
-            var snap = JsonSerializer.Deserialize<TraitorSnapshotDto>(r.PayloadJson, JsonOpts.Default)
-                       ?? new TraitorSnapshotDto();
             if (string.IsNullOrEmpty(r.TraitorId))
             {
                 var t = new Traitor();
@@ -93,6 +94,17 @@ public class RevisionService(AppDbContext db, CacheService cache)
         r.ReviewedAt = DateTime.UtcNow;
         r.ReviewResult = result;
         r.ReviewComment = comment;
+
+        // 给提交人生成审核结果通知：前端按 Type 渲染本地化文案，ReferenceName 为档案姓名，Comment 为审核意见原文
+        db.Notifications.Add(new AppNotification
+        {
+            UserId = r.SubmitterId,
+            Type = result == "approved" ? "revision_approved" : "revision_rejected",
+            ReferenceName = r.Traitor?.Name ?? snap.Name ?? "",
+            Comment = comment,
+            RevisionId = r.Id,
+        });
+
         await db.SaveChangesAsync();
 
         // 审核通过会写入 Traitor 主表，失效档案缓存

@@ -488,4 +488,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get avatarUpdated => 'Avatar aktualisiert';
+
+  @override
+  String get notifications => 'Benachrichtigungen';
+
+  @override
+  String get noNotifications => 'Keine Benachrichtigungen';
+
+  @override
+  String get markAllRead => 'Alle als gelesen markieren';
+
+  @override
+  String notificationApproved(String name) {
+    return 'Ihre Einreichung „$name“ wurde genehmigt';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return 'Ihre Einreichung „$name“ wurde abgelehnt';
+  }
 }

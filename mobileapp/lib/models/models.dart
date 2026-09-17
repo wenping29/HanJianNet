@@ -30,6 +30,54 @@ class User {
       );
 }
 
+/// 站内通知（避免与 Flutter 框架的 Notification 类同名，命名为 NoticeItem）。
+class NoticeItem {
+  final String id;
+  final String type; // revision_approved / revision_rejected
+  final String referenceName;
+  final String? comment;
+  final String? revisionId;
+  final bool isRead;
+  final String? createdAt;
+
+  const NoticeItem({
+    required this.id,
+    required this.type,
+    required this.referenceName,
+    this.comment,
+    this.revisionId,
+    required this.isRead,
+    this.createdAt,
+  });
+
+  factory NoticeItem.fromJson(Json j) => NoticeItem(
+        id: j['id'] as String,
+        type: (j['type'] as String?) ?? '',
+        referenceName: (j['referenceName'] as String?) ?? '',
+        comment: j['comment'] as String?,
+        revisionId: j['revisionId'] as String?,
+        isRead: (j['isRead'] as bool?) ?? false,
+        createdAt: j['createdAt'] as String?,
+      );
+
+  NoticeItem copyWith({bool? isRead}) => NoticeItem(
+        id: id,
+        type: type,
+        referenceName: referenceName,
+        comment: comment,
+        revisionId: revisionId,
+        isRead: isRead ?? this.isRead,
+        createdAt: createdAt,
+      );
+}
+
+class NotificationListResult {
+  final List<NoticeItem> items;
+  final int unreadCount;
+
+  const NotificationListResult({required this.items, required this.unreadCount});
+}
+
 class Spouse {
   final String name;
   final String? remark;

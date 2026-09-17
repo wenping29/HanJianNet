@@ -485,4 +485,23 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get avatarUpdated => '프로필 사진이 업데이트되었습니다';
+
+  @override
+  String get notifications => '알림';
+
+  @override
+  String get noNotifications => '알림이 없습니다';
+
+  @override
+  String get markAllRead => '모두 읽음으로 표시';
+
+  @override
+  String notificationApproved(String name) {
+    return '제출한 「$name」이(가) 승인되었습니다';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return '제출한 「$name」이(가) 반려되었습니다';
+  }
 }

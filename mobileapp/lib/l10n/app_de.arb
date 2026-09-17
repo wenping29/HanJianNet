@@ -255,5 +255,24 @@
   "editProfile": "Profil bearbeiten",
   "profileUpdated": "Profil aktualisiert",
   "editAvatar": "Avatar ändern",
-  "avatarUpdated": "Avatar aktualisiert"
+  "avatarUpdated": "Avatar aktualisiert",
+  "notifications": "Benachrichtigungen",
+  "noNotifications": "Keine Benachrichtigungen",
+  "markAllRead": "Alle als gelesen markieren",
+  "notificationApproved": "Ihre Einreichung „{name}“ wurde genehmigt",
+  "@notificationApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRejected": "Ihre Einreichung „{name}“ wurde abgelehnt",
+  "@notificationRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

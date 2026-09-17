@@ -281,6 +281,12 @@ static class DbInitHelpers
                 ? "ALTER TABLE Users ADD COLUMN AvatarUrl TEXT;"
                 : "ALTER TABLE Users ADD COLUMN AvatarUrl VARCHAR(512) NULL;");
 
+        // 站内通知表（EnsureCreated 会为新库自动建表，此处兼容旧库）
+        await db.Database.ExecuteSqlRawAsync(
+            db.Database.IsSqlite()
+                ? """CREATE TABLE IF NOT EXISTS "Notifications" ("Id" TEXT NOT NULL PRIMARY KEY, "UserId" TEXT NOT NULL, "Type" TEXT NOT NULL DEFAULT '', "ReferenceName" TEXT NOT NULL DEFAULT '', "Comment" TEXT, "RevisionId" TEXT, "IsRead" INTEGER NOT NULL DEFAULT 0, "CreatedAt" TEXT NOT NULL); CREATE INDEX IF NOT EXISTS "IX_Notifications_UserId" ON "Notifications" ("UserId"); CREATE INDEX IF NOT EXISTS "IX_Notifications_CreatedAt" ON "Notifications" ("CreatedAt");"""
+                : "CREATE TABLE IF NOT EXISTS `Notifications` (`Id` VARCHAR(64) NOT NULL PRIMARY KEY, `UserId` VARCHAR(64) NOT NULL, `Type` VARCHAR(64) NOT NULL DEFAULT '', `ReferenceName` VARCHAR(255) NOT NULL DEFAULT '', `Comment` TEXT, `RevisionId` VARCHAR(64) NULL, `IsRead` TINYINT(1) NOT NULL DEFAULT 0, `CreatedAt` DATETIME NOT NULL, INDEX `IX_Notifications_UserId` (`UserId`), INDEX `IX_Notifications_CreatedAt` (`CreatedAt`));");
+
         // 系统配置表（EnsureCreated 会为新库自动建表，此处兼容旧库）
         await db.Database.ExecuteSqlRawAsync(
             db.Database.IsSqlite()

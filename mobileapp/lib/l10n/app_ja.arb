@@ -255,5 +255,24 @@
   "editProfile": "個人情報の編集",
   "profileUpdated": "個人情報を更新しました",
   "editAvatar": "アバターの変更",
-  "avatarUpdated": "アバターを更新しました"
+  "avatarUpdated": "アバターを更新しました",
+  "notifications": "通知",
+  "noNotifications": "通知はありません",
+  "markAllRead": "すべて既読にする",
+  "notificationApproved": "提出した「{name}」が承認されました",
+  "@notificationApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRejected": "提出した「{name}」は却下されました",
+  "@notificationRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

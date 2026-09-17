@@ -31,6 +31,17 @@ public class UpdateAvatarRequest
     public string AvatarUrl { get; set; } = "";
 }
 
+public class NotificationDto
+{
+    public string Id { get; set; } = "";
+    public string Type { get; set; } = "";
+    public string ReferenceName { get; set; } = "";
+    public string? Comment { get; set; }
+    public string? RevisionId { get; set; }
+    public bool IsRead { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
 public class ChangePasswordRequest
 {
     public string CurrentPassword { get; set; } = "";

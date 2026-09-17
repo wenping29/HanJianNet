@@ -1003,6 +1003,36 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'头像已更新'**
   String get avatarUpdated;
+
+  /// No description provided for @notifications.
+  ///
+  /// In zh, this message translates to:
+  /// **'通知消息'**
+  String get notifications;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无通知消息'**
+  String get noNotifications;
+
+  /// No description provided for @markAllRead.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部已读'**
+  String get markAllRead;
+
+  /// No description provided for @notificationApproved.
+  ///
+  /// In zh, this message translates to:
+  /// **'您提交的「{name}」已通过审核'**
+  String notificationApproved(String name);
+
+  /// No description provided for @notificationRejected.
+  ///
+  /// In zh, this message translates to:
+  /// **'您提交的「{name}」未通过审核'**
+  String notificationRejected(String name);
 }
 
 class _AppLocalizationsDelegate

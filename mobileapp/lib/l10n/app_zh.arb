@@ -255,5 +255,24 @@
   "editProfile": "编辑个人信息",
   "profileUpdated": "个人信息已更新",
   "editAvatar": "修改头像",
-  "avatarUpdated": "头像已更新"
+  "avatarUpdated": "头像已更新",
+  "notifications": "通知消息",
+  "noNotifications": "暂无通知消息",
+  "markAllRead": "全部已读",
+  "notificationApproved": "您提交的「{name}」已通过审核",
+  "@notificationApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationRejected": "您提交的「{name}」未通过审核",
+  "@notificationRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

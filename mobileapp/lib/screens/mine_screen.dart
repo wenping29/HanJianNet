@@ -9,6 +9,7 @@ import '../widgets/theme.dart';
 import 'avatar_screen.dart';
 import 'login_screen.dart';
 import 'my_submissions_screen.dart';
+import 'notifications_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
 import 'traitor_form_screen.dart';
@@ -21,6 +22,24 @@ class MineScreen extends StatefulWidget {
 }
 
 class _MineScreenState extends State<MineScreen> {
+  int _unreadNotifications = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUnread();
+  }
+
+  /// 拉取未读通知数用于入口角标；未登录或请求失败时静默忽略。
+  Future<void> _loadUnread() async {
+    if (!Session.instance.isLogin) return;
+    try {
+      final res = await ApiClient.instance.myNotifications();
+      if (!mounted) return;
+      setState(() => _unreadNotifications = res.unreadCount);
+    } on ApiException catch (_) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -143,6 +162,37 @@ class _MineScreenState extends State<MineScreen> {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => const MySubmissionsScreen(),
               ));
+            },
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.notifications_outlined, color: AppTheme.cinnabarLight),
+            title: Text(l10n.notifications, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_unreadNotifications > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cinnabarLight,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      _unreadNotifications > 99 ? '99+' : '$_unreadNotifications',
+                      style: const TextStyle(fontSize: 11, color: AppTheme.paper),
+                    ),
+                  ),
+                const SizedBox(width: 4),
+                const Icon(Icons.chevron_right, size: 20),
+              ],
+            ),
+            onTap: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const NotificationsScreen(),
+              ));
+              _loadUnread();
             },
           ),
         ),

@@ -57,4 +57,25 @@ public class MeController(UserService users) : ControllerBase
     [HttpGet("submissions")]
     public async Task<IActionResult> MySubmissions()
         => Ok(new { items = await users.MySubmissionsAsync(CurrentUser.GetId(User)) });
+
+    [HttpGet("notifications")]
+    public async Task<IActionResult> MyNotifications()
+    {
+        var (items, unreadCount) = await users.MyNotificationsAsync(CurrentUser.GetId(User));
+        return Ok(new { items, unreadCount });
+    }
+
+    [HttpPut("notifications/{id}/read")]
+    public async Task<IActionResult> MarkNotificationRead(string id)
+    {
+        await users.MarkNotificationReadAsync(CurrentUser.GetId(User), id);
+        return Ok(new { message = "已标记为已读" });
+    }
+
+    [HttpPut("notifications/read-all")]
+    public async Task<IActionResult> MarkAllNotificationsRead()
+    {
+        await users.MarkAllNotificationsReadAsync(CurrentUser.GetId(User));
+        return Ok(new { message = "已全部标记为已读" });
+    }
 }

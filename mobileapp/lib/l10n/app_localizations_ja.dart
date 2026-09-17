@@ -485,4 +485,23 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get avatarUpdated => 'アバターを更新しました';
+
+  @override
+  String get notifications => '通知';
+
+  @override
+  String get noNotifications => '通知はありません';
+
+  @override
+  String get markAllRead => 'すべて既読にする';
+
+  @override
+  String notificationApproved(String name) {
+    return '提出した「$name」が承認されました';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return '提出した「$name」は却下されました';
+  }
 }
