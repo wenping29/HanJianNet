@@ -279,5 +279,8 @@
   "chooseTheme": "Select theme",
   "themeSystem": "Follow system",
   "themeDark": "Dark",
-  "themeLight": "Light"
+  "themeLight": "Light",
+  "traitorMap": "Traitor Map",
+  "mapHint": "Tap a province to see distribution",
+  "viewArchives": "View Archives"
 }

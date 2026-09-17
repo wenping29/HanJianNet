@@ -524,4 +524,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get themeLight => 'Claro';
+
+  @override
+  String get traitorMap => 'Mapa de traidores';
+
+  @override
+  String get mapHint => 'Toque una provincia para ver la distribución';
+
+  @override
+  String get viewArchives => 'Ver archivos';
 }

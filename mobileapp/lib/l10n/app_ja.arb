@@ -279,5 +279,8 @@
   "chooseTheme": "テーマを選択",
   "themeSystem": "システムに従う",
   "themeDark": "ダーク",
-  "themeLight": "ライト"
+  "themeLight": "ライト",
+  "traitorMap": "漢奸地図",
+  "mapHint": "省をタップして分布を表示",
+  "viewArchives": "記録を見る"
 }

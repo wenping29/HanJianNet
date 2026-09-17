@@ -1063,6 +1063,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'白天'**
   String get themeLight;
+
+  /// No description provided for @traitorMap.
+  ///
+  /// In zh, this message translates to:
+  /// **'汉奸地图'**
+  String get traitorMap;
+
+  /// No description provided for @mapHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击省份查看分布'**
+  String get mapHint;
+
+  /// No description provided for @viewArchives.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看档案'**
+  String get viewArchives;
 }
 
 class _AppLocalizationsDelegate

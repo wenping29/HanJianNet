@@ -13,7 +13,10 @@ import 'traitor_detail_screen.dart';
 const _periodApiValues = [null, '宋末', '明末', '清末', '民国', '其他'];
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  /// 从汉奸地图进入时按省份筛选（省份简称，如「河南」），并立即执行查询。
+  final String? initialProvince;
+
+  const SearchScreen({super.key, this.initialProvince});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -35,12 +38,17 @@ class _SearchScreenState extends State<SearchScreen> {
   String? _error;
   bool _hasSearched = false;
   int _selectedPeriod = 0;
+  String? _province;
 
   @override
   void initState() {
     super.initState();
-    // 默认不查询：等用户点击「查询」按钮后再请求
+    // 默认不查询：等用户点击「查询」按钮后再请求；但带省份入口（汉奸地图）立即查询
     _scrollCtrl.addListener(_onScroll);
+    _province = widget.initialProvince;
+    if (_province != null && _province!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _search());
+    }
   }
 
   @override
@@ -77,6 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
         event: _eventCtrl.text.trim(),
         period: _periodApiValues[_selectedPeriod],
         nativePlace: _nativePlaceCtrl.text.trim(),
+        province: _province,
         page: 1,
         pageSize: 20,
       );
@@ -107,6 +116,7 @@ class _SearchScreenState extends State<SearchScreen> {
         event: _eventCtrl.text.trim(),
         period: _periodApiValues[_selectedPeriod],
         nativePlace: _nativePlaceCtrl.text.trim(),
+        province: _province,
         page: _page + 1,
         pageSize: 20,
       );
@@ -223,6 +233,21 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             const SizedBox(height: 12),
+            if (_province != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: InputChip(
+                    label: Text(_province!),
+                    deleteIcon: const Icon(Icons.close, size: 16),
+                    onDeleted: () {
+                      setState(() => _province = null);
+                      _search();
+                    },
+                  ),
+                ),
+              ),
             SizedBox(
               width: double.infinity,
               child: FilledButton(

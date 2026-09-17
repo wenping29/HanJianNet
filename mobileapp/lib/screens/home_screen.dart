@@ -8,6 +8,7 @@ import '../widgets/common.dart';
 import '../widgets/theme.dart';
 import '../widgets/traitor_card.dart';
 import 'traitor_detail_screen.dart';
+import 'traitor_map_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -186,6 +187,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ],
+            VerticalDivider(color: AppTheme.paperDim.withValues(alpha: 0.15)),
+            Expanded(
+              child: InkWell(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => const TraitorMapScreen(),
+                )),
+                child: Column(
+                  children: [
+                    const Icon(Icons.map_outlined, size: 26, color: AppTheme.bronzeLight),
+                    const SizedBox(height: 4),
+                    Text(l10n.traitorMap,
+                        style: TextStyle(
+                            fontSize: 11, letterSpacing: 2, color: AppTheme.paperDim)),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

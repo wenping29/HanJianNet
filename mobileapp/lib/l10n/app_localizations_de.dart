@@ -522,4 +522,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get themeLight => 'Hell';
+
+  @override
+  String get traitorMap => 'Verräterkarte';
+
+  @override
+  String get mapHint => 'Provinz antippen, um die Verteilung zu sehen';
+
+  @override
+  String get viewArchives => 'Akten ansehen';
 }

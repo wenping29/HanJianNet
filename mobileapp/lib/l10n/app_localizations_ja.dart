@@ -519,4 +519,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get themeLight => 'ライト';
+
+  @override
+  String get traitorMap => '漢奸地図';
+
+  @override
+  String get mapHint => '省をタップして分布を表示';
+
+  @override
+  String get viewArchives => '記録を見る';
 }

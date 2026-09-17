@@ -279,5 +279,8 @@
   "chooseTheme": "选择主题",
   "themeSystem": "跟随系统",
   "themeDark": "黑夜",
-  "themeLight": "白天"
+  "themeLight": "白天",
+  "traitorMap": "汉奸地图",
+  "mapHint": "点击省份查看分布",
+  "viewArchives": "查看档案"
 }

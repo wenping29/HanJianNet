@@ -279,5 +279,8 @@
   "chooseTheme": "Design wählen",
   "themeSystem": "System",
   "themeDark": "Dunkel",
-  "themeLight": "Hell"
+  "themeLight": "Hell",
+  "traitorMap": "Verräterkarte",
+  "mapHint": "Provinz antippen, um die Verteilung zu sehen",
+  "viewArchives": "Akten ansehen"
 }

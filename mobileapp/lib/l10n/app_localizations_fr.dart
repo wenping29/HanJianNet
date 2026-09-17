@@ -525,4 +525,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get themeLight => 'Clair';
+
+  @override
+  String get traitorMap => 'Carte des traîtres';
+
+  @override
+  String get mapHint => 'Touchez une province pour voir la répartition';
+
+  @override
+  String get viewArchives => 'Voir les archives';
 }

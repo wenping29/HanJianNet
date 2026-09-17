@@ -164,6 +164,7 @@ class ApiClient {
     String? event,
     String? period,
     String? nativePlace,
+    String? province,
     int page = 1,
     int pageSize = 20,
   }) async {
@@ -174,6 +175,7 @@ class ApiClient {
       if (event != null && event.isNotEmpty) 'event': event,
       if (period != null && period.isNotEmpty) 'period': period,
       if (nativePlace != null && nativePlace.isNotEmpty) 'nativePlace': nativePlace,
+      if (province != null && province.isNotEmpty) 'province': province,
       'page': '$page',
       'pageSize': '$pageSize',
     };
@@ -205,6 +207,22 @@ class ApiClient {
           headers: _headers,
         )) as Map<String, dynamic>;
     return TraitorStats.fromJson(data);
+  }
+
+  /// 分省统计：items 按数量降序；total 档案总数；matched 已填写省份的记录数。
+  Future<ProvinceStatsResult> getProvinceStats() async {
+    final data = await _run(() => http.get(
+          Uri.parse('$_baseUrl/api/traitors/province-stats'),
+          headers: _headers,
+        )) as Map<String, dynamic>;
+    final items = (data['items'] as List? ?? [])
+        .map((e) => ProvinceStat.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return ProvinceStatsResult(
+      items: items,
+      total: (data['total'] as num?)?.toInt() ?? 0,
+      matched: (data['matched'] as num?)?.toInt() ?? 0,
+    );
   }
 
   Future<List<TimelineNode>> getTimeline() async {

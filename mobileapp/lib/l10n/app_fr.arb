@@ -279,5 +279,8 @@
   "chooseTheme": "Choisir le thème",
   "themeSystem": "Suivre le système",
   "themeDark": "Sombre",
-  "themeLight": "Clair"
+  "themeLight": "Clair",
+  "traitorMap": "Carte des traîtres",
+  "mapHint": "Touchez une province pour voir la répartition",
+  "viewArchives": "Voir les archives"
 }

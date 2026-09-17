@@ -519,4 +519,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get themeLight => '라이트';
+
+  @override
+  String get traitorMap => '매국노 지도';
+
+  @override
+  String get mapHint => '성을 탭하여 분포 보기';
+
+  @override
+  String get viewArchives => '기록 보기';
 }

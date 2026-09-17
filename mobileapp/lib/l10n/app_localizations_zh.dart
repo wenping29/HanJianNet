@@ -518,4 +518,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get themeLight => '白天';
+
+  @override
+  String get traitorMap => '汉奸地图';
+
+  @override
+  String get mapHint => '点击省份查看分布';
+
+  @override
+  String get viewArchives => '查看档案';
 }

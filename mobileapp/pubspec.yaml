@@ -29,6 +29,7 @@ flutter:
   assets:
     - assets/avatar_default.png
     - assets/app_logo.png
+    - assets/data/china_geo.json
   fonts:
     - family: Noto Sans SC
       fonts:

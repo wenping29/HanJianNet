@@ -522,4 +522,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get themeLight => 'Светлая';
+
+  @override
+  String get traitorMap => 'Карта предателей';
+
+  @override
+  String get mapHint => 'Нажмите на провинцию, чтобы увидеть распределение';
+
+  @override
+  String get viewArchives => 'Смотреть архивы';
 }

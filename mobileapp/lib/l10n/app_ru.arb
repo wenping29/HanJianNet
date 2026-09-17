@@ -279,5 +279,8 @@
   "chooseTheme": "Выбрать тему",
   "themeSystem": "Как в системе",
   "themeDark": "Тёмная",
-  "themeLight": "Светлая"
+  "themeLight": "Светлая",
+  "traitorMap": "Карта предателей",
+  "mapHint": "Нажмите на провинцию, чтобы увидеть распределение",
+  "viewArchives": "Смотреть архивы"
 }

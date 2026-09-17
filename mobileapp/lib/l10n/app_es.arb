@@ -279,5 +279,8 @@
   "chooseTheme": "Elegir tema",
   "themeSystem": "Seguir el sistema",
   "themeDark": "Oscuro",
-  "themeLight": "Claro"
+  "themeLight": "Claro",
+  "traitorMap": "Mapa de traidores",
+  "mapHint": "Toque una provincia para ver la distribución",
+  "viewArchives": "Ver archivos"
 }

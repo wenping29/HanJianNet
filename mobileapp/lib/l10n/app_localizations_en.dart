@@ -522,4 +522,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeLight => 'Light';
+
+  @override
+  String get traitorMap => 'Traitor Map';
+
+  @override
+  String get mapHint => 'Tap a province to see distribution';
+
+  @override
+  String get viewArchives => 'View Archives';
 }

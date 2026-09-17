@@ -279,5 +279,8 @@
   "chooseTheme": "테마 선택",
   "themeSystem": "시스템 설정 따르기",
   "themeDark": "다크",
-  "themeLight": "라이트"
+  "themeLight": "라이트",
+  "traitorMap": "매국노 지도",
+  "mapHint": "성을 탭하여 분포 보기",
+  "viewArchives": "기록 보기"
 }

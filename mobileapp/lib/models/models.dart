@@ -78,6 +78,29 @@ class NotificationListResult {
   const NotificationListResult({required this.items, required this.unreadCount});
 }
 
+/// 分省统计项：province 为简称（如「河南」），fullName 与地图 GeoJSON 名称一致（如「河南省」）。
+class ProvinceStat {
+  final String province;
+  final String fullName;
+  final int count;
+
+  const ProvinceStat({required this.province, required this.fullName, required this.count});
+
+  factory ProvinceStat.fromJson(Json j) => ProvinceStat(
+        province: (j['province'] as String?) ?? '',
+        fullName: (j['fullName'] as String?) ?? '',
+        count: (j['count'] as num?)?.toInt() ?? 0,
+      );
+}
+
+class ProvinceStatsResult {
+  final List<ProvinceStat> items;
+  final int total;
+  final int matched;
+
+  const ProvinceStatsResult({required this.items, required this.total, required this.matched});
+}
+
 class Spouse {
   final String name;
   final String? remark;
