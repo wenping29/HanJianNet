@@ -12,7 +12,6 @@ import 'my_submissions_screen.dart';
 import 'notifications_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
-import 'traitor_form_screen.dart';
 
 class MineScreen extends StatefulWidget {
   const MineScreen({super.key});
@@ -204,18 +203,6 @@ class _MineScreenState extends State<MineScreen> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => const SettingsScreen(),
-              ));
-            },
-          ),
-        ),
-        Card(
-          child: ListTile(
-            leading: Icon(Icons.add_circle_outline, color: AppTheme.cinnabarLight),
-            title: Text(l10n.submitNewArchive, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
-            trailing: const Icon(Icons.chevron_right, size: 20),
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => const TraitorFormScreen(mode: TraitorFormMode.create),
               ));
             },
           ),
