@@ -398,6 +398,12 @@ abstract class AppLocalizations {
   /// **'民国'**
   String get republic;
 
+  /// No description provided for @antiJapaneseWar.
+  ///
+  /// In zh, this message translates to:
+  /// **'抗日战争时期'**
+  String get antiJapaneseWar;
+
   /// No description provided for @other.
   ///
   /// In zh, this message translates to:

@@ -159,6 +159,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get republic => '民国';
 
   @override
+  String get antiJapaneseWar => '抗日战争时期';
+
+  @override
   String get other => '其他';
 
   @override

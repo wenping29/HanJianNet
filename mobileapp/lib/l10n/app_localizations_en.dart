@@ -161,6 +161,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get republic => 'Republic';
 
   @override
+  String get antiJapaneseWar => 'War of Resistance';
+
+  @override
   String get other => 'Other';
 
   @override

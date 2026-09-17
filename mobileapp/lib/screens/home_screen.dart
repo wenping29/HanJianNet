@@ -7,6 +7,7 @@ import '../services/api_client.dart';
 import '../widgets/common.dart';
 import '../widgets/theme.dart';
 import '../widgets/traitor_card.dart';
+import 'search_screen.dart';
 import 'traitor_detail_screen.dart';
 import 'traitor_map_screen.dart';
 
@@ -152,16 +153,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// 点击统计数字跳转到查询页：总数不带条件，时期按对应时期筛选，均立即查询。
+  void _openSearch({String? period}) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) =>
+          period == null ? const SearchScreen(autoSearch: true) : SearchScreen(initialPeriod: period),
+    ));
+  }
+
   Widget _statsBoard() {
     final l10n = AppLocalizations.of(context)!;
     final s = _stats;
+    // (标签, 数量, 时期筛选值)；总数项时期为 null 表示不带条件
     final cells = [
-      (l10n.totalArchives, s?.total ?? 0),
+      (l10n.totalArchives, s?.total ?? 0, null as String?),
     ];
     final periods = s?.periods;
     if (periods != null) {
       for (final entry in periods.entries) {
-        cells.add((entry.key, entry.value));
+        cells.add((entry.key, entry.value, entry.key));
       }
     }
     return Card(
@@ -169,21 +179,24 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
         child: Row(
           children: [
-            for (final (i, (label, value)) in cells.indexed) ...[
+            for (final (i, (label, value, period)) in cells.indexed) ...[
               if (i > 0) VerticalDivider(color: AppTheme.paperDim.withValues(alpha: 0.15)),
               Expanded(
-                child: Column(
-                  children: [
-                    Text('$value',
-                        style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.bronzeLight)),
-                    const SizedBox(height: 4),
-                    Text(label,
-                        style: TextStyle(
-                            fontSize: 11, letterSpacing: 2, color: AppTheme.paperDim)),
-                  ],
+                child: InkWell(
+                  onTap: () => _openSearch(period: period),
+                  child: Column(
+                    children: [
+                      Text('$value',
+                          style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.bronzeLight)),
+                      const SizedBox(height: 4),
+                      Text(label,
+                          style: TextStyle(
+                              fontSize: 11, letterSpacing: 2, color: AppTheme.paperDim)),
+                    ],
+                  ),
                 ),
               ),
             ],

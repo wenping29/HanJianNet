@@ -10,13 +10,19 @@ import '../widgets/traitor_card.dart';
 import 'traitor_detail_screen.dart';
 
 /// 与 API 对齐的时期值（第一个 null 代表「全部」）。
-const _periodApiValues = [null, '宋末', '明末', '清末', '民国', '其他'];
+const _periodApiValues = [null, '宋末', '明末', '清末', '民国', '抗日战争时期', '其他'];
 
 class SearchScreen extends StatefulWidget {
   /// 从汉奸地图进入时按省份筛选（省份简称，如「河南」），并立即执行查询。
   final String? initialProvince;
 
-  const SearchScreen({super.key, this.initialProvince});
+  /// 从首页统计卡片进入时按时期筛选（如「抗日战争时期」），并立即执行查询。
+  final String? initialPeriod;
+
+  /// 进入后立即执行一次无条件查询（首页「档案总数」入口）。
+  final bool autoSearch;
+
+  const SearchScreen({super.key, this.initialProvince, this.initialPeriod, this.autoSearch = false});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -43,10 +49,14 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    // 默认不查询：等用户点击「查询」按钮后再请求；但带省份入口（汉奸地图）立即查询
+    // 默认不查询：等用户点击「查询」按钮后再请求；但带省份/时期/总数入口立即查询
     _scrollCtrl.addListener(_onScroll);
     _province = widget.initialProvince;
-    if (_province != null && _province!.isNotEmpty) {
+    final periodIndex = _periodApiValues.indexOf(widget.initialPeriod);
+    if (periodIndex > 0) _selectedPeriod = periodIndex;
+    if (widget.autoSearch ||
+        periodIndex > 0 ||
+        (_province != null && _province!.isNotEmpty)) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _search());
     }
   }
@@ -155,6 +165,7 @@ class _SearchScreenState extends State<SearchScreen> {
       l10n.lateMing,
       l10n.lateQing,
       l10n.republic,
+      l10n.antiJapaneseWar,
       l10n.other,
     ];
     return Card(

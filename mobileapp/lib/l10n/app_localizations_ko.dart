@@ -160,6 +160,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get republic => '민국';
 
   @override
+  String get antiJapaneseWar => '항일전쟁 시기';
+
+  @override
   String get other => '기타';
 
   @override

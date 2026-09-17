@@ -161,6 +161,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get republic => 'Республика';
 
   @override
+  String get antiJapaneseWar => 'Война сопротивления';
+
+  @override
   String get other => 'Другое';
 
   @override

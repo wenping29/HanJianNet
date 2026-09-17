@@ -162,6 +162,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get republic => 'République';
 
   @override
+  String get antiJapaneseWar => 'Guerre de résistance';
+
+  @override
   String get other => 'Autre';
 
   @override

@@ -160,6 +160,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get republic => '民国';
 
   @override
+  String get antiJapaneseWar => '抗日戦争時期';
+
+  @override
   String get other => 'その他';
 
   @override
