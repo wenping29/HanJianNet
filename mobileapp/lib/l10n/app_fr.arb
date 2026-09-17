@@ -250,5 +250,6 @@
   "summaryRequired": "Veuillez saisir le résumé",
   "submitSuccess": "Soumis, en attente de révision",
   "submitFailed": "Échec de l'envoi",
-  "searchPrompt": "Saisissez les critères puis appuyez sur « Rechercher »"
+  "searchPrompt": "Saisissez les critères puis appuyez sur « Rechercher »",
+  "settings": "Paramètres"
 }

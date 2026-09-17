@@ -475,4 +475,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get searchPrompt => 'Ingrese los criterios y pulse «Buscar»';
+
+  @override
+  String get settings => 'Configuración';
 }

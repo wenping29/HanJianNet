@@ -469,4 +469,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get searchPrompt => '输入条件后点击「查询」';
+
+  @override
+  String get settings => '设置';
 }

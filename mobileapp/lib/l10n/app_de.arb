@@ -250,5 +250,6 @@
   "summaryRequired": "Bitte Beschreibung eingeben",
   "submitSuccess": "Eingereicht, wartet auf Prüfung",
   "submitFailed": "Senden fehlgeschlagen",
-  "searchPrompt": "Kriterien eingeben und auf „Suchen“ tippen"
+  "searchPrompt": "Kriterien eingeben und auf „Suchen“ tippen",
+  "settings": "Einstellungen"
 }

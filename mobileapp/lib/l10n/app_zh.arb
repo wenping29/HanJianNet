@@ -250,5 +250,6 @@
   "summaryRequired": "请填写人物概述",
   "submitSuccess": "提交成功，等待审核",
   "submitFailed": "提交失败",
-  "searchPrompt": "输入条件后点击「查询」"
+  "searchPrompt": "输入条件后点击「查询」",
+  "settings": "设置"
 }

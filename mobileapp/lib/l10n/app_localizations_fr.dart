@@ -475,4 +475,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get searchPrompt => 'Saisissez les critères puis appuyez sur « Rechercher »';
+
+  @override
+  String get settings => 'Paramètres';
 }

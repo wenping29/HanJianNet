@@ -470,4 +470,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get searchPrompt => '条件を入力して「検索」をタップしてください';
+
+  @override
+  String get settings => '設定';
 }

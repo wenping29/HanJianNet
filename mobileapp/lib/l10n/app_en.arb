@@ -250,5 +250,6 @@
   "summaryRequired": "Please enter the summary",
   "submitSuccess": "Submitted, pending review",
   "submitFailed": "Submit failed",
-  "searchPrompt": "Enter criteria and tap Search"
+  "searchPrompt": "Enter criteria and tap Search",
+  "settings": "Settings"
 }

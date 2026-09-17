@@ -470,4 +470,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get searchPrompt => '조건을 입력하고 「조회」를 탭하세요';
+
+  @override
+  String get settings => '설정';
 }

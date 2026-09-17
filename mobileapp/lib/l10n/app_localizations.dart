@@ -973,6 +973,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'输入条件后点击「查询」'**
   String get searchPrompt;
+
+  /// No description provided for @settings.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置'**
+  String get settings;
 }
 
 class _AppLocalizationsDelegate

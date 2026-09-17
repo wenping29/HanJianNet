@@ -4,11 +4,12 @@ import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
 
 import '../models/models.dart';
 import '../services/api_client.dart';
-import '../services/locale_controller.dart';
 import '../services/session.dart';
 import '../widgets/common.dart';
 import '../widgets/theme.dart';
 import 'login_screen.dart';
+import 'settings_screen.dart';
+import 'traitor_form_screen.dart';
 
 class MineScreen extends StatefulWidget {
   const MineScreen({super.key});
@@ -143,9 +144,9 @@ class _MineScreenState extends State<MineScreen> {
             title: Text(l10n.submitNewArchive, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
             trailing: const Icon(Icons.chevron_right, size: 20),
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('P1 阶段实现')),
-              );
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const TraitorFormScreen(mode: TraitorFormMode.create),
+              ));
             },
           ),
         ),
@@ -154,10 +155,14 @@ class _MineScreenState extends State<MineScreen> {
         const SizedBox(height: 12),
         Card(
           child: ListTile(
-            leading: const Icon(Icons.language, color: AppTheme.cinnabarLight),
-            title: Text(l10n.language, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            leading: const Icon(Icons.settings_outlined, color: AppTheme.cinnabarLight),
+            title: Text(l10n.settings, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
             trailing: const Icon(Icons.chevron_right, size: 20),
-            onTap: _showLanguagePicker,
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const SettingsScreen(),
+              ));
+            },
           ),
         ),
         Card(
@@ -176,43 +181,6 @@ class _MineScreenState extends State<MineScreen> {
         const SizedBox(height: 32),
       ],
     );
-  }
-
-  Future<void> _showLanguagePicker() async {
-    final current = LocaleController.instance.locale.value;
-    final chosen = await showDialog<Locale>(
-      context: context,
-      builder: (ctx) => SimpleDialog(
-        backgroundColor: AppTheme.inkCard,
-        title: Text(
-          AppLocalizations.of(ctx)!.chooseLanguage,
-          style: const TextStyle(fontSize: 16, letterSpacing: 2),
-        ),
-        children: [
-          RadioGroup<Locale>(
-            groupValue: current,
-            onChanged: (v) => Navigator.of(ctx).pop(v),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final loc in LocaleController.supportedLocales)
-                  RadioListTile<Locale>(
-                    value: loc,
-                    activeColor: AppTheme.cinnabar,
-                    title: Text(
-                      LocaleController.instance.localeName(loc.languageCode),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-    if (chosen != null) {
-      await LocaleController.instance.setLocale(chosen);
-    }
   }
 
   Widget _submissionsView() {

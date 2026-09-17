@@ -473,4 +473,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get searchPrompt => 'Введите условия и нажмите «Поиск»';
+
+  @override
+  String get settings => 'Настройки';
 }
