@@ -283,5 +283,16 @@
   "themeLight": "Clair",
   "traitorMap": "Carte des traîtres",
   "mapHint": "Touchez une province pour voir la répartition",
-  "viewArchives": "Voir les archives"
+  "viewArchives": "Voir les archives",
+  "gender": "Genre",
+  "genderMale": "Homme",
+  "genderFemale": "Femme",
+  "genderSecret": "Non précisé",
+  "birthday": "Date de naissance",
+  "address": "Adresse",
+  "phone": "Téléphone",
+  "invalidPhone": "Numéro de téléphone invalide",
+  "profileAccountFixed": "Le nom d'utilisateur et l'e-mail ne peuvent pas être modifiés",
+  "optional": "Facultatif",
+  "tapToChangeAvatar": "Touchez l'avatar pour le changer"
 }

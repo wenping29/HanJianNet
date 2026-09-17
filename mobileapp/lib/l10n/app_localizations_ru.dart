@@ -534,4 +534,37 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get viewArchives => 'Смотреть архивы';
+
+  @override
+  String get gender => 'Пол';
+
+  @override
+  String get genderMale => 'Мужской';
+
+  @override
+  String get genderFemale => 'Женский';
+
+  @override
+  String get genderSecret => 'Не указано';
+
+  @override
+  String get birthday => 'Дата рождения';
+
+  @override
+  String get address => 'Адрес';
+
+  @override
+  String get phone => 'Телефон';
+
+  @override
+  String get invalidPhone => 'Неверный номер телефона';
+
+  @override
+  String get profileAccountFixed => 'Имя пользователя и email нельзя изменить';
+
+  @override
+  String get optional => 'Необязательно';
+
+  @override
+  String get tapToChangeAvatar => 'Нажмите на аватар, чтобы изменить';
 }

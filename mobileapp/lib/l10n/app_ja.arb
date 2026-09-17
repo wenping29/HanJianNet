@@ -283,5 +283,16 @@
   "themeLight": "ライト",
   "traitorMap": "漢奸地図",
   "mapHint": "省をタップして分布を表示",
-  "viewArchives": "記録を見る"
+  "viewArchives": "記録を見る",
+  "gender": "性別",
+  "genderMale": "男性",
+  "genderFemale": "女性",
+  "genderSecret": "非公開",
+  "birthday": "誕生日",
+  "address": "住所",
+  "phone": "携帯電話",
+  "invalidPhone": "電話番号の形式が正しくありません",
+  "profileAccountFixed": "ユーザー名とメールアドレスは変更できません",
+  "optional": "任意",
+  "tapToChangeAvatar": "アバターをタップして変更"
 }

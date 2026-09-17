@@ -9,6 +9,10 @@ class User {
   final String email;
   final String role;
   final String? avatarUrl;
+  final String? gender; // male / female / secret
+  final String? birthday; // yyyy-MM-dd
+  final String? address;
+  final String? phone;
   final String? createdAt;
 
   const User({
@@ -17,6 +21,10 @@ class User {
     required this.email,
     required this.role,
     this.avatarUrl,
+    this.gender,
+    this.birthday,
+    this.address,
+    this.phone,
     this.createdAt,
   });
 
@@ -26,6 +34,10 @@ class User {
         email: (j['email'] as String?) ?? '',
         role: (j['role'] as String?) ?? 'user',
         avatarUrl: j['avatarUrl'] as String?,
+        gender: j['gender'] as String?,
+        birthday: j['birthday'] as String?,
+        address: j['address'] as String?,
+        phone: j['phone'] as String?,
         createdAt: j['createdAt'] as String?,
       );
 }

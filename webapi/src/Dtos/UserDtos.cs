@@ -22,8 +22,18 @@ public class ChangeRoleRequest
 
 public class UpdateProfileRequest
 {
-    public string Username { get; set; } = "";
-    public string Email { get; set; } = "";
+    /// <summary>用户名（可选，留空表示不修改；移动端个人资料页不允许修改）</summary>
+    public string? Username { get; set; }
+    /// <summary>邮箱（可选，留空表示不修改）</summary>
+    public string? Email { get; set; }
+    /// <summary>性别：male / female / secret；null 不修改，空串清除</summary>
+    public string? Gender { get; set; }
+    /// <summary>生日（yyyy-MM-dd）；null 不修改，空串清除</summary>
+    public string? Birthday { get; set; }
+    /// <summary>联系地址；null 不修改，空串清除</summary>
+    public string? Address { get; set; }
+    /// <summary>手机号；null 不修改，空串清除</summary>
+    public string? Phone { get; set; }
 }
 
 public class UpdateAvatarRequest

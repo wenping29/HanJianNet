@@ -283,5 +283,16 @@
   "themeLight": "Hell",
   "traitorMap": "Verräterkarte",
   "mapHint": "Provinz antippen, um die Verteilung zu sehen",
-  "viewArchives": "Akten ansehen"
+  "viewArchives": "Akten ansehen",
+  "gender": "Geschlecht",
+  "genderMale": "Männlich",
+  "genderFemale": "Weiblich",
+  "genderSecret": "Keine Angabe",
+  "birthday": "Geburtstag",
+  "address": "Adresse",
+  "phone": "Telefon",
+  "invalidPhone": "Ungültige Telefonnummer",
+  "profileAccountFixed": "Benutzername und E-Mail können nicht geändert werden",
+  "optional": "Optional",
+  "tapToChangeAvatar": "Zum Ändern auf den Avatar tippen"
 }

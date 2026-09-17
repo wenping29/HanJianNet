@@ -531,4 +531,37 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get viewArchives => '記録を見る';
+
+  @override
+  String get gender => '性別';
+
+  @override
+  String get genderMale => '男性';
+
+  @override
+  String get genderFemale => '女性';
+
+  @override
+  String get genderSecret => '非公開';
+
+  @override
+  String get birthday => '誕生日';
+
+  @override
+  String get address => '住所';
+
+  @override
+  String get phone => '携帯電話';
+
+  @override
+  String get invalidPhone => '電話番号の形式が正しくありません';
+
+  @override
+  String get profileAccountFixed => 'ユーザー名とメールアドレスは変更できません';
+
+  @override
+  String get optional => '任意';
+
+  @override
+  String get tapToChangeAvatar => 'アバターをタップして変更';
 }

@@ -283,5 +283,16 @@
   "themeLight": "Light",
   "traitorMap": "Traitor Map",
   "mapHint": "Tap a province to see distribution",
-  "viewArchives": "View Archives"
+  "viewArchives": "View Archives",
+  "gender": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderSecret": "Prefer not to say",
+  "birthday": "Birthday",
+  "address": "Address",
+  "phone": "Phone",
+  "invalidPhone": "Invalid phone number",
+  "profileAccountFixed": "Username and email cannot be changed",
+  "optional": "Optional",
+  "tapToChangeAvatar": "Tap the avatar to change it"
 }

@@ -1087,6 +1087,72 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'查看档案'**
   String get viewArchives;
+
+  /// No description provided for @gender.
+  ///
+  /// In zh, this message translates to:
+  /// **'性别'**
+  String get gender;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In zh, this message translates to:
+  /// **'男'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In zh, this message translates to:
+  /// **'女'**
+  String get genderFemale;
+
+  /// No description provided for @genderSecret.
+  ///
+  /// In zh, this message translates to:
+  /// **'保密'**
+  String get genderSecret;
+
+  /// No description provided for @birthday.
+  ///
+  /// In zh, this message translates to:
+  /// **'生日'**
+  String get birthday;
+
+  /// No description provided for @address.
+  ///
+  /// In zh, this message translates to:
+  /// **'地址'**
+  String get address;
+
+  /// No description provided for @phone.
+  ///
+  /// In zh, this message translates to:
+  /// **'手机号'**
+  String get phone;
+
+  /// No description provided for @invalidPhone.
+  ///
+  /// In zh, this message translates to:
+  /// **'手机号格式不正确'**
+  String get invalidPhone;
+
+  /// No description provided for @profileAccountFixed.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户名和邮箱不可修改'**
+  String get profileAccountFixed;
+
+  /// No description provided for @optional.
+  ///
+  /// In zh, this message translates to:
+  /// **'选填'**
+  String get optional;
+
+  /// No description provided for @tapToChangeAvatar.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击头像更换'**
+  String get tapToChangeAvatar;
 }
 
 class _AppLocalizationsDelegate

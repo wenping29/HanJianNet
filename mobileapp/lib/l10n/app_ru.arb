@@ -283,5 +283,16 @@
   "themeLight": "Светлая",
   "traitorMap": "Карта предателей",
   "mapHint": "Нажмите на провинцию, чтобы увидеть распределение",
-  "viewArchives": "Смотреть архивы"
+  "viewArchives": "Смотреть архивы",
+  "gender": "Пол",
+  "genderMale": "Мужской",
+  "genderFemale": "Женский",
+  "genderSecret": "Не указано",
+  "birthday": "Дата рождения",
+  "address": "Адрес",
+  "phone": "Телефон",
+  "invalidPhone": "Неверный номер телефона",
+  "profileAccountFixed": "Имя пользователя и email нельзя изменить",
+  "optional": "Необязательно",
+  "tapToChangeAvatar": "Нажмите на аватар, чтобы изменить"
 }

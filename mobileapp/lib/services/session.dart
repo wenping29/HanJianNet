@@ -115,6 +115,10 @@ class Session extends ChangeNotifier {
         'email': u.email,
         'role': u.role,
         'avatarUrl': u.avatarUrl,
+        'gender': u.gender,
+        'birthday': u.birthday,
+        'address': u.address,
+        'phone': u.phone,
       });
 
   Future<void> _persistAll() async {

@@ -530,4 +530,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get viewArchives => '查看档案';
+
+  @override
+  String get gender => '性别';
+
+  @override
+  String get genderMale => '男';
+
+  @override
+  String get genderFemale => '女';
+
+  @override
+  String get genderSecret => '保密';
+
+  @override
+  String get birthday => '生日';
+
+  @override
+  String get address => '地址';
+
+  @override
+  String get phone => '手机号';
+
+  @override
+  String get invalidPhone => '手机号格式不正确';
+
+  @override
+  String get profileAccountFixed => '用户名和邮箱不可修改';
+
+  @override
+  String get optional => '选填';
+
+  @override
+  String get tapToChangeAvatar => '点击头像更换';
 }

@@ -283,5 +283,16 @@
   "themeLight": "라이트",
   "traitorMap": "매국노 지도",
   "mapHint": "성을 탭하여 분포 보기",
-  "viewArchives": "기록 보기"
+  "viewArchives": "기록 보기",
+  "gender": "성별",
+  "genderMale": "남성",
+  "genderFemale": "여성",
+  "genderSecret": "비공개",
+  "birthday": "생일",
+  "address": "주소",
+  "phone": "전화번호",
+  "invalidPhone": "전화번호 형식이 올바르지 않습니다",
+  "profileAccountFixed": "사용자 이름과 이메일은 변경할 수 없습니다",
+  "optional": "선택 사항",
+  "tapToChangeAvatar": "아바타를 탭하여 변경"
 }

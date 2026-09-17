@@ -536,4 +536,38 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get viewArchives => 'Ver archivos';
+
+  @override
+  String get gender => 'Género';
+
+  @override
+  String get genderMale => 'Hombre';
+
+  @override
+  String get genderFemale => 'Mujer';
+
+  @override
+  String get genderSecret => 'Prefiero no decirlo';
+
+  @override
+  String get birthday => 'Fecha de nacimiento';
+
+  @override
+  String get address => 'Dirección';
+
+  @override
+  String get phone => 'Teléfono';
+
+  @override
+  String get invalidPhone => 'Número de teléfono no válido';
+
+  @override
+  String get profileAccountFixed =>
+      'El nombre de usuario y el correo no se pueden modificar';
+
+  @override
+  String get optional => 'Opcional';
+
+  @override
+  String get tapToChangeAvatar => 'Toque el avatar para cambiarlo';
 }

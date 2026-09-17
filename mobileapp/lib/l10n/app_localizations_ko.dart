@@ -531,4 +531,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get viewArchives => '기록 보기';
+
+  @override
+  String get gender => '성별';
+
+  @override
+  String get genderMale => '남성';
+
+  @override
+  String get genderFemale => '여성';
+
+  @override
+  String get genderSecret => '비공개';
+
+  @override
+  String get birthday => '생일';
+
+  @override
+  String get address => '주소';
+
+  @override
+  String get phone => '휴전화 번호';
+
+  @override
+  String get invalidPhone => '전화번호 형식이 올바르지 않습니다';
+
+  @override
+  String get profileAccountFixed => '사용자 이름과 이메일은 변경할 수 없습니다';
+
+  @override
+  String get optional => '선택 사항';
+
+  @override
+  String get tapToChangeAvatar => '아바타를 탭하여 변경';
 }

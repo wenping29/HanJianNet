@@ -283,5 +283,16 @@
   "themeLight": "白天",
   "traitorMap": "汉奸地图",
   "mapHint": "点击省份查看分布",
-  "viewArchives": "查看档案"
+  "viewArchives": "查看档案",
+  "gender": "性别",
+  "genderMale": "男",
+  "genderFemale": "女",
+  "genderSecret": "保密",
+  "birthday": "生日",
+  "address": "地址",
+  "phone": "手机号",
+  "invalidPhone": "手机号格式不正确",
+  "profileAccountFixed": "用户名和邮箱不可修改",
+  "optional": "选填",
+  "tapToChangeAvatar": "点击头像更换"
 }

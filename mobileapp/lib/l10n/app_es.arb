@@ -283,5 +283,16 @@
   "themeLight": "Claro",
   "traitorMap": "Mapa de traidores",
   "mapHint": "Toque una provincia para ver la distribución",
-  "viewArchives": "Ver archivos"
+  "viewArchives": "Ver archivos",
+  "gender": "Género",
+  "genderMale": "Hombre",
+  "genderFemale": "Mujer",
+  "genderSecret": "Prefiero no decirlo",
+  "birthday": "Fecha de nacimiento",
+  "address": "Dirección",
+  "phone": "Teléfono",
+  "invalidPhone": "Número de teléfono no válido",
+  "profileAccountFixed": "El nombre de usuario y el correo no se pueden modificar",
+  "optional": "Opcional",
+  "tapToChangeAvatar": "Toque el avatar para cambiarlo"
 }

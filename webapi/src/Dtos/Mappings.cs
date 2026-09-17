@@ -13,6 +13,10 @@ public static class Mappings
         Email = u.Email,
         Role = u.Role,
         AvatarUrl = u.AvatarUrl,
+        Gender = u.Gender,
+        Birthday = u.Birthday,
+        Address = u.Address,
+        Phone = u.Phone,
         CreatedAt = u.CreatedAt,
     };
 

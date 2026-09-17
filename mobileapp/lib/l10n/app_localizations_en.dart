@@ -534,4 +534,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewArchives => 'View Archives';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderSecret => 'Prefer not to say';
+
+  @override
+  String get birthday => 'Birthday';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get invalidPhone => 'Invalid phone number';
+
+  @override
+  String get profileAccountFixed => 'Username and email cannot be changed';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get tapToChangeAvatar => 'Tap the avatar to change it';
 }

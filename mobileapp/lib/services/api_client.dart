@@ -104,12 +104,23 @@ class ApiClient {
     return User.fromJson(data['user'] as Map<String, dynamic>);
   }
 
-  /// 更新本人个人信息（用户名/邮箱）。
-  Future<User> updateProfile({required String username, required String email}) async {
+  /// 更新本人个人资料（性别/生日/地址/手机号；用户名与邮箱不可修改，不再提交）。
+  /// 传 null 表示不修改该字段，传空串表示清除。
+  Future<User> updateProfile({
+    String? gender,
+    String? birthday,
+    String? address,
+    String? phone,
+  }) async {
     final data = await _run(() => http.put(
           Uri.parse('$_baseUrl/api/me/profile'),
           headers: _headers,
-          body: jsonEncode({'username': username, 'email': email}),
+          body: jsonEncode({
+            if (gender != null) 'gender': gender,
+            if (birthday != null) 'birthday': birthday,
+            if (address != null) 'address': address,
+            if (phone != null) 'phone': phone,
+          }),
         )) as Map<String, dynamic>;
     return User.fromJson(data['user'] as Map<String, dynamic>);
   }

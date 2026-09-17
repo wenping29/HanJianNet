@@ -281,6 +281,24 @@ static class DbInitHelpers
                 ? "ALTER TABLE Users ADD COLUMN AvatarUrl TEXT;"
                 : "ALTER TABLE Users ADD COLUMN AvatarUrl VARCHAR(512) NULL;");
 
+        // 补齐 Users 表的新增列（个人资料：性别/生日/地址/手机号）
+        await EnsureColumnAsync(db, "Users", "Gender",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Gender TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Gender VARCHAR(16) NULL;");
+        await EnsureColumnAsync(db, "Users", "Birthday",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Birthday TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Birthday VARCHAR(10) NULL;");
+        await EnsureColumnAsync(db, "Users", "Address",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Address TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Address VARCHAR(255) NULL;");
+        await EnsureColumnAsync(db, "Users", "Phone",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Phone TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Phone VARCHAR(32) NULL;");
+
         // 站内通知表（EnsureCreated 会为新库自动建表，此处兼容旧库）
         await db.Database.ExecuteSqlRawAsync(
             db.Database.IsSqlite()
