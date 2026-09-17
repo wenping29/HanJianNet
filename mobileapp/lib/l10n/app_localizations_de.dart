@@ -476,4 +476,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settings => 'Einstellungen';
+
+  @override
+  String get editProfile => 'Profil bearbeiten';
+
+  @override
+  String get profileUpdated => 'Profil aktualisiert';
 }

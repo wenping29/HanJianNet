@@ -251,5 +251,7 @@
   "submitSuccess": "Soumis, en attente de révision",
   "submitFailed": "Échec de l'envoi",
   "searchPrompt": "Saisissez les critères puis appuyez sur « Rechercher »",
-  "settings": "Paramètres"
+  "settings": "Paramètres",
+  "editProfile": "Modifier le profil",
+  "profileUpdated": "Profil mis à jour"
 }

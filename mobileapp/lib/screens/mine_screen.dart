@@ -7,6 +7,7 @@ import '../services/session.dart';
 import '../widgets/theme.dart';
 import 'login_screen.dart';
 import 'my_submissions_screen.dart';
+import 'profile_screen.dart';
 import 'settings_screen.dart';
 import 'traitor_form_screen.dart';
 
@@ -105,6 +106,19 @@ class _MineScreenState extends State<MineScreen> {
           ),
         ),
         const SizedBox(height: 12),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.person_outline, color: AppTheme.cinnabarLight),
+            title: Text(l10n.editProfile, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () async {
+              final updated = await Navigator.of(context).push<bool>(MaterialPageRoute(
+                builder: (_) => const EditProfileScreen(),
+              ));
+              if (updated == true) setState(() {});
+            },
+          ),
+        ),
         Card(
           child: ListTile(
             leading: const Icon(Icons.history_edu, color: AppTheme.cinnabarLight),

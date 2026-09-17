@@ -251,5 +251,7 @@
   "submitSuccess": "제출되었습니다. 심사를 기다려 주세요",
   "submitFailed": "제출에 실패했습니다",
   "searchPrompt": "조건을 입력하고 「조회」를 탭하세요",
-  "settings": "설정"
+  "settings": "설정",
+  "editProfile": "개인 정보 수정",
+  "profileUpdated": "개인 정보가 업데이트되었습니다"
 }

@@ -979,6 +979,18 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'设置'**
   String get settings;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑个人信息'**
+  String get editProfile;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In zh, this message translates to:
+  /// **'个人信息已更新'**
+  String get profileUpdated;
 }
 
 class _AppLocalizationsDelegate

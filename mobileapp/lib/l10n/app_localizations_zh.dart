@@ -472,4 +472,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settings => '设置';
+
+  @override
+  String get editProfile => '编辑个人信息';
+
+  @override
+  String get profileUpdated => '个人信息已更新';
 }

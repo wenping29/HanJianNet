@@ -76,6 +76,13 @@ class Session extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 个人信息保存成功后，更新内存中的用户并持久化。
+  Future<void> updateUser(User u) async {
+    user = u;
+    await _persistUser();
+    notifyListeners();
+  }
+
   Future<void> logout({bool persist = true}) async {
     token = null;
     user = null;

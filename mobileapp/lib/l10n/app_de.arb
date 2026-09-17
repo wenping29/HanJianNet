@@ -251,5 +251,7 @@
   "submitSuccess": "Eingereicht, wartet auf Prüfung",
   "submitFailed": "Senden fehlgeschlagen",
   "searchPrompt": "Kriterien eingeben und auf „Suchen“ tippen",
-  "settings": "Einstellungen"
+  "settings": "Einstellungen",
+  "editProfile": "Profil bearbeiten",
+  "profileUpdated": "Profil aktualisiert"
 }

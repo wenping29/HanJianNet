@@ -473,4 +473,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settings => '설정';
+
+  @override
+  String get editProfile => '개인 정보 수정';
+
+  @override
+  String get profileUpdated => '개인 정보가 업데이트되었습니다';
 }

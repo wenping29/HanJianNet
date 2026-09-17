@@ -104,6 +104,16 @@ class ApiClient {
     return User.fromJson(data['user'] as Map<String, dynamic>);
   }
 
+  /// 更新本人个人信息（用户名/邮箱）。
+  Future<User> updateProfile({required String username, required String email}) async {
+    final data = await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/me/profile'),
+          headers: _headers,
+          body: jsonEncode({'username': username, 'email': email}),
+        )) as Map<String, dynamic>;
+    return User.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
   // ---- 档案（公开） ----
 
   Future<PaginatedTraitors> listTraitors({

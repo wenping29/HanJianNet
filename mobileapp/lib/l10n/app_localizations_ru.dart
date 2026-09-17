@@ -476,4 +476,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settings => 'Настройки';
+
+  @override
+  String get editProfile => 'Редактировать профиль';
+
+  @override
+  String get profileUpdated => 'Профиль обновлён';
 }

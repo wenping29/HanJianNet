@@ -479,4 +479,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings => 'Paramètres';
+
+  @override
+  String get editProfile => 'Modifier le profil';
+
+  @override
+  String get profileUpdated => 'Profil mis à jour';
 }

@@ -251,5 +251,7 @@
   "submitSuccess": "Enviado, pendiente de revisión",
   "submitFailed": "Error al enviar",
   "searchPrompt": "Ingrese los criterios y pulse «Buscar»",
-  "settings": "Configuración"
+  "settings": "Configuración",
+  "editProfile": "Editar perfil",
+  "profileUpdated": "Perfil actualizado"
 }

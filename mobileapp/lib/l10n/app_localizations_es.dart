@@ -478,4 +478,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings => 'Configuración';
+
+  @override
+  String get editProfile => 'Editar perfil';
+
+  @override
+  String get profileUpdated => 'Perfil actualizado';
 }

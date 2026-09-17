@@ -473,4 +473,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settings => '設定';
+
+  @override
+  String get editProfile => '個人情報の編集';
+
+  @override
+  String get profileUpdated => '個人情報を更新しました';
 }
