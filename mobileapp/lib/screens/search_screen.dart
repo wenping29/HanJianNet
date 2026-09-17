@@ -30,7 +30,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Traitor> _results = [];
   int _page = 1;
   int _totalPages = 1;
-  bool _loading = true;
+  bool _loading = false;
   bool _loadingMore = false;
   String? _error;
   bool _hasSearched = false;
@@ -39,7 +39,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    _loadAll();
+    // 默认不查询：等用户点击「查询」按钮后再请求
     _scrollCtrl.addListener(_onScroll);
   }
 
@@ -59,29 +59,6 @@ class _SearchScreenState extends State<SearchScreen> {
         !_loadingMore &&
         _page < _totalPages) {
       _loadMore();
-    }
-  }
-
-  Future<void> _loadAll() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final result = await ApiClient.instance.listTraitors(page: 1, pageSize: 20);
-      if (!mounted) return;
-      setState(() {
-        _results = result.items;
-        _page = result.page;
-        _totalPages = result.totalPages;
-        _loading = false;
-      });
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.message;
-        _loading = false;
-      });
     }
   }
 
@@ -261,17 +238,15 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildResults() {
     final l10n = AppLocalizations.of(context)!;
+    if (!_hasSearched) return EmptyView(text: l10n.searchPrompt);
     if (_loading && !_loadingMore) return const LoadingView();
-    if (_error != null) return ErrorRetry(message: _error!, onRetry: _loadAll);
-    if (_hasSearched && _results.isEmpty) {
+    if (_error != null) return ErrorRetry(message: _error!, onRetry: _search);
+    if (_results.isEmpty) {
       return EmptyView(text: l10n.noResults);
-    }
-    if (!_hasSearched && _results.isEmpty) {
-      return EmptyView(text: l10n.noPublishedArchives);
     }
     return RefreshIndicator(
       color: AppTheme.bronzeLight,
-      onRefresh: _loadAll,
+      onRefresh: _search,
       child: ListView.builder(
         controller: _scrollCtrl,
         padding: const EdgeInsets.all(16),

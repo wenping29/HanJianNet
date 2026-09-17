@@ -470,4 +470,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get submitFailed => 'Senden fehlgeschlagen';
+
+  @override
+  String get searchPrompt => 'Kriterien eingeben und auf „Suchen“ tippen';
 }

@@ -467,4 +467,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get submitFailed => '제출에 실패했습니다';
+
+  @override
+  String get searchPrompt => '조건을 입력하고 「조회」를 탭하세요';
 }

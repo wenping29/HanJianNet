@@ -472,4 +472,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get submitFailed => 'Error al enviar';
+
+  @override
+  String get searchPrompt => 'Ingrese los criterios y pulse «Buscar»';
 }

@@ -249,5 +249,6 @@
   "uploading": "Uploading…",
   "summaryRequired": "Please enter the summary",
   "submitSuccess": "Submitted, pending review",
-  "submitFailed": "Submit failed"
+  "submitFailed": "Submit failed",
+  "searchPrompt": "Enter criteria and tap Search"
 }

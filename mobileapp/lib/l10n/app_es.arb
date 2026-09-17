@@ -249,5 +249,6 @@
   "uploading": "Subiendo…",
   "summaryRequired": "Ingrese el resumen",
   "submitSuccess": "Enviado, pendiente de revisión",
-  "submitFailed": "Error al enviar"
+  "submitFailed": "Error al enviar",
+  "searchPrompt": "Ingrese los criterios y pulse «Buscar»"
 }

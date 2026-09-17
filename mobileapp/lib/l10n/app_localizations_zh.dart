@@ -466,4 +466,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get submitFailed => '提交失败';
+
+  @override
+  String get searchPrompt => '输入条件后点击「查询」';
 }

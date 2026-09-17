@@ -249,5 +249,6 @@
   "uploading": "アップロード中…",
   "summaryRequired": "人物概要を入力してください",
   "submitSuccess": "送信しました。審査をお待ちください",
-  "submitFailed": "送信に失敗しました"
+  "submitFailed": "送信に失敗しました",
+  "searchPrompt": "条件を入力して「検索」をタップしてください"
 }

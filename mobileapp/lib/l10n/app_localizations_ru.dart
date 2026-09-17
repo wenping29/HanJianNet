@@ -470,4 +470,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get submitFailed => 'Ошибка отправки';
+
+  @override
+  String get searchPrompt => 'Введите условия и нажмите «Поиск»';
 }

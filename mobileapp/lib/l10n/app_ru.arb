@@ -249,5 +249,6 @@
   "uploading": "Загрузка…",
   "summaryRequired": "Введите описание личности",
   "submitSuccess": "Отправлено, ожидает проверки",
-  "submitFailed": "Ошибка отправки"
+  "submitFailed": "Ошибка отправки",
+  "searchPrompt": "Введите условия и нажмите «Поиск»"
 }

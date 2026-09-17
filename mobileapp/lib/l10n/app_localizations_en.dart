@@ -470,4 +470,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get submitFailed => 'Submit failed';
+
+  @override
+  String get searchPrompt => 'Enter criteria and tap Search';
 }

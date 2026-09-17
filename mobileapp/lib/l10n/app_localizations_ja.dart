@@ -467,4 +467,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get submitFailed => '送信に失敗しました';
+
+  @override
+  String get searchPrompt => '条件を入力して「検索」をタップしてください';
 }

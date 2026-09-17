@@ -967,6 +967,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'提交失败'**
   String get submitFailed;
+
+  /// No description provided for @searchPrompt.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入条件后点击「查询」'**
+  String get searchPrompt;
 }
 
 class _AppLocalizationsDelegate

@@ -249,5 +249,6 @@
   "uploading": "Wird hochgeladen…",
   "summaryRequired": "Bitte Beschreibung eingeben",
   "submitSuccess": "Eingereicht, wartet auf Prüfung",
-  "submitFailed": "Senden fehlgeschlagen"
+  "submitFailed": "Senden fehlgeschlagen",
+  "searchPrompt": "Kriterien eingeben und auf „Suchen“ tippen"
 }
