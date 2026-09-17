@@ -4,11 +4,14 @@ import 'package:hanjian_mobileapp/l10n/app_localizations.dart';
 
 import '../models/models.dart';
 import '../services/api_client.dart';
-import '../services/locale_controller.dart';
 import '../services/session.dart';
-import '../widgets/common.dart';
 import '../widgets/theme.dart';
+import 'avatar_screen.dart';
 import 'login_screen.dart';
+import 'my_submissions_screen.dart';
+import 'notifications_screen.dart';
+import 'profile_screen.dart';
+import 'settings_screen.dart';
 
 class MineScreen extends StatefulWidget {
   const MineScreen({super.key});
@@ -18,29 +21,22 @@ class MineScreen extends StatefulWidget {
 }
 
 class _MineScreenState extends State<MineScreen> {
-  List<Revision>? _submissions;
-  String? _error;
+  int _unreadNotifications = 0;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _loadUnread();
   }
 
-  Future<void> _load() async {
+  /// 拉取未读通知数用于入口角标；未登录或请求失败时静默忽略。
+  Future<void> _loadUnread() async {
     if (!Session.instance.isLogin) return;
-    setState(() {
-      _error = null;
-      _submissions = null;
-    });
     try {
-      final items = await ApiClient.instance.mySubmissions();
+      final res = await ApiClient.instance.myNotifications();
       if (!mounted) return;
-      setState(() => _submissions = items);
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      setState(() => _error = e.message);
-    }
+      setState(() => _unreadNotifications = res.unreadCount);
+    } on ApiException catch (_) {}
   }
 
   @override
@@ -66,33 +62,26 @@ class _MineScreenState extends State<MineScreen> {
               style: TextStyle(color: AppTheme.paperDim, fontSize: 13)),
           const SizedBox(height: 24),
           FilledButton(
-            onPressed: () async {
-              final ok = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
-              if (ok == true) {
-                setState(() {});
-                _load();
-              }
-            },
+            onPressed: () => _goLogin(),
             child: Text(l10n.goToLogin),
           ),
           const SizedBox(height: 12),
           OutlinedButton(
-            onPressed: () async {
-              final ok = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              );
-              if (ok == true) {
-                setState(() {});
-                _load();
-              }
-            },
+            onPressed: () => _goLogin(),
             child: Text(l10n.register),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _goLogin() async {
+    final ok = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+    if (ok == true) {
+      setState(() {});
+    }
   }
 
   Widget _loggedInView(User? user) {
@@ -105,14 +94,27 @@ class _MineScreenState extends State<MineScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: AppTheme.cinnabar.withValues(alpha: 0.3),
-                  child: Text(
-                    (user?.username.isNotEmpty == true)
-                        ? user!.username.characters.first.toUpperCase()
-                        : '?',
-                    style: const TextStyle(fontSize: 20, color: AppTheme.paper),
+                GestureDetector(
+                  onTap: () async {
+                    final updated = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(builder: (_) => const EditAvatarScreen()),
+                    );
+                    if (updated == true) setState(() {});
+                  },
+                  child: CircleAvatar(
+                    radius: 26,
+                    backgroundColor: AppTheme.cinnabar.withValues(alpha: 0.3),
+                    backgroundImage: (user?.avatarUrl != null && user!.avatarUrl!.isNotEmpty)
+                        ? NetworkImage(resolveAssetUrl(user.avatarUrl!))
+                        : null,
+                    child: (user?.avatarUrl == null || user!.avatarUrl!.isEmpty)
+                        ? Text(
+                            (user?.username.isNotEmpty == true)
+                                ? user!.username.characters.first.toUpperCase()
+                                : '?',
+                            style: TextStyle(fontSize: 20, color: AppTheme.paper),
+                          )
+                        : null,
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -120,7 +122,10 @@ class _MineScreenState extends State<MineScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user?.username ?? '',
+                      Text(
+                          (user?.nickname?.isNotEmpty == true)
+                              ? user!.nickname!
+                              : (user?.username ?? ''),
                           style: const TextStyle(
                               fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: 1)),
                       const SizedBox(height: 4),
@@ -129,6 +134,16 @@ class _MineScreenState extends State<MineScreen> {
                       const SizedBox(height: 2),
                       Text(user?.email ?? '',
                           style: TextStyle(fontSize: 12, color: AppTheme.paperDim)),
+                      if (user?.signature?.isNotEmpty == true) ...[
+                        const SizedBox(height: 2),
+                        Text(user!.signature!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: AppTheme.paperDim,
+                                fontStyle: FontStyle.italic)),
+                      ],
                     ],
                   ),
                 ),
@@ -139,25 +154,71 @@ class _MineScreenState extends State<MineScreen> {
         const SizedBox(height: 12),
         Card(
           child: ListTile(
-            leading: Icon(Icons.add_circle_outline, color: AppTheme.cinnabarLight),
-            title: Text(l10n.submitNewArchive, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            leading: const Icon(Icons.person_outline, color: AppTheme.cinnabarLight),
+            title: Text(l10n.editProfile, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
             trailing: const Icon(Icons.chevron_right, size: 20),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('P1 阶段实现')),
-              );
+            onTap: () async {
+              final updated = await Navigator.of(context).push<bool>(MaterialPageRoute(
+                builder: (_) => const EditProfileScreen(),
+              ));
+              if (updated == true) setState(() {});
             },
           ),
         ),
-        SectionHeader(title: l10n.mySubmissions, en: 'MY SUBMISSIONS'),
-        _submissionsView(),
-        const SizedBox(height: 12),
         Card(
           child: ListTile(
-            leading: const Icon(Icons.language, color: AppTheme.cinnabarLight),
-            title: Text(l10n.language, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            leading: const Icon(Icons.history_edu, color: AppTheme.cinnabarLight),
+            title: Text(l10n.mySubmissions, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
             trailing: const Icon(Icons.chevron_right, size: 20),
-            onTap: _showLanguagePicker,
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const MySubmissionsScreen(),
+              ));
+            },
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.notifications_outlined, color: AppTheme.cinnabarLight),
+            title: Text(l10n.notifications, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_unreadNotifications > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cinnabarLight,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      _unreadNotifications > 99 ? '99+' : '$_unreadNotifications',
+                      // 角标底色为朱砂，两种主题下都用固定浅色字
+                      style: const TextStyle(fontSize: 11, color: Color(0xFFF2EAD8)),
+                    ),
+                  ),
+                const SizedBox(width: 4),
+                const Icon(Icons.chevron_right, size: 20),
+              ],
+            ),
+            onTap: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const NotificationsScreen(),
+              ));
+              _loadUnread();
+            },
+          ),
+        ),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.settings_outlined, color: AppTheme.cinnabarLight),
+            title: Text(l10n.settings, style: const TextStyle(fontSize: 15, letterSpacing: 2)),
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const SettingsScreen(),
+              ));
+            },
           ),
         ),
         Card(
@@ -167,118 +228,11 @@ class _MineScreenState extends State<MineScreen> {
             onTap: () async {
               await Session.instance.logout();
               if (!mounted) return;
-              setState(() {
-                _submissions = null;
-              });
+              setState(() {});
             },
           ),
         ),
         const SizedBox(height: 32),
-      ],
-    );
-  }
-
-  Future<void> _showLanguagePicker() async {
-    final current = LocaleController.instance.locale.value;
-    final chosen = await showDialog<Locale>(
-      context: context,
-      builder: (ctx) => SimpleDialog(
-        backgroundColor: AppTheme.inkCard,
-        title: Text(
-          AppLocalizations.of(ctx)!.chooseLanguage,
-          style: const TextStyle(fontSize: 16, letterSpacing: 2),
-        ),
-        children: [
-          RadioGroup<Locale>(
-            groupValue: current,
-            onChanged: (v) => Navigator.of(ctx).pop(v),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final loc in LocaleController.supportedLocales)
-                  RadioListTile<Locale>(
-                    value: loc,
-                    activeColor: AppTheme.cinnabar,
-                    title: Text(
-                      LocaleController.instance.localeName(loc.languageCode),
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-    if (chosen != null) {
-      await LocaleController.instance.setLocale(chosen);
-    }
-  }
-
-  Widget _submissionsView() {
-    final l10n = AppLocalizations.of(context)!;
-    if (_error != null) return ErrorRetry(message: _error!, onRetry: _load);
-    final items = _submissions;
-    if (items == null) return const LoadingView();
-    if (items.isEmpty) return EmptyView(text: l10n.noSubmissions);
-    return Column(
-      children: [
-        for (final r in items)
-          Card(
-            margin: const EdgeInsets.only(bottom: 10),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: r.isNewArchive
-                                ? AppTheme.cinnabarLight
-                                : AppTheme.paperDim.withValues(alpha: 0.3),
-                          ),
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: Text(r.isNewArchive ? l10n.submitNewArchive : l10n.modifyArchive,
-                            style: TextStyle(
-                                fontSize: 10,
-                                color: r.isNewArchive
-                                    ? AppTheme.cinnabarLight
-                                    : AppTheme.paperDim)),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(r.payload.name,
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 2)),
-                      ),
-                      StatusChip(status: r.status),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(l10n.changeContent(r.changeSummary),
-                      style: TextStyle(
-                          fontSize: 12.5, height: 1.5, color: AppTheme.paper.withValues(alpha: 0.85))),
-                  const SizedBox(height: 6),
-                  Text(l10n.submittedAt(formatDateTime(r.submittedAt)),
-                      style:
-                          TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.7))),
-                  if (r.reviewedAt != null)
-                    Text(
-                      l10n.reviewedAt(formatDateTime(r.reviewedAt)) +
-                          (r.reviewer != null ? l10n.reviewer(r.reviewer!.username) : '') +
-                          (r.reviewComment?.isNotEmpty == true ? l10n.reviewComment(r.reviewComment!) : ''),
-                      style:
-                          TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.7)),
-                    ),
-                ],
-              ),
-            ),
-          ),
       ],
     );
   }

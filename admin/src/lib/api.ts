@@ -1,6 +1,8 @@
 import { useAuth } from '../stores/auth'
+import { decryptResponse, encryptRequest, encryptionAlg, getCryptoEnabled, hasCryptoKey } from './crypto'
 import type {
   AdminMenuItem,
+  AiEventResult,
   AiTraitorResult,
   AtrocityEventDetail,
   AtrocityEventInput,
@@ -8,9 +10,11 @@ import type {
   Attachment,
   AttachmentKind,
   AuthPayload,
+  DashboardOverview,
   DuplicateGroup,
   ErrorLogItem,
   LoginLogItem,
+  LoginTrendPoint,
   MenuItem,
   OperationLogItem,
   Paginated,
@@ -20,6 +24,7 @@ import type {
   RevisionStatusStats,
   Role,
   RoleMenuConfig,
+  SystemConfig,
   TraitorDetail,
   TraitorInput,
   TraitorSnapshot,
@@ -51,6 +56,18 @@ function authHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+async function readResponseBody(res: Response): Promise<string> {
+  const raw = await res.text()
+  if (res.headers.get('X-Encrypted') === '1' && getCryptoEnabled() && hasCryptoKey()) {
+    try {
+      return await decryptResponse(raw)
+    } catch {
+      return raw
+    }
+  }
+  return raw
+}
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers: Record<string, string> = {
     ...authHeader(),
@@ -58,14 +75,25 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
   console.log('request', BASE , path)
   if (init.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json'
+  const useCrypto = getCryptoEnabled() && hasCryptoKey()
+  let body = init.body
+  if (useCrypto && typeof init.body === 'string') {
+    body = await encryptRequest(init.body)
+  }
+  if (useCrypto) {
+    headers['X-Encrypted'] = '1'
+    headers['X-Crypto-Alg'] = encryptionAlg()
+  }
   const res = await fetch(BASE + path, {
     ...init,
     headers,
+    body,
   })
   if (!res.ok) {
     let message = `请求失败（${res.status}）`
     try {
-      const data = (await res.json()) as { message?: string; error?: string }
+      const text = await readResponseBody(res)
+      const data = JSON.parse(text) as { message?: string; error?: string }
       message = data.message ?? data.error ?? message
     } catch {
       /* ignore */
@@ -73,7 +101,8 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     if (res.status === 401) useAuth.getState().clear()
     throw new ApiError(res.status, message)
   }
-  return (await res.json()) as T
+  const text = await readResponseBody(res)
+  return JSON.parse(text) as T
 }
 
 // PascalCase -> camelCase 字段规范化（兼容不同序列化配置场景）
@@ -140,10 +169,11 @@ export const api = {
 
   getTraitor: (id: string) => request<{ traitor: TraitorSnapshot }>(`/traitors/${id}`),
 
-  adminTraitors: (name?: string, page = 1, pageSize = 10, harmLevel?: number) => {
+  adminTraitors: (name?: string, page = 1, pageSize = 10, harmLevel?: number, hasPhoto?: boolean) => {
     const params = new URLSearchParams()
     if (name) params.set('name', name)
     if (harmLevel != null) params.set('harmLevel', String(harmLevel))
+    if (hasPhoto != null) params.set('hasPhoto', String(hasPhoto))
     params.set('page', String(page))
     params.set('pageSize', String(pageSize))
     return request<{ items: TraitorSummary[] } & Paginated<TraitorSummary>>(`/admin/traitors?${params.toString()}`)
@@ -160,6 +190,33 @@ export const api = {
   deleteTraitor: (id: string) =>
     request<{ message: string }>(`/admin/traitors/${id}`, { method: 'DELETE' }),
 
+  deleteTraitorPhotos: (id: string) =>
+    request<{ message: string; count: number }>(`/admin/traitors/${id}/photos`, { method: 'DELETE' }),
+
+  updateTraitorHarmLevel: (id: string, harmLevel: number | null) =>
+    request<{ message: string }>(`/admin/traitors/${id}/harm-level`, {
+      method: 'PATCH',
+      body: JSON.stringify({ harmLevel }),
+    }),
+
+  batchDeleteTraitors: (ids: string[]) =>
+    request<{ message: string; count: number }>('/admin/traitors/batch-delete', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    }),
+
+  batchDeleteTraitorPhotos: (ids: string[]) =>
+    request<{ message: string; count: number }>('/admin/traitors/batch-delete-photos', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    }),
+
+  batchExportTraitors: (ids: string[]) =>
+    request<{ items: TraitorSummary[] }>('/admin/traitors/batch-export', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    }),
+
   aiQueryTraitor: (name: string) =>
     request<{ result: AiTraitorResult }>('/admin/traitors/ai-query', {
       method: 'POST',
@@ -167,6 +224,12 @@ export const api = {
     }),
 
   // ---- 历史事件（惨案/宏观事件） ----
+  aiQueryEvent: (name: string) =>
+    request<{ result: AiEventResult }>('/admin/atrocity-events/ai-query', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    }),
+
   listAtrocityEvents: (era?: string) => {
     const params = new URLSearchParams()
     if (era) params.set('era', era)
@@ -212,22 +275,33 @@ export const api = {
   },
 
   uploadFromUrl: async (url: string, kind: AttachmentKind): Promise<Attachment> => {
+    const body = JSON.stringify({ url, kind })
+    const headers: Record<string, string> = { ...authHeader(), 'Content-Type': 'application/json' }
+    const useCrypto = getCryptoEnabled() && hasCryptoKey()
+    let finalBody = body
+    if (useCrypto) {
+      finalBody = await encryptRequest(body)
+      headers['X-Encrypted'] = '1'
+      headers['X-Crypto-Alg'] = encryptionAlg()
+    }
     const res = await fetch(`${BASE}/uploads/from-url`, {
       method: 'POST',
-      headers: { ...authHeader(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, kind }),
+      headers,
+      body: finalBody,
     })
     if (!res.ok) {
       let message = '下载图片失败'
       try {
-        const data = (await res.json()) as { message?: string; error?: string }
+        const text = await readResponseBody(res)
+        const data = JSON.parse(text) as { message?: string; error?: string }
         message = data.message ?? data.error ?? message
       } catch {
         /* ignore */
       }
       throw new ApiError(res.status, message)
     }
-    const data = (await res.json()) as { id: string; url: string; kind: AttachmentKind; fileType: string }
+    const text = await readResponseBody(res)
+    const data = JSON.parse(text) as { id: string; url: string; kind: AttachmentKind; fileType: string }
     return { ...data, caption: '' }
   },
 
@@ -336,4 +410,19 @@ export const api = {
     params.set('pageSize', String(q.pageSize ?? 20))
     return request<Paginated<ErrorLogItem>>(`/admin/logs/error-logs?${params.toString()}`)
   },
+
+  // ---- 系统配置 ----
+  listSystemConfigs: () => request<{ items: SystemConfig[] }>('/admin/system-configs'),
+
+  updateSystemConfig: (id: string, body: { value: string; description?: string | null }) =>
+    request<{ item: SystemConfig }>(`/admin/system-configs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }),
+
+  // ---- 数据看板 ----
+  dashboardOverview: () => request<DashboardOverview>('/admin/dashboard/overview'),
+
+  loginTrend: (days: number) =>
+    request<{ items: LoginTrendPoint[] }>(`/admin/dashboard/login-trend?days=${days}`),
 }

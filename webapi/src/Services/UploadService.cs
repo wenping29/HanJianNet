@@ -12,8 +12,8 @@ public class UploadService(IWebHostEnvironment env, IOptions<UploadOptions> uplo
 
     public async Task<UploadResultDto> SaveAsync(IFormFile file, string kind)
     {
-        if (kind != "photo" && kind != "evidence")
-            throw new ApiException(400, "上传类型仅支持 photo 或 evidence");
+        if (kind != "photo" && kind != "evidence" && kind != "avatar")
+            throw new ApiException(400, "上传类型仅支持 photo、evidence 或 avatar");
 
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!_opts.AllowedTypes.Contains(ext))

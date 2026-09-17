@@ -161,6 +161,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get republic => 'Республика';
 
   @override
+  String get antiJapaneseWar => 'Война сопротивления';
+
+  @override
   String get other => 'Другое';
 
   @override
@@ -386,4 +389,194 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Выбрать язык';
+
+  @override
+  String get basicInfo => 'Основная информация';
+
+  @override
+  String get birthYearLabel => 'Год рождения';
+
+  @override
+  String get deathYearLabel => 'Год смерти';
+
+  @override
+  String get yearExact => 'Точно';
+
+  @override
+  String get birthPlaceLabel => 'Место рождения';
+
+  @override
+  String get officialTitleLabel => 'Должность (марионеточный режим)';
+
+  @override
+  String get tagsLabel => 'Метки';
+
+  @override
+  String get tagsHint => 'Перечисляйте метки через запятую';
+
+  @override
+  String get rowYear => 'Год';
+
+  @override
+  String get rowEvent => 'Событие';
+
+  @override
+  String get rowTitle => 'Заголовок';
+
+  @override
+  String get rowProcess => 'Ход событий';
+
+  @override
+  String get rowHarm => 'Ущерб';
+
+  @override
+  String get rowSourceRef => 'Источник';
+
+  @override
+  String get rowRemark => 'Примечание';
+
+  @override
+  String get rowPlace => 'Место';
+
+  @override
+  String get rowPeriod => 'Период';
+
+  @override
+  String get rowCitation => 'Цитата';
+
+  @override
+  String get rowCredibility => 'Достоверность (1-5)';
+
+  @override
+  String get rowCaption => 'Подпись к фото';
+
+  @override
+  String get addItem => 'Добавить';
+
+  @override
+  String get deleteItem => 'Удалить';
+
+  @override
+  String get uploadPhoto => 'Загрузить фото';
+
+  @override
+  String get uploadEvidence => 'Загрузить улику';
+
+  @override
+  String get uploading => 'Загрузка…';
+
+  @override
+  String get summaryRequired => 'Введите описание личности';
+
+  @override
+  String get submitSuccess => 'Отправлено, ожидает проверки';
+
+  @override
+  String get submitFailed => 'Ошибка отправки';
+
+  @override
+  String get searchPrompt => 'Введите условия и нажмите «Поиск»';
+
+  @override
+  String get settings => 'Настройки';
+
+  @override
+  String get editProfile => 'Редактировать профиль';
+
+  @override
+  String get profileUpdated => 'Профиль обновлён';
+
+  @override
+  String get editAvatar => 'Изменить аватар';
+
+  @override
+  String get avatarUpdated => 'Аватар обновлён';
+
+  @override
+  String get notifications => 'Уведомления';
+
+  @override
+  String get noNotifications => 'Нет уведомлений';
+
+  @override
+  String get markAllRead => 'Отметить все прочитанными';
+
+  @override
+  String notificationApproved(String name) {
+    return 'Ваша заявка «$name» одобрена';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return 'Ваша заявка «$name» отклонена';
+  }
+
+  @override
+  String get theme => 'Тема';
+
+  @override
+  String get chooseTheme => 'Выбрать тему';
+
+  @override
+  String get themeSystem => 'Как в системе';
+
+  @override
+  String get themeDark => 'Тёмная';
+
+  @override
+  String get themeLight => 'Светлая';
+
+  @override
+  String get traitorMap => 'Карта предателей';
+
+  @override
+  String get mapHint => 'Нажмите на провинцию, чтобы увидеть распределение';
+
+  @override
+  String get viewArchives => 'Смотреть архивы';
+
+  @override
+  String get gender => 'Пол';
+
+  @override
+  String get genderMale => 'Мужской';
+
+  @override
+  String get genderFemale => 'Женский';
+
+  @override
+  String get genderSecret => 'Не указано';
+
+  @override
+  String get birthday => 'Дата рождения';
+
+  @override
+  String get address => 'Адрес';
+
+  @override
+  String get phone => 'Телефон';
+
+  @override
+  String get invalidPhone => 'Неверный номер телефона';
+
+  @override
+  String get profileAccountFixed => 'Имя пользователя и email нельзя изменить';
+
+  @override
+  String get optional => 'Необязательно';
+
+  @override
+  String get tapToChangeAvatar => 'Нажмите на аватар, чтобы изменить';
+
+  @override
+  String get nickname => 'Никнейм';
+
+  @override
+  String get signature => 'Подпись';
+
+  @override
+  String get region => 'Регион';
+
+  @override
+  String get myQrCode => 'Мой QR-код';
 }

@@ -1,5 +1,6 @@
 {
   "menu": {
+    "dashboard": "Panel de datos",
     "traitors": "Gestión de traidores",
     "traitors-list": "Gestión de la lista",
     "edit-traitor": "Edición de datos básicos",
@@ -12,6 +13,7 @@
     "roles": "Gestión de roles",
     "menus": "Gestión de menús",
     "web-menus": "Menús del sitio",
+    "system-config": "Configuración del sistema",
     "profile": "Perfil",
     "logs-login": "Registros de inicio de sesión",
     "logs-operation": "Registros de operaciones",
@@ -93,7 +95,9 @@
     "registeredAt": "Registrado el",
     "resetFailed": "Error al restablecer",
     "requestFailed": "Solicitud fallida ({{status}})",
-    "uploadFailed": "Error al subir"
+    "uploadFailed": "Error al subir",
+    "select": "Seleccionar «{{name}}»",
+    "view": "Ver"
   },
   "sidebar": {
     "archives": "Archivos",
@@ -164,11 +168,21 @@
     "title": "Gestión de traidores",
     "searchPlaceholder": "Buscar por nombre / alias",
     "newTraitor": "Nuevo traidor",
+    "hasPhoto": "Filtro de foto",
+    "withPhoto": "Con foto",
+    "withoutPhoto": "Sin foto",
     "noArchives": "Sin archivos",
     "edit": "Editar",
     "deleteConfirm": "¿Eliminar al traidor \"{{name}}\"? Esta acción no se puede deshacer y eliminará también todos los registros relacionados, como los crímenes.",
     "deleteSuccess": "Eliminado",
     "deleteFailed": "Error al eliminar",
+    "deletePhotos": "Eliminar fotos",
+    "deletePhotosConfirm": "¿Eliminar todas las fotos del traidor \"{{name}}\"? Esta acción no se puede deshacer y también eliminará los archivos de imagen subidos localmente.",
+    "deletePhotosSuccess": "Fotos eliminadas",
+    "deletePhotosFailed": "Error al eliminar las fotos",
+    "updateHarmLevel": "Cambiar nivel de peligro",
+    "harmLevelUpdated": "Nivel de peligro actualizado",
+    "harmLevelUpdateFailed": "Error al actualizar el nivel",
     "totalRecords": "{{total}} registros · Página {{page}} / {{totalPages}}"
   },
   "merge": {
@@ -331,6 +345,60 @@
     "operationFailed": "Error en la operación",
     "updateSuccess": "Menü \"{{label}}\" actualizado",
     "updateFailed": "Error al guardar"
+  },
+  "systemConfig": {
+    "title": "Configuración del sistema",
+    "description": "Administrar elementos de configuración clave-valor para web, webapi, mobileapp.",
+    "hint": "Los cambios surten efecto inmediatamente sin reiniciar el frontend.",
+    "noData": "Sin datos de configuración del sistema",
+    "startBackend": "Inicie el backend, los datos seed se crearán automáticamente",
+    "key": "Clave",
+    "value": "Valor",
+    "description": "Descripción",
+    "updatedAt": "Actualizado el",
+    "edit": "Editar",
+    "editTitle": "Modificar configuración del sistema",
+    "keyNotModifiable": "La clave {{key}} no se puede modificar",
+    "toggleOn": "Clic para activar",
+    "toggleOff": "Clic para desactivar",
+    "valuePlaceholder": "Ingrese el valor de configuración",
+    "descriptionPlaceholder": "Ingrese descripción (opcional)",
+    "updateSuccess": "Configuración {{key}} actualizada",
+    "updateFailed": "Error al guardar"
+  },
+  "dashboard": {
+    "title": "Panel de datos",
+    "serverStatus": "Estado del servidor",
+    "databaseStatus": "Estado de la base de datos",
+    "normal": "Normal",
+    "abnormal": "Anómalo",
+    "machineName": "Nombre de host",
+    "os": "Sistema operativo",
+    "environment": "Entorno",
+    "framework": "Tiempo de ejecución",
+    "cpuCores": "Núcleos de CPU",
+    "memory": "Uso de memoria",
+    "managedMemory": "Memoria administrada",
+    "uptime": "Tiempo activo (proceso)",
+    "startedAt": "Iniciado el",
+    "osUptime": "Tiempo activo del sistema",
+    "dbProvider": "Tipo de base de datos",
+    "dbName": "Base de datos",
+    "dbVersion": "Versión de la base de datos",
+    "dbLatency": "Tiempo de respuesta",
+    "traitorCount": "Traidores",
+    "visitorCount": "Visitantes",
+    "pageViewCount": "Páginas vistas",
+    "userCount": "Usuarios",
+    "activeUserCount": "Usuarios activos",
+    "queryCount": "Consultas",
+    "dailyLoginTitle": "Usuarios que inician sesión a diario",
+    "days": "Últimos {{count}} días",
+    "noTrendData": "Aún no hay datos de inicio de sesión",
+    "unitDay": "d ",
+    "unitHour": "h ",
+    "unitMin": "min ",
+    "unitSec": "s"
   },
   "profile": {
     "title": "Perfil",
@@ -498,7 +566,10 @@
       "changeSummaryPlaceholder": "Describa brevemente el contenido de esta entrega/modificación para referencia de la revisión"
     },
     "saveDraft": "Guardar archivo directamente",
-    "saveChanges": "Guardar cambios"
+    "saveChanges": "Guardar cambios",
+    "preview": "Vista previa",
+    "previewLive": "Vista previa en vivo",
+    "previewHint": "Haga clic en « Vista previa » para ver el archivo en una ventana emergente."
   },
   "profileTab": {
     "title": "Perfil"
@@ -573,6 +644,20 @@
     "fieldColumn": "Campo",
     "replaceCheck": "¿Reemplazar?",
     "originalValue": "Datos de archivo actuales"
+  },
+  "aiQueryEvent": {
+    "queryAction": "Consulta IA",
+    "queryTitle": "Investigación IA: {{name}}",
+    "querying": "Investigando la historia del evento mediante DeepSeek (10–60 s), espere…",
+    "queryFailed": "Error en la consulta IA",
+    "retry": "Reintentar",
+    "fillToEditor": "Rellenar en el editor",
+    "applied": "Resultado IA aplicado al formulario. Verifíquelo antes de guardar.",
+    "empty": "(ninguno)",
+    "originalColumn": "Datos de archivo actuales",
+    "aiColumn": "Resultado de consulta de IA",
+    "fieldColumn": "Campo",
+    "replaceCheck": "¿Reemplazar?"
   },
   "periods": {
     "lateSong": "Song tardío",

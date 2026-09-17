@@ -12,7 +12,26 @@ public static class Mappings
         Username = u.Username,
         Email = u.Email,
         Role = u.Role,
+        AvatarUrl = u.AvatarUrl,
+        Gender = u.Gender,
+        Birthday = u.Birthday,
+        Address = u.Address,
+        Phone = u.Phone,
+        Nickname = u.Nickname,
+        Signature = u.Signature,
+        Region = u.Region,
         CreatedAt = u.CreatedAt,
+    };
+
+    public static NotificationDto ToDto(this AppNotification n) => new()
+    {
+        Id = n.Id,
+        Type = n.Type,
+        ReferenceName = n.ReferenceName,
+        Comment = n.Comment,
+        RevisionId = n.RevisionId,
+        IsRead = n.IsRead,
+        CreatedAt = n.CreatedAt,
     };
 
     public static UserBriefDto ToBrief(this User u) => new()
@@ -142,6 +161,8 @@ public static class Mappings
         Period = (i.Period ?? "").Trim(),
         Faction = (i.Faction ?? "").Trim(),
         Summary = i.Summary ?? "",
+        // 官职：null=未提供（应用时保留原值）；空串=主动清空；其余为新值
+        Title = i.Title?.Trim(),
         Spouses = (i.Spouses ?? [])
             .Where(s => !string.IsNullOrWhiteSpace(s.Name))
             .Select(s => new SpouseInputDto
@@ -225,6 +246,8 @@ public static class Mappings
         t.Period = s.Period;
         t.Faction = s.Faction;
         t.Summary = s.Summary;
+        // 官职（伪职）：快照未携带（null）时保留原值，兼容未实现该字段的旧表单；空串视为主动清空
+        if (s.Title != null) t.Title = s.Title.Length == 0 ? null : s.Title;
         t.RelatedIdsJson = JsonSerializer.Serialize(s.RelatedIds, JsonOpts.Default);
         t.Spouses = s.Spouses.Select(x => new Spouse
         {
@@ -400,6 +423,7 @@ public static class Mappings
         Period = s.Period,
         Faction = s.Faction,
         Summary = s.Summary,
+        Title = s.Title,
         Spouses = s.Spouses,
         Children = s.Children,
         Residences = s.Residences,

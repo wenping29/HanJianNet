@@ -1,5 +1,6 @@
 {
   "menu": {
+    "dashboard": "Dashboard",
     "traitors": "Verräterverwaltung",
     "traitors-list": "Namenslistenverwaltung",
     "edit-traitor": "Stammdaten bearbeiten",
@@ -12,6 +13,7 @@
     "roles": "Rollenverwaltung",
     "menus": "Menüverwaltung",
     "web-menus": "Frontend-Menüs",
+    "system-config": "Systemkonfiguration",
     "profile": "Profil",
     "logs-login": "Anmeldeprotokolle",
     "logs-operation": "Vorgangsprotokolle",
@@ -93,7 +95,9 @@
     "registeredAt": "Registriert am",
     "resetFailed": "Zurücksetzen fehlgeschlagen",
     "requestFailed": "Anfrage fehlgeschlagen ({{status}})",
-    "uploadFailed": "Upload fehlgeschlagen"
+    "uploadFailed": "Upload fehlgeschlagen",
+    "select": "\"{{name}}\" auswählen",
+    "view": "Ansehen"
   },
   "sidebar": {
     "archives": "Archiv",
@@ -164,11 +168,21 @@
     "title": "Verräterverwaltung",
     "searchPlaceholder": "Nach Name / Alias suchen",
     "newTraitor": "Neuer Verräter",
+    "hasPhoto": "Foto-Filter",
+    "withPhoto": "Mit Foto",
+    "withoutPhoto": "Ohne Foto",
     "noArchives": "Keine Archive",
     "edit": "Bearbeiten",
     "deleteConfirm": "Verräter \"{{name}}\" löschen? Diese Aktion kann nicht rückgängig gemacht werden und löscht auch alle zugehörigen Aufzeichnungen wie Verbrechen.",
     "deleteSuccess": "Gelöscht",
     "deleteFailed": "Löschung fehlgeschlagen",
+    "deletePhotos": "Fotos löschen",
+    "deletePhotosConfirm": "Alle Fotos von Verräter \"{{name}}\" löschen? Dies kann nicht rückgängig gemacht werden und entfernt auch lokal hochgeladene Bilddateien.",
+    "deletePhotosSuccess": "Fotos gelöscht",
+    "deletePhotosFailed": "Löschen der Fotos fehlgeschlagen",
+    "updateHarmLevel": "Gefährdungsgrad ändern",
+    "harmLevelUpdated": "Gefährdungsgrad aktualisiert",
+    "harmLevelUpdateFailed": "Aktualisierung fehlgeschlagen",
     "totalRecords": "{{total}} Einträge · Seite {{page}} / {{totalPages}}"
   },
   "merge": {
@@ -331,6 +345,60 @@
     "operationFailed": "Operation fehlgeschlagen",
     "updateSuccess": "Menü \"{{label}}\" aktualisiert",
     "updateFailed": "Speichern fehlgeschlagen"
+  },
+  "systemConfig": {
+    "title": "Systemkonfiguration",
+    "description": "Schlüssel-Wert-Konfigurationen für web, webapi, mobileapp verwalten.",
+    "hint": "Änderungen werden sofort wirksam, ohne Frontend-Neustart.",
+    "noData": "Keine Systemkonfigurationsdaten",
+    "startBackend": "Bitte starten Sie das Backend, Seed-Daten werden automatisch erstellt",
+    "key": "Schlüssel",
+    "value": "Wert",
+    "description": "Beschreibung",
+    "updatedAt": "Aktualisiert am",
+    "edit": "Bearbeiten",
+    "editTitle": "Systemkonfiguration ändern",
+    "keyNotModifiable": "Schlüssel {{key}} kann nicht geändert werden",
+    "toggleOn": "Zum Einschalten klicken",
+    "toggleOff": "Zum Ausschalten klicken",
+    "valuePlaceholder": "Konfigurationswert eingeben",
+    "descriptionPlaceholder": "Beschreibung eingeben (optional)",
+    "updateSuccess": "Konfiguration {{key}} aktualisiert",
+    "updateFailed": "Speichern fehlgeschlagen"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "serverStatus": "Serverstatus",
+    "databaseStatus": "Datenbankstatus",
+    "normal": "Normal",
+    "abnormal": "Fehler",
+    "machineName": "Hostname",
+    "os": "Betriebssystem",
+    "environment": "Umgebung",
+    "framework": "Laufzeit",
+    "cpuCores": "CPU-Kerne",
+    "memory": "Speicherverbrauch",
+    "managedMemory": "Verwalteter Speicher",
+    "uptime": "Laufzeit (Prozess)",
+    "startedAt": "Gestartet am",
+    "osUptime": "Systemlaufzeit",
+    "dbProvider": "Datenbanktyp",
+    "dbName": "Datenbank",
+    "dbVersion": "Datenbankversion",
+    "dbLatency": "Antwortzeit",
+    "traitorCount": "Verräter",
+    "visitorCount": "Besucher",
+    "pageViewCount": "Seitenaufrufe",
+    "userCount": "Benutzer",
+    "activeUserCount": "Aktive Benutzer",
+    "queryCount": "Abfragen",
+    "dailyLoginTitle": "Täglich angemeldete Benutzer",
+    "days": "Letzte {{count}} Tage",
+    "noTrendData": "Noch keine Anmeldedaten",
+    "unitDay": "T ",
+    "unitHour": "Std ",
+    "unitMin": "Min ",
+    "unitSec": "Sek"
   },
   "profile": {
     "title": "Profil",
@@ -498,7 +566,10 @@
       "changeSummaryPlaceholder": "Beschreiben Sie kurz den Inhalt dieser Einreichung/Änderung zur Referenz für die Prüfung"
     },
     "saveDraft": "Archiv direkt speichern",
-    "saveChanges": "Änderungen speichern"
+    "saveChanges": "Änderungen speichern",
+    "preview": "Vorschau",
+    "previewLive": "Live-Vorschau",
+    "previewHint": "Klicken Sie auf \"Vorschau\", um das Archiv in einem Popup anzuzeigen."
   },
   "profileTab": {
     "title": "Profil"
@@ -573,6 +644,20 @@
     "fieldColumn": "Feld",
     "replaceCheck": "Ersetzen?",
     "originalValue": "Aktuelle Archivdaten"
+  },
+  "aiQueryEvent": {
+    "queryAction": "KI-Recherche",
+    "queryTitle": "KI-Recherche: {{name}}",
+    "querying": "Recherche der Ereignisgeschichte über DeepSeek (10–60 s), bitte warten…",
+    "queryFailed": "KI-Recherche fehlgeschlagen",
+    "retry": "Erneut versuchen",
+    "fillToEditor": "In Editor übernehmen",
+    "applied": "KI-Ergebnis in das Formular übernommen. Bitte vor dem Speichern prüfen.",
+    "empty": "(keine)",
+    "originalColumn": "Aktuelle Archivdaten",
+    "aiColumn": "AI-Abfrageergebnis",
+    "fieldColumn": "Feld",
+    "replaceCheck": "Ersetzen?"
   },
   "periods": {
     "lateSong": "Späte Song-Dynastie",

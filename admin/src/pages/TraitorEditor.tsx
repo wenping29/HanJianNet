@@ -2,10 +2,14 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api, resolveAssetUrl } from '../lib/api'
-import { PERIODS, splitList } from '../lib/format'
+import { PERIODS, formatLifeSpan, formatYear, splitList } from '../lib/format'
 import { normalizeAiResult } from '../lib/ai'
 import type { NormalizedAi } from '../lib/ai'
 import AiQueryModal, { useAiQuery } from '../components/AiQueryModal'
+import Modal from '../components/Modal'
+import PageHeader from '../components/PageHeader'
+import { ROLE_LABELS } from '../lib/roles'
+import { useAuth } from '../stores/auth'
 import type {
   Attachment,
   AttachmentKind,
@@ -109,10 +113,324 @@ function RowActions({ onRemove }: { onRemove: () => void }) {
   )
 }
 
+function PreviewSection({ title, en, children }: { title: string; en: string; children: React.ReactNode }) {
+  return (
+    <section className="mt-8">
+      <h3 className="flex items-baseline gap-2 border-b border-paperedge/15 pb-2">
+        <span className="text-sm font-semibold tracking-[0.2em] text-paper">{title}</span>
+        <span className="font-garamond text-[10px] italic text-bronzelight">{en}</span>
+      </h3>
+      <div className="mt-4">{children}</div>
+    </section>
+  )
+}
+
+interface PreviewPaneProps {
+  form: FormState
+  spouses: Spouse[]
+  children: Child[]
+  residences: Residence[]
+  crimeRecords: CrimeRecord[]
+  lifeEvents: LifeEvent[]
+  sources: SourceRef[]
+  attachments: Attachment[]
+  relatedIds: string[]
+  candidates: TraitorSummary[]
+}
+
+function PreviewPane({
+  form,
+  spouses,
+  children,
+  residences,
+  crimeRecords,
+  lifeEvents,
+  sources,
+  attachments,
+  relatedIds,
+  candidates,
+}: PreviewPaneProps) {
+  const { t } = useTranslation()
+  const photos = attachments.filter((a) => a.kind === 'photo')
+  const evidences = attachments.filter((a) => a.kind === 'evidence')
+  const photoUrl = (a: { url: string }) => resolveAssetUrl(a.url)
+  const aliases = splitList(form.aliasesText)
+  const identityTags = splitList(form.identityTagsText)
+
+  return (
+    <div className="card p-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold tracking-[0.25em] text-bronzelight">{t('traitorEditor.previewLive')}</h2>
+        <span className="inline-flex items-center gap-1.5 text-[10px] tracking-widest text-paperdim/60">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cinnabar opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-cinnabar" />
+          </span>
+          LIVE
+        </span>
+      </div>
+
+      {/* 人物头部 */}
+      <header className="mt-5 flex flex-col gap-5 rounded-sm border border-paperedge/15 bg-inksoft/40 p-5 sm:flex-row">
+        <div className="flex h-40 w-full shrink-0 items-center justify-center overflow-hidden rounded-sm border border-paperedge/15 bg-inkcard sm:w-32">
+          {photos[0] ? (
+            <img src={photoUrl(photos[0])} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span className="font-song text-6xl font-bold text-paperedge/20">
+              {(form.name || '？').slice(0, 1)}
+            </span>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-xl font-bold tracking-[0.15em] text-paper">{form.name || t('common.unknown')}</h3>
+            {form.period && <span className="badge border-cinnabar/70 bg-cinnabar/15 text-cinnabarlight">{form.period}</span>}
+            {form.faction && <span className="badge border-bronze/60 bg-bronze/15 text-bronzelight">{form.faction}</span>}
+          </div>
+          {(form.courtesyName || form.pseudonym) && (
+            <p className="mt-2 text-xs tracking-widest text-paperdim">
+              {form.courtesyName && <span className="mr-4">{t('snapshot.courtesyName')}{form.courtesyName}</span>}
+              {form.pseudonym && <span>{t('snapshot.pseudonym')}{form.pseudonym}</span>}
+            </p>
+          )}
+          <dl className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 text-xs sm:grid-cols-2">
+            <div className="flex gap-2">
+              <dt className="shrink-0 text-paperdim/70">{t('snapshot.lifespan')}</dt>
+              <dd className="font-garamond text-paper/90">
+                {formatLifeSpan(
+                  form.birthYear === '' ? null : Number(form.birthYear),
+                  form.deathYear === '' ? null : Number(form.deathYear),
+                  form.birthYearType,
+                  form.deathYearType,
+                )}
+              </dd>
+            </div>
+            <div className="flex gap-2">
+              <dt className="shrink-0 text-paperdim/70">{t('snapshot.nativePlace')}</dt>
+              <dd className="text-paper/90">{form.nativePlace || '—'}</dd>
+            </div>
+          </dl>
+          {aliases.length > 0 && (
+            <p className="mt-2 text-xs text-paperdim/80">
+              <span className="mr-2 text-paperdim/70">{t('snapshot.aliases')}</span>
+              {aliases.join('、')}
+            </p>
+          )}
+          {identityTags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {identityTags.map((tag) => (
+                <span key={tag} className="badge border-paperedge/25 text-paperdim">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* 摘要 */}
+      {form.summary && (
+        <PreviewSection title={t('snapshot.summary')} en="SUMMARY">
+          <p className="whitespace-pre-line text-xs leading-loose text-paper/90">{form.summary}</p>
+        </PreviewSection>
+      )}
+
+      {/* 生平时间线 */}
+      {lifeEvents.length > 0 && (
+        <PreviewSection title={t('snapshot.lifeTimeline')} en="CHRONOLOGY">
+          <ol className="relative ml-1 space-y-3 border-l border-cinnabar/40 pl-4">
+            {[...lifeEvents]
+              .filter((ev) => ev.event)
+              .sort((a, b) => (a.year ?? 0) - (b.year ?? 0))
+              .map((ev, i) => (
+                <li key={i} className="relative">
+                  <span className="absolute -left-[21px] top-1.5 h-2 w-2 rounded-full border-2 border-cinnabar bg-ink" />
+                  <p className="font-garamond text-xs font-semibold text-bronzelight">{formatYear(ev.year, 'exact')}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-paper/90">{ev.event}</p>
+                  {ev.sourceRef && <p className="mt-0.5 text-[10px] text-paperdim/60">{t('common.origin')}{ev.sourceRef}</p>}
+                </li>
+              ))}
+          </ol>
+        </PreviewSection>
+      )}
+
+      {/* 犯罪记录 */}
+      {crimeRecords.filter((c) => c.title).length > 0 && (
+        <PreviewSection title={t('snapshot.crimes')} en="CRIMINAL RECORDS">
+          <div className="grid grid-cols-1 gap-3">
+            {crimeRecords
+              .filter((c) => c.title)
+              .map((c, i) => (
+                <article key={i} className="rounded-sm border border-paperedge/15 p-3">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h4 className="text-xs font-semibold tracking-wider text-cinnabarlight">{c.title}</h4>
+                    <span className="font-garamond text-sm text-bronzelight">{formatYear(c.year, 'exact')}</span>
+                  </div>
+                  {c.process && <p className="mt-2 text-xs leading-relaxed text-paper/85">{c.process}</p>}
+                  {c.harm && (
+                    <p className="mt-1.5 text-xs leading-relaxed text-paper/85">
+                      <span className="mr-1.5 badge border-cinnabar/40 px-1.5 py-0.5 text-[10px] text-cinnabarlight/90">
+                        {t('snapshot.harm')}
+                      </span>
+                      {c.harm}
+                    </p>
+                  )}
+                  {c.sourceRef && <p className="mt-1.5 text-[10px] text-paperdim/60">{c.sourceRef}</p>}
+                </article>
+              ))}
+          </div>
+        </PreviewSection>
+      )}
+
+      {/* 家族 */}
+      {(spouses.filter((s) => s.name).length > 0 || children.filter((c) => c.name).length > 0) && (
+        <PreviewSection title={t('snapshot.familyAndResidence')} en="FAMILY">
+          {spouses.filter((s) => s.name).length > 0 && (
+            <div className="mb-3">
+              <p className="mb-1.5 text-[10px] tracking-widest text-paperdim/70">{t('snapshot.spouse')}</p>
+              <ul className="space-y-1.5">
+                {spouses
+                  .filter((s) => s.name)
+                  .map((s, i) => (
+                    <li key={i} className="flex items-baseline gap-2 text-xs">
+                      <span className="font-semibold tracking-widest text-paper">{s.name}</span>
+                      {s.remark && <span className="truncate text-paperdim">{s.remark}</span>}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+          {children.filter((c) => c.name).length > 0 && (
+            <div>
+              <p className="mb-1.5 text-[10px] tracking-widest text-paperdim/70">{t('snapshot.children')}</p>
+              <ul className="space-y-1.5">
+                {children
+                  .filter((c) => c.name)
+                  .map((c, i) => (
+                    <li key={i} className="flex gap-2 text-xs">
+                      <span className="font-semibold tracking-widest text-paper">{c.name}</span>
+                      {c.gender && <span className="text-paperdim/70">{c.gender}</span>}
+                      {(c.whereabouts || c.remark) && (
+                        <span className="truncate text-paperdim">{c.whereabouts ?? ''}{c.whereabouts && c.remark ? ' · ' : ''}{c.remark ?? ''}</span>
+                      )}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+        </PreviewSection>
+      )}
+
+      {/* 居住地 */}
+      {residences.filter((r) => r.place).length > 0 && (
+        <PreviewSection title={t('snapshot.residences')} en="RESIDENCES">
+          <ol className="relative ml-1 space-y-3 border-l border-bronze/50 pl-4">
+            {residences
+              .filter((r) => r.place)
+              .map((r, i) => (
+                <li key={i} className="relative">
+                  <span className="absolute -left-[21px] top-1.5 h-2 w-2 rounded-full border-2 border-bronze bg-ink" />
+                  <p className="text-xs tracking-widest text-paper">
+                    {r.place}
+                    {r.period && <span className="ml-2 font-garamond text-[11px] text-bronzelight">{r.period}</span>}
+                  </p>
+                  {r.remark && <p className="mt-0.5 text-[10px] text-paperdim">{r.remark}</p>}
+                </li>
+              ))}
+          </ol>
+        </PreviewSection>
+      )}
+
+      {/* 照片 */}
+      {photos.length > 0 && (
+        <PreviewSection title={t('snapshot.photosAndEvidence')} en="PHOTOGRAPHS">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {photos.map((p) => (
+              <div key={p.id} className="overflow-hidden rounded-sm border border-paperedge/15">
+                <img src={photoUrl(p)} alt="" className="aspect-square w-full object-cover" />
+                {p.caption && <span className="block truncate bg-inkcard px-1.5 py-1 text-[10px] text-paperdim">{p.caption}</span>}
+              </div>
+            ))}
+          </div>
+        </PreviewSection>
+      )}
+
+      {/* 罪证 */}
+      {evidences.length > 0 && (
+        <PreviewSection title={t('snapshot.evidence')} en="EVIDENCE">
+          <ul className="space-y-2">
+            {evidences.map((ev) => (
+              <li key={ev.id} className="flex items-center gap-3 rounded-sm border border-paperedge/15 p-2.5">
+                {ev.fileType.startsWith('image') ? (
+                  <img src={photoUrl(ev)} alt="" className="h-10 w-10 shrink-0 rounded-sm object-cover" />
+                ) : (
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border border-paperedge/20 font-garamond text-sm text-bronzelight">
+                    文
+                  </span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs text-paper">{ev.caption || ev.fileType}</p>
+                </div>
+                <a href={photoUrl(ev)} target="_blank" rel="noreferrer" className="btn-ghost !px-2 !py-1 text-[10px]">
+                  {t('common.view')}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </PreviewSection>
+      )}
+
+      {/* 史料来源 */}
+      {sources.filter((s) => s.citation).length > 0 && (
+        <PreviewSection title={t('snapshot.references')} en="REFERENCES">
+          <ol className="space-y-1.5">
+            {sources
+              .filter((s) => s.citation)
+              .map((s, i) => (
+                <li key={i} className="flex items-start gap-2 text-xs">
+                  <span className="font-garamond text-bronzelight">[{i + 1}]</span>
+                  <span className="flex-1 leading-relaxed text-paper/85">{s.citation}</span>
+                  {typeof s.credibility === 'number' && (
+                    <span className="shrink-0 font-garamond text-[10px] text-bronzelight">
+                      {'★'.repeat(s.credibility)}
+                    </span>
+                  )}
+                </li>
+              ))}
+          </ol>
+        </PreviewSection>
+      )}
+
+      {/* 相关人物 */}
+      {relatedIds.length > 0 && (
+        <PreviewSection title={t('traitorEditor.related')} en="RELATED FIGURES">
+          <div className="flex flex-wrap gap-1.5">
+            {relatedIds.map((rid) => {
+              const cand = candidates.find((c) => c.id === rid)
+              return (
+                <span key={rid} className="badge border-paperedge/30 py-1 text-[11px] text-paperdim">
+                  {cand?.name ?? rid}
+                  <span className="ml-1.5 text-[10px] text-bronzelight">{cand?.period ?? ''}</span>
+                </span>
+              )
+            })}
+          </div>
+        </PreviewSection>
+      )}
+
+      <p className="mt-6 text-center text-[10px] tracking-widest text-paperdim/50">
+        {t('traitorEditor.previewHint')}
+      </p>
+    </div>
+  )
+}
+
 export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const me = useAuth((s) => s.user)
+  const clear = useAuth((s) => s.clear)
 
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [spouses, spouseCtl] = useRowList<Spouse>([])
@@ -124,6 +442,7 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const [relatedIds, setRelatedIds] = useState<string[]>([])
   const [candidates, setCandidates] = useState<TraitorSummary[]>([])
+  const [previewOpen, setPreviewOpen] = useState(false)
   const [notice, setNotice] = useState('')
   const aiQuery = useAiQuery()
   const [photoAiOnly, setPhotoAiOnly] = useState(false)
@@ -359,41 +678,86 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
     }
   }
 
-  if (loading) return <div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div>
+  if (loading) return <div className="min-h-screen pt-24"><div className="container-page py-24 text-center text-paperdim">{t('common.loading')}</div></div>
 
   return (
-    <div className="container-page max-w-4xl py-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <header>
-          <h1 className="text-xl font-semibold tracking-[0.25em] text-paper">
-            {mode === 'create' ? t('traitorEditor.createTitle') : t('traitorEditor.editTitle')}
-          </h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">
-            {mode === 'create' ? 'NEW ARCHIVE · ADMIN DIRECT' : 'EDIT ARCHIVE · ADMIN DIRECT'}
-          </p>
-        </header>
-        {notice && (
-          <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
-            {notice}
-          </p>
-        )}
-        {mode === 'edit' && (
+    <div className="min-h-screen">
+      {/* 独立页顶栏（不含侧边菜单） */}
+      <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-paperedge/15 bg-ink/85 px-4 backdrop-blur sm:px-6">
+        <button
+          type="button"
+          onClick={() => navigate('/traitors/list')}
+          className="flex items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 transition hover:text-paper"
+        >
+          <span aria-hidden="true">←</span>
+          {t('traitors.title')}
+        </button>
+        <span className="hidden items-center gap-2 text-xs tracking-[0.2em] text-bronzelight/80 sm:flex">
+          {t('layout.brand')}
+        </span>
+        <div className="flex items-center gap-4">
+          {me && (
+            <span className="hidden items-center gap-2 text-sm text-paper md:flex">
+              <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-bronze/50 bg-bronze/15 font-song text-sm font-bold text-bronzelight">
+                {me.username.slice(0, 1).toUpperCase()}
+              </span>
+              <span className="flex flex-col items-start leading-tight">
+                <span className="text-sm">{me.username}</span>
+                <span className="text-[11px] tracking-[0.2em] text-bronzelight">{ROLE_LABELS[me.role]}</span>
+              </span>
+            </span>
+          )}
           <button
             type="button"
-            className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
-            onClick={() => openAiQuery(false)}
-            disabled={!form.name.trim()}
+            onClick={() => {
+              clear()
+              navigate('/login', { replace: true })
+            }}
+            className="btn-ghost !px-3 !py-1.5 text-xs"
           >
-            {t('aiQuery.queryAction')}
+            {t('header.logout')}
           </button>
-        )}
-      </div>
-      <p className="mt-3 text-sm text-paperdim">
-        {t('traitorEditor.adminHint')}
-      </p>
+        </div>
+      </header>
+
+      <div className="container-page max-w-7xl py-5 pt-24">
+        <PageHeader
+          title={mode === 'create' ? t('traitorEditor.createTitle') : t('traitorEditor.editTitle')}
+          subtitle={mode === 'create' ? 'NEW ARCHIVE · ADMIN DIRECT' : 'EDIT ARCHIVE · ADMIN DIRECT'}
+          actions={
+            <>
+              {notice && (
+                <p className="rounded-sm border border-bronze/60 bg-bronze/15 px-3 py-2 text-sm text-bronzelight">
+                  {notice}
+                </p>
+              )}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  className="btn-ghost !px-4 !py-2 text-xs !text-bronzelight"
+                  onClick={() => setPreviewOpen(true)}
+                >
+                  {t('traitorEditor.preview')}
+                </button>
+                {mode === 'edit' && (
+                  <button
+                    type="button"
+                    className="btn-ghost !px-3 !py-2 text-xs !text-bronzelight"
+                    onClick={() => openAiQuery(false)}
+                    disabled={!form.name.trim()}
+                  >
+                    {t('aiQuery.queryAction')}
+                  </button>
+                )}
+              </div>
+            </>
+          }
+        >
+          <p className="text-sm text-paperdim">{t('traitorEditor.adminHint')}</p>
+        </PageHeader>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
-        <Fieldset title={t('traitorEditor.basicInfo')} en="BASIC">
+          <Fieldset title={t('traitorEditor.basicInfo')} en="BASIC">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
               <label className="label" htmlFor="name">
@@ -947,8 +1311,8 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
           </p>
         )}
 
-        <div className="flex items-center justify-end gap-3 pb-10">
-          <button type="button" onClick={() => navigate(-1)} className="btn-ghost">
+        <div className="flex items-center justify-end gap-3 pb-6">
+          <button type="button" onClick={() => (mode === 'edit' ? navigate('/traitors/list') : navigate(-1))} className="btn-ghost">
             {t('common.cancel')}
           </button>
           <button type="submit" className="btn-primary min-w-36" disabled={busy || uploading}>
@@ -956,6 +1320,28 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
           </button>
         </div>
       </form>
+
+      {/* 预览弹框 */}
+      <Modal
+        open={previewOpen}
+        title={t('traitorEditor.preview')}
+        hideFooter
+        widthClassName="max-w-4xl"
+        onClose={() => setPreviewOpen(false)}
+      >
+        <PreviewPane
+          form={form}
+          spouses={spouses}
+          children={children}
+          residences={residences}
+          crimeRecords={crimeRecords}
+          lifeEvents={lifeEvents}
+          sources={sources}
+          attachments={attachments}
+          relatedIds={relatedIds}
+          candidates={candidates}
+        />
+      </Modal>
 
       <AiQueryModal
         open={aiQuery.open}
@@ -974,6 +1360,15 @@ export default function TraitorEditor({ mode }: { mode: 'create' | 'edit' }) {
         onRetry={() => aiQuery.retry()}
         onFill={handleAiReady}
       />
+      </div>
+
+      {/* 页脚 */}
+      <footer className="flex-shrink-0 border-t border-paperedge/15 bg-inksoft/60">
+        <div className="container-page flex flex-col items-center justify-between gap-2 py-4 text-xs tracking-wider text-paperdim/70 sm:flex-row">
+          <span>{t('layout.title')}</span>
+          <span className="font-garamond italic">Editorial Console · Est. 2026</span>
+        </div>
+      </footer>
     </div>
   )
 }

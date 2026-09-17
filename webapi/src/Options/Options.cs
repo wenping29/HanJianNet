@@ -55,6 +55,18 @@ public class DeepSeekOptions
     public int MaxTokens { get; set; } = 4096;
 }
 
+public class SecurityOptions
+{
+    /// <summary>
+    /// 通讯加密共享密钥：Base64 编码的 16/24/32 字节 AES 密钥。
+    /// 需与前端 VITE_API_ENCRYPTION_KEY 保持一致；留空则通讯加密不可用。
+    /// </summary>
+    public string EncryptionKey { get; set; } = "";
+
+    /// <summary>是否已配置通讯加密密钥。</summary>
+    public bool EncryptionConfigured => !string.IsNullOrWhiteSpace(EncryptionKey);
+}
+
 public class RedisOptions
 {
     /// <summary>

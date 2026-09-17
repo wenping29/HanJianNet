@@ -160,6 +160,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get republic => '민국';
 
   @override
+  String get antiJapaneseWar => '항일전쟁 시기';
+
+  @override
   String get other => '기타';
 
   @override
@@ -383,4 +386,194 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get chooseLanguage => '언어 선택';
+
+  @override
+  String get basicInfo => '기본 정보';
+
+  @override
+  String get birthYearLabel => '출생 연도';
+
+  @override
+  String get deathYearLabel => '사망 연도';
+
+  @override
+  String get yearExact => '확실';
+
+  @override
+  String get birthPlaceLabel => '출생지';
+
+  @override
+  String get officialTitleLabel => '관직(괴외(傀儡) 정권)';
+
+  @override
+  String get tagsLabel => '신분 태그';
+
+  @override
+  String get tagsHint => '여러 태그는 쉼표로 구분하세요';
+
+  @override
+  String get rowYear => '연도';
+
+  @override
+  String get rowEvent => '사건';
+
+  @override
+  String get rowTitle => '제목';
+
+  @override
+  String get rowProcess => '경과';
+
+  @override
+  String get rowHarm => '피해';
+
+  @override
+  String get rowSourceRef => '출처';
+
+  @override
+  String get rowRemark => '비고';
+
+  @override
+  String get rowPlace => '장소';
+
+  @override
+  String get rowPeriod => '시기';
+
+  @override
+  String get rowCitation => '인용 문헌';
+
+  @override
+  String get rowCredibility => '신뢰도(1-5)';
+
+  @override
+  String get rowCaption => '이미지 설명';
+
+  @override
+  String get addItem => '추가';
+
+  @override
+  String get deleteItem => '삭제';
+
+  @override
+  String get uploadPhoto => '사진 업로드';
+
+  @override
+  String get uploadEvidence => '죄증 업로드';
+
+  @override
+  String get uploading => '업로드 중…';
+
+  @override
+  String get summaryRequired => '인물 개요를 입력하세요';
+
+  @override
+  String get submitSuccess => '제출되었습니다. 심사를 기다려 주세요';
+
+  @override
+  String get submitFailed => '제출에 실패했습니다';
+
+  @override
+  String get searchPrompt => '조건을 입력하고 「조회」를 탭하세요';
+
+  @override
+  String get settings => '설정';
+
+  @override
+  String get editProfile => '개인 정보 수정';
+
+  @override
+  String get profileUpdated => '개인 정보가 업데이트되었습니다';
+
+  @override
+  String get editAvatar => '프로필 사진 변경';
+
+  @override
+  String get avatarUpdated => '프로필 사진이 업데이트되었습니다';
+
+  @override
+  String get notifications => '알림';
+
+  @override
+  String get noNotifications => '알림이 없습니다';
+
+  @override
+  String get markAllRead => '모두 읽음으로 표시';
+
+  @override
+  String notificationApproved(String name) {
+    return '제출한 「$name」이(가) 승인되었습니다';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return '제출한 「$name」이(가) 반려되었습니다';
+  }
+
+  @override
+  String get theme => '테마';
+
+  @override
+  String get chooseTheme => '테마 선택';
+
+  @override
+  String get themeSystem => '시스템 설정 따르기';
+
+  @override
+  String get themeDark => '다크';
+
+  @override
+  String get themeLight => '라이트';
+
+  @override
+  String get traitorMap => '매국노 지도';
+
+  @override
+  String get mapHint => '성을 탭하여 분포 보기';
+
+  @override
+  String get viewArchives => '기록 보기';
+
+  @override
+  String get gender => '성별';
+
+  @override
+  String get genderMale => '남성';
+
+  @override
+  String get genderFemale => '여성';
+
+  @override
+  String get genderSecret => '비공개';
+
+  @override
+  String get birthday => '생일';
+
+  @override
+  String get address => '주소';
+
+  @override
+  String get phone => '전화번호';
+
+  @override
+  String get invalidPhone => '전화번호 형식이 올바르지 않습니다';
+
+  @override
+  String get profileAccountFixed => '사용자 이름과 이메일은 변경할 수 없습니다';
+
+  @override
+  String get optional => '선택 사항';
+
+  @override
+  String get tapToChangeAvatar => '아바타를 탭하여 변경';
+
+  @override
+  String get nickname => '닉네임';
+
+  @override
+  String get signature => '상태 메시지';
+
+  @override
+  String get region => '지역';
+
+  @override
+  String get myQrCode => '내 QR 코드';
 }

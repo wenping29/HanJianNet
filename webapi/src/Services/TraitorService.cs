@@ -3,12 +3,13 @@ using HanJianNet.WebApi.Common;
 using HanJianNet.WebApi.Data;
 using HanJianNet.WebApi.Dtos;
 using HanJianNet.WebApi.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 namespace HanJianNet.WebApi.Services;
 
 /// <summary>档案相关操作。公开读取（列表/详情/统计）启用分布式缓存，写入时自动失效。</summary>
-public class TraitorService(AppDbContext db, CacheService cache)
+public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheService cache)
 {
     private const string CacheGroup = "traitors";
 
@@ -57,16 +58,26 @@ public class TraitorService(AppDbContext db, CacheService cache)
              .ThenByDescending(t => t.CreatedAt);
 
         var total = await q.CountAsync();
-        // 犯罪记录条数在 SQL 侧聚合，避免把明细全部读入内存
+        // 犯罪记录条数与头像 URL 在 SQL 侧聚合，避免把明细全部读入内存与 N+1 查询
         if (page.HasValue && pageSize.HasValue)
         {
             var p = Math.Max(1, page.Value);
             var ps = Math.Clamp(pageSize.Value, 1, 200);
             var rows = await q.Skip((p - 1) * ps).Take(ps)
-                .Select(t => new { Traitor = t, CrimeCount = t.CrimeRecords.Count })
+                .Select(t => new
+                {
+                    Traitor = t,
+                    CrimeCount = t.CrimeRecords.Count,
+                    PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
+                })
                 .ToListAsync();
             return new PagedResult<TraitorSummaryDto>(
-                Items: rows.Select(r => r.Traitor.ToSummary(r.CrimeCount)).ToList(),
+                Items: rows.Select(r =>
+                {
+                    var dto = r.Traitor.ToSummary(r.CrimeCount);
+                    dto.PhotoUrl = r.PhotoUrl;
+                    return dto;
+                }).ToList(),
                 Total: total,
                 Page: p,
                 PageSize: ps);
@@ -74,10 +85,20 @@ public class TraitorService(AppDbContext db, CacheService cache)
         else
         {
             var rows = await q
-                .Select(t => new { Traitor = t, CrimeCount = t.CrimeRecords.Count })
+                .Select(t => new
+                {
+                    Traitor = t,
+                    CrimeCount = t.CrimeRecords.Count,
+                    PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
+                })
                 .ToListAsync();
             return new PagedResult<TraitorSummaryDto>(
-                Items: rows.Select(r => r.Traitor.ToSummary(r.CrimeCount)).ToList(),
+                Items: rows.Select(r =>
+                {
+                    var dto = r.Traitor.ToSummary(r.CrimeCount);
+                    dto.PhotoUrl = r.PhotoUrl;
+                    return dto;
+                }).ToList(),
                 Total: total,
                 Page: 1,
                 PageSize: Math.Max(1, total));
@@ -129,7 +150,24 @@ public class TraitorService(AppDbContext db, CacheService cache)
             .ToList();
         int? earliestYear = years.Count > 0 ? years.Min() : null;
         int? latestYear = years.Count > 0 ? years.Max() : null;
-        return new TraitorStatsDto { Total = total, Periods = periods, EarliestYear = earliestYear, LatestYear = latestYear };
+
+        // 被判刑人数：有犯罪记录的档案数
+        var sentenced = await db.Traitors.CountAsync(t => t.CrimeRecords.Any());
+        // 子女信息数：有子女记录的档案数
+        var childrenInfo = await db.Traitors.CountAsync(t => t.Children.Any());
+        // 后代现状数：子女去向（Whereabouts）不为空的记录数
+        var descendantsStatus = await db.Children.CountAsync(c => c.Whereabouts != null && c.Whereabouts.Trim() != "");
+
+        return new TraitorStatsDto
+        {
+            Total = total,
+            Sentenced = sentenced,
+            ChildrenInfo = childrenInfo,
+            DescendantsStatus = descendantsStatus,
+            Periods = periods,
+            EarliestYear = earliestYear,
+            LatestYear = latestYear
+        };
     }
 
     /// <summary>
@@ -236,11 +274,11 @@ public class TraitorService(AppDbContext db, CacheService cache)
         return traitor.ToDto();
     }
 
-    public async Task<PagedResult<TraitorSummaryDto>> AdminListAsync(string? name, int? harmLevel, int page = 1, int pageSize = 10)
+    public async Task<PagedResult<TraitorSummaryDto>> AdminListAsync(string? name, int? harmLevel, bool? hasPhoto, int page = 1, int pageSize = 10)
     {
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;
-        if (pageSize > 200) pageSize = 200;
+        if (pageSize > 1000) pageSize = 1000;
         var q = db.Traitors.AsQueryable();
         if (!string.IsNullOrWhiteSpace(name))
         {
@@ -249,6 +287,13 @@ public class TraitorService(AppDbContext db, CacheService cache)
         }
         if (harmLevel is int hl)
             q = q.Where(t => t.HarmLevel == hl);
+        if (hasPhoto is bool hp)
+        {
+            if (hp)
+                q = q.Where(t => t.Attachments.Any(a => a.Kind == "photo"));
+            else
+                q = q.Where(t => !t.Attachments.Any(a => a.Kind == "photo"));
+        }
         var total = await q.CountAsync();
         // 固定排序：危害等级升序（1=特级/S级 最严重在前），未分级排最后；同级按姓名，再按创建时间倒序
         var rows = await q
@@ -261,6 +306,7 @@ public class TraitorService(AppDbContext db, CacheService cache)
             .Select(t => new
             {
                 T = t,
+                PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
                 Titles = t.CrimeRecords
                     .Where(c => !string.IsNullOrWhiteSpace(c.Title))
                     .Select(c => c.Title)
@@ -269,7 +315,12 @@ public class TraitorService(AppDbContext db, CacheService cache)
             })
             .ToListAsync();
         return new PagedResult<TraitorSummaryDto>(
-            Items: rows.Select(r => r.T.ToSummary(r.Titles.Count, r.Titles)).ToList(),
+            Items: rows.Select(r =>
+            {
+                var dto = r.T.ToSummary(r.Titles.Count, r.Titles);
+                dto.PhotoUrl = r.PhotoUrl;
+                return dto;
+            }).ToList(),
             Total: total,
             Page: page,
             PageSize: pageSize);
@@ -292,6 +343,162 @@ public class TraitorService(AppDbContext db, CacheService cache)
         db.Traitors.Remove(traitor);
         await db.SaveChangesAsync();
         await cache.InvalidateAsync(CacheGroup);
+    }
+
+    /// <summary>
+    /// 删除指定档案的全部照片：清除 Attachments 中 kind=photo 的记录，并同步删除 uploads 目录下对应的本地文件。
+    /// </summary>
+    public async Task<int> AdminDeletePhotosAsync(string id)
+    {
+        var traitor = await db.Traitors.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id)
+                      ?? throw new ApiException(404, "档案不存在");
+        var photos = await db.Attachments.Where(a => a.TraitorId == id && a.Kind == "photo").ToListAsync();
+        if (photos.Count == 0)
+            return 0;
+
+        db.Attachments.RemoveRange(photos);
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+
+        var uploadRoot = Path.Combine(env.ContentRootPath, "uploads");
+        foreach (var photo in photos)
+        {
+            // 仅清理本地上传文件（/uploads/xxx），远程直链（http(s)://）无法也不应删除
+            if (string.IsNullOrWhiteSpace(photo.Url) || !photo.Url.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+                continue;
+            var fileName = Path.GetFileName(photo.Url);
+            if (string.IsNullOrWhiteSpace(fileName))
+                continue;
+            var filePath = Path.Combine(uploadRoot, fileName);
+            try
+            {
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+            }
+            catch
+            {
+                // 文件删除失败不影响数据库记录清理
+            }
+        }
+        return photos.Count;
+    }
+
+    /// <summary>更新档案危害等级。</summary>
+    public async Task AdminUpdateHarmLevelAsync(string id, int? harmLevel)
+    {
+        var traitor = await db.Traitors.FirstOrDefaultAsync(t => t.Id == id)
+                      ?? throw new ApiException(404, "档案不存在");
+        if (harmLevel is int hl && (hl < 1 || hl > 7))
+            throw new ApiException(400, "危害等级取值应为 1-7 或留空");
+        traitor.HarmLevel = harmLevel;
+        traitor.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+    }
+
+    /// <summary>
+    /// 批量删除档案：仅删除指定的 Id 列表中实际存在的记录；任一被选记录作为合并目标被引用（MergedIntoId）时整批拒绝。
+    /// 子记录由数据库级联删除。
+    /// </summary>
+    public async Task<int> AdminBatchDeleteAsync(IReadOnlyCollection<string> ids)
+    {
+        var idSet = (ids ?? []).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToHashSet();
+        if (idSet.Count == 0)
+            throw new ApiException(400, "未选择任何档案");
+
+        var traitors = await db.Traitors.Where(t => idSet.Contains(t.Id)).ToListAsync();
+        if (traitors.Count == 0)
+            throw new ApiException(404, "档案不存在");
+
+        // 任一被选记录被其他档案作为合并目标引用时拒绝整批删除，保持数据完整
+        var referenced = await db.Traitors
+            .Where(t => t.MergedIntoId != null && idSet.Contains(t.MergedIntoId))
+            .Select(t => t.MergedIntoId)
+            .Distinct()
+            .ToListAsync();
+        if (referenced.Count > 0)
+            throw new ApiException(409, "所选档案中有被其他档案合并引用的记录，请先解除合并后再删除");
+
+        db.Traitors.RemoveRange(traitors);
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+        return traitors.Count;
+    }
+
+    /// <summary>
+    /// 批量删除所选档案的全部照片：清除 Attachments 中 kind=photo 的记录并删除 uploads 目录下的本地文件。
+    /// 返回受影响（至少删除了一张照片）的档案数。
+    /// </summary>
+    public async Task<int> AdminBatchDeletePhotosAsync(IReadOnlyCollection<string> ids)
+    {
+        var idSet = (ids ?? []).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToHashSet();
+        if (idSet.Count == 0)
+            throw new ApiException(400, "未选择任何档案");
+
+        var photos = await db.Attachments
+            .Where(a => a.Kind == "photo" && idSet.Contains(a.TraitorId))
+            .ToListAsync();
+        if (photos.Count == 0)
+            throw new ApiException(404, "所选档案均无照片");
+
+        db.Attachments.RemoveRange(photos);
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+
+        var uploadRoot = Path.Combine(env.ContentRootPath, "uploads");
+        var fileName = "";
+        foreach (var photo in photos)
+        {
+            if (string.IsNullOrWhiteSpace(photo.Url) || !photo.Url.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+                continue;
+            fileName = Path.GetFileName(photo.Url);
+            if (string.IsNullOrWhiteSpace(fileName))
+                continue;
+            var filePath = Path.Combine(uploadRoot, fileName);
+            try
+            {
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+            }
+            catch
+            {
+                // 文件删除失败不影响数据库记录清理
+            }
+        }
+        return photos.Select(p => p.TraitorId).Distinct().Count();
+    }
+
+    /// <summary>
+    /// 批量导出：按 Id 列表返回包含照片地址的档案概要。ids 为空时返回全量（供无选择场景全量导出）。
+    /// </summary>
+    public async Task<List<TraitorSummaryDto>> AdminExportAsync(IReadOnlyCollection<string> ids)
+    {
+        var idSet = (ids ?? []).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToHashSet();
+        var q = db.Traitors.AsQueryable();
+        if (idSet.Count > 0)
+            q = q.Where(t => idSet.Contains(t.Id));
+        var rows = await q
+            .OrderBy(t => t.HarmLevel == null ? 1 : 0)
+            .ThenBy(t => t.HarmLevel)
+            .ThenBy(t => t.Name)
+            .ThenByDescending(t => t.CreatedAt)
+            .Select(t => new
+            {
+                T = t,
+                PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
+                Titles = t.CrimeRecords
+                    .Where(c => !string.IsNullOrWhiteSpace(c.Title))
+                    .Select(c => c.Title)
+                    .Take(10)
+                    .ToList(),
+            })
+            .ToListAsync();
+        return rows.Select(r =>
+        {
+            var dto = r.T.ToSummary(r.Titles.Count, r.Titles);
+            dto.PhotoUrl = r.PhotoUrl;
+            return dto;
+        }).ToList();
     }
 
     /// <summary>

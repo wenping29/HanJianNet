@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="ink">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,6 +11,19 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // 首屏防闪烁：在 React 挂载前根据本地存储写入主题
+      (function () {
+        try {
+          var raw = localStorage.getItem('hanjian-theme')
+          var theme = raw ? (JSON.parse(raw).state || {}).theme : null
+          if (['ink', 'paper', 'cinnabar', 'bamboo'].indexOf(theme) === -1) theme = 'ink'
+          document.documentElement.setAttribute('data-theme', theme)
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'ink')
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

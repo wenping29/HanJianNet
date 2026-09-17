@@ -10,10 +10,19 @@ import '../widgets/traitor_card.dart';
 import 'traitor_detail_screen.dart';
 
 /// 与 API 对齐的时期值（第一个 null 代表「全部」）。
-const _periodApiValues = [null, '宋末', '明末', '清末', '民国', '其他'];
+const _periodApiValues = [null, '宋末', '明末', '清末', '民国', '抗日战争时期', '其他'];
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  /// 从汉奸地图进入时按省份筛选（省份简称，如「河南」），并立即执行查询。
+  final String? initialProvince;
+
+  /// 从首页统计卡片进入时按时期筛选（如「抗日战争时期」），并立即执行查询。
+  final String? initialPeriod;
+
+  /// 进入后立即执行一次无条件查询（首页「档案总数」入口）。
+  final bool autoSearch;
+
+  const SearchScreen({super.key, this.initialProvince, this.initialPeriod, this.autoSearch = false});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -30,17 +39,26 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Traitor> _results = [];
   int _page = 1;
   int _totalPages = 1;
-  bool _loading = true;
+  bool _loading = false;
   bool _loadingMore = false;
   String? _error;
   bool _hasSearched = false;
   int _selectedPeriod = 0;
+  String? _province;
 
   @override
   void initState() {
     super.initState();
-    _loadAll();
+    // 默认不查询：等用户点击「查询」按钮后再请求；但带省份/时期/总数入口立即查询
     _scrollCtrl.addListener(_onScroll);
+    _province = widget.initialProvince;
+    final periodIndex = _periodApiValues.indexOf(widget.initialPeriod);
+    if (periodIndex > 0) _selectedPeriod = periodIndex;
+    if (widget.autoSearch ||
+        periodIndex > 0 ||
+        (_province != null && _province!.isNotEmpty)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _search());
+    }
   }
 
   @override
@@ -62,29 +80,6 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  Future<void> _loadAll() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final result = await ApiClient.instance.listTraitors(page: 1, pageSize: 20);
-      if (!mounted) return;
-      setState(() {
-        _results = result.items;
-        _page = result.page;
-        _totalPages = result.totalPages;
-        _loading = false;
-      });
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.message;
-        _loading = false;
-      });
-    }
-  }
-
   Future<void> _search() async {
     FocusScope.of(context).unfocus();
     setState(() {
@@ -100,6 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
         event: _eventCtrl.text.trim(),
         period: _periodApiValues[_selectedPeriod],
         nativePlace: _nativePlaceCtrl.text.trim(),
+        province: _province,
         page: 1,
         pageSize: 20,
       );
@@ -130,6 +126,7 @@ class _SearchScreenState extends State<SearchScreen> {
         event: _eventCtrl.text.trim(),
         period: _periodApiValues[_selectedPeriod],
         nativePlace: _nativePlaceCtrl.text.trim(),
+        province: _province,
         page: _page + 1,
         pageSize: 20,
       );
@@ -168,6 +165,7 @@ class _SearchScreenState extends State<SearchScreen> {
       l10n.lateMing,
       l10n.lateQing,
       l10n.republic,
+      l10n.antiJapaneseWar,
       l10n.other,
     ];
     return Card(
@@ -246,6 +244,21 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
             const SizedBox(height: 12),
+            if (_province != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: InputChip(
+                    label: Text(_province!),
+                    deleteIcon: const Icon(Icons.close, size: 16),
+                    onDeleted: () {
+                      setState(() => _province = null);
+                      _search();
+                    },
+                  ),
+                ),
+              ),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
@@ -261,17 +274,15 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildResults() {
     final l10n = AppLocalizations.of(context)!;
+    if (!_hasSearched) return EmptyView(text: l10n.searchPrompt);
     if (_loading && !_loadingMore) return const LoadingView();
-    if (_error != null) return ErrorRetry(message: _error!, onRetry: _loadAll);
-    if (_hasSearched && _results.isEmpty) {
+    if (_error != null) return ErrorRetry(message: _error!, onRetry: _search);
+    if (_results.isEmpty) {
       return EmptyView(text: l10n.noResults);
-    }
-    if (!_hasSearched && _results.isEmpty) {
-      return EmptyView(text: l10n.noPublishedArchives);
     }
     return RefreshIndicator(
       color: AppTheme.bronzeLight,
-      onRefresh: _loadAll,
+      onRefresh: _search,
       child: ListView.builder(
         controller: _scrollCtrl,
         padding: const EdgeInsets.all(16),

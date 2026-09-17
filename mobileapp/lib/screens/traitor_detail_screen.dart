@@ -106,7 +106,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                 height: 128,
                 color: AppTheme.inkSoft,
                 child: photo != null
-                    ? Image.network(photo, fit: BoxFit.cover, errorBuilder: (_, _, _) => _initial(t.name))
+                    ? Image.network(resolveAssetUrl(photo), fit: BoxFit.cover, errorBuilder: (_, _, _) => _initial(t.name))
                     : _initial(t.name),
               ),
             ),
@@ -119,7 +119,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                     children: [
                       Flexible(
                         child: Text(t.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 3, color: AppTheme.paper)),
                       ),
                       const SizedBox(width: 8),
@@ -449,7 +449,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(photos[i].url, fit: BoxFit.cover,
+                  Image.network(resolveAssetUrl(photos[i].url), fit: BoxFit.cover,
                       errorBuilder: (_, _, _) => Container(color: AppTheme.inkSoft)),
                   if (photos[i].caption?.isNotEmpty == true)
                     Align(
@@ -483,7 +483,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
           children: [
             Center(
               child: InteractiveViewer(
-                child: Image.network(a.url, fit: BoxFit.contain,
+                child: Image.network(resolveAssetUrl(a.url), fit: BoxFit.contain,
                     errorBuilder: (_, _, _) => const Icon(Icons.broken_image, color: Colors.white24, size: 64)),
               ),
             ),
@@ -517,7 +517,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                   leading: ev.fileType.startsWith('image')
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(3),
-                          child: Image.network(ev.url, width: 48, height: 48, fit: BoxFit.cover,
+                          child: Image.network(resolveAssetUrl(ev.url), width: 48, height: 48, fit: BoxFit.cover,
                               errorBuilder: (_, _, _) =>
                                   Container(width: 48, height: 48, color: AppTheme.inkSoft)),
                         )
@@ -533,7 +533,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                         ),
                   title: Text(ev.caption?.isNotEmpty == true ? ev.caption! : l10n.evidence,
                       maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13, color: AppTheme.paper)),
+                      style: TextStyle(fontSize: 13, color: AppTheme.paper)),
                   subtitle: Text(ev.fileType, style: TextStyle(fontSize: 11, color: AppTheme.paperDim.withValues(alpha: 0.7))),
                   trailing: Icon(Icons.open_in_new, size: 16, color: AppTheme.paperDim),
                   onTap: () {/* 移动端暂不内置文件预览 */},

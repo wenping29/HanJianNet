@@ -162,6 +162,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get republic => 'República';
 
   @override
+  String get antiJapaneseWar => 'Guerra de Resistencia';
+
+  @override
   String get other => 'Otro';
 
   @override
@@ -388,4 +391,195 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Elegir idioma';
+
+  @override
+  String get basicInfo => 'Información básica';
+
+  @override
+  String get birthYearLabel => 'Año de nacimiento';
+
+  @override
+  String get deathYearLabel => 'Año de fallecimiento';
+
+  @override
+  String get yearExact => 'Exacto';
+
+  @override
+  String get birthPlaceLabel => 'Lugar de nacimiento';
+
+  @override
+  String get officialTitleLabel => 'Título oficial (régimen títere)';
+
+  @override
+  String get tagsLabel => 'Etiquetas';
+
+  @override
+  String get tagsHint => 'Separe las etiquetas con comas';
+
+  @override
+  String get rowYear => 'Año';
+
+  @override
+  String get rowEvent => 'Evento';
+
+  @override
+  String get rowTitle => 'Título';
+
+  @override
+  String get rowProcess => 'Proceso';
+
+  @override
+  String get rowHarm => 'Daño';
+
+  @override
+  String get rowSourceRef => 'Fuente';
+
+  @override
+  String get rowRemark => 'Observación';
+
+  @override
+  String get rowPlace => 'Lugar';
+
+  @override
+  String get rowPeriod => 'Período';
+
+  @override
+  String get rowCitation => 'Referencia';
+
+  @override
+  String get rowCredibility => 'Credibilidad (1-5)';
+
+  @override
+  String get rowCaption => 'Descripción de la imagen';
+
+  @override
+  String get addItem => 'Añadir';
+
+  @override
+  String get deleteItem => 'Eliminar';
+
+  @override
+  String get uploadPhoto => 'Subir foto';
+
+  @override
+  String get uploadEvidence => 'Subir evidencia';
+
+  @override
+  String get uploading => 'Subiendo…';
+
+  @override
+  String get summaryRequired => 'Ingrese el resumen';
+
+  @override
+  String get submitSuccess => 'Enviado, pendiente de revisión';
+
+  @override
+  String get submitFailed => 'Error al enviar';
+
+  @override
+  String get searchPrompt => 'Ingrese los criterios y pulse «Buscar»';
+
+  @override
+  String get settings => 'Configuración';
+
+  @override
+  String get editProfile => 'Editar perfil';
+
+  @override
+  String get profileUpdated => 'Perfil actualizado';
+
+  @override
+  String get editAvatar => 'Cambiar avatar';
+
+  @override
+  String get avatarUpdated => 'Avatar actualizado';
+
+  @override
+  String get notifications => 'Notificaciones';
+
+  @override
+  String get noNotifications => 'Sin notificaciones';
+
+  @override
+  String get markAllRead => 'Marcar todo como leído';
+
+  @override
+  String notificationApproved(String name) {
+    return 'Su envío «$name» fue aprobado';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return 'Su envío «$name» fue rechazado';
+  }
+
+  @override
+  String get theme => 'Tema';
+
+  @override
+  String get chooseTheme => 'Elegir tema';
+
+  @override
+  String get themeSystem => 'Seguir el sistema';
+
+  @override
+  String get themeDark => 'Oscuro';
+
+  @override
+  String get themeLight => 'Claro';
+
+  @override
+  String get traitorMap => 'Mapa de traidores';
+
+  @override
+  String get mapHint => 'Toque una provincia para ver la distribución';
+
+  @override
+  String get viewArchives => 'Ver archivos';
+
+  @override
+  String get gender => 'Género';
+
+  @override
+  String get genderMale => 'Hombre';
+
+  @override
+  String get genderFemale => 'Mujer';
+
+  @override
+  String get genderSecret => 'Prefiero no decirlo';
+
+  @override
+  String get birthday => 'Fecha de nacimiento';
+
+  @override
+  String get address => 'Dirección';
+
+  @override
+  String get phone => 'Teléfono';
+
+  @override
+  String get invalidPhone => 'Número de teléfono no válido';
+
+  @override
+  String get profileAccountFixed =>
+      'El nombre de usuario y el correo no se pueden modificar';
+
+  @override
+  String get optional => 'Opcional';
+
+  @override
+  String get tapToChangeAvatar => 'Toque el avatar para cambiarlo';
+
+  @override
+  String get nickname => 'Apodo';
+
+  @override
+  String get signature => 'Firma';
+
+  @override
+  String get region => 'Región';
+
+  @override
+  String get myQrCode => 'Mi código QR';
 }

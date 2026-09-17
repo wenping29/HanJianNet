@@ -15,6 +15,13 @@ class ApiException implements Exception {
   String toString() => message;
 }
 
+/// 将后端返回的资源路径解析为完整 URL：相对路径（如 /uploads/x.jpg）拼接当前 API 根地址。
+String resolveAssetUrl(String url) {
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  final base = ApiClient.instance.baseUrl;
+  return url.startsWith('/') ? '$base$url' : '$base/$url';
+}
+
 /// Web API 客户端：REST + JWT。
 class ApiClient {
   ApiClient._();
@@ -97,6 +104,74 @@ class ApiClient {
     return User.fromJson(data['user'] as Map<String, dynamic>);
   }
 
+  /// 更新本人个人资料（昵称/性别/生日/地址/手机号/签名/地区；用户名与邮箱不可修改，不再提交）。
+  /// 传 null 表示不修改该字段，传空串表示清除。
+  Future<User> updateProfile({
+    String? nickname,
+    String? gender,
+    String? birthday,
+    String? address,
+    String? phone,
+    String? signature,
+    String? region,
+  }) async {
+    final data = await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/me/profile'),
+          headers: _headers,
+          body: jsonEncode({
+            if (nickname != null) 'nickname': nickname,
+            if (gender != null) 'gender': gender,
+            if (birthday != null) 'birthday': birthday,
+            if (address != null) 'address': address,
+            if (phone != null) 'phone': phone,
+            if (signature != null) 'signature': signature,
+            if (region != null) 'region': region,
+          }),
+        )) as Map<String, dynamic>;
+    return User.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  /// 更新本人头像：avatarUrl 为上传接口返回的 /uploads/ 相对路径。
+  Future<User> updateAvatar(String avatarUrl) async {
+    final data = await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/me/avatar'),
+          headers: _headers,
+          body: jsonEncode({'avatarUrl': avatarUrl}),
+        )) as Map<String, dynamic>;
+    return User.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  // ---- 站内通知 ----
+
+  /// 我的通知列表（最新 100 条）与未读数。
+  Future<NotificationListResult> myNotifications() async {
+    final data = await _run(() => http.get(
+          Uri.parse('$_baseUrl/api/me/notifications'),
+          headers: _headers,
+        )) as Map<String, dynamic>;
+    final items = (data['items'] as List? ?? [])
+        .map((e) => NoticeItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return NotificationListResult(
+      items: items,
+      unreadCount: (data['unreadCount'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  Future<void> markNotificationRead(String id) async {
+    await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/me/notifications/$id/read'),
+          headers: _headers,
+        ));
+  }
+
+  Future<void> markAllNotificationsRead() async {
+    await _run(() => http.put(
+          Uri.parse('$_baseUrl/api/me/notifications/read-all'),
+          headers: _headers,
+        ));
+  }
+
   // ---- 档案（公开） ----
 
   Future<PaginatedTraitors> listTraitors({
@@ -106,6 +181,7 @@ class ApiClient {
     String? event,
     String? period,
     String? nativePlace,
+    String? province,
     int page = 1,
     int pageSize = 20,
   }) async {
@@ -116,6 +192,7 @@ class ApiClient {
       if (event != null && event.isNotEmpty) 'event': event,
       if (period != null && period.isNotEmpty) 'period': period,
       if (nativePlace != null && nativePlace.isNotEmpty) 'nativePlace': nativePlace,
+      if (province != null && province.isNotEmpty) 'province': province,
       'page': '$page',
       'pageSize': '$pageSize',
     };
@@ -147,6 +224,22 @@ class ApiClient {
           headers: _headers,
         )) as Map<String, dynamic>;
     return TraitorStats.fromJson(data);
+  }
+
+  /// 分省统计：items 按数量降序；total 档案总数；matched 已填写省份的记录数。
+  Future<ProvinceStatsResult> getProvinceStats() async {
+    final data = await _run(() => http.get(
+          Uri.parse('$_baseUrl/api/traitors/province-stats'),
+          headers: _headers,
+        )) as Map<String, dynamic>;
+    final items = (data['items'] as List? ?? [])
+        .map((e) => ProvinceStat.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return ProvinceStatsResult(
+      items: items,
+      total: (data['total'] as num?)?.toInt() ?? 0,
+      matched: (data['matched'] as num?)?.toInt() ?? 0,
+    );
   }
 
   Future<List<TimelineNode>> getTimeline() async {
@@ -200,6 +293,26 @@ class ApiClient {
       })
       ..files.add(await http.MultipartFile.fromPath('file', filePath))
       ..fields['kind'] = kind;
+    return _sendUpload(request);
+  }
+
+  /// 字节上传：Web 平台没有文件路径，统一走内存字节（image_picker 的 XFile.readAsBytes）。
+  Future<Map<String, dynamic>> uploadBytes({
+    required List<int> bytes,
+    required String filename,
+    required String kind,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/api/uploads');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers.addAll({
+        if (hasToken) 'Authorization': 'Bearer $_token',
+      })
+      ..files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename))
+      ..fields['kind'] = kind;
+    return _sendUpload(request);
+  }
+
+  Future<Map<String, dynamic>> _sendUpload(http.MultipartRequest request) async {
     final streamed = await request.send().timeout(const Duration(seconds: 30));
     final response = await http.Response.fromStream(streamed);
     if (response.statusCode >= 200 && response.statusCode < 300) {

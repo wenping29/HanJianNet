@@ -161,6 +161,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get republic => 'Republic';
 
   @override
+  String get antiJapaneseWar => 'War of Resistance';
+
+  @override
   String get other => 'Other';
 
   @override
@@ -386,4 +389,194 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Choose language';
+
+  @override
+  String get basicInfo => 'Basic Info';
+
+  @override
+  String get birthYearLabel => 'Birth Year';
+
+  @override
+  String get deathYearLabel => 'Death Year';
+
+  @override
+  String get yearExact => 'Exact';
+
+  @override
+  String get birthPlaceLabel => 'Birthplace';
+
+  @override
+  String get officialTitleLabel => 'Official Title (puppet regime)';
+
+  @override
+  String get tagsLabel => 'Identity Tags';
+
+  @override
+  String get tagsHint => 'Separate multiple tags with commas';
+
+  @override
+  String get rowYear => 'Year';
+
+  @override
+  String get rowEvent => 'Event';
+
+  @override
+  String get rowTitle => 'Title';
+
+  @override
+  String get rowProcess => 'Process';
+
+  @override
+  String get rowHarm => 'Harm';
+
+  @override
+  String get rowSourceRef => 'Source';
+
+  @override
+  String get rowRemark => 'Remark';
+
+  @override
+  String get rowPlace => 'Place';
+
+  @override
+  String get rowPeriod => 'Period';
+
+  @override
+  String get rowCitation => 'Citation';
+
+  @override
+  String get rowCredibility => 'Credibility (1-5)';
+
+  @override
+  String get rowCaption => 'Caption';
+
+  @override
+  String get addItem => 'Add';
+
+  @override
+  String get deleteItem => 'Delete';
+
+  @override
+  String get uploadPhoto => 'Upload Photo';
+
+  @override
+  String get uploadEvidence => 'Upload Evidence';
+
+  @override
+  String get uploading => 'Uploading…';
+
+  @override
+  String get summaryRequired => 'Please enter the summary';
+
+  @override
+  String get submitSuccess => 'Submitted, pending review';
+
+  @override
+  String get submitFailed => 'Submit failed';
+
+  @override
+  String get searchPrompt => 'Enter criteria and tap Search';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get profileUpdated => 'Profile updated';
+
+  @override
+  String get editAvatar => 'Edit Avatar';
+
+  @override
+  String get avatarUpdated => 'Avatar updated';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get noNotifications => 'No notifications';
+
+  @override
+  String get markAllRead => 'Mark all read';
+
+  @override
+  String notificationApproved(String name) {
+    return 'Your submission \"$name\" was approved';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return 'Your submission \"$name\" was rejected';
+  }
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get chooseTheme => 'Select theme';
+
+  @override
+  String get themeSystem => 'Follow system';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get traitorMap => 'Traitor Map';
+
+  @override
+  String get mapHint => 'Tap a province to see distribution';
+
+  @override
+  String get viewArchives => 'View Archives';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderSecret => 'Prefer not to say';
+
+  @override
+  String get birthday => 'Birthday';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get invalidPhone => 'Invalid phone number';
+
+  @override
+  String get profileAccountFixed => 'Username and email cannot be changed';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get tapToChangeAvatar => 'Tap the avatar to change it';
+
+  @override
+  String get nickname => 'Nickname';
+
+  @override
+  String get signature => 'Signature';
+
+  @override
+  String get region => 'Region';
+
+  @override
+  String get myQrCode => 'My QR Code';
 }

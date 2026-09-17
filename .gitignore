@@ -51,7 +51,7 @@ webapi/*.pfx
 ## 日志
 webapi/*.log
 webapi/logs/
-
+webapi/uploads/
 ## 覆盖测试报告
 webapi/coverage/
 webapi/logs/
@@ -113,6 +113,7 @@ appsettings.*.json
 !appsettings.json
 !appsettings.Development.json
 !appsettings.Production.json
+
 
 # ---- 证书与密钥 ----
 *.pem

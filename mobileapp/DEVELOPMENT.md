@@ -219,9 +219,11 @@ Base URL 示例：`http://localhost:3000`。鉴权头：`Authorization: Bearer <
 
 成功响应：`{ revisionId }`，不是更新后的档案对象。
 
-### 6.2 统计字段注意
+### 6.2 统计字段
 
-当前 WebApi `GET /api/traitors/stats` 返回 `total`、`periods`、`earliestYear`、`latestYear`。现有 Flutter `TraitorStats` 仍按旧字段 `sentenced/childrenInfo/descendantsStatus` 解析，**实现时必须改模型**，否则首页数量可能一直为 0。
+WebApi `GET /api/traitors/stats` 返回：`total`（档案总数）、`sentenced`（有犯罪记录的档案数）、`childrenInfo`（有子女记录的档案数）、`descendantsStatus`（子女去向不为空的记录数）、`periods`（分时期统计）、`earliestYear`、`latestYear`。
+
+Flutter  `TraitorStats` 应包含 `total`、`sentenced`、`childrenInfo`、`descendantsStatus` 字段；`periods`/`earliestYear`/`latestYear` 可按需选用。
 
 ---
 
@@ -282,6 +284,10 @@ lib/
 - iOS：`mobileapp/ios`；最低建议 iOS 13+。  
 - 图标与启动图沿用现有 Runner 资源，本轮可不换品牌图。  
 - 运行：先起 `webapi`（:3000），再 `cd mobileapp && flutter run`。
+- Web 调试固定端口 **5175**（与 web:5173 / admin:5174 对齐，已加入 webapi CORS 白名单）：
+  - 命令行：`flutter run -d web-server --web-port=5175`，或直接运行 `run_web.bat`；
+  - VS Code：F5 选择 `mobileapp (web, fixed port 5175)`；
+  - Android Studio：编辑运行配置，在 Additional run args 中加 `--web-port=5175`。
 
 ---
 

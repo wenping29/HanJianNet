@@ -1,4 +1,5 @@
 import { useAuth } from '../stores/auth'
+import { decryptResponse, encryptRequest, encryptionAlg, getCryptoEnabled, hasCryptoKey } from './crypto'
 import type {
   Attachment,
   AttachmentKind,
@@ -37,20 +38,43 @@ function authHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+async function readResponseBody(res: Response): Promise<string> {
+  const raw = await res.text()
+  if (res.headers.get('X-Encrypted') === '1' && getCryptoEnabled() && hasCryptoKey()) {
+    try {
+      return await decryptResponse(raw)
+    } catch {
+      return raw
+    }
+  }
+  return raw
+}
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers: Record<string, string> = {
     ...authHeader(),
     ...(init.headers as Record<string, string> | undefined),
   }
   if (init.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json'
+  const useCrypto = getCryptoEnabled() && hasCryptoKey()
+  let body = init.body
+  if (useCrypto && typeof init.body === 'string') {
+    body = await encryptRequest(init.body)
+  }
+  if (useCrypto) {
+    headers['X-Encrypted'] = '1'
+    headers['X-Crypto-Alg'] = encryptionAlg()
+  }
   const res = await fetch(BASE + path, {
     ...init,
     headers,
+    body,
   })
   if (!res.ok) {
     let message = `请求失败（${res.status}）`
     try {
-      const data = (await res.json()) as { message?: string; error?: string }
+      const text = await readResponseBody(res)
+      const data = JSON.parse(text) as { message?: string; error?: string }
       message = data.message ?? data.error ?? message
     } catch {
       /* ignore */
@@ -58,7 +82,8 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     if (res.status === 401) useAuth.getState().clear()
     throw new ApiError(res.status, message)
   }
-  return (await res.json()) as T
+  const text = await readResponseBody(res)
+  return JSON.parse(text) as T
 }
 
 function query(params: Record<string, string | number | undefined>): string {
@@ -150,10 +175,12 @@ export const api = {
 
   listWebMenus: () => request<{ items: WebMenu[] }>('/web-menus'),
 
-  trackVisit: (token: string) =>
-    request<{ ok: boolean }>('/visits/track', { method: 'POST', body: JSON.stringify({ token }) }),
+  trackVisit: (token: string, path: string) =>
+    request<{ ok: boolean }>('/visits/track', { method: 'POST', body: JSON.stringify({ token, path }) }),
 
   getVisitStats: () => request<{ totalVisits: number; totalVisitors: number }>('/visits/stats'),
+
+  getPublicConfig: () => request<{ items: Record<string, string> }>('/config'),
 
   createTraitor: (input: TraitorInput & { changeSummary: string }) =>
     request<{ revisionId: string }>('/traitors', { method: 'POST', body: JSON.stringify(input) }),

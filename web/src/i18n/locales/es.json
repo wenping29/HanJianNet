@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} registros · Página {{page}} / {{totalPages}}",
     "empty": "No hay registros que coincidan con los criterios",
     "colIndex": "N°",
+    "colAvatar": "Retrato",
     "colName": "Nombre",
     "colPeriod": "Período",
     "colFaction": "Facción",
@@ -448,5 +449,12 @@
   "notFound": {
     "title": "Documento no encontrado",
     "message": "La página que visitó no existe o ha sido eliminada."
+  },
+  "theme": {
+    "title": "Tema",
+    "ink": "Tinta",
+    "paper": "Papel de Xuan",
+    "cinnabar": "Cinabrio",
+    "bamboo": "Bambú"
   }
 }

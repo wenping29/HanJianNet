@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import StatusBadge from '../components/StatusBadge'
+import PageHeader from '../components/PageHeader'
 import { api } from '../lib/api'
 import { formatDateTime } from '../lib/format'
 import type { ReviewStatus, Revision } from '../types'
@@ -40,27 +41,27 @@ export default function Reviews() {
   }, [tab, t])
 
   return (
-    <div className="container-page py-10">
-      <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('reviews.title')}</h1>
-          <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">Review Queue</p>
-        </div>
-        <nav className="flex gap-1 rounded-sm border border-paperedge/20 bg-inkcard p-1">
-          {TABS.map((tb) => (
-            <button
-              key={tb.key}
-              type="button"
-              onClick={() => setTab(tb.key)}
-              className={`rounded-sm px-4 py-1.5 text-sm tracking-widest transition ${
-                tab === tb.key ? 'bg-cinnabar/85 text-paper' : 'text-paperdim hover:text-paper'
-              }`}
-            >
-              {tb.label}
-            </button>
-          ))}
-        </nav>
-      </header>
+    <div className="container-page py-5">
+      <PageHeader
+        title={t('reviews.title')}
+        subtitle="Review Queue"
+        actions={
+          <nav className="flex gap-1 rounded-sm border border-paperedge/20 bg-inkcard p-1">
+            {TABS.map((tb) => (
+              <button
+                key={tb.key}
+                type="button"
+                onClick={() => setTab(tb.key)}
+                className={`rounded-sm px-4 py-1.5 text-sm tracking-widest transition ${
+                  tab === tb.key ? 'bg-cinnabar/85 text-paper' : 'text-paperdim hover:text-paper'
+                }`}
+              >
+                {tb.label}
+              </button>
+            ))}
+          </nav>
+        }
+      />
 
       {error && (
         <p className="mt-6 rounded-sm border border-cinnabar/50 bg-cinnabar/10 px-3 py-2 text-sm text-cinnabarlight">{error}</p>

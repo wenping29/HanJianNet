@@ -398,6 +398,12 @@ abstract class AppLocalizations {
   /// **'民国'**
   String get republic;
 
+  /// No description provided for @antiJapaneseWar.
+  ///
+  /// In zh, this message translates to:
+  /// **'抗日战争时期'**
+  String get antiJapaneseWar;
+
   /// No description provided for @other.
   ///
   /// In zh, this message translates to:
@@ -799,6 +805,378 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'选择语言'**
   String get chooseLanguage;
+
+  /// No description provided for @basicInfo.
+  ///
+  /// In zh, this message translates to:
+  /// **'基本信息'**
+  String get basicInfo;
+
+  /// No description provided for @birthYearLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'出生年份'**
+  String get birthYearLabel;
+
+  /// No description provided for @deathYearLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'卒于年份'**
+  String get deathYearLabel;
+
+  /// No description provided for @yearExact.
+  ///
+  /// In zh, this message translates to:
+  /// **'确'**
+  String get yearExact;
+
+  /// No description provided for @birthPlaceLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'出生地'**
+  String get birthPlaceLabel;
+
+  /// No description provided for @officialTitleLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'官职（伪职）'**
+  String get officialTitleLabel;
+
+  /// No description provided for @tagsLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'身份标签'**
+  String get tagsLabel;
+
+  /// No description provided for @tagsHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'多个标签用「，」或英文逗号分隔'**
+  String get tagsHint;
+
+  /// No description provided for @rowYear.
+  ///
+  /// In zh, this message translates to:
+  /// **'年份'**
+  String get rowYear;
+
+  /// No description provided for @rowEvent.
+  ///
+  /// In zh, this message translates to:
+  /// **'事件'**
+  String get rowEvent;
+
+  /// No description provided for @rowTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'标题'**
+  String get rowTitle;
+
+  /// No description provided for @rowProcess.
+  ///
+  /// In zh, this message translates to:
+  /// **'经过'**
+  String get rowProcess;
+
+  /// No description provided for @rowHarm.
+  ///
+  /// In zh, this message translates to:
+  /// **'危害'**
+  String get rowHarm;
+
+  /// No description provided for @rowSourceRef.
+  ///
+  /// In zh, this message translates to:
+  /// **'史料出处'**
+  String get rowSourceRef;
+
+  /// No description provided for @rowRemark.
+  ///
+  /// In zh, this message translates to:
+  /// **'备注'**
+  String get rowRemark;
+
+  /// No description provided for @rowPlace.
+  ///
+  /// In zh, this message translates to:
+  /// **'地点'**
+  String get rowPlace;
+
+  /// No description provided for @rowPeriod.
+  ///
+  /// In zh, this message translates to:
+  /// **'时期'**
+  String get rowPeriod;
+
+  /// No description provided for @rowCitation.
+  ///
+  /// In zh, this message translates to:
+  /// **'引用文献'**
+  String get rowCitation;
+
+  /// No description provided for @rowCredibility.
+  ///
+  /// In zh, this message translates to:
+  /// **'可信度（1-5）'**
+  String get rowCredibility;
+
+  /// No description provided for @rowCaption.
+  ///
+  /// In zh, this message translates to:
+  /// **'图片说明'**
+  String get rowCaption;
+
+  /// No description provided for @addItem.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加'**
+  String get addItem;
+
+  /// No description provided for @deleteItem.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get deleteItem;
+
+  /// No description provided for @uploadPhoto.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传照片'**
+  String get uploadPhoto;
+
+  /// No description provided for @uploadEvidence.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传罪证'**
+  String get uploadEvidence;
+
+  /// No description provided for @uploading.
+  ///
+  /// In zh, this message translates to:
+  /// **'上传中…'**
+  String get uploading;
+
+  /// No description provided for @summaryRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请填写人物概述'**
+  String get summaryRequired;
+
+  /// No description provided for @submitSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'提交成功，等待审核'**
+  String get submitSuccess;
+
+  /// No description provided for @submitFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'提交失败'**
+  String get submitFailed;
+
+  /// No description provided for @searchPrompt.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入条件后点击「查询」'**
+  String get searchPrompt;
+
+  /// No description provided for @settings.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置'**
+  String get settings;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑个人信息'**
+  String get editProfile;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In zh, this message translates to:
+  /// **'个人信息已更新'**
+  String get profileUpdated;
+
+  /// No description provided for @editAvatar.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改头像'**
+  String get editAvatar;
+
+  /// No description provided for @avatarUpdated.
+  ///
+  /// In zh, this message translates to:
+  /// **'头像已更新'**
+  String get avatarUpdated;
+
+  /// No description provided for @notifications.
+  ///
+  /// In zh, this message translates to:
+  /// **'通知消息'**
+  String get notifications;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无通知消息'**
+  String get noNotifications;
+
+  /// No description provided for @markAllRead.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部已读'**
+  String get markAllRead;
+
+  /// No description provided for @notificationApproved.
+  ///
+  /// In zh, this message translates to:
+  /// **'您提交的「{name}」已通过审核'**
+  String notificationApproved(String name);
+
+  /// No description provided for @notificationRejected.
+  ///
+  /// In zh, this message translates to:
+  /// **'您提交的「{name}」未通过审核'**
+  String notificationRejected(String name);
+
+  /// No description provided for @theme.
+  ///
+  /// In zh, this message translates to:
+  /// **'主题'**
+  String get theme;
+
+  /// No description provided for @chooseTheme.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择主题'**
+  String get chooseTheme;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get themeSystem;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In zh, this message translates to:
+  /// **'黑夜'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In zh, this message translates to:
+  /// **'白天'**
+  String get themeLight;
+
+  /// No description provided for @traitorMap.
+  ///
+  /// In zh, this message translates to:
+  /// **'汉奸地图'**
+  String get traitorMap;
+
+  /// No description provided for @mapHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击省份查看分布'**
+  String get mapHint;
+
+  /// No description provided for @viewArchives.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看档案'**
+  String get viewArchives;
+
+  /// No description provided for @gender.
+  ///
+  /// In zh, this message translates to:
+  /// **'性别'**
+  String get gender;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In zh, this message translates to:
+  /// **'男'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In zh, this message translates to:
+  /// **'女'**
+  String get genderFemale;
+
+  /// No description provided for @genderSecret.
+  ///
+  /// In zh, this message translates to:
+  /// **'保密'**
+  String get genderSecret;
+
+  /// No description provided for @birthday.
+  ///
+  /// In zh, this message translates to:
+  /// **'生日'**
+  String get birthday;
+
+  /// No description provided for @address.
+  ///
+  /// In zh, this message translates to:
+  /// **'地址'**
+  String get address;
+
+  /// No description provided for @phone.
+  ///
+  /// In zh, this message translates to:
+  /// **'手机号'**
+  String get phone;
+
+  /// No description provided for @invalidPhone.
+  ///
+  /// In zh, this message translates to:
+  /// **'手机号格式不正确'**
+  String get invalidPhone;
+
+  /// No description provided for @profileAccountFixed.
+  ///
+  /// In zh, this message translates to:
+  /// **'用户名和邮箱不可修改'**
+  String get profileAccountFixed;
+
+  /// No description provided for @optional.
+  ///
+  /// In zh, this message translates to:
+  /// **'选填'**
+  String get optional;
+
+  /// No description provided for @tapToChangeAvatar.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击头像更换'**
+  String get tapToChangeAvatar;
+
+  /// No description provided for @nickname.
+  ///
+  /// In zh, this message translates to:
+  /// **'昵称'**
+  String get nickname;
+
+  /// No description provided for @signature.
+  ///
+  /// In zh, this message translates to:
+  /// **'个性签名'**
+  String get signature;
+
+  /// No description provided for @region.
+  ///
+  /// In zh, this message translates to:
+  /// **'地区'**
+  String get region;
+
+  /// No description provided for @myQrCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'我的二维码'**
+  String get myQrCode;
 }
 
 class _AppLocalizationsDelegate

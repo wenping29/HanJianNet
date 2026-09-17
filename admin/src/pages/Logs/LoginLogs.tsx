@@ -97,7 +97,7 @@ export default function LoginLogs() {
   }
 
   return (
-    <div className="container-page py-10">
+    <div className="container-page py-5">
       <SectionTitle zh={t('logs.loginLogs.title')} en="Login Audits" />
 
       <form

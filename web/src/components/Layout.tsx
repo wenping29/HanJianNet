@@ -3,9 +3,11 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { useAuth } from '../stores/auth'
+import { useConfig } from '../stores/config'
 import type { Revision, WebMenu } from '../types'
 import { headerMenuItemStyle,footerContainerPageStyle } from '../style'
 import LanguageSwitcher from './LanguageSwitcher'
+import ThemeSwitcher from './ThemeSwitcher'
 /** 后端不可用时的兜底菜单 */
 const FALLBACK_MENUS: WebMenu[] = [
   { id: 'fb1', key: 'home', path: '/', label: '首页', sort: 1, isEnabled: true },
@@ -44,6 +46,8 @@ export default function Layout() {
   const [menus, setMenus] = useState<WebMenu[]>(FALLBACK_MENUS)
   const [visitStats, setVisitStats] = useState<{ totalVisits: number; totalVisitors: number }>({ totalVisits: 123456, totalVisitors: 56789 })
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const visitorToken = useRef<string | null>(null)
+  const lastTrackedPath = useRef<string | null>(null)
 
   // 路由切换时自动收起移动端菜单
   useEffect(() => {
@@ -65,6 +69,11 @@ export default function Layout() {
     return () => {
       cancelled = true
     }
+  }, [])
+
+  // 加载系统配置（web 端公开配置，后端不可用时静默降级到 fallback）
+  useEffect(() => {
+    useConfig.getState().load()
   }, [])
 
   // 获取通知数量：已审核（approved/rejected）的提交记录数
@@ -91,7 +100,7 @@ export default function Layout() {
     }
   }, [user])
 
-  // 访客统计：生成/读取访客 token，同会话只计一次访问，并加载统计
+  // 访客标识：生成/读取访客 token 并加载累计统计
   useEffect(() => {
     let cancelled = false
     let token = localStorage.getItem('hanjian_visitor')
@@ -102,10 +111,7 @@ export default function Layout() {
           : `v-${Date.now()}-${Math.random().toString(36).slice(2)}`
       localStorage.setItem('hanjian_visitor', token)
     }
-    if (!sessionStorage.getItem('hanjian_visit_tracked')) {
-      sessionStorage.setItem('hanjian_visit_tracked', '1')
-      api.trackVisit(token).catch(() => {})
-    }
+    visitorToken.current = token
     api
       .getVisitStats()
       .then((r) => {
@@ -116,6 +122,16 @@ export default function Layout() {
       cancelled = true
     }
   }, [])
+
+  // 浏览量（PV）：每次路由切换上报一次；只记 pathname，不带 query，
+  // 避免筛选条件把同一页面拆成多条。ref 去重是为了抵消 StrictMode 下的重复执行。
+  useEffect(() => {
+    const token = visitorToken.current
+    if (!token) return
+    if (lastTrackedPath.current === location.pathname) return
+    lastTrackedPath.current = location.pathname
+    api.trackVisit(token, location.pathname).catch(() => {})
+  }, [location.pathname])
 
   function openMenu() {
     if (closeTimer.current) {
@@ -171,6 +187,7 @@ export default function Layout() {
 
           {/* 右：桌面用户区（≥1024px 显示） */}
           <div className="hidden shrink-0 items-center justify-end gap-3 lg:flex">
+            <ThemeSwitcher />
             <LanguageSwitcher />
             {user ? (
               <div
@@ -184,7 +201,7 @@ export default function Layout() {
                     {user.username.slice(0, 1).toUpperCase()}
                     {/* 通知数量徽标 */}
                     {notifCount > 0 && (
-                      <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-ink bg-cinnabar px-1 font-garamond text-[10px] font-bold leading-none text-paper">
+                      <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-ink bg-cinnabar px-1 font-garamond text-[10px] font-bold leading-none text-paperlight">
                         {notifCount > 99 ? '99+' : notifCount}
                       </span>
                     )}
@@ -279,7 +296,8 @@ export default function Layout() {
           />
           <div className="fixed inset-x-0 top-16 z-50 max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-paperedge/15 bg-inkcard shadow-card animate-fade-up">
             <nav className="container-page flex flex-col py-2">
-              <div className="flex justify-end px-2 py-1.5">
+              <div className="flex justify-end gap-2 px-2 py-1.5">
+                <ThemeSwitcher />
                 <LanguageSwitcher />
               </div>
               {menus.map((m) => (

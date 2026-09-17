@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/models.dart';
+import '../services/api_client.dart';
 import '../widgets/theme.dart';
 
 /// 首页人物卡片墙的卡片。
@@ -24,7 +25,7 @@ class TraitorCard extends StatelessWidget {
               aspectRatio: 4 / 3,
               child: t.photoUrl != null
                   ? Image.network(
-                      t.photoUrl!,
+                      resolveAssetUrl(t.photoUrl!),
                       fit: BoxFit.cover,
                       errorBuilder: (_, _, _) => _placeholder(t.name),
                     )
@@ -42,7 +43,7 @@ class TraitorCard extends StatelessWidget {
                           t.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 2, color: AppTheme.paper),
                         ),
                       ),

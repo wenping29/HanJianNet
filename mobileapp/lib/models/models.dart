@@ -8,6 +8,14 @@ class User {
   final String username;
   final String email;
   final String role;
+  final String? avatarUrl;
+  final String? gender; // male / female / secret
+  final String? birthday; // yyyy-MM-dd
+  final String? address;
+  final String? phone;
+  final String? nickname; // 可修改的显示名
+  final String? signature;
+  final String? region;
   final String? createdAt;
 
   const User({
@@ -15,6 +23,14 @@ class User {
     required this.username,
     required this.email,
     required this.role,
+    this.avatarUrl,
+    this.gender,
+    this.birthday,
+    this.address,
+    this.phone,
+    this.nickname,
+    this.signature,
+    this.region,
     this.createdAt,
   });
 
@@ -23,8 +39,87 @@ class User {
         username: j['username'] as String,
         email: (j['email'] as String?) ?? '',
         role: (j['role'] as String?) ?? 'user',
+        avatarUrl: j['avatarUrl'] as String?,
+        gender: j['gender'] as String?,
+        birthday: j['birthday'] as String?,
+        address: j['address'] as String?,
+        phone: j['phone'] as String?,
+        nickname: j['nickname'] as String?,
+        signature: j['signature'] as String?,
+        region: j['region'] as String?,
         createdAt: j['createdAt'] as String?,
       );
+}
+
+/// 站内通知（避免与 Flutter 框架的 Notification 类同名，命名为 NoticeItem）。
+class NoticeItem {
+  final String id;
+  final String type; // revision_approved / revision_rejected
+  final String referenceName;
+  final String? comment;
+  final String? revisionId;
+  final bool isRead;
+  final String? createdAt;
+
+  const NoticeItem({
+    required this.id,
+    required this.type,
+    required this.referenceName,
+    this.comment,
+    this.revisionId,
+    required this.isRead,
+    this.createdAt,
+  });
+
+  factory NoticeItem.fromJson(Json j) => NoticeItem(
+        id: j['id'] as String,
+        type: (j['type'] as String?) ?? '',
+        referenceName: (j['referenceName'] as String?) ?? '',
+        comment: j['comment'] as String?,
+        revisionId: j['revisionId'] as String?,
+        isRead: (j['isRead'] as bool?) ?? false,
+        createdAt: j['createdAt'] as String?,
+      );
+
+  NoticeItem copyWith({bool? isRead}) => NoticeItem(
+        id: id,
+        type: type,
+        referenceName: referenceName,
+        comment: comment,
+        revisionId: revisionId,
+        isRead: isRead ?? this.isRead,
+        createdAt: createdAt,
+      );
+}
+
+class NotificationListResult {
+  final List<NoticeItem> items;
+  final int unreadCount;
+
+  const NotificationListResult({required this.items, required this.unreadCount});
+}
+
+/// 分省统计项：province 为简称（如「河南」），fullName 与地图 GeoJSON 名称一致（如「河南省」）。
+class ProvinceStat {
+  final String province;
+  final String fullName;
+  final int count;
+
+  const ProvinceStat({required this.province, required this.fullName, required this.count});
+
+  factory ProvinceStat.fromJson(Json j) => ProvinceStat(
+        province: (j['province'] as String?) ?? '',
+        fullName: (j['fullName'] as String?) ?? '',
+        count: (j['count'] as num?)?.toInt() ?? 0,
+      );
+}
+
+class ProvinceStatsResult {
+  final List<ProvinceStat> items;
+  final int total;
+  final int matched;
+
+  const ProvinceStatsResult({required this.items, required this.total, required this.matched});
 }
 
 class Spouse {
@@ -149,6 +244,9 @@ class Traitor {
   final String birthYearType;
   final String deathYearType;
   final String nativePlace;
+  final String birthPlace;
+  final String province;
+  final String? title;
   final List<String> aliases;
   final List<String> identityTags;
   final String period;
@@ -163,6 +261,9 @@ class Traitor {
   final List<LifeEvent> lifeEvents;
   final List<String> relatedIds;
 
+  /// 列表/摘要接口直接下发的头像 URL；详情接口无此字段，回退到 attachments 推导。
+  final String? photo;
+
   const Traitor({
     required this.id,
     required this.name,
@@ -173,6 +274,9 @@ class Traitor {
     this.birthYearType = 'exact',
     this.deathYearType = 'exact',
     this.nativePlace = '',
+    this.birthPlace = '',
+    this.province = '',
+    this.title,
     this.aliases = const [],
     this.identityTags = const [],
     this.period = '',
@@ -186,9 +290,11 @@ class Traitor {
     this.sources = const [],
     this.lifeEvents = const [],
     this.relatedIds = const [],
+    this.photo,
   });
 
   String? get photoUrl {
+    if (photo != null && photo!.isNotEmpty) return photo;
     for (final a in attachments) {
       if (a.isPhoto) return a.url;
     }
@@ -205,6 +311,9 @@ class Traitor {
         birthYearType: (j['birthYearType'] as String?) ?? 'exact',
         deathYearType: (j['deathYearType'] as String?) ?? 'exact',
         nativePlace: (j['nativePlace'] as String?) ?? '',
+        birthPlace: (j['birthPlace'] as String?) ?? '',
+        province: (j['province'] as String?) ?? '',
+        title: j['title'] as String?,
         aliases: ((j['aliases'] as List?) ?? const []).cast<String>(),
         identityTags: ((j['identityTags'] as List?) ?? const []).cast<String>(),
         period: (j['period'] as String?) ?? '',
@@ -232,6 +341,7 @@ class Traitor {
             .map((e) => LifeEvent.fromJson(e as Json))
             .toList(),
         relatedIds: ((j['relatedIds'] as List?) ?? const []).cast<String>(),
+        photo: j['photoUrl'] as String?,
       );
 }
 

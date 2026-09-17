@@ -59,9 +59,9 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
 
     [Authorize(Roles = "admin,superadmin")]
     [HttpGet("api/admin/traitors")]
-    public async Task<IActionResult> AdminList([FromQuery] string? name, [FromQuery] int? harmLevel, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> AdminList([FromQuery] string? name, [FromQuery] int? harmLevel, [FromQuery] bool? hasPhoto, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var paged = await traitors.AdminListAsync(name, harmLevel, page, pageSize);
+        var paged = await traitors.AdminListAsync(name, harmLevel, hasPhoto, page, pageSize);
         return Ok(new { paged.Items, paged.Total, paged.Page, paged.PageSize, paged.TotalPages });
     }
 
@@ -96,6 +96,46 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
     }
 
     [Authorize(Roles = "admin,superadmin")]
+    [HttpDelete("api/admin/traitors/{id}/photos")]
+    public async Task<IActionResult> AdminDeletePhotos(string id)
+    {
+        var count = await traitors.AdminDeletePhotosAsync(id);
+        return Ok(new { message = "照片已删除", count });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/traitors/batch-delete")]
+    public async Task<IActionResult> AdminBatchDelete([FromBody] BatchIdsRequest req)
+    {
+        var count = await traitors.AdminBatchDeleteAsync(req.Ids);
+        return Ok(new { message = "批量删除成功", count });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPatch("api/admin/traitors/{id}/harm-level")]
+    public async Task<IActionResult> AdminUpdateHarmLevel(string id, [FromBody] UpdateHarmLevelRequest req)
+    {
+        await traitors.AdminUpdateHarmLevelAsync(id, req.HarmLevel);
+        return Ok(new { message = "危害等级已更新" });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/traitors/batch-delete-photos")]
+    public async Task<IActionResult> AdminBatchDeletePhotos([FromBody] BatchIdsRequest req)
+    {
+        var count = await traitors.AdminBatchDeletePhotosAsync(req.Ids);
+        return Ok(new { message = "照片已删除", count });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/traitors/batch-export")]
+    public async Task<IActionResult> AdminBatchExport([FromBody] BatchIdsRequest req)
+    {
+        var items = await traitors.AdminExportAsync(req.Ids);
+        return Ok(new { items });
+    }
+
+    [Authorize(Roles = "admin,superadmin")]
     [HttpPost("api/admin/traitors/ai-query")]
     public async Task<IActionResult> AdminAiQuery([FromBody] AiTraitorQueryDto req)
     {
@@ -108,4 +148,17 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
 public class TraitorSubmitRequest : TraitorInputDto
 {
     public string ChangeSummary { get; set; } = "";
+}
+
+/// <summary>批量操作请求：Id 列表。</summary>
+public class BatchIdsRequest
+{
+    public List<string> Ids { get; set; } = [];
+}
+
+/// <summary>更新危害等级请求。</summary>
+public class UpdateHarmLevelRequest
+{
+    /// <summary>危害度分级：1=特级 … 7=己级；null=未分级</summary>
+    public int? HarmLevel { get; set; }
 }

@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} records · Page {{page}} / {{totalPages}}",
     "empty": "No records match the criteria",
     "colIndex": "#",
+    "colAvatar": "Portrait",
     "colName": "Name",
     "colPeriod": "Period",
     "colFaction": "Faction",
@@ -460,5 +461,12 @@
   "notFound": {
     "title": "Document Not Found",
     "message": "The page you visited does not exist or has been removed."
+  },
+  "theme": {
+    "title": "Theme",
+    "ink": "Ink",
+    "paper": "Xuan Paper",
+    "cinnabar": "Cinnabar",
+    "bamboo": "Bamboo"
   }
 }

@@ -137,6 +137,7 @@
     "totalRecords": "全 {{total}} 件 · {{page}} / {{totalPages}} ページ",
     "empty": "条件に一致する記録はありません",
     "colIndex": "No.",
+    "colAvatar": "肖像",
     "colName": "名前",
     "colPeriod": "時代",
     "colFaction": "派閥",
@@ -448,5 +449,12 @@
   "notFound": {
     "title": "文書が見つかりません",
     "message": "アクセスしたページは存在しないか、削除されています。"
+  },
+  "theme": {
+    "title": "テーマ",
+    "ink": "墨",
+    "paper": "宣紙",
+    "cinnabar": "朱砂",
+    "bamboo": "青竹"
   }
 }

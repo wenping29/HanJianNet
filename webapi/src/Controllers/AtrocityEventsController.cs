@@ -7,7 +7,7 @@ namespace HanJianNet.WebApi.Controllers;
 
 /// <summary>历史事件（惨案/宏观事件）。公开读取列表与详情；新增需登录。</summary>
 [ApiController]
-public class AtrocityEventsController(AtrocityCaseService service) : ControllerBase
+public class AtrocityEventsController(AtrocityCaseService service, AiService ai) : ControllerBase
 {
     [HttpGet("api/atrocity-events")]
     public async Task<IActionResult> List([FromQuery] string? era)
@@ -26,4 +26,9 @@ public class AtrocityEventsController(AtrocityCaseService service) : ControllerB
     [HttpPut("api/atrocity-events/{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] AtrocityEventInputDto input)
         => Ok(new { item = await service.UpdateAsync(id, input) });
+
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPost("api/admin/atrocity-events/ai-query")]
+    public async Task<IActionResult> AdminAiQuery([FromBody] AiEventQueryDto req)
+        => Ok(new { result = await ai.QueryEventAsync(req.Name) });
 }

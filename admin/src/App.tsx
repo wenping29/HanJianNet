@@ -6,6 +6,7 @@ import LoginLogs from './pages/Logs/LoginLogs'
 import OperationLogs from './pages/Logs/OperationLogs'
 import QueryLogs from './pages/Logs/QueryLogs'
 import ErrorLogs from './pages/Logs/ErrorLogs'
+import Dashboard from './pages/Dashboard'
 import Events from './pages/Events'
 import Menus from './pages/Menus'
 import NotFound from './pages/NotFound'
@@ -13,6 +14,7 @@ import Profile from './pages/Profile'
 import ReviewDetail from './pages/ReviewDetail'
 import Reviews from './pages/Reviews'
 import Roles from './pages/Roles'
+import SystemConfig from './pages/SystemConfig'
 import TraitorBasicEdit from './pages/TraitorBasicEdit'
 import TraitorEditor from './pages/TraitorEditor'
 // import Traitors from './pages/Traitors'
@@ -20,8 +22,14 @@ import TraitorsList from './pages/Traitors'
 import MergeTraitors from './pages/MergeTraitors'
 import Users from './pages/Users'
 import WebMenus from './pages/WebMenus'
-import { canManageUsers } from './lib/roles'
+import { canManageUsers, defaultLandingPath } from './lib/roles'
 import { useAuth } from './stores/auth'
+
+/** 根路径按角色分流：管理员进数据看板，其余进审核列表 */
+function HomeRedirect() {
+  const user = useAuth((s) => s.user)
+  return <Navigate to={user ? defaultLandingPath(user.role) : '/reviews'} replace />
+}
 
 function AdminOnlyRoute() {
   const user = useAuth((s) => s.user)
@@ -43,18 +51,21 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route element={<ProtectedRoute />}>
+        <Route element={<AdminOnlyRoute />}>
+          {/* 编辑档案页：独立新页签打开，不含后台菜单（Layout） */}
+          <Route path="/traitors/:id/edit" element={<TraitorEditor mode="edit" />} />
+          <Route path="/events/:id/edit" element={<Events />} />
+        </Route>
         <Route element={<Layout />}>
-          <Route path="/" element={<Navigate to="/reviews" replace />} />
-         
+          <Route path="/" element={<HomeRedirect />} />
+          
           <Route element={<AdminOnlyRoute />}>
             <Route path="/traitors/new" element={<TraitorEditor mode="create" />} />
             <Route path="/traitors/merge" element={<MergeTraitors />} />
             <Route path="/traitors/list" element={<TraitorsList />} />
             <Route path="/traitors/basic-edit" element={<TraitorBasicEdit />} />
             <Route path="/traitors/basic-edit/:id" element={<TraitorBasicEdit />} />
-            <Route path="/traitors/:id/edit" element={<TraitorEditor mode="edit" />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/events/:id/edit" element={<Events />} />
           </Route>
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/reviews/:rid" element={<ReviewDetail />} />
@@ -63,6 +74,8 @@ export default function App() {
           <Route path="/menus" element={<Menus />} />
           <Route path="/web-menus" element={<WebMenus />} />
           <Route element={<AdminOnlyRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/settings" element={<SystemConfig />} />
             <Route path="/logs/login" element={<LoginLogs />} />
             <Route path="/logs/operation" element={<OperationLogs />} />
             <Route path="/logs/query" element={<QueryLogs />} />

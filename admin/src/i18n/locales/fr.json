@@ -1,5 +1,6 @@
 {
   "menu": {
+    "dashboard": "Tableau de bord",
     "traitors": "Gestion des traîtres",
     "traitors-list": "Gestion de la liste",
     "edit-traitor": "Édition des informations de base",
@@ -12,6 +13,7 @@
     "roles": "Gestion des rôles",
     "menus": "Gestion des menus",
     "web-menus": "Menus du site",
+    "system-config": "Configuration du système",
     "profile": "Profil",
     "logs-login": "Journaux de connexion",
     "logs-operation": "Journaux d'opérations",
@@ -93,7 +95,9 @@
     "registeredAt": "Inscrit le",
     "resetFailed": "Échec de la réinitialisation",
     "requestFailed": "Requête échouée ({{status}})",
-    "uploadFailed": "Échec de l'envoi"
+    "uploadFailed": "Échec de l'envoi",
+    "select": "Sélectionner « {{name}} »",
+    "view": "Voir"
   },
   "sidebar": {
     "archives": "Archives",
@@ -164,11 +168,21 @@
     "title": "Gestion des traîtres",
     "searchPlaceholder": "Rechercher par nom / alias",
     "newTraitor": "Nouveau traître",
+    "hasPhoto": "Filtre photo",
+    "withPhoto": "Avec photo",
+    "withoutPhoto": "Sans photo",
     "noArchives": "Aucune archive",
     "edit": "Modifier",
     "deleteConfirm": "Supprimer le traître « {{name}} » ? Cette action est irréversible et supprimera également tous les enregistrements associés tels que les crimes.",
     "deleteSuccess": "Supprimé",
     "deleteFailed": "Échec de la suppression",
+    "deletePhotos": "Supprimer les photos",
+    "deletePhotosConfirm": "Supprimer toutes les photos du traître « {{name}} » ? Cette action est irréversible et supprimera également les fichiers image téléchargés localement.",
+    "deletePhotosSuccess": "Photos supprimées",
+    "deletePhotosFailed": "Échec de la suppression des photos",
+    "updateHarmLevel": "Modifier le niveau de danger",
+    "harmLevelUpdated": "Niveau de danger mis à jour",
+    "harmLevelUpdateFailed": "Échec de la mise à jour du niveau",
     "totalRecords": "{{total}} enregistrements · Page {{page}} / {{totalPages}}"
   },
   "merge": {
@@ -331,6 +345,60 @@
     "operationFailed": "Opération échouée",
     "updateSuccess": "Menu « {{label}} » mis à jour",
     "updateFailed": "Échec de l'enregistrement"
+  },
+  "systemConfig": {
+    "title": "Configuration du système",
+    "description": "Gérer les éléments de configuration clé-valeur pour web, webapi, mobileapp.",
+    "hint": "Les modifications sont effectives immédiatement sans redémarrer le frontend.",
+    "noData": "Aucune donnée de configuration système",
+    "startBackend": "Veuillez démarrer le backend, les données seed seront créées automatiquement",
+    "key": "Clé",
+    "value": "Valeur",
+    "description": "Description",
+    "updatedAt": "Mis à jour le",
+    "edit": "Modifier",
+    "editTitle": "Modifier la configuration système",
+    "keyNotModifiable": "La clé {{key}} ne peut pas être modifiée",
+    "toggleOn": "Cliquer pour activer",
+    "toggleOff": "Cliquer pour désactiver",
+    "valuePlaceholder": "Saisir la valeur de configuration",
+    "descriptionPlaceholder": "Saisir une description (facultatif)",
+    "updateSuccess": "Configuration {{key}} mise à jour",
+    "updateFailed": "Échec de l'enregistrement"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "serverStatus": "État du serveur",
+    "databaseStatus": "État de la base de données",
+    "normal": "Normal",
+    "abnormal": "Anormal",
+    "machineName": "Nom d'hôte",
+    "os": "Système d'exploitation",
+    "environment": "Environnement",
+    "framework": "Runtime",
+    "cpuCores": "Cœurs CPU",
+    "memory": "Mémoire utilisée",
+    "managedMemory": "Mémoire managée",
+    "uptime": "Durée (processus)",
+    "startedAt": "Démarré le",
+    "osUptime": "Durée du système",
+    "dbProvider": "Type de base",
+    "dbName": "Base de données",
+    "dbVersion": "Version de la base",
+    "dbLatency": "Temps de réponse",
+    "traitorCount": "Traîtres",
+    "visitorCount": "Visiteurs",
+    "pageViewCount": "Pages vues",
+    "userCount": "Utilisateurs",
+    "activeUserCount": "Utilisateurs actifs",
+    "queryCount": "Requêtes",
+    "dailyLoginTitle": "Utilisateurs connectés par jour",
+    "days": "{{count}} derniers jours",
+    "noTrendData": "Aucune donnée de connexion",
+    "unitDay": "j ",
+    "unitHour": "h ",
+    "unitMin": "min ",
+    "unitSec": "s"
   },
   "profile": {
     "title": "Profil",
@@ -498,7 +566,10 @@
       "changeSummaryPlaceholder": "Décrivez brièvement le contenu de cette soumission/modification pour référence de la révision"
     },
     "saveDraft": "Enregistrer l'archive directement",
-    "saveChanges": "Enregistrer les modifications"
+    "saveChanges": "Enregistrer les modifications",
+    "preview": "Aperçu",
+    "previewLive": "Aperçu en direct",
+    "previewHint": "Cliquez sur « Aperçu » pour visualiser l'archive dans une fenêtre contextuelle."
   },
   "profileTab": {
     "title": "Profil"
@@ -573,6 +644,20 @@
     "fieldColumn": "Champ",
     "replaceCheck": "Remplacer ?",
     "originalValue": "Données d'archive actuelles"
+  },
+  "aiQueryEvent": {
+    "queryAction": "Recherche IA",
+    "queryTitle": "Recherche IA: {{name}}",
+    "querying": "Recherche de l\u2019histoire de l\u2019événement via DeepSeek (10–60 s), veuillez patienter…",
+    "queryFailed": "Échec de la recherche IA",
+    "retry": "Réessayer",
+    "fillToEditor": "Remplir dans l'éditeur",
+    "applied": "Résultat IA appliqué au formulaire. Veuillez vérifier avant d'enregistrer.",
+    "empty": "(aucun)",
+    "originalColumn": "Données d'archive actuelles",
+    "aiColumn": "Résultat de la requête IA",
+    "fieldColumn": "Champ",
+    "replaceCheck": "Remplacer ?"
   },
   "periods": {
     "lateSong": "Fin des Song",

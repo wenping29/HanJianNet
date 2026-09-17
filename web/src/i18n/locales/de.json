@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} Einträge · Seite {{page}} / {{totalPages}}",
     "empty": "Keine Einträge gefunden",
     "colIndex": "Nr.",
+    "colAvatar": "Porträt",
     "colName": "Name",
     "colPeriod": "Zeitraum",
     "colFaction": "Fraktion",
@@ -448,5 +449,12 @@
   "notFound": {
     "title": "Seite nicht gefunden",
     "message": "Die angeforderte Seite existiert nicht oder wurde entfernt."
+  },
+  "theme": {
+    "title": "Design",
+    "ink": "Tusche",
+    "paper": "Xuan-Papier",
+    "cinnabar": "Zinnober",
+    "bamboo": "Bambus"
   }
 }

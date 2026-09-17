@@ -1,5 +1,6 @@
 {
   "menu": {
+    "dashboard": "Dashboard",
     "traitors": "Traitor Management",
     "traitors-list": "Roster Management",
     "edit-traitor": "Basic Info Editor",
@@ -12,6 +13,7 @@
     "roles": "Role Management",
     "menus": "Menu Management",
     "web-menus": "Site Menus",
+    "system-config": "System Configuration",
     "profile": "Profile",
     "logs-login": "Login Logs",
     "logs-operation": "Operation Logs",
@@ -93,7 +95,9 @@
     "registeredAt": "Registered At",
     "resetFailed": "Reset failed",
     "requestFailed": "Request failed ({{status}})",
-    "uploadFailed": "Upload failed"
+    "uploadFailed": "Upload failed",
+    "select": "Select \"{{name}}\"",
+    "view": "View"
   },
   "sidebar": {
     "archives": "Archives",
@@ -164,11 +168,21 @@
     "title": "Traitor Management",
     "searchPlaceholder": "Search by name / alias",
     "newTraitor": "New Traitor",
+    "hasPhoto": "Photo Filter",
+    "withPhoto": "With Photo",
+    "withoutPhoto": "No Photo",
     "noArchives": "No archives",
     "edit": "Edit",
     "deleteConfirm": "Delete traitor \"{{name}}\"? This action cannot be undone and will also delete all related records such as crimes.",
     "deleteSuccess": "Deleted",
     "deleteFailed": "Deletion failed",
+    "deletePhotos": "Delete Photos",
+    "deletePhotosConfirm": "Delete all photos of traitor \"{{name}}\"? This cannot be undone and will also remove locally uploaded image files.",
+    "deletePhotosSuccess": "Photos deleted",
+    "deletePhotosFailed": "Failed to delete photos",
+    "updateHarmLevel": "Update Harm Level",
+    "harmLevelUpdated": "Harm level updated",
+    "harmLevelUpdateFailed": "Failed to update harm level",
     "totalRecords": "{{total}} records · Page {{page}} / {{totalPages}}"
   },
   "merge": {
@@ -373,6 +387,60 @@
     "updateSuccess": "Menu \"{{label}}\" updated",
     "updateFailed": "Save failed"
   },
+  "systemConfig": {
+    "title": "System Configuration",
+    "description": "Manage key-value configuration items for web, webapi, mobileapp.",
+    "hint": "Changes take effect immediately without restarting the frontend.",
+    "noData": "No system configuration data",
+    "startBackend": "Please start the backend service, seed data will be created automatically",
+    "key": "Key",
+    "value": "Value",
+    "description": "Description",
+    "updatedAt": "Updated At",
+    "edit": "Edit",
+    "editTitle": "Modify System Configuration",
+    "keyNotModifiable": "Key {{key}} cannot be modified",
+    "toggleOn": "Click to turn on",
+    "toggleOff": "Click to turn off",
+    "valuePlaceholder": "Enter config value",
+    "descriptionPlaceholder": "Enter description (optional)",
+    "updateSuccess": "Config {{key}} updated",
+    "updateFailed": "Save failed"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "serverStatus": "Server Status",
+    "databaseStatus": "Database Status",
+    "normal": "Normal",
+    "abnormal": "Abnormal",
+    "machineName": "Hostname",
+    "os": "Operating System",
+    "environment": "Environment",
+    "framework": "Runtime",
+    "cpuCores": "CPU Cores",
+    "memory": "Memory Usage",
+    "managedMemory": "Managed Memory",
+    "uptime": "Process Uptime",
+    "startedAt": "Started At",
+    "osUptime": "System Uptime",
+    "dbProvider": "Database Type",
+    "dbName": "Database",
+    "dbVersion": "Database Version",
+    "dbLatency": "Response Time",
+    "traitorCount": "Traitors",
+    "visitorCount": "Visitors",
+    "pageViewCount": "Page Views",
+    "userCount": "Users",
+    "activeUserCount": "Active Users",
+    "queryCount": "Queries",
+    "dailyLoginTitle": "Daily Login Users",
+    "days": "Last {{count}} days",
+    "noTrendData": "No login data yet",
+    "unitDay": "d ",
+    "unitHour": "h ",
+    "unitMin": "m ",
+    "unitSec": "s"
+  },
   "profile": {
     "title": "Profile",
     "usernameLabel": "Username: ",
@@ -539,7 +607,10 @@
       "changeSummaryPlaceholder": "Briefly describe the content of this submission/modification for review reference"
     },
     "saveDraft": "Save Archive Directly",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "preview": "Preview",
+    "previewLive": "Live Preview",
+    "previewHint": "Click the \"Preview\" button to view the archive in a popup."
   },
   "profileTab": {
     "title": "Profile"
@@ -614,6 +685,20 @@
     "fieldColumn": "Field",
     "replaceCheck": "Replace?",
     "originalValue": "Current archive data"
+  },
+  "aiQueryEvent": {
+    "queryAction": "AI Query",
+    "queryTitle": "AI research: {{name}}",
+    "querying": "Researching event history via DeepSeek (10–60 s), please wait…",
+    "queryFailed": "AI query failed",
+    "retry": "Retry",
+    "fillToEditor": "Fill into editor",
+    "applied": "AI result applied to the form. Please verify before saving.",
+    "empty": "(none)",
+    "originalColumn": "Current archive data",
+    "aiColumn": "AI query result",
+    "fieldColumn": "Field",
+    "replaceCheck": "Replace?"
   },
   "periods": {
     "lateSong": "Late Song",

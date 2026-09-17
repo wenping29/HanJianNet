@@ -5,16 +5,23 @@ import type { TraitorSummary } from '../types'
 import { formatLifeSpan, harmLevelClass, harmLevelLabel } from '../lib/format'
 import { resolveAssetUrl } from '../lib/api'
 
-export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
+export default function TraitorCard({
+  traitor,
+  showPhoto = true,
+}: {
+  traitor: TraitorSummary
+  /** 是否展示照片；关闭时回退到姓名首字占位（由系统配置 web.home.cardShowPhoto 控制） */
+  showPhoto?: boolean
+}) {
   const { t } = useTranslation()
   const [photoFailed, setPhotoFailed] = useState(false)
-  const hasPhoto = !!traitor.photoUrl && !photoFailed
+  const hasPhoto = showPhoto && !!traitor.photoUrl && !photoFailed
   return (
     <Link
       to={`/traitor/${traitor.id}`}
       className="card group block overflow-hidden transition hover:-translate-y-1 hover:border-bronze/50"
     >
-      <div className="flex h-36 items-center justify-center overflow-hidden border-b border-paperedge/10 bg-gradient-to-br from-inksoft to-ink">
+      <div className="flex aspect-square items-center justify-center overflow-hidden border-b border-paperedge/10 bg-gradient-to-br from-inksoft to-ink">
         {hasPhoto ? (
           <img
             src={resolveAssetUrl(traitor.photoUrl!)}
@@ -24,9 +31,11 @@ export default function TraitorCard({ traitor }: { traitor: TraitorSummary }) {
             onError={() => setPhotoFailed(true)}
           />
         ) : (
-          <span className="font-song text-5xl font-bold text-paperedge/20 transition group-hover:text-cinnabar/40">
-            {traitor.name.slice(0, 1)}
-          </span>
+          <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-bronze/40 bg-inksoft/60 transition group-hover:border-cinnabar/60">
+            <span className="font-song text-4xl font-bold text-bronzelight/80 transition group-hover:text-cinnabarlight">
+              {traitor.name.slice(0, 1)}
+            </span>
+          </div>
         )}
       </div>
       <div className="p-4">

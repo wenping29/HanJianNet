@@ -68,7 +68,7 @@ class SectionHeader extends StatelessWidget {
           Container(width: 3, height: 16, color: AppTheme.cinnabar),
           const SizedBox(width: 10),
           Text(title,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 17, fontWeight: FontWeight.w600, letterSpacing: 4, color: AppTheme.paper)),
           if (en.isNotEmpty) ...[
             const SizedBox(width: 10),

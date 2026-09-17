@@ -9,6 +9,7 @@ import { PERIODS, PERIOD_META, periodLabel } from '../lib/format'
 import type { TraitorStats, TraitorSummary } from '../types'
 
 import { containerPageStyle } from '../style'
+import { useConfig } from '../stores/config'
 
 
 
@@ -44,7 +45,6 @@ function StatCard({ label, value }: { label: string; value: number }) {
   )
 }
 
-const PAGE_SIZE = 20
 const EMPTY_FILTERS: TraitorFilters = { name: '', yearFrom: undefined, yearTo: undefined, event: '', period: undefined }
 
 /** 生成分页按钮上显示的页码列表：首尾页 + 当前页附近 + 省略号 */
@@ -69,6 +69,8 @@ function buildPageList(current: number, total: number): (number | '...')[] {
 
 export default function Home() {
   const { t } = useTranslation()
+  const pageSize = useConfig((s) => s.getPageSize('web.home.pageSize', 20))
+  const showCardPhoto = useConfig((s) => s.getBoolean('web.home.cardShowPhoto', true))
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [stats, setStats] = useState<TraitorStats | null>(null)
   const [filters, setFilters] = useState<TraitorFilters>(EMPTY_FILTERS)
@@ -78,13 +80,13 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const wallRef = useRef<HTMLDivElement>(null)
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   const loadList = useCallback(async (f: TraitorFilters, p: number) => {
     setLoading(true)
     setError('')
     try {
-      const data = await api.listTraitors({ ...f, page: p, pageSize: PAGE_SIZE })
+      const data = await api.listTraitors({ ...f, page: p, pageSize })
       setItems(data.items)
       setTotal(data.total)
       setPage(data.page)
@@ -95,7 +97,7 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
-  }, [t])
+  }, [t, pageSize])
 
   useEffect(() => {
     loadList(EMPTY_FILTERS, 1)
@@ -148,7 +150,7 @@ export default function Home() {
         </div>
       </section>
                   {/* 统计看板 */}
-      <section className="container-page -mt-2 py-2">
+      <section className="container-page -mt-2 py-4">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard label={t('home.statTotal')} value={stats?.total ?? 0} />
           <StatCard label={t('home.statConvicted')} value={stats?.sentenced ?? 0} />
@@ -257,9 +259,9 @@ export default function Home() {
           <p className="py-16 text-center text-paperdim">{t('home.noResults')}</p>
         )}
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {items.map((t) => (
-            <TraitorCard key={t.id} traitor={t} />
+            <TraitorCard key={t.id} traitor={t} showPhoto={showCardPhoto} />
           ))}
         </div>
 

@@ -9,11 +9,11 @@ namespace HanJianNet.WebApi.Controllers;
 [ApiController]
 public class VisitsController(VisitService visits) : ControllerBase
 {
-    /// <summary>POST 记录一次前台访问（body: { token }）。</summary>
+    /// <summary>POST 记录一次前台页面访问（body: { token, path }）。</summary>
     [HttpPost("api/visits/track")]
     public async Task<IActionResult> Track([FromBody] TrackVisitRequest req)
     {
-        await visits.TrackAsync(req.Token);
+        await visits.TrackAsync(req.Token, req.Path);
         return Ok(new { ok = true });
     }
 
@@ -25,4 +25,6 @@ public class VisitsController(VisitService visits) : ControllerBase
 public class TrackVisitRequest
 {
     public string? Token { get; set; }
+    /// <summary>被访问的前台路由 pathname，如 /roster</summary>
+    public string? Path { get; set; }
 }

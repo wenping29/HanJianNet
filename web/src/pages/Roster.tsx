@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { api } from '../lib/api'
+import { api, resolveAssetUrl } from '../lib/api'
 import type { TraitorFilters } from '../lib/api'
 import { PERIODS, periodLabel } from '../lib/format'
 import { formatLifeSpan } from '../lib/format'
 import { harmLevelClass, harmLevelLabel } from '../lib/format'
 import type { TraitorSummary } from '../types'
 import { containerPageStyle } from '../style'
-
-const PAGE_SIZE = 20
+import { useConfig } from '../stores/config'
 
 /** 生成分页按钮上显示的页码列表：首尾页 + 当前页附近 + 省略号 */
 function buildPageList(current: number, total: number): (number | '...')[] {
@@ -31,8 +30,31 @@ function buildPageList(current: number, total: number): (number | '...')[] {
   return windows
 }
 
+/** 名录表格中的头像单元格：有照片显示照片，加载失败或无照片时回退为姓名首字 */
+function RosterAvatar({ traitor, showAvatar = true }: { traitor: TraitorSummary; showAvatar?: boolean }) {
+  const [photoFailed, setPhotoFailed] = useState(false)
+  if (showAvatar && traitor.photoUrl && !photoFailed) {
+    return (
+      <img
+        src={resolveAssetUrl(traitor.photoUrl)}
+        alt={traitor.name}
+        loading="lazy"
+        className="h-12 w-12 rounded-full border border-paperedge/20 object-cover"
+        onError={() => setPhotoFailed(true)}
+      />
+    )
+  }
+  return (
+    <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-bronze/40 bg-inksoft/60">
+      <span className="font-song text-lg font-bold text-bronzelight/80">{traitor.name.slice(0, 1)}</span>
+    </div>
+  )
+}
+
 export default function Roster() {
   const { t } = useTranslation()
+  const pageSize = useConfig((s) => s.getPageSize('web.roster.pageSize', 20))
+  const showAvatar = useConfig((s) => s.getBoolean('web.roster.showAvatar', true))
   const [searchParams, setSearchParams] = useSearchParams()
   const [filters, setFilters] = useState<TraitorFilters>(() => ({
     name: '',
@@ -45,13 +67,13 @@ export default function Roster() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   const loadList = useCallback(async (f: TraitorFilters, p: number) => {
     setLoading(true)
     setError('')
     try {
-      const data = await api.listTraitors({ ...f, page: p, pageSize: PAGE_SIZE })
+      const data = await api.listTraitors({ ...f, page: p, pageSize: pageSize })
       setItems(data.items)
       setTotal(data.total)
       setPage(data.page)
@@ -62,7 +84,7 @@ export default function Roster() {
     } finally {
       setLoading(false)
     }
-  }, [t])
+  }, [t, pageSize])
 
   useEffect(() => {
     const province = searchParams.get('province') ?? ''
@@ -194,6 +216,7 @@ export default function Roster() {
               <thead>
                 <tr>
                   <th className="w-10 text-center">{t('roster.colIndex')}</th>
+                  <th className="text-center">{t('roster.colAvatar')}</th>
                   <th>{t('roster.colName')}</th>
                   <th>{t('roster.colTitle')}</th>
                   <th>{t('roster.colHarmLevel')}</th>
@@ -207,7 +230,10 @@ export default function Roster() {
               <tbody>
                 {items.map((tr, i) => (
                   <tr key={tr.id}>
-                    <td className="text-center font-garamond text-paperdim">{i + 1 + (page - 1) * PAGE_SIZE}</td>
+                    <td className="text-center font-garamond text-paperdim">{i + 1 + (page - 1) * pageSize}</td>
+                    <td className="px-3 py-2 text-center">
+                      <RosterAvatar traitor={tr} showAvatar={showAvatar} />
+                    </td>
                     <td>
                       <Link
                         to={`/traitor/${tr.id}`}

@@ -1,5 +1,6 @@
 {
   "menu": {
+    "dashboard": "Панель данных",
     "traitors": "Управление предателями",
     "traitors-list": "Управление списком",
     "edit-traitor": "Редактирование основных данных",
@@ -12,6 +13,7 @@
     "roles": "Управление ролями",
     "menus": "Управление меню",
     "web-menus": "Меню сайта",
+    "system-config": "Системная конфигурация",
     "profile": "Профиль",
     "logs-login": "Журналы входа",
     "logs-operation": "Журналы операций",
@@ -93,7 +95,9 @@
     "registeredAt": "Дата регистрации",
     "resetFailed": "Ошибка сброса",
     "requestFailed": "Ошибка запроса ({{status}})",
-    "uploadFailed": "Ошибка загрузки"
+    "uploadFailed": "Ошибка загрузки",
+    "select": "Выбрать «{{name}}»",
+    "view": "Просмотр"
   },
   "sidebar": {
     "archives": "Архивы",
@@ -164,11 +168,21 @@
     "title": "Управление предателями",
     "searchPlaceholder": "Поиск по имени / псевдониму",
     "newTraitor": "Новый предатель",
+    "hasPhoto": "Фильтр по фото",
+    "withPhoto": "С фото",
+    "withoutPhoto": "Без фото",
     "noArchives": "Нет архивов",
     "edit": "Редактировать",
     "deleteConfirm": "Удалить предателя «{{name}}»? Это действие нельзя отменить. Будут удалены также все связанные записи, например о преступлениях.",
     "deleteSuccess": "Удалён",
     "deleteFailed": "Ошибка удаления",
+    "deletePhotos": "Удалить фотографии",
+    "deletePhotosConfirm": "Удалить все фотографии предателя «{{name}}»? Это действие нельзя отменить, будут также удалены локально загруженные файлы изображений.",
+    "deletePhotosSuccess": "Фотографии удалены",
+    "deletePhotosFailed": "Не удалось удалить фотографии",
+    "updateHarmLevel": "Изменить уровень опасности",
+    "harmLevelUpdated": "Уровень опасности обновлён",
+    "harmLevelUpdateFailed": "Ошибка обновления уровня",
     "totalRecords": "{{total}} записей · Страница {{page}} / {{totalPages}}"
   },
   "merge": {
@@ -331,6 +345,60 @@
     "operationFailed": "Ошибка операции",
     "updateSuccess": "Меню «{{label}}» обновлено",
     "updateFailed": "Ошибка сохранения"
+  },
+  "systemConfig": {
+    "title": "Системная конфигурация",
+    "description": "Управление конфигурациями ключ-значение для web, webapi, mobileapp.",
+    "hint": "Изменения вступают в силу немедленно без перезапуска фронтенда.",
+    "noData": "Нет данных системной конфигурации",
+    "startBackend": "Запустите backend, начальные данные будут созданы автоматически",
+    "key": "Ключ",
+    "value": "Значение",
+    "description": "Описание",
+    "updatedAt": "Обновлено",
+    "edit": "Изменить",
+    "editTitle": "Изменить системную конфигурацию",
+    "keyNotModifiable": "Ключ {{key}} нельзя изменить",
+    "toggleOn": "Нажмите, чтобы включить",
+    "toggleOff": "Нажмите, чтобы выключить",
+    "valuePlaceholder": "Введите значение конфигурации",
+    "descriptionPlaceholder": "Введите описание (необязательно)",
+    "updateSuccess": "Конфигурация {{key}} обновлена",
+    "updateFailed": "Ошибка сохранения"
+  },
+  "dashboard": {
+    "title": "Панель данных",
+    "serverStatus": "Состояние сервера",
+    "databaseStatus": "Состояние базы данных",
+    "normal": "Норма",
+    "abnormal": "Сбой",
+    "machineName": "Имя хоста",
+    "os": "Операционная система",
+    "environment": "Среда",
+    "framework": "Среда выполнения",
+    "cpuCores": "Ядра CPU",
+    "memory": "Использование памяти",
+    "managedMemory": "Управляемая память",
+    "uptime": "Время работы процесса",
+    "startedAt": "Запущено",
+    "osUptime": "Время работы системы",
+    "dbProvider": "Тип базы данных",
+    "dbName": "База данных",
+    "dbVersion": "Версия базы данных",
+    "dbLatency": "Время отклика",
+    "traitorCount": "Предатели",
+    "visitorCount": "Посетители",
+    "pageViewCount": "Просмотры страниц",
+    "userCount": "Пользователи",
+    "activeUserCount": "Активные пользователи",
+    "queryCount": "Запросы",
+    "dailyLoginTitle": "Пользователи, входившие ежедневно",
+    "days": "Последние {{count}} дн.",
+    "noTrendData": "Нет данных о входах",
+    "unitDay": "д ",
+    "unitHour": "ч ",
+    "unitMin": "мин ",
+    "unitSec": "с"
   },
   "profile": {
     "title": "Профиль",
@@ -498,7 +566,10 @@
       "changeSummaryPlaceholder": "Кратко опишите содержание этого изменения для справки ревизора"
     },
     "saveDraft": "Сохранить архив напрямую",
-    "saveChanges": "Сохранить изменения"
+    "saveChanges": "Сохранить изменения",
+    "preview": "Предпросмотр",
+    "previewLive": "Предпросмотр в реальном времени",
+    "previewHint": "Нажмите «Предпросмотр», чтобы просмотреть архив во всплывающем окне."
   },
   "profileTab": {
     "title": "Профиль"
@@ -573,6 +644,20 @@
     "fieldColumn": "Поле",
     "replaceCheck": "Заменить?",
     "originalValue": "Текущие данные архива"
+  },
+  "aiQueryEvent": {
+    "queryAction": "AI-запрос",
+    "queryTitle": "AI-исследование: {{name}}",
+    "querying": "Идёт исследование истории события через DeepSeek (10–60 с), подождите…",
+    "queryFailed": "Не удалось выполнить AI-запрос",
+    "retry": "Повторить",
+    "fillToEditor": "Заполнить в редакторе",
+    "applied": "Результат ИИ применён к форме. Проверьте перед сохранением.",
+    "empty": "(нет)",
+    "originalColumn": "Текущие данные архива",
+    "aiColumn": "Результат ИИ-запроса",
+    "fieldColumn": "Поле",
+    "replaceCheck": "Заменить?"
   },
   "periods": {
     "lateSong": "Поздняя Сун",

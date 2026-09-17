@@ -161,6 +161,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get republic => 'Republik';
 
   @override
+  String get antiJapaneseWar => 'Widerstandskrieg';
+
+  @override
   String get other => 'Andere';
 
   @override
@@ -386,4 +389,195 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Sprache wählen';
+
+  @override
+  String get basicInfo => 'Basisdaten';
+
+  @override
+  String get birthYearLabel => 'Geburtsjahr';
+
+  @override
+  String get deathYearLabel => 'Todesjahr';
+
+  @override
+  String get yearExact => 'Genau';
+
+  @override
+  String get birthPlaceLabel => 'Geburtsort';
+
+  @override
+  String get officialTitleLabel => 'Amtstitel (Marionettenregime)';
+
+  @override
+  String get tagsLabel => 'Tags';
+
+  @override
+  String get tagsHint => 'Mehrere Tags mit Komma trennen';
+
+  @override
+  String get rowYear => 'Jahr';
+
+  @override
+  String get rowEvent => 'Ereignis';
+
+  @override
+  String get rowTitle => 'Titel';
+
+  @override
+  String get rowProcess => 'Verlauf';
+
+  @override
+  String get rowHarm => 'Schaden';
+
+  @override
+  String get rowSourceRef => 'Quelle';
+
+  @override
+  String get rowRemark => 'Anmerkung';
+
+  @override
+  String get rowPlace => 'Ort';
+
+  @override
+  String get rowPeriod => 'Zeitraum';
+
+  @override
+  String get rowCitation => 'Quellennachweis';
+
+  @override
+  String get rowCredibility => 'Glaubwürdigkeit (1-5)';
+
+  @override
+  String get rowCaption => 'Bildbeschreibung';
+
+  @override
+  String get addItem => 'Hinzufügen';
+
+  @override
+  String get deleteItem => 'Löschen';
+
+  @override
+  String get uploadPhoto => 'Foto hochladen';
+
+  @override
+  String get uploadEvidence => 'Beweismittel hochladen';
+
+  @override
+  String get uploading => 'Wird hochgeladen…';
+
+  @override
+  String get summaryRequired => 'Bitte Beschreibung eingeben';
+
+  @override
+  String get submitSuccess => 'Eingereicht, wartet auf Prüfung';
+
+  @override
+  String get submitFailed => 'Senden fehlgeschlagen';
+
+  @override
+  String get searchPrompt => 'Kriterien eingeben und auf „Suchen“ tippen';
+
+  @override
+  String get settings => 'Einstellungen';
+
+  @override
+  String get editProfile => 'Profil bearbeiten';
+
+  @override
+  String get profileUpdated => 'Profil aktualisiert';
+
+  @override
+  String get editAvatar => 'Avatar ändern';
+
+  @override
+  String get avatarUpdated => 'Avatar aktualisiert';
+
+  @override
+  String get notifications => 'Benachrichtigungen';
+
+  @override
+  String get noNotifications => 'Keine Benachrichtigungen';
+
+  @override
+  String get markAllRead => 'Alle als gelesen markieren';
+
+  @override
+  String notificationApproved(String name) {
+    return 'Ihre Einreichung „$name“ wurde genehmigt';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return 'Ihre Einreichung „$name“ wurde abgelehnt';
+  }
+
+  @override
+  String get theme => 'Design';
+
+  @override
+  String get chooseTheme => 'Design wählen';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get themeDark => 'Dunkel';
+
+  @override
+  String get themeLight => 'Hell';
+
+  @override
+  String get traitorMap => 'Verräterkarte';
+
+  @override
+  String get mapHint => 'Provinz antippen, um die Verteilung zu sehen';
+
+  @override
+  String get viewArchives => 'Akten ansehen';
+
+  @override
+  String get gender => 'Geschlecht';
+
+  @override
+  String get genderMale => 'Männlich';
+
+  @override
+  String get genderFemale => 'Weiblich';
+
+  @override
+  String get genderSecret => 'Keine Angabe';
+
+  @override
+  String get birthday => 'Geburtstag';
+
+  @override
+  String get address => 'Adresse';
+
+  @override
+  String get phone => 'Telefon';
+
+  @override
+  String get invalidPhone => 'Ungültige Telefonnummer';
+
+  @override
+  String get profileAccountFixed =>
+      'Benutzername und E-Mail können nicht geändert werden';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get tapToChangeAvatar => 'Zum Ändern auf den Avatar tippen';
+
+  @override
+  String get nickname => 'Spitzname';
+
+  @override
+  String get signature => 'Signatur';
+
+  @override
+  String get region => 'Region';
+
+  @override
+  String get myQrCode => 'Mein QR-Code';
 }

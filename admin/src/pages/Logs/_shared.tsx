@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import PageHeader from '../../components/PageHeader'
 
 export const PAGE_SIZE = 20
 
@@ -150,14 +151,7 @@ export function MethodBadge({ method }: { method: string }) {
 }
 
 export function SectionTitle({ zh, en }: { zh: string; en: string }) {
-  return (
-    <header className="animate-fade-up flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{zh}</h1>
-        <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">{en}</p>
-      </div>
-    </header>
-  )
+  return <PageHeader title={zh} subtitle={en} />
 }
 
 export function NoticeAndError({ notice, error }: { notice?: string; error?: string }) {

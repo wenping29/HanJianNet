@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} записей · Страница {{page}} / {{totalPages}}",
     "empty": "Записи не найдены",
     "colIndex": "№",
+    "colAvatar": "Портрет",
     "colName": "Имя",
     "colPeriod": "Период",
     "colFaction": "Фракция",
@@ -448,5 +449,12 @@
   "notFound": {
     "title": "Документ не найден",
     "message": "Запрашиваемая страница не существует или была удалена."
+  },
+  "theme": {
+    "title": "Тема",
+    "ink": "Тушь",
+    "paper": "Сюаньская бумага",
+    "cinnabar": "Киноварь",
+    "bamboo": "Бамбук"
   }
 }

@@ -1,5 +1,6 @@
 {
   "menu": {
+    "dashboard": "データダッシュボード",
     "traitors": "漢奸管理",
     "traitors-list": "名鑑管理",
     "edit-traitor": "基本情報編集",
@@ -12,6 +13,7 @@
     "roles": "ロール管理",
     "menus": "メニュー管理",
     "web-menus": "フロントメニュー",
+    "system-config": "システム設定",
     "profile": "個人情報",
     "logs-login": "ログインログ",
     "logs-operation": "操作ログ",
@@ -93,7 +95,9 @@
     "registeredAt": "登録日",
     "resetFailed": "リセットに失敗しました",
     "requestFailed": "リクエストに失敗しました（{{status}}）",
-    "uploadFailed": "アップロードに失敗しました"
+    "uploadFailed": "アップロードに失敗しました",
+    "select": "「{{name}}」を選択",
+    "view": "表示"
   },
   "sidebar": {
     "archives": "人物檔案",
@@ -164,11 +168,21 @@
     "title": "漢奸管理",
     "searchPlaceholder": "名前・別名で検索",
     "newTraitor": "新規漢奸",
+    "hasPhoto": "写真フィルター",
+    "withPhoto": "写真あり",
+    "withoutPhoto": "写真なし",
     "noArchives": "檔案がありません",
     "edit": "編集",
     "deleteConfirm": "漢奸「{{name}}」を削除しますか？この操作は取り消せません。関連する犯罪などの記録もすべて削除されます。",
     "deleteSuccess": "削除しました",
     "deleteFailed": "削除に失敗しました",
+    "deletePhotos": "写真を削除",
+    "deletePhotosConfirm": "漢奸「{{name}}」のすべての写真を削除しますか？この操作は取り消せません。ローカルにアップロードされた画像ファイルも削除されます。",
+    "deletePhotosSuccess": "写真を削除しました",
+    "deletePhotosFailed": "写真の削除に失敗しました",
+    "updateHarmLevel": "危害度を変更",
+    "harmLevelUpdated": "危害度を更新しました",
+    "harmLevelUpdateFailed": "危害度の更新に失敗しました",
     "totalRecords": "{{total}} 件のレコード・ページ {{page}} / {{totalPages}}"
   },
   "merge": {
@@ -331,6 +345,60 @@
     "operationFailed": "操作に失敗しました",
     "updateSuccess": "メニュー「{{label}}」を更新しました",
     "updateFailed": "保存に失敗しました"
+  },
+  "systemConfig": {
+    "title": "システム設定",
+    "description": "web、webapi、mobileappのキー値設定項目を管理します。",
+    "hint": "変更はすぐに有効になり、フロントエンドの再起動は不要です。",
+    "noData": "システム設定データがありません",
+    "startBackend": "バックエンドサービスを起動してください。シードデータが自動作成されます",
+    "key": "キー",
+    "value": "値",
+    "description": "説明",
+    "updatedAt": "更新日時",
+    "edit": "編集",
+    "editTitle": "システム設定を変更",
+    "keyNotModifiable": "キー {{key}} は変更できません",
+    "toggleOn": "クリックしてオン",
+    "toggleOff": "クリックしてオフ",
+    "valuePlaceholder": "設定値を入力",
+    "descriptionPlaceholder": "説明を入力（任意）",
+    "updateSuccess": "設定 {{key}} を更新しました",
+    "updateFailed": "保存に失敗しました"
+  },
+  "dashboard": {
+    "title": "データダッシュボード",
+    "serverStatus": "サーバー状態",
+    "databaseStatus": "データベース状態",
+    "normal": "正常",
+    "abnormal": "異常",
+    "machineName": "ホスト名",
+    "os": "オペレーティングシステム",
+    "environment": "実行環境",
+    "framework": "ランタイム",
+    "cpuCores": "CPU コア数",
+    "memory": "メモリ使用量",
+    "managedMemory": "マネージドメモリ",
+    "uptime": "プロセス稼働時間",
+    "startedAt": "起動時刻",
+    "osUptime": "システム稼働時間",
+    "dbProvider": "データベース種別",
+    "dbName": "データベース",
+    "dbVersion": "データベースバージョン",
+    "dbLatency": "応答時間",
+    "traitorCount": "漢奸数",
+    "visitorCount": "訪問者数",
+    "pageViewCount": "ページビュー",
+    "userCount": "ユーザー数",
+    "activeUserCount": "アクティブユーザー",
+    "queryCount": "クエリ数",
+    "dailyLoginTitle": "日次ログインユーザー",
+    "days": "直近 {{count}} 日",
+    "noTrendData": "ログインデータがありません",
+    "unitDay": "日",
+    "unitHour": "時間",
+    "unitMin": "分",
+    "unitSec": "秒"
   },
   "profile": {
     "title": "プロフィール",
@@ -498,7 +566,10 @@
       "changeSummaryPlaceholder": "この投稿/修正の内容を簡潔に記述してください（審査時の参考になります）"
     },
     "saveDraft": "檔案を直接保存",
-    "saveChanges": "変更を保存"
+    "saveChanges": "変更を保存",
+    "preview": "プレビュー",
+    "previewLive": "ライブプレビュー",
+    "previewHint": "「プレビュー」ボタンをクリックすると、ポップアップでアーカイブを表示できます。"
   },
   "profileTab": {
     "title": "プロフィール"
@@ -573,6 +644,20 @@
     "fieldColumn": "項目",
     "replaceCheck": "置換する?",
     "originalValue": "現在のアーカイブデータ"
+  },
+  "aiQueryEvent": {
+    "queryAction": "AI 調査",
+    "queryTitle": "AI 史料調査：{{name}}",
+    "querying": "DeepSeek による事件史料の調査中（10～60秒）、お待ちください…",
+    "queryFailed": "AI 調査に失敗しました",
+    "retry": "再試行",
+    "fillToEditor": "エディタに反映",
+    "applied": "AI 調査結果をフォームに反映しました。保存前に必ず確認してください。",
+    "empty": "（なし）",
+    "originalColumn": "現在のアーカイブデータ",
+    "aiColumn": "AI クエリ結果",
+    "fieldColumn": "項目",
+    "replaceCheck": "置換する?"
   },
   "periods": {
     "lateSong": "南宋末期",

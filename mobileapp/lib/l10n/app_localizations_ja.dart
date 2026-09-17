@@ -160,6 +160,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get republic => '民国';
 
   @override
+  String get antiJapaneseWar => '抗日戦争時期';
+
+  @override
   String get other => 'その他';
 
   @override
@@ -383,4 +386,194 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get chooseLanguage => '言語を選択';
+
+  @override
+  String get basicInfo => '基本情報';
+
+  @override
+  String get birthYearLabel => '出生年';
+
+  @override
+  String get deathYearLabel => '没年';
+
+  @override
+  String get yearExact => '確';
+
+  @override
+  String get birthPlaceLabel => '出生地';
+
+  @override
+  String get officialTitleLabel => '官職（傀儡政権）';
+
+  @override
+  String get tagsLabel => '身份タグ';
+
+  @override
+  String get tagsHint => '複数のタグは「、」またはカンマで区切ってください';
+
+  @override
+  String get rowYear => '年';
+
+  @override
+  String get rowEvent => '出来事';
+
+  @override
+  String get rowTitle => '件名';
+
+  @override
+  String get rowProcess => '経過';
+
+  @override
+  String get rowHarm => '危害';
+
+  @override
+  String get rowSourceRef => '出典';
+
+  @override
+  String get rowRemark => '備考';
+
+  @override
+  String get rowPlace => '場所';
+
+  @override
+  String get rowPeriod => '時期';
+
+  @override
+  String get rowCitation => '引用文献';
+
+  @override
+  String get rowCredibility => '信頼度（1-5）';
+
+  @override
+  String get rowCaption => '画像の説明';
+
+  @override
+  String get addItem => '追加';
+
+  @override
+  String get deleteItem => '削除';
+
+  @override
+  String get uploadPhoto => '写真をアップロード';
+
+  @override
+  String get uploadEvidence => '罪証をアップロード';
+
+  @override
+  String get uploading => 'アップロード中…';
+
+  @override
+  String get summaryRequired => '人物概要を入力してください';
+
+  @override
+  String get submitSuccess => '送信しました。審査をお待ちください';
+
+  @override
+  String get submitFailed => '送信に失敗しました';
+
+  @override
+  String get searchPrompt => '条件を入力して「検索」をタップしてください';
+
+  @override
+  String get settings => '設定';
+
+  @override
+  String get editProfile => '個人情報の編集';
+
+  @override
+  String get profileUpdated => '個人情報を更新しました';
+
+  @override
+  String get editAvatar => 'アバターの変更';
+
+  @override
+  String get avatarUpdated => 'アバターを更新しました';
+
+  @override
+  String get notifications => '通知';
+
+  @override
+  String get noNotifications => '通知はありません';
+
+  @override
+  String get markAllRead => 'すべて既読にする';
+
+  @override
+  String notificationApproved(String name) {
+    return '提出した「$name」が承認されました';
+  }
+
+  @override
+  String notificationRejected(String name) {
+    return '提出した「$name」は却下されました';
+  }
+
+  @override
+  String get theme => 'テーマ';
+
+  @override
+  String get chooseTheme => 'テーマを選択';
+
+  @override
+  String get themeSystem => 'システムに従う';
+
+  @override
+  String get themeDark => 'ダーク';
+
+  @override
+  String get themeLight => 'ライト';
+
+  @override
+  String get traitorMap => '漢奸地図';
+
+  @override
+  String get mapHint => '省をタップして分布を表示';
+
+  @override
+  String get viewArchives => '記録を見る';
+
+  @override
+  String get gender => '性別';
+
+  @override
+  String get genderMale => '男性';
+
+  @override
+  String get genderFemale => '女性';
+
+  @override
+  String get genderSecret => '非公開';
+
+  @override
+  String get birthday => '誕生日';
+
+  @override
+  String get address => '住所';
+
+  @override
+  String get phone => '携帯電話';
+
+  @override
+  String get invalidPhone => '電話番号の形式が正しくありません';
+
+  @override
+  String get profileAccountFixed => 'ユーザー名とメールアドレスは変更できません';
+
+  @override
+  String get optional => '任意';
+
+  @override
+  String get tapToChangeAvatar => 'アバターをタップして変更';
+
+  @override
+  String get nickname => 'ニックネーム';
+
+  @override
+  String get signature => 'ひとこと';
+
+  @override
+  String get region => '地域';
+
+  @override
+  String get myQrCode => 'マイQRコード';
 }

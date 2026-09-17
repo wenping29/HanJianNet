@@ -137,6 +137,7 @@
     "totalRecords": "총 {{total}}건 · {{page}} / {{totalPages}} 페이지",
     "empty": "조건에 맞는 기록이 없습니다",
     "colIndex": "순번",
+    "colAvatar": "초상",
     "colName": "이름",
     "colPeriod": "시기",
     "colFaction": "파벌",
@@ -448,5 +449,12 @@
   "notFound": {
     "title": "문서를 찾을 수 없습니다",
     "message": "요청하신 페이지가 존재하지 않거나 삭제되었습니다."
+  },
+  "theme": {
+    "title": "테마",
+    "ink": "먹색",
+    "paper": "선지",
+    "cinnabar": "주사",
+    "bamboo": "청죽"
   }
 }

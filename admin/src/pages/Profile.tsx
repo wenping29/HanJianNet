@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
+import PageHeader from '../components/PageHeader'
 import { ROLE_LABELS } from '../lib/roles'
 import { useAuth } from '../stores/auth'
 
@@ -59,11 +60,8 @@ export default function Profile() {
   }
 
   return (
-    <div className="container-page max-w-3xl py-10">
-      <header className="animate-fade-up">
-        <h1 className="text-2xl font-bold tracking-[0.25em] text-paper">{t('profile.title')}</h1>
-        <p className="mt-1 font-garamond text-xs italic tracking-wider text-bronzelight">My Profile</p>
-      </header>
+    <div className="container-page max-w-3xl py-5">
+      <PageHeader title={t('profile.title')} subtitle="My Profile" />
 
       <section className="card animate-fade-up mt-6 p-6">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-paperdim">

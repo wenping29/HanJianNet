@@ -1,5 +1,6 @@
 {
   "menu": {
+    "dashboard": "데이터 대시보드",
     "traitors": "인물 관리",
     "traitors-list": "명부 관리",
     "edit-traitor": "기본 정보 편집",
@@ -12,6 +13,7 @@
     "roles": "역할 관리",
     "menus": "메뉴 관리",
     "web-menus": "프런트 메뉴",
+    "system-config": "시스템 설정",
     "profile": "개인 정보",
     "logs-login": "로그인 로그",
     "logs-operation": "작업 로그",
@@ -93,7 +95,9 @@
     "registeredAt": "가입일",
     "resetFailed": "초기화 실패",
     "requestFailed": "요청 실패 ({{status}})",
-    "uploadFailed": "업로드 실패"
+    "uploadFailed": "업로드 실패",
+    "select": "「{{name}}」 선택",
+    "view": "보기"
   },
   "sidebar": {
     "archives": "아카이브",
@@ -164,11 +168,21 @@
     "title": "인물 관리",
     "searchPlaceholder": "이름 / 별명으로 검색",
     "newTraitor": "새 인물",
+    "hasPhoto": "사진 필터",
+    "withPhoto": "사진 있음",
+    "withoutPhoto": "사진 없음",
     "noArchives": "아카이브 없음",
     "edit": "편집",
     "deleteConfirm": "\"{{name}}\" 인물을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 범죄 등 관련 기록도 모두 삭제됩니다.",
     "deleteSuccess": "삭제되었습니다",
     "deleteFailed": "삭제 실패",
+    "deletePhotos": "사진 삭제",
+    "deletePhotosConfirm": "\"{{name}}\" 인물의 모든 사진을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 로컬에 업로드된 이미지 파일도 삭제됩니다.",
+    "deletePhotosSuccess": "사진이 삭제되었습니다",
+    "deletePhotosFailed": "사진 삭제 실패",
+    "updateHarmLevel": "위해 등급 변경",
+    "harmLevelUpdated": "위해 등급이 업데이트되었습니다",
+    "harmLevelUpdateFailed": "위해 등급 업데이트 실패",
     "totalRecords": "{{total}}건 · {{page}} / {{totalPages}} 페이지"
   },
   "merge": {
@@ -331,6 +345,60 @@
     "operationFailed": "작업 실패",
     "updateSuccess": "\"{{label}}\" 메뉴가 업데이트되었습니다",
     "updateFailed": "저장 실패"
+  },
+  "systemConfig": {
+    "title": "시스템 설정",
+    "description": "web, webapi, mobileapp의 키-값 설정 항목을 관리합니다.",
+    "hint": "변경 사항은 즉시 적용되며 프론트엔드 재시작이 필요 없습니다.",
+    "noData": "시스템 설정 데이터가 없습니다",
+    "startBackend": "백엔드 서비스를 시작하면 시드 데이터가 자동 생성됩니다",
+    "key": "키",
+    "value": "값",
+    "description": "설명",
+    "updatedAt": "업데이트 시간",
+    "edit": "편집",
+    "editTitle": "시스템 설정 수정",
+    "keyNotModifiable": "키 {{key}}는 변경할 수 없습니다",
+    "toggleOn": "클릭하여 켜기",
+    "toggleOff": "클릭하여 끄기",
+    "valuePlaceholder": "설정 값 입력",
+    "descriptionPlaceholder": "설명 입력 (선택)",
+    "updateSuccess": "설정 {{key}}가 업데이트되었습니다",
+    "updateFailed": "저장 실패"
+  },
+  "dashboard": {
+    "title": "데이터 대시보드",
+    "serverStatus": "서버 상태",
+    "databaseStatus": "데이터베이스 상태",
+    "normal": "정상",
+    "abnormal": "이상",
+    "machineName": "호스트 이름",
+    "os": "운영체제",
+    "environment": "실행 환경",
+    "framework": "런타임",
+    "cpuCores": "CPU 코어",
+    "memory": "메모리 사용량",
+    "managedMemory": "관리 메모리",
+    "uptime": "프로세스 가동 시간",
+    "startedAt": "시작 시각",
+    "osUptime": "시스템 가동 시간",
+    "dbProvider": "데이터베이스 종류",
+    "dbName": "데이터베이스",
+    "dbVersion": "데이터베이스 버전",
+    "dbLatency": "응답 시간",
+    "traitorCount": "한간 수",
+    "visitorCount": "방문자 수",
+    "pageViewCount": "페이지뷰",
+    "userCount": "사용자 수",
+    "activeUserCount": "활성 사용자",
+    "queryCount": "쿼리 수",
+    "dailyLoginTitle": "일별 로그인 사용자",
+    "days": "최근 {{count}}일",
+    "noTrendData": "로그인 데이터가 없습니다",
+    "unitDay": "일",
+    "unitHour": "시간",
+    "unitMin": "분",
+    "unitSec": "초"
   },
   "profile": {
     "title": "프로필",
@@ -498,7 +566,10 @@
       "changeSummaryPlaceholder": "이번 제출/수정 내용을 간략히 설명해 주세요 (검수 참고용)"
     },
     "saveDraft": "아카이브 직접 저장",
-    "saveChanges": "변경 사항 저장"
+    "saveChanges": "변경 사항 저장",
+    "preview": "미리보기",
+    "previewLive": "실시간 미리보기",
+    "previewHint": "「미리보기」버튼을 클릭하면 팝업에서 아카이브를 확인할 수 있습니다."
   },
   "profileTab": {
     "title": "프로필"
@@ -573,6 +644,20 @@
     "fieldColumn": "필드",
     "replaceCheck": "교체할까요?",
     "originalValue": "현재 아카이브 데이터"
+  },
+  "aiQueryEvent": {
+    "queryAction": "AI 조회",
+    "queryTitle": "AI 사료 조회: {{name}}",
+    "querying": "DeepSeek로 사건 사료를 조회 중입니다(10~60초), 잠시 기다려 주세요…",
+    "queryFailed": "AI 조회 실패",
+    "retry": "다시 시도",
+    "fillToEditor": "편집기에 채우기",
+    "applied": "AI 조회 결과가 양식에 반영되었습니다. 저장 전에 확인하세요.",
+    "empty": "(없음)",
+    "originalColumn": "현재 아카이브 데이터",
+    "aiColumn": "AI 쿼리 결과",
+    "fieldColumn": "필드",
+    "replaceCheck": "교체할까요?"
   },
   "periods": {
     "lateSong": "남송",

@@ -31,7 +31,7 @@ export default function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         type="button"
-        className="flex items-center gap-1.5 rounded-sm px-2 py-1 text-xs tracking-wider text-paperdim/70 transition hover:text-paper"
+        className="flex items-center gap-1.5 rounded-sm px-2 py-1 text-sm tracking-wider text-paperdim/70 transition hover:text-paper"
         onClick={() => setOpen(!open)}
         title="Language / 语言"
       >
@@ -43,7 +43,7 @@ export default function LanguageSwitcher() {
             <button
               key={lang.code}
               type="button"
-              className={`block w-full px-3 py-1.5 text-left text-xs transition hover:bg-ink/60 ${
+              className={`block w-full px-3 py-1.5 text-left text-sm transition hover:bg-ink/60 ${
                 lang.code === i18n.language ? 'font-bold text-bronzelight' : 'text-paperdim/70'
               }`}
               onClick={() => {

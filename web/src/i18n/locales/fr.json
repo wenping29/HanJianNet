@@ -137,6 +137,7 @@
     "totalRecords": "{{total}} dossiers · Page {{page}} / {{totalPages}}",
     "empty": "Aucun dossier ne correspond aux critères",
     "colIndex": "N°",
+    "colAvatar": "Portrait",
     "colName": "Nom",
     "colPeriod": "Période",
     "colFaction": "Faction",
@@ -448,5 +449,12 @@
   "notFound": {
     "title": "Dossier non trouvé",
     "message": "La page que vous avez visitée n'existe pas ou a été supprimée."
+  },
+  "theme": {
+    "title": "Thème",
+    "ink": "Encre",
+    "paper": "Papier de Xuan",
+    "cinnabar": "Cinabre",
+    "bamboo": "Bambou"
   }
 }

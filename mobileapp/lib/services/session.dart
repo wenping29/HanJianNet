@@ -50,7 +50,8 @@ class Session extends ChangeNotifier {
         user = await ApiClient.instance.me();
         await _persistUser();
       } on ApiException catch (e) {
-        if (e.status == 401) await logout(persist: false);
+        // token 已失效（过期/被吊销）：连同本地持久化一起清除
+        if (e.status == 401) await logout();
       } catch (_) {}
     }
     notifyListeners();
@@ -73,6 +74,13 @@ class Session extends ChangeNotifier {
     token = r.token;
     user = r.user;
     await _persistAll();
+    notifyListeners();
+  }
+
+  /// 个人信息保存成功后，更新内存中的用户并持久化。
+  Future<void> updateUser(User u) async {
+    user = u;
+    await _persistUser();
     notifyListeners();
   }
 
@@ -101,16 +109,31 @@ class Session extends ChangeNotifier {
     ApiClient.instance.configure(baseUrl: baseUrl, token: token);
   }
 
+  static String _userJson(User u) => jsonEncode({
+        'id': u.id,
+        'username': u.username,
+        'email': u.email,
+        'role': u.role,
+        'avatarUrl': u.avatarUrl,
+        'gender': u.gender,
+        'birthday': u.birthday,
+        'address': u.address,
+        'phone': u.phone,
+        'nickname': u.nickname,
+        'signature': u.signature,
+        'region': u.region,
+      });
+
   Future<void> _persistAll() async {
     final sp = await SharedPreferences.getInstance();
     await sp.setString(_kToken, token!);
-    await sp.setString(_kUser, jsonEncode({'id': user!.id, 'username': user!.username, 'email': user!.email, 'role': user!.role}));
+    await sp.setString(_kUser, _userJson(user!));
     await sp.setString(_kBaseUrl, baseUrl);
     _applyToClient();
   }
 
   Future<void> _persistUser() async {
     final sp = await SharedPreferences.getInstance();
-    await sp.setString(_kUser, jsonEncode({'id': user!.id, 'username': user!.username, 'email': user!.email, 'role': user!.role}));
+    await sp.setString(_kUser, _userJson(user!));
   }
 }

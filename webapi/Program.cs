@@ -28,6 +28,7 @@ try
     builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
     builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("Redis"));
     builder.Services.Configure<DeepSeekOptions>(builder.Configuration.GetSection("DeepSeek"));
+    builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection("Security"));
 
     var databaseOptions = builder.Configuration.GetSection("Database").Get<DatabaseOptions>() ?? new DatabaseOptions();
     builder.Services.AddDbContext<AppDbContext>(options =>
@@ -97,7 +98,8 @@ try
     builder.Services.AddCors(o => o.AddPolicy("frontend", p => p
         .WithOrigins(corsOrigins)
         .AllowAnyHeader()
-        .AllowAnyMethod()));
+        .AllowAnyMethod()
+        .WithExposedHeaders("X-Encrypted")));
 
     // --- 审计/日志 ---
     // 允许服务层（如 AuthService）直接访问 HttpContext
@@ -118,6 +120,9 @@ try
     builder.Services.AddScoped<CacheService>();
     // 前台访客统计
     builder.Services.AddScoped<VisitService>();
+    builder.Services.AddScoped<SystemConfigService>();
+    // 后台数据看板
+    builder.Services.AddScoped<DashboardService>();
     // AI 史料查询（DeepSeek）
     var deepSeekOptions = builder.Configuration.GetSection("DeepSeek").Get<DeepSeekOptions>() ?? new DeepSeekOptions();
     if (string.IsNullOrWhiteSpace(deepSeekOptions.BaseUrl))
@@ -132,6 +137,8 @@ try
         client.Timeout = TimeSpan.FromSeconds(60);
     });
     builder.Services.AddScoped<AiService>();
+    // 通讯加密服务（AES-GCM/AES-CBC，密钥来自 Security:EncryptionKey）
+    builder.Services.AddSingleton<CryptoService>();
 
     builder.Services.AddControllers(options =>
     {
@@ -192,10 +199,15 @@ try
 
     // 先启用请求体缓冲（允许审计过滤器和错误中间件重读 body）
     app.UseMiddleware<RequestBodyBufferingMiddleware>();
+    // 通讯加密：按 X-Encrypted 头解密请求体、加密 JSON 响应体
+    app.UseMiddleware<CryptoMiddleware>();
     // 提取请求级审计上下文（IP/UA/用户信息 + 计时器）
     app.UseMiddleware<AuditEnrichmentMiddleware>();
     // 异常 → 响应 + 写错误日志
     app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    // CORS 必须放在 UseStaticFiles 之前，否则 /uploads 静态资源被短路、缺少跨域响应头（Flutter Web 图片以 XHR 加载会报错）
+    app.UseCors("frontend");
 
     Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "uploads"));
     app.UseStaticFiles(new StaticFileOptions
@@ -208,7 +220,6 @@ try
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    app.UseCors("frontend");
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
@@ -244,6 +255,12 @@ static class DbInitHelpers
         await EnsureTableAsync(db, "VisitLogs", "VisitLogs.sqlite.sql", "VisitLogs.mysql.sql");
         await EnsureTableAsync(db, "atrocitycases", "AtrocityCases.sqlite.sql", "AtrocityCases.mysql.sql");
 
+        // 补齐 VisitLogs 表的新增列（Path：真实 PV 需要按页面统计）
+        await EnsureColumnAsync(db, "VisitLogs", "Path",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE VisitLogs ADD COLUMN Path TEXT NOT NULL DEFAULT '';"
+                : "ALTER TABLE VisitLogs ADD COLUMN Path VARCHAR(256) NOT NULL DEFAULT '';");
+
         // 补齐 Traitors 表的新增列（MergedIntoId / MergedAt）
         await EnsureColumnAsync(db, "Traitors", "MergedIntoId",
             db.Database.IsSqlite()
@@ -257,6 +274,54 @@ static class DbInitHelpers
             db.Database.IsSqlite()
                 ? "ALTER TABLE Traitors ADD COLUMN BirthPlace TEXT NOT NULL DEFAULT '';"
                 : "ALTER TABLE Traitors ADD COLUMN BirthPlace VARCHAR(255) NOT NULL DEFAULT '';");
+
+        // 补齐 Users 表的新增列（AvatarUrl：用户头像）
+        await EnsureColumnAsync(db, "Users", "AvatarUrl",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN AvatarUrl TEXT;"
+                : "ALTER TABLE Users ADD COLUMN AvatarUrl VARCHAR(512) NULL;");
+
+        // 补齐 Users 表的新增列（个人资料：性别/生日/地址/手机号）
+        await EnsureColumnAsync(db, "Users", "Gender",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Gender TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Gender VARCHAR(16) NULL;");
+        await EnsureColumnAsync(db, "Users", "Birthday",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Birthday TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Birthday VARCHAR(10) NULL;");
+        await EnsureColumnAsync(db, "Users", "Address",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Address TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Address VARCHAR(255) NULL;");
+        await EnsureColumnAsync(db, "Users", "Phone",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Phone TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Phone VARCHAR(32) NULL;");
+        await EnsureColumnAsync(db, "Users", "Nickname",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Nickname TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Nickname VARCHAR(64) NULL;");
+        await EnsureColumnAsync(db, "Users", "Signature",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Signature TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Signature VARCHAR(255) NULL;");
+        await EnsureColumnAsync(db, "Users", "Region",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Users ADD COLUMN Region TEXT;"
+                : "ALTER TABLE Users ADD COLUMN Region VARCHAR(64) NULL;");
+
+        // 站内通知表（EnsureCreated 会为新库自动建表，此处兼容旧库）
+        await db.Database.ExecuteSqlRawAsync(
+            db.Database.IsSqlite()
+                ? """CREATE TABLE IF NOT EXISTS "Notifications" ("Id" TEXT NOT NULL PRIMARY KEY, "UserId" TEXT NOT NULL, "Type" TEXT NOT NULL DEFAULT '', "ReferenceName" TEXT NOT NULL DEFAULT '', "Comment" TEXT, "RevisionId" TEXT, "IsRead" INTEGER NOT NULL DEFAULT 0, "CreatedAt" TEXT NOT NULL); CREATE INDEX IF NOT EXISTS "IX_Notifications_UserId" ON "Notifications" ("UserId"); CREATE INDEX IF NOT EXISTS "IX_Notifications_CreatedAt" ON "Notifications" ("CreatedAt");"""
+                : "CREATE TABLE IF NOT EXISTS `Notifications` (`Id` VARCHAR(64) NOT NULL PRIMARY KEY, `UserId` VARCHAR(64) NOT NULL, `Type` VARCHAR(64) NOT NULL DEFAULT '', `ReferenceName` VARCHAR(255) NOT NULL DEFAULT '', `Comment` TEXT, `RevisionId` VARCHAR(64) NULL, `IsRead` TINYINT(1) NOT NULL DEFAULT 0, `CreatedAt` DATETIME NOT NULL, INDEX `IX_Notifications_UserId` (`UserId`), INDEX `IX_Notifications_CreatedAt` (`CreatedAt`));");
+
+        // 系统配置表（EnsureCreated 会为新库自动建表，此处兼容旧库）
+        await db.Database.ExecuteSqlRawAsync(
+            db.Database.IsSqlite()
+                ? """CREATE TABLE IF NOT EXISTS "SystemConfigs" ("Id" TEXT NOT NULL PRIMARY KEY, "Key" TEXT NOT NULL, "Value" TEXT NOT NULL DEFAULT '', "Category" TEXT NOT NULL DEFAULT '', "Description" TEXT, "CreatedAt" TEXT NOT NULL, "UpdatedAt" TEXT); CREATE UNIQUE INDEX IF NOT EXISTS "IX_SystemConfigs_Key" ON "SystemConfigs" ("Key"); CREATE INDEX IF NOT EXISTS "IX_SystemConfigs_Category" ON "SystemConfigs" ("Category");"""
+                : "CREATE TABLE IF NOT EXISTS `SystemConfigs` (`Id` VARCHAR(64) NOT NULL PRIMARY KEY, `Key` VARCHAR(128) NOT NULL, `Value` TEXT NOT NULL, `Category` VARCHAR(64) NOT NULL, `Description` TEXT, `CreatedAt` DATETIME NOT NULL, `UpdatedAt` DATETIME NULL, UNIQUE INDEX `IX_SystemConfigs_Key` (`Key`), INDEX `IX_SystemConfigs_Category` (`Category`));");
     }
 
     /// <summary>检查表是否存在，不存在则执行对应方言的 DDL 文件建表。</summary>
