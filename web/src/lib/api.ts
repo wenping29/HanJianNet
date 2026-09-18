@@ -113,6 +113,8 @@ export interface PagedTraitorResponse {
   page: number
   pageSize: number
   totalPages: number
+  /** Keyset 游标：本页末行位置，可用于"页码跳转后转游标续翻"；无下一页时为 null */
+  nextCursor?: string | null
 }
 
 /** 分省统计项（省份归类在后端完成） */

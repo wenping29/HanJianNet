@@ -32,6 +32,15 @@ public class Traitor
     public string? MergedIntoId { get; set; }
     public DateTime? MergedAt { get; set; }
 
+    /// <summary>是否已下架（屏蔽公开展示）。应对内容投诉时快速下架，前台列表/详情/统计不再返回。</summary>
+    public bool IsHidden { get; set; }
+    /// <summary>下架原因（如内容投诉、信息待核实等）。</summary>
+    public string? HiddenReason { get; set; }
+    /// <summary>下架时间（UTC）。</summary>
+    public DateTime? HiddenAt { get; set; }
+    /// <summary>下架操作人用户名。</summary>
+    public string? HiddenBy { get; set; }
+
     public List<Spouse> Spouses { get; set; } = [];
     public List<Child> Children { get; set; } = [];
     public List<Residence> Residences { get; set; } = [];

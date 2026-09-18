@@ -199,6 +199,12 @@ export const api = {
       body: JSON.stringify({ harmLevel }),
     }),
 
+  setTraitorStatus: (id: string, hidden: boolean, reason?: string) =>
+    request<{ traitor: TraitorDetail; message: string }>(`/admin/traitors/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ hidden, reason }),
+    }),
+
   batchDeleteTraitors: (ids: string[]) =>
     request<{ message: string; count: number }>('/admin/traitors/batch-delete', {
       method: 'POST',

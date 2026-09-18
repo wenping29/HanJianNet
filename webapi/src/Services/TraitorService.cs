@@ -15,20 +15,58 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     /// <summary>
     /// 公开列表查询。page/pageSize 未指定时返回全量（供地图统计等场景使用），指定时返回分页结果。
+    /// cursor 非 null 时走 Keyset 游标分页（空串 = 第一页）：不做 COUNT、不做大 OFFSET，深翻页性能与页码无关；
+    /// 响应 Total=-1（未知）、Page=0，通过 NextCursor 续翻。页码模式行为不变，深页结果同样走 Redis 缓存。
     /// </summary>
-    public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null)
+    public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null, string? cursor = null)
     {
-        var key = string.Join("|",
-            name ?? "", yearFrom?.ToString() ?? "", yearTo?.ToString() ?? "",
-            @event ?? "", period ?? "", province ?? "",
-            page?.ToString() ?? "", pageSize?.ToString() ?? "");
-        return await cache.GetOrCreateAsync(CacheGroup, $"list:{key}", () => ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize))
+        // 缓存范围收敛：
+        // - 页码模式只缓存前 MaxCachedListPage 页，深页命中率极低，直连 MySQL 避免爬虫翻页撑爆 Redis；
+        // - 游标模式只缓存第一页（cursor 为空），深游标页走 Keyset 查询代价本就恒定且低；
+        // - 全量分支（地图页）保留缓存，大 value 由 CacheService 透明 gzip 压缩。
+        var cacheable = cursor is not null
+            ? cursor.Length == 0
+            : !page.HasValue || page.Value <= cache.MaxCachedListPage;
+        if (!cacheable)
+            return await ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor);
+
+        return await cache.GetOrCreateAsync(
+                CacheGroup,
+                BuildListKey(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor),
+                () => ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor),
+                cache.ListExpiry)
             ?? new PagedResult<TraitorSummaryDto>([], 0, 1, 10);
     }
 
-    private async Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null)
+    /// <summary>
+    /// 列表缓存 key：过滤值 Trim 后拼接；长度超 200 时参数段整体取 MD5，保证 key 长度有界。
+    /// </summary>
+    private static string BuildListKey(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page, int? pageSize, string? cursor)
     {
-        var q = db.Traitors.AsQueryable();
+        var paramPart = string.Join("|",
+            name?.Trim() ?? "", yearFrom?.ToString() ?? "", yearTo?.ToString() ?? "",
+            @event?.Trim() ?? "", period?.Trim() ?? "", province?.Trim() ?? "",
+            page?.ToString() ?? "", pageSize?.ToString() ?? "",
+            cursor is null ? "" : $"c:{cursor}");
+        if (paramPart.Length <= 200)
+            return $"list:{paramPart}";
+        var hash = Convert.ToHexString(System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(paramPart)));
+        return $"list:h:{hash}";
+    }
+
+    private Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null, string? cursor = null)
+        => cursor is not null
+            ? ListCursorCoreAsync(name, yearFrom, yearTo, @event, period, province, pageSize, cursor)
+            : ListOffsetCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize);
+
+    /// <summary>公开列表的过滤条件（Offset 与 Cursor 两种分页共用）。</summary>
+    private IQueryable<Entities.Traitor> ApplyListFilters(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province)
+    {
+        // 只读列表：不进入 ChangeTracker，降低每请求内存占用
+        var q = db.Traitors.AsNoTracking();
+
+        // 已下架档案不在前台公开展示（应对内容投诉）
+        q = q.Where(t => !t.IsHidden);
 
         if (!string.IsNullOrWhiteSpace(name))
         {
@@ -51,11 +89,22 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         }
         if (!string.IsNullOrWhiteSpace(period))
             q = q.Where(t => t.Period == period);
+        return q;
+    }
 
-        // 固定排序：危害等级升序（1=特级 最严重在前），未分级排最后；同级按创建时间倒序
-        q = q.OrderBy(t => t.HarmLevel == null ? 1 : 0)
-             .ThenBy(t => t.HarmLevel)
-             .ThenByDescending(t => t.CreatedAt);
+    /// <summary>
+    /// 固定排序：危害等级升序（1=特级 最严重在前），未分级排最后；同级按创建时间倒序，Id 升序终判。
+    /// Keyset 游标分页依赖该全序（任何两行都能分出先后）。
+    /// </summary>
+    private static IOrderedQueryable<Entities.Traitor> ApplyListOrdering(IQueryable<Entities.Traitor> q)
+        => q.OrderBy(t => t.HarmLevel == null ? 1 : 0)
+            .ThenBy(t => t.HarmLevel)
+            .ThenByDescending(t => t.CreatedAt)
+            .ThenBy(t => t.Id);
+
+    private async Task<PagedResult<TraitorSummaryDto>> ListOffsetCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null)
+    {
+        var q = ApplyListOrdering(ApplyListFilters(name, yearFrom, yearTo, @event, period, province));
 
         var total = await q.CountAsync();
         // 犯罪记录条数与头像 URL 在 SQL 侧聚合，避免把明细全部读入内存与 N+1 查询
@@ -80,7 +129,11 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
                 }).ToList(),
                 Total: total,
                 Page: p,
-                PageSize: ps);
+                PageSize: ps)
+            {
+                // 附带本页末行游标，便于客户端"页码跳转后转游标续翻"
+                NextCursor = rows.Count > 0 && (long)p * ps < total ? EncodeCursor(rows[^1].Traitor) : null,
+            };
         }
         else
         {
@@ -105,21 +158,118 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         }
     }
 
+    /// <summary>
+    /// Keyset 游标分页：WHERE 谓词直接定位到游标行之后，不做 COUNT 与大 OFFSET，深翻页代价恒定。
+    /// cursor 为空串表示第一页。约定返回 Total=-1（未知）、Page=0；NextCursor 为 null 表示没有下一页。
+    /// </summary>
+    private async Task<PagedResult<TraitorSummaryDto>> ListCursorCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? pageSize, string cursor)
+    {
+        var ps = Math.Clamp(pageSize ?? 20, 1, 200);
+        var q = ApplyListFilters(name, yearFrom, yearTo, @event, period, province);
+
+        if (!string.IsNullOrEmpty(cursor))
+        {
+            var (harmLevel, createdAtTicks, id) = DecodeCursor(cursor);
+            var createdAt = new DateTime(createdAtTicks, DateTimeKind.Utc);
+            if (harmLevel is int h)
+            {
+                // 排序序：(HarmLevel asc 空值最后, CreatedAt desc, Id asc) —— 取"游标行之后"的行
+                q = q.Where(t =>
+                    t.HarmLevel == null
+                    || t.HarmLevel > h
+                    || (t.HarmLevel == h && t.CreatedAt < createdAt)
+                    || (t.HarmLevel == h && t.CreatedAt == createdAt && string.Compare(t.Id, id) > 0));
+            }
+            else
+            {
+                // 游标行在未分级组（排在最后）：只需在未分级组内继续
+                q = q.Where(t =>
+                    t.HarmLevel == null
+                    && (t.CreatedAt < createdAt
+                        || (t.CreatedAt == createdAt && string.Compare(t.Id, id) > 0)));
+            }
+        }
+
+        q = ApplyListOrdering(q);
+
+        // 多取 1 行判断是否还有下一页
+        var rows = await q.Take(ps + 1)
+            .Select(t => new
+            {
+                Traitor = t,
+                CrimeCount = t.CrimeRecords.Count,
+                PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
+            })
+            .ToListAsync();
+
+        var hasMore = rows.Count > ps;
+        if (hasMore) rows.RemoveAt(rows.Count - 1);
+
+        return new PagedResult<TraitorSummaryDto>(
+            Items: rows.Select(r =>
+            {
+                var dto = r.Traitor.ToSummary(r.CrimeCount);
+                dto.PhotoUrl = r.PhotoUrl;
+                return dto;
+            }).ToList(),
+            Total: -1,
+            Page: 0,
+            PageSize: ps)
+        {
+            NextCursor = hasMore && rows.Count > 0 ? EncodeCursor(rows[^1].Traitor) : null,
+        };
+    }
+
+    /// <summary>游标编码：base64url("{harmLevel或空}|{createdAt.Ticks}|{id}")。</summary>
+    private static string EncodeCursor(Entities.Traitor t)
+    {
+        var raw = $"{t.HarmLevel?.ToString() ?? ""}|{t.CreatedAt.Ticks}|{t.Id}";
+        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(raw))
+            .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+    }
+
+    /// <summary>游标解码；格式非法时抛 <see cref="ArgumentException"/>（由 Controller 转为 400）。</summary>
+    private static (int? HarmLevel, long CreatedAtTicks, string Id) DecodeCursor(string cursor)
+    {
+        try
+        {
+            var raw = System.Text.Encoding.UTF8.GetString(
+                Convert.FromBase64String(cursor.Replace('-', '+').Replace('_', '/').PadRight(cursor.Length + (4 - cursor.Length % 4) % 4, '=')));
+            var parts = raw.Split('|');
+            if (parts.Length != 3 || !long.TryParse(parts[1], out var ticks) || string.IsNullOrEmpty(parts[2]))
+                throw new FormatException("bad cursor parts");
+            int? harmLevel = string.IsNullOrEmpty(parts[0]) ? null : int.Parse(parts[0]);
+            return (harmLevel, ticks, parts[2]);
+        }
+        catch (Exception ex) when (ex is FormatException or OverflowException)
+        {
+            throw new ArgumentException("非法的分页游标", nameof(cursor));
+        }
+    }
+
     public async Task<TraitorDto> GetAsync(string id)
     {
-        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id));
+        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id, includeHidden: false), cache.DetailExpiry);
         return cached ?? throw new ApiException(404, "档案不存在");
     }
 
-    private async Task<TraitorDto?> GetCoreAsync(string id)
+    private async Task<TraitorDto?> GetCoreAsync(string id, bool includeHidden)
     {
-        var t = await WithIncludes().FirstOrDefaultAsync(t => t.Id == id);
+        var q = WithIncludes().AsNoTracking();
+        // 前台详情：已下架档案不可见（返回 404）
+        if (!includeHidden) q = q.Where(t => !t.IsHidden);
+        var t = await q.FirstOrDefaultAsync(t => t.Id == id);
         return t?.ToDto();
     }
 
     public async Task<List<RevisionDto>> GetRevisionsAsync(string traitorId)
     {
+        // 已下架 / 不存在档案不公开其修订历史
+        var visible = await db.Traitors.AsNoTracking().AnyAsync(t => t.Id == traitorId && !t.IsHidden);
+        if (!visible) return [];
+
         var items = await db.Revisions
+            .AsNoTracking()
             .Where(r => r.TraitorId == traitorId)
             .Include(r => r.Submitter)
             .Include(r => r.Reviewer)
@@ -130,13 +280,14 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     public async Task<TraitorStatsDto> GetStatsAsync()
     {
-        return await cache.GetOrCreateAsync(CacheGroup, "stats", StatsCoreAsync)
+        return await cache.GetOrCreateAsync(CacheGroup, "stats", StatsCoreAsync, cache.StatsExpiry)
             ?? new TraitorStatsDto();
     }
 
     private async Task<TraitorStatsDto> StatsCoreAsync()
     {
         var rows = await db.Traitors
+            .Where(t => !t.IsHidden)
             .Select(t => new { t.Period, t.BirthYear, t.DeathYear })
             .ToListAsync();
         var total = rows.Count;
@@ -152,9 +303,9 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         int? latestYear = years.Count > 0 ? years.Max() : null;
 
         // 被判刑人数：有犯罪记录的档案数
-        var sentenced = await db.Traitors.CountAsync(t => t.CrimeRecords.Any());
+        var sentenced = await db.Traitors.CountAsync(t => !t.IsHidden && t.CrimeRecords.Any());
         // 子女信息数：有子女记录的档案数
-        var childrenInfo = await db.Traitors.CountAsync(t => t.Children.Any());
+        var childrenInfo = await db.Traitors.CountAsync(t => !t.IsHidden && t.Children.Any());
         // 后代现状数：子女去向（Whereabouts）不为空的记录数
         var descendantsStatus = await db.Children.CountAsync(c => c.Whereabouts != null && c.Whereabouts.Trim() != "");
 
@@ -176,13 +327,13 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     /// </summary>
     public async Task<ProvinceStatsDto> GetProvinceStatsAsync()
     {
-        return await cache.GetOrCreateAsync(CacheGroup, "province-stats", ProvinceStatsCoreAsync)
+        return await cache.GetOrCreateAsync(CacheGroup, "province-stats", ProvinceStatsCoreAsync, cache.StatsExpiry)
             ?? new ProvinceStatsDto();
     }
 
     private async Task<ProvinceStatsDto> ProvinceStatsCoreAsync()
     {
-        var provinces = await db.Traitors.Select(t => t.Province ?? "").ToListAsync();
+        var provinces = await db.Traitors.Where(t => !t.IsHidden).Select(t => t.Province ?? "").ToListAsync();
         var counts = new Dictionary<string, int>();
         var matched = 0;
         foreach (var prov in provinces)
@@ -200,7 +351,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     public async Task<List<TimelineItemDto>> GetTimelineAsync()
     {
-        return await cache.GetOrCreateAsync(CacheGroup, "timeline", TimelineCoreAsync)
+        return await cache.GetOrCreateAsync(CacheGroup, "timeline", TimelineCoreAsync, cache.StatsExpiry)
             ?? [];
     }
 
@@ -208,7 +359,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     {
         var items = await db.LifeEvents
             .Include(e => e.Traitor)
-            .Where(e => e.Year != null)
+            .Where(e => e.Year != null && !e.Traitor.IsHidden)
             .OrderBy(e => e.Year)
             .ToListAsync();
         return items.Select(e => new TimelineItemDto
@@ -259,7 +410,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         db.Traitors.Add(traitor);
         await db.SaveChangesAsync();
         await cache.InvalidateAsync(CacheGroup);
-        var loaded = await WithIncludes().FirstAsync(t => t.Id == traitor.Id);
+        var loaded = await WithIncludes().AsNoTracking().FirstAsync(t => t.Id == traitor.Id);
         return loaded.ToDto();
     }
 
@@ -279,7 +430,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;
         if (pageSize > 1000) pageSize = 1000;
-        var q = db.Traitors.AsQueryable();
+        var q = db.Traitors.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(name))
         {
             var n = name!;
@@ -326,7 +477,12 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
             PageSize: pageSize);
     }
 
-    public async Task<TraitorDto> AdminGetAsync(string id) => await GetAsync(id);
+    public async Task<TraitorDto> AdminGetAsync(string id)
+    {
+        // 管理员读取详情：不排除已下架档案，便于查看/恢复
+        var t = await GetCoreAsync(id, includeHidden: true);
+        return t ?? throw new ApiException(404, "档案不存在");
+    }
 
     /// <summary>
     /// 删除汉奸档案：其全部子记录（罪行/配偶/子女/住所/生平/附件/来源）由数据库级联删除。
@@ -394,6 +550,33 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         traitor.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
         await cache.InvalidateAsync(CacheGroup);
+    }
+
+    /// <summary>
+    /// 下架/恢复档案：下架后档案不在前台公开展示（应对内容投诉），恢复即重新上架。
+    /// 记录下架原因/时间/操作人，便于留痕追溯。
+    /// </summary>
+    public async Task<TraitorDto> AdminSetHiddenAsync(string id, bool hidden, string? reason, string operatorUsername)
+    {
+        var traitor = await WithIncludes().FirstOrDefaultAsync(t => t.Id == id)
+                      ?? throw new ApiException(404, "档案不存在");
+        traitor.IsHidden = hidden;
+        if (hidden)
+        {
+            traitor.HiddenReason = string.IsNullOrWhiteSpace(reason) ? null : reason.Trim();
+            traitor.HiddenAt = DateTime.UtcNow;
+            traitor.HiddenBy = string.IsNullOrWhiteSpace(operatorUsername) ? null : operatorUsername;
+        }
+        else
+        {
+            traitor.HiddenReason = null;
+            traitor.HiddenAt = null;
+            traitor.HiddenBy = null;
+        }
+        traitor.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+        return traitor.ToDto();
     }
 
     /// <summary>
@@ -474,7 +657,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     public async Task<List<TraitorSummaryDto>> AdminExportAsync(IReadOnlyCollection<string> ids)
     {
         var idSet = (ids ?? []).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToHashSet();
-        var q = db.Traitors.AsQueryable();
+        var q = db.Traitors.AsNoTracking();
         if (idSet.Count > 0)
             q = q.Where(t => idSet.Contains(t.Id));
         var rows = await q
@@ -507,7 +690,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     /// </summary>
     public async Task<List<DuplicateGroupDto>> FindDuplicatesAsync(string? name, string? nativePlace)
     {
-        var q = db.Traitors.AsQueryable();
+        var q = db.Traitors.AsNoTracking();
         q = q.Where(t => t.MergedIntoId == null);
         if (!string.IsNullOrWhiteSpace(name))
         {

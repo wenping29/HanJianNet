@@ -76,6 +76,9 @@ export default function Traitors() {
   const [batchPhotoDeleting, setBatchPhotoDeleting] = useState(false)
   const [batchExporting, setBatchExporting] = useState(false)
   const [levelUpdatingId, setLevelUpdatingId] = useState<string | null>(null)
+  const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null)
+  const [pendingStatus, setPendingStatus] = useState<{ tr: TraitorSummary; hidden: boolean } | null>(null)
+  const [statusReason, setStatusReason] = useState('')
   const selectAllRef = useRef<HTMLInputElement>(null)
 
   const reload = useCallback(async (name?: string, p = 1, lv?: number, hp?: boolean) => {
@@ -159,6 +162,25 @@ export default function Traitors() {
       toast(e instanceof Error ? e.message : t('traitors.harmLevelUpdateFailed'), 'error')
     } finally {
       setLevelUpdatingId(null)
+    }
+  }
+
+  const handleSetStatus = async (tr: TraitorSummary, hidden: boolean, reason?: string) => {
+    setStatusUpdatingId(tr.id)
+    setError('')
+    try {
+      await api.setTraitorStatus(tr.id, hidden, reason?.trim() || undefined)
+      toast(hidden ? t('traitors.takeDownSuccess') : t('traitors.restoreSuccess'))
+      await reload(searched || undefined, page, level ? Number(level) : undefined, hasPhoto ? hasPhoto === '1' : undefined)
+    } catch (e) {
+      toast(
+        e instanceof Error ? e.message : hidden ? t('traitors.takeDownFailed') : t('traitors.restoreFailed'),
+        'error',
+      )
+    } finally {
+      setStatusUpdatingId(null)
+      setPendingStatus(null)
+      setStatusReason('')
     }
   }
 
@@ -466,6 +488,14 @@ export default function Traitors() {
                             </span>
                           ))}
                         <span className="font-medium tracking-wider text-paper">{tr.name}</span>
+                        {tr.isHidden && (
+                          <span
+                            className="badge border-cinnabar/60 bg-cinnabar/15 text-cinnabarlight"
+                            title={tr.hiddenReason ? `${t('traitors.takeDownReason')}: ${tr.hiddenReason}` : undefined}
+                          >
+                            {t('traitors.hiddenBadge')}
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="px-5 py-3  w-[150px] text-paperdim">{tr.period}</td>
@@ -522,6 +552,22 @@ export default function Traitors() {
                             }}
                           >
                             {t('traitors.edit')}
+                          </button>
+                        )}
+                        {canManageUsers(me.role) && (
+                          <button
+                            type="button"
+                            className={`btn-ghost !px-3 !py-1.5 text-xs ${
+                              tr.isHidden ? '!text-paperdim hover:!text-emerald-300' : 'hover:!text-cinnabarlight'
+                            }`}
+                            disabled={statusUpdatingId === tr.id}
+                            onClick={() => {
+                              setStatusReason('')
+                              setPendingStatus({ tr, hidden: !tr.isHidden })
+                            }}
+                            title={tr.isHidden ? t('traitors.restore') : t('traitors.takeDown')}
+                          >
+                            {tr.isHidden ? t('traitors.restore') : t('traitors.takeDown')}
                           </button>
                         )}
                         {canManageUsers(me.role) && (
@@ -686,6 +732,45 @@ export default function Traitors() {
         <p className="text-sm leading-relaxed text-paperdim">
           {t('traitors.batchDeletePhotosConfirm', { count: selectedIds.size })}
         </p>
+      </Modal>
+
+      <Modal
+        open={pendingStatus !== null}
+        title={pendingStatus?.hidden ? t('traitors.takeDown') : t('traitors.restore')}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
+        confirmBusy={statusUpdatingId !== null}
+        onConfirm={() => pendingStatus && void handleSetStatus(pendingStatus.tr, pendingStatus.hidden, statusReason)}
+        onCancel={() => {
+          setPendingStatus(null)
+          setStatusReason('')
+        }}
+        onClose={() => {
+          setPendingStatus(null)
+          setStatusReason('')
+        }}
+      >
+        {pendingStatus?.hidden ? (
+          <>
+            <p className="text-sm leading-relaxed text-paperdim">
+              {t('traitors.takeDownConfirm', { name: pendingStatus.tr.name })}
+            </p>
+            <label className="mt-4 block text-xs tracking-widest text-paperdim">
+              {t('traitors.takeDownReason')}
+              <textarea
+                className="input mt-2 w-full resize-y"
+                rows={3}
+                value={statusReason}
+                onChange={(e) => setStatusReason(e.target.value)}
+                placeholder={t('traitors.takeDownReasonPlaceholder')}
+              />
+            </label>
+          </>
+        ) : (
+          <p className="text-sm leading-relaxed text-paperdim">
+            {pendingStatus && t('traitors.restoreConfirm', { name: pendingStatus.tr.name })}
+          </p>
+        )}
       </Modal>
     </div>
   )

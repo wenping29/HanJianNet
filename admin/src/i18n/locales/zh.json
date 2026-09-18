@@ -197,7 +197,18 @@
     "deletePhotosConfirm": "确定删除汉奸「{{name}}」的全部照片？该操作不可恢复，将同时清除本地上传的图片文件。",
     "deletePhotosSuccess": "照片已删除",
     "deletePhotosFailed": "照片删除失败",
-    "totalRecords": "共 {{total}} 条档案 · 第 {{page}} / {{totalPages}} 页"
+    "totalRecords": "共 {{total}} 条档案 · 第 {{page}} / {{totalPages}} 页",
+    "takeDown": "下架",
+    "restore": "恢复",
+    "hiddenBadge": "已下架",
+    "takeDownConfirm": "确定下架汉奸「{{name}}」？下架后该档案将不在前台公开展示。",
+    "restoreConfirm": "确定恢复汉奸「{{name}}」？恢复后该档案将重新在前台公开展示。",
+    "takeDownReason": "下架原因",
+    "takeDownReasonPlaceholder": "选填，如：内容投诉、信息待核实等",
+    "takeDownSuccess": "档案已下架",
+    "restoreSuccess": "档案已恢复",
+    "takeDownFailed": "下架失败",
+    "restoreFailed": "恢复失败"
   },
   "merge": {
     "title": "数据合并",

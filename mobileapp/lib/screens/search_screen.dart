@@ -37,8 +37,8 @@ class _SearchScreenState extends State<SearchScreen> {
   final _scrollCtrl = ScrollController();
 
   List<Traitor> _results = [];
-  int _page = 1;
-  int _totalPages = 1;
+  /// Keyset 游标：null 表示没有下一页；新查询用空串请求第一页。
+  String? _nextCursor = '';
   bool _loading = false;
   bool _loadingMore = false;
   String? _error;
@@ -75,7 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void _onScroll() {
     if (_scrollCtrl.position.pixels >= _scrollCtrl.position.maxScrollExtent - 200 &&
         !_loadingMore &&
-        _page < _totalPages) {
+        _nextCursor != null) {
       _loadMore();
     }
   }
@@ -96,14 +96,13 @@ class _SearchScreenState extends State<SearchScreen> {
         period: _periodApiValues[_selectedPeriod],
         nativePlace: _nativePlaceCtrl.text.trim(),
         province: _province,
-        page: 1,
+        cursor: '',
         pageSize: 20,
       );
       if (!mounted) return;
       setState(() {
         _results = result.items;
-        _page = result.page;
-        _totalPages = result.totalPages;
+        _nextCursor = result.nextCursor;
         _loading = false;
       });
     } on ApiException catch (e) {
@@ -116,7 +115,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _loadMore() async {
-    if (_loadingMore || _page >= _totalPages) return;
+    final cursor = _nextCursor;
+    if (_loadingMore || cursor == null) return;
     setState(() => _loadingMore = true);
     try {
       final result = await ApiClient.instance.listTraitors(
@@ -127,14 +127,13 @@ class _SearchScreenState extends State<SearchScreen> {
         period: _periodApiValues[_selectedPeriod],
         nativePlace: _nativePlaceCtrl.text.trim(),
         province: _province,
-        page: _page + 1,
+        cursor: cursor,
         pageSize: 20,
       );
       if (!mounted) return;
       setState(() {
         _results = [..._results, ...result.items];
-        _page = result.page;
-        _totalPages = result.totalPages;
+        _nextCursor = result.nextCursor;
         _loadingMore = false;
       });
     } on ApiException catch (_) {
