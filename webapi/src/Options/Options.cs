@@ -98,4 +98,29 @@ public class RedisOptions
     /// 熔断时长（秒）：熔断打开后经过该时长进入半开状态，放行一个探测请求尝试恢复。
     /// </summary>
     public int CircuitBreakerOpenSeconds { get; set; } = 30;
+
+    /// <summary>
+    /// 统计类缓存过期时间（分钟）：首页统计、分省统计、时间线。数据变化少且写操作会整组失效，可用较长 TTL。
+    /// </summary>
+    public int StatsExpireMinutes { get; set; } = 30;
+
+    /// <summary>
+    /// 列表页缓存过期时间（分钟）。
+    /// </summary>
+    public int ListExpireMinutes { get; set; } = 10;
+
+    /// <summary>
+    /// 详情缓存过期时间（分钟）：档案详情、事件详情。写操作会整组失效，可用较长 TTL。
+    /// </summary>
+    public int DetailExpireMinutes { get; set; } = 60;
+
+    /// <summary>
+    /// 列表缓存的最大页码：页码模式超过该页不进缓存（深页命中率极低，避免爬虫翻页撑爆 Redis），直接回源数据库。
+    /// </summary>
+    public int MaxCachedListPage { get; set; } = 50;
+
+    /// <summary>
+    /// 缓存值压缩阈值（字节）：序列化后超过该大小自动 gzip 压缩存储，读取时透明解压，避免大 key 拖慢 Redis。
+    /// </summary>
+    public int CompressThresholdBytes { get; set; } = 32768;
 }

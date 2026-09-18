@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using HanJianNet.WebApi.Common;
@@ -51,6 +52,18 @@ public class CacheService
     /// <summary>默认缓存过期时长。</summary>
     public TimeSpan DefaultExpiry => TimeSpan.FromMinutes(Math.Max(1, _options.DefaultExpireMinutes));
 
+    /// <summary>统计类缓存过期时长（首页统计/分省统计/时间线）。</summary>
+    public TimeSpan StatsExpiry => TimeSpan.FromMinutes(Math.Max(1, _options.StatsExpireMinutes));
+
+    /// <summary>列表页缓存过期时长。</summary>
+    public TimeSpan ListExpiry => TimeSpan.FromMinutes(Math.Max(1, _options.ListExpireMinutes));
+
+    /// <summary>详情缓存过期时长（档案详情/事件详情）。</summary>
+    public TimeSpan DetailExpiry => TimeSpan.FromMinutes(Math.Max(1, _options.DetailExpireMinutes));
+
+    /// <summary>列表缓存的最大页码：超过该页的请求应绕过缓存直接回源，避免深页撑爆 Redis。</summary>
+    public int MaxCachedListPage => Math.Max(1, _options.MaxCachedListPage);
+
     public async Task<T?> GetAsync<T>(string group, string key)
     {
         if (!Enabled) return default;
@@ -65,7 +78,7 @@ public class CacheService
             if (bytes is null) return default;
             try
             {
-                return JsonSerializer.Deserialize<T>(bytes, JsonOpts.Default);
+                return JsonSerializer.Deserialize<T>(MaybeDecompress(bytes), JsonOpts.Default);
             }
             catch (JsonException)
             {
@@ -92,9 +105,10 @@ public class CacheService
         {
             await InvalidateDirtyGroupsIfNeededAsync().ConfigureAwait(false);
             var version = await GetVersionAsync(group).ConfigureAwait(false);
+            var payload = MaybeCompress(JsonSerializer.SerializeToUtf8Bytes(value, JsonOpts.Default));
             await _cache!.SetAsync(
                 DataKey(group, key, version),
-                JsonSerializer.SerializeToUtf8Bytes(value, JsonOpts.Default),
+                payload,
                 new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = WithJitter(expiry) })
                 .ConfigureAwait(false);
             _breaker.OnSuccess();
@@ -215,16 +229,31 @@ public class CacheService
         return TimeSpan.FromTicks((long)(expiry.Ticks * jitter));
     }
 
-    private string VersionKey(string group) => $"{RootKeyPrefix}{VersionKeySuffix}:{group}";
+    // ---- 大 value gzip 透明压缩（防大 key） ----
 
-    private string DataKey(string group, string key, int version) => $"{RootKeyPrefix}{group}:v{version}:{key}";
-
-    private string RootKeyPrefix
+    /// <summary>序列化后的值超过阈值时 gzip 压缩存储。</summary>
+    private byte[] MaybeCompress(byte[] bytes)
     {
-        get
-        {
-            var prefix = _options.InstanceName ?? "";
-            return prefix.EndsWith(':') ? prefix : prefix + ":";
-        }
+        if (bytes.Length < Math.Max(1024, _options.CompressThresholdBytes)) return bytes;
+        using var output = new MemoryStream();
+        using (var gzip = new GZipStream(output, CompressionLevel.Fastest))
+            gzip.Write(bytes, 0, bytes.Length);
+        return output.ToArray();
     }
+
+    /// <summary>检测 gzip magic（0x1F 0x8B，JSON UTF-8 首字节不可能是 0x1F）并解压；未压缩原样返回。</summary>
+    private static byte[] MaybeDecompress(byte[] bytes)
+    {
+        if (bytes.Length < 2 || bytes[0] != 0x1F || bytes[1] != 0x8B) return bytes;
+        using var input = new MemoryStream(bytes);
+        using var gzip = new GZipStream(input, CompressionMode.Decompress);
+        using var output = new MemoryStream();
+        gzip.CopyTo(output);
+        return output.ToArray();
+    }
+
+    // key 前缀（InstanceName）统一由 IDistributedCache 实现层添加，这里不再重复拼接
+    private static string VersionKey(string group) => $"{VersionKeySuffix}:{group}";
+
+    private static string DataKey(string group, string key, int version) => $"{group}:v{version}:{key}";
 }

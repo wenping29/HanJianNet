@@ -20,13 +20,38 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     /// </summary>
     public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null, string? cursor = null)
     {
-        var key = string.Join("|",
-            name ?? "", yearFrom?.ToString() ?? "", yearTo?.ToString() ?? "",
-            @event ?? "", period ?? "", province ?? "",
+        // 缓存范围收敛：
+        // - 页码模式只缓存前 MaxCachedListPage 页，深页命中率极低，直连 MySQL 避免爬虫翻页撑爆 Redis；
+        // - 游标模式只缓存第一页（cursor 为空），深游标页走 Keyset 查询代价本就恒定且低；
+        // - 全量分支（地图页）保留缓存，大 value 由 CacheService 透明 gzip 压缩。
+        var cacheable = cursor is not null
+            ? cursor.Length == 0
+            : !page.HasValue || page.Value <= cache.MaxCachedListPage;
+        if (!cacheable)
+            return await ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor);
+
+        return await cache.GetOrCreateAsync(
+                CacheGroup,
+                BuildListKey(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor),
+                () => ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor),
+                cache.ListExpiry)
+            ?? new PagedResult<TraitorSummaryDto>([], 0, 1, 10);
+    }
+
+    /// <summary>
+    /// 列表缓存 key：过滤值 Trim 后拼接；长度超 200 时参数段整体取 MD5，保证 key 长度有界。
+    /// </summary>
+    private static string BuildListKey(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page, int? pageSize, string? cursor)
+    {
+        var paramPart = string.Join("|",
+            name?.Trim() ?? "", yearFrom?.ToString() ?? "", yearTo?.ToString() ?? "",
+            @event?.Trim() ?? "", period?.Trim() ?? "", province?.Trim() ?? "",
             page?.ToString() ?? "", pageSize?.ToString() ?? "",
             cursor is null ? "" : $"c:{cursor}");
-        return await cache.GetOrCreateAsync(CacheGroup, $"list:{key}", () => ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor))
-            ?? new PagedResult<TraitorSummaryDto>([], 0, 1, 10);
+        if (paramPart.Length <= 200)
+            return $"list:{paramPart}";
+        var hash = Convert.ToHexString(System.Security.Cryptography.MD5.HashData(System.Text.Encoding.UTF8.GetBytes(paramPart)));
+        return $"list:h:{hash}";
     }
 
     private Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null, string? cursor = null)
@@ -220,7 +245,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     public async Task<TraitorDto> GetAsync(string id)
     {
-        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id));
+        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id), cache.DetailExpiry);
         return cached ?? throw new ApiException(404, "档案不存在");
     }
 
@@ -243,7 +268,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     public async Task<TraitorStatsDto> GetStatsAsync()
     {
-        return await cache.GetOrCreateAsync(CacheGroup, "stats", StatsCoreAsync)
+        return await cache.GetOrCreateAsync(CacheGroup, "stats", StatsCoreAsync, cache.StatsExpiry)
             ?? new TraitorStatsDto();
     }
 
@@ -289,7 +314,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     /// </summary>
     public async Task<ProvinceStatsDto> GetProvinceStatsAsync()
     {
-        return await cache.GetOrCreateAsync(CacheGroup, "province-stats", ProvinceStatsCoreAsync)
+        return await cache.GetOrCreateAsync(CacheGroup, "province-stats", ProvinceStatsCoreAsync, cache.StatsExpiry)
             ?? new ProvinceStatsDto();
     }
 
@@ -313,7 +338,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     public async Task<List<TimelineItemDto>> GetTimelineAsync()
     {
-        return await cache.GetOrCreateAsync(CacheGroup, "timeline", TimelineCoreAsync)
+        return await cache.GetOrCreateAsync(CacheGroup, "timeline", TimelineCoreAsync, cache.StatsExpiry)
             ?? [];
     }
 

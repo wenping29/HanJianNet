@@ -15,7 +15,7 @@ public class AtrocityCaseService(AppDbContext db, CacheService cache)
     public async Task<List<AtrocityEventDto>> ListAsync(string? era = null)
     {
         var key = $"list:{era ?? ""}";
-        return await cache.GetOrCreateAsync(CacheGroup, key, () => ListCoreAsync(era))
+        return await cache.GetOrCreateAsync(CacheGroup, key, () => ListCoreAsync(era), cache.ListExpiry)
             ?? [];
     }
 
@@ -39,7 +39,7 @@ public class AtrocityCaseService(AppDbContext db, CacheService cache)
     /// <summary>事件详情（含涉案人员）。</summary>
     public async Task<AtrocityEventDetailDto> GetAsync(string id)
     {
-        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id));
+        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id), cache.DetailExpiry);
         return cached ?? throw new ApiException(404, "事件不存在");
     }
 
