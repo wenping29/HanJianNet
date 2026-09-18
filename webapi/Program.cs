@@ -1,4 +1,5 @@
 using System.Text;
+using AspNetCoreRateLimit;
 using HanJianNet.WebApi.Data;
 using HanJianNet.WebApi.Filters;
 using HanJianNet.WebApi.Middleware;
@@ -152,6 +153,21 @@ try
     // 通讯加密服务（AES-GCM/AES-CBC，密钥来自 Security:EncryptionKey）
     builder.Services.AddSingleton<CryptoService>();
 
+    // --- IP 限流（AspNetCoreRateLimit，内存计数器；配合 Nginx 限流做 API 层二次防护） ---
+    builder.Services.AddMemoryCache();
+    builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+    // 超限响应统一为中文 JSON，与全局异常响应格式一致
+    builder.Services.PostConfigure<IpRateLimitOptions>(o =>
+        o.QuotaExceededResponse = new QuotaExceededResponse
+        {
+            StatusCode = StatusCodes.Status429TooManyRequests,
+            ContentType = "application/json; charset=utf-8",
+            // 注意：Content 会被 string.Format 处理，JSON 花括号必须写成 {{ }} 转义
+            Content = """{{"message":"请求过于频繁，请稍后再试"}}""",
+        });
+    builder.Services.AddInMemoryRateLimiting();
+    builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
     builder.Services.AddControllers(options =>
     {
         // 全局审计过滤器
@@ -211,6 +227,8 @@ try
 
     // 异常 → 响应 + 写错误日志；置于最前，保证其后所有中间件（含 Crypto）的异常都被统一兜底
     app.UseMiddleware<ExceptionHandlingMiddleware>();
+    // IP 限流：超限直接 429 短路，放在缓冲/解密之前避免无效请求消耗资源
+    app.UseIpRateLimiting();
     // 先启用请求体缓冲（允许审计过滤器和错误中间件重读 body）
     app.UseMiddleware<RequestBodyBufferingMiddleware>();
     // 通讯加密：按 X-Encrypted 头解密请求体、加密 JSON 响应体
