@@ -14,12 +14,28 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
 {
     // ---------- 公开接口 ----------
 
+    /// <summary>
+    /// 公开列表。分页方式二选一：
+    /// - 页码模式（兼容旧客户端）：传 page/pageSize，返回 total/totalPages；
+    /// - 游标模式（Keyset，深翻页性能恒定）：查询串带 cursor 键（空值 = 第一页），
+    ///   响应不含有效 total（-1），用 nextCursor 续翻，nextCursor 为 null 表示没有下一页；
+    /// - 两者都不传返回全量（地图统计场景）。
+    /// </summary>
     [HttpGet("api/traitors")]
     public async Task<IActionResult> List([FromQuery] string? name,[FromQuery] int? yearFrom,[FromQuery] int? yearTo,
         [FromQuery] string? @event,[FromQuery] string? period,[FromQuery] string? province,[FromQuery] int? page = null,[FromQuery] int? pageSize = null)
     {
-        var paged = await traitors.ListAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize);
-        return Ok(new { items = paged.Items, total = paged.Total, page = paged.Page, pageSize = paged.PageSize, totalPages = paged.TotalPages });
+        // 查询串出现 cursor 键（即使为空）即进入游标模式；旧客户端不带 cursor，行为不变
+        string? cursor = Request.Query.TryGetValue("cursor", out var c) ? c.ToString() : null;
+        try
+        {
+            var paged = await traitors.ListAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor);
+            return Ok(new { items = paged.Items, total = paged.Total, page = paged.Page, pageSize = paged.PageSize, totalPages = paged.TotalPages, nextCursor = paged.NextCursor });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpGet("api/traitors/{id}")]

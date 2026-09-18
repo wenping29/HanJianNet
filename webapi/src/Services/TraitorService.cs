@@ -15,18 +15,27 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     /// <summary>
     /// 公开列表查询。page/pageSize 未指定时返回全量（供地图统计等场景使用），指定时返回分页结果。
+    /// cursor 非 null 时走 Keyset 游标分页（空串 = 第一页）：不做 COUNT、不做大 OFFSET，深翻页性能与页码无关；
+    /// 响应 Total=-1（未知）、Page=0，通过 NextCursor 续翻。页码模式行为不变，深页结果同样走 Redis 缓存。
     /// </summary>
-    public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null)
+    public async Task<PagedResult<TraitorSummaryDto>> ListAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null, string? cursor = null)
     {
         var key = string.Join("|",
             name ?? "", yearFrom?.ToString() ?? "", yearTo?.ToString() ?? "",
             @event ?? "", period ?? "", province ?? "",
-            page?.ToString() ?? "", pageSize?.ToString() ?? "");
-        return await cache.GetOrCreateAsync(CacheGroup, $"list:{key}", () => ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize))
+            page?.ToString() ?? "", pageSize?.ToString() ?? "",
+            cursor is null ? "" : $"c:{cursor}");
+        return await cache.GetOrCreateAsync(CacheGroup, $"list:{key}", () => ListCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize, cursor))
             ?? new PagedResult<TraitorSummaryDto>([], 0, 1, 10);
     }
 
-    private async Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null)
+    private Task<PagedResult<TraitorSummaryDto>> ListCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null, string? cursor = null)
+        => cursor is not null
+            ? ListCursorCoreAsync(name, yearFrom, yearTo, @event, period, province, pageSize, cursor)
+            : ListOffsetCoreAsync(name, yearFrom, yearTo, @event, period, province, page, pageSize);
+
+    /// <summary>公开列表的过滤条件（Offset 与 Cursor 两种分页共用）。</summary>
+    private IQueryable<Entities.Traitor> ApplyListFilters(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province)
     {
         var q = db.Traitors.AsQueryable();
 
@@ -51,11 +60,22 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         }
         if (!string.IsNullOrWhiteSpace(period))
             q = q.Where(t => t.Period == period);
+        return q;
+    }
 
-        // 固定排序：危害等级升序（1=特级 最严重在前），未分级排最后；同级按创建时间倒序
-        q = q.OrderBy(t => t.HarmLevel == null ? 1 : 0)
-             .ThenBy(t => t.HarmLevel)
-             .ThenByDescending(t => t.CreatedAt);
+    /// <summary>
+    /// 固定排序：危害等级升序（1=特级 最严重在前），未分级排最后；同级按创建时间倒序，Id 升序终判。
+    /// Keyset 游标分页依赖该全序（任何两行都能分出先后）。
+    /// </summary>
+    private static IOrderedQueryable<Entities.Traitor> ApplyListOrdering(IQueryable<Entities.Traitor> q)
+        => q.OrderBy(t => t.HarmLevel == null ? 1 : 0)
+            .ThenBy(t => t.HarmLevel)
+            .ThenByDescending(t => t.CreatedAt)
+            .ThenBy(t => t.Id);
+
+    private async Task<PagedResult<TraitorSummaryDto>> ListOffsetCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? page = null, int? pageSize = null)
+    {
+        var q = ApplyListOrdering(ApplyListFilters(name, yearFrom, yearTo, @event, period, province));
 
         var total = await q.CountAsync();
         // 犯罪记录条数与头像 URL 在 SQL 侧聚合，避免把明细全部读入内存与 N+1 查询
@@ -80,7 +100,11 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
                 }).ToList(),
                 Total: total,
                 Page: p,
-                PageSize: ps);
+                PageSize: ps)
+            {
+                // 附带本页末行游标，便于客户端"页码跳转后转游标续翻"
+                NextCursor = rows.Count > 0 && (long)p * ps < total ? EncodeCursor(rows[^1].Traitor) : null,
+            };
         }
         else
         {
@@ -102,6 +126,95 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
                 Total: total,
                 Page: 1,
                 PageSize: Math.Max(1, total));
+        }
+    }
+
+    /// <summary>
+    /// Keyset 游标分页：WHERE 谓词直接定位到游标行之后，不做 COUNT 与大 OFFSET，深翻页代价恒定。
+    /// cursor 为空串表示第一页。约定返回 Total=-1（未知）、Page=0；NextCursor 为 null 表示没有下一页。
+    /// </summary>
+    private async Task<PagedResult<TraitorSummaryDto>> ListCursorCoreAsync(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province, int? pageSize, string cursor)
+    {
+        var ps = Math.Clamp(pageSize ?? 20, 1, 200);
+        var q = ApplyListFilters(name, yearFrom, yearTo, @event, period, province);
+
+        if (!string.IsNullOrEmpty(cursor))
+        {
+            var (harmLevel, createdAtTicks, id) = DecodeCursor(cursor);
+            var createdAt = new DateTime(createdAtTicks, DateTimeKind.Utc);
+            if (harmLevel is int h)
+            {
+                // 排序序：(HarmLevel asc 空值最后, CreatedAt desc, Id asc) —— 取"游标行之后"的行
+                q = q.Where(t =>
+                    t.HarmLevel == null
+                    || t.HarmLevel > h
+                    || (t.HarmLevel == h && t.CreatedAt < createdAt)
+                    || (t.HarmLevel == h && t.CreatedAt == createdAt && string.Compare(t.Id, id) > 0));
+            }
+            else
+            {
+                // 游标行在未分级组（排在最后）：只需在未分级组内继续
+                q = q.Where(t =>
+                    t.HarmLevel == null
+                    && (t.CreatedAt < createdAt
+                        || (t.CreatedAt == createdAt && string.Compare(t.Id, id) > 0)));
+            }
+        }
+
+        q = ApplyListOrdering(q);
+
+        // 多取 1 行判断是否还有下一页
+        var rows = await q.Take(ps + 1)
+            .Select(t => new
+            {
+                Traitor = t,
+                CrimeCount = t.CrimeRecords.Count,
+                PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
+            })
+            .ToListAsync();
+
+        var hasMore = rows.Count > ps;
+        if (hasMore) rows.RemoveAt(rows.Count - 1);
+
+        return new PagedResult<TraitorSummaryDto>(
+            Items: rows.Select(r =>
+            {
+                var dto = r.Traitor.ToSummary(r.CrimeCount);
+                dto.PhotoUrl = r.PhotoUrl;
+                return dto;
+            }).ToList(),
+            Total: -1,
+            Page: 0,
+            PageSize: ps)
+        {
+            NextCursor = hasMore && rows.Count > 0 ? EncodeCursor(rows[^1].Traitor) : null,
+        };
+    }
+
+    /// <summary>游标编码：base64url("{harmLevel或空}|{createdAt.Ticks}|{id}")。</summary>
+    private static string EncodeCursor(Entities.Traitor t)
+    {
+        var raw = $"{t.HarmLevel?.ToString() ?? ""}|{t.CreatedAt.Ticks}|{t.Id}";
+        return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(raw))
+            .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+    }
+
+    /// <summary>游标解码；格式非法时抛 <see cref="ArgumentException"/>（由 Controller 转为 400）。</summary>
+    private static (int? HarmLevel, long CreatedAtTicks, string Id) DecodeCursor(string cursor)
+    {
+        try
+        {
+            var raw = System.Text.Encoding.UTF8.GetString(
+                Convert.FromBase64String(cursor.Replace('-', '+').Replace('_', '/').PadRight(cursor.Length + (4 - cursor.Length % 4) % 4, '=')));
+            var parts = raw.Split('|');
+            if (parts.Length != 3 || !long.TryParse(parts[1], out var ticks) || string.IsNullOrEmpty(parts[2]))
+                throw new FormatException("bad cursor parts");
+            int? harmLevel = string.IsNullOrEmpty(parts[0]) ? null : int.Parse(parts[0]);
+            return (harmLevel, ticks, parts[2]);
+        }
+        catch (Exception ex) when (ex is FormatException or OverflowException)
+        {
+            throw new ArgumentException("非法的分页游标", nameof(cursor));
         }
     }
 

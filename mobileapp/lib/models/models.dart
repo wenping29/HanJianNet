@@ -375,12 +375,16 @@ class PaginatedTraitors {
   final int pageSize;
   final int totalPages;
 
+  /// Keyset 游标：传给下一次请求翻页；null 表示没有下一页。
+  final String? nextCursor;
+
   const PaginatedTraitors({
     required this.items,
     required this.total,
     required this.page,
     required this.pageSize,
     required this.totalPages,
+    this.nextCursor,
   });
 
   factory PaginatedTraitors.fromJson(Json j) => PaginatedTraitors(
@@ -391,6 +395,7 @@ class PaginatedTraitors {
         page: (j['page'] as num?)?.toInt() ?? 1,
         pageSize: (j['pageSize'] as num?)?.toInt() ?? 20,
         totalPages: (j['totalPages'] as num?)?.toInt() ?? 0,
+        nextCursor: j['nextCursor'] as String?,
       );
 }
 

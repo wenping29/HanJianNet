@@ -23,8 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   TraitorStats? _stats;
   List<Traitor> _traitors = [];
-  int _page = 1;
-  int _totalPages = 1;
+  /// Keyset 游标：null 表示没有下一页；首屏用空串请求第一页。
+  String? _nextCursor = '';
   bool _loading = true;
   bool _loadingMore = false;
   String? _error;
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onScroll() {
     if (_scrollCtrl.position.pixels >= _scrollCtrl.position.maxScrollExtent - 200 &&
         !_loadingMore &&
-        _page < _totalPages) {
+        _nextCursor != null) {
       _loadMore();
     }
   }
@@ -58,15 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final results = await Future.wait([
         ApiClient.instance.getStats(),
-        ApiClient.instance.listTraitors(page: 1, pageSize: 20),
+        ApiClient.instance.listTraitors(cursor: '', pageSize: 20),
       ]);
       if (!mounted) return;
       final paginated = results[1] as PaginatedTraitors;
       setState(() {
         _stats = results[0] as TraitorStats;
         _traitors = paginated.items;
-        _page = paginated.page;
-        _totalPages = paginated.totalPages;
+        _nextCursor = paginated.nextCursor;
         _loading = false;
       });
     } on ApiException catch (e) {
@@ -79,15 +78,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadMore() async {
-    if (_loadingMore || _page >= _totalPages) return;
+    final cursor = _nextCursor;
+    if (_loadingMore || cursor == null) return;
     setState(() => _loadingMore = true);
     try {
-      final result = await ApiClient.instance.listTraitors(page: _page + 1, pageSize: 20);
+      final result = await ApiClient.instance.listTraitors(cursor: cursor, pageSize: 20);
       if (!mounted) return;
       setState(() {
         _traitors = [..._traitors, ...result.items];
-        _page = result.page;
-        _totalPages = result.totalPages;
+        _nextCursor = result.nextCursor;
         _loadingMore = false;
       });
     } on ApiException catch (_) {

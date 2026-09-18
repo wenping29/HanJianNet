@@ -334,26 +334,35 @@ static class DbInitHelpers
             db.Database.IsSqlite()
                 ? """CREATE TABLE IF NOT EXISTS "SystemConfigs" ("Id" TEXT NOT NULL PRIMARY KEY, "Key" TEXT NOT NULL, "Value" TEXT NOT NULL DEFAULT '', "Category" TEXT NOT NULL DEFAULT '', "Description" TEXT, "CreatedAt" TEXT NOT NULL, "UpdatedAt" TEXT); CREATE UNIQUE INDEX IF NOT EXISTS "IX_SystemConfigs_Key" ON "SystemConfigs" ("Key"); CREATE INDEX IF NOT EXISTS "IX_SystemConfigs_Category" ON "SystemConfigs" ("Category");"""
                 : "CREATE TABLE IF NOT EXISTS `SystemConfigs` (`Id` VARCHAR(64) NOT NULL PRIMARY KEY, `Key` VARCHAR(128) NOT NULL, `Value` TEXT NOT NULL, `Category` VARCHAR(64) NOT NULL, `Description` TEXT, `CreatedAt` DATETIME NOT NULL, `UpdatedAt` DATETIME NULL, UNIQUE INDEX `IX_SystemConfigs_Key` (`Key`), INDEX `IX_SystemConfigs_Category` (`Category`));");
+
+        // 档案列表排序索引：公开列表按 (HarmLevel asc, CreatedAt desc, Id) 排序并支持 Keyset 游标分页，
+        // InnoDB 二级索引叶子自带主键 Id，该复合索引等效覆盖全部三个排序列
+        await EnsureIndexAsync(db, "Traitors", "IX_Traitors_HarmLevel_CreatedAt",
+            db.Database.IsSqlite()
+                ? """CREATE INDEX "IX_Traitors_HarmLevel_CreatedAt" ON "Traitors" ("HarmLevel", "CreatedAt");"""
+                : "CREATE INDEX `IX_Traitors_HarmLevel_CreatedAt` ON `Traitors` (`HarmLevel`, `CreatedAt`);");
     }
 
     /// <summary>检查表是否存在，不存在则执行对应方言的 DDL 文件建表。</summary>
     private static async Task EnsureTableAsync(AppDbContext db, string table, string sqliteDdl, string mysqlDdl)
     {
-        bool exists;
+        // 注意：COUNT(*) 恒返回一行，必须取值判断，不能用 AnyAsync（恒为 true）；
+        // 且 EF 标量 SqlQuery 要求列别名为 Value
+        int count;
         if (db.Database.IsSqlite())
         {
-            exists = await db.Database
-                .SqlQueryRaw<int>("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name={0}", table)
-                .AnyAsync();
+            count = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM sqlite_master WHERE type='table' AND name={0}", table)
+                .FirstAsync();
         }
         else
         {
-            exists = await db.Database
-                .SqlQueryRaw<int>("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name={0}", table)
-                .AnyAsync();
+            count = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name={0}", table)
+                .FirstAsync();
         }
 
-        if (!exists)
+        if (count == 0)
         {
             Log.Information("数据库缺少 {Table} 表，执行增量建表", table);
             var ddlFile = db.Database.IsSqlite() ? sqliteDdl : mysqlDdl;
@@ -408,6 +417,30 @@ static class DbInitHelpers
         {
             Log.Information("数据库表 {Table} 缺少列 {Column}，执行 ALTER TABLE", table, column);
             await db.Database.ExecuteSqlRawAsync(alterSql);
+        }
+    }
+
+    /// <summary>检查索引是否存在，不存在则执行 CREATE INDEX（MySQL 不支持 CREATE INDEX IF NOT EXISTS，需先查元数据）。</summary>
+    private static async Task EnsureIndexAsync(AppDbContext db, string table, string index, string createSql)
+    {
+        int count;
+        if (db.Database.IsSqlite())
+        {
+            count = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM sqlite_master WHERE type='index' AND name={0}", index)
+                .FirstAsync();
+        }
+        else
+        {
+            count = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = {0} AND index_name = {1}", table, index)
+                .FirstAsync();
+        }
+
+        if (count == 0)
+        {
+            Log.Information("数据库表 {Table} 缺少索引 {Index}，执行 CREATE INDEX", table, index);
+            await db.Database.ExecuteSqlRawAsync(createSql);
         }
     }
 }
