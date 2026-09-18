@@ -23,6 +23,33 @@ try
         .ReadFrom.Services(services)
         .Enrich.FromLogContext());
 
+    // --- HTTPS ---
+    // 开发环境：使用 ASP.NET Core 开发证书（首次运行执行 dotnet dev-certs https --trust）
+    // 生产环境：在 Https:Certificate 中配置证书文件路径与密码；未配置证书时只监听 HTTP，避免启动崩溃
+    var httpsPort = builder.Configuration.GetValue("Https:Port", 3001);
+    var httpsCertPath = builder.Configuration["Https:Certificate:Path"];
+    var httpsCertPassword = builder.Configuration["Https:Certificate:Password"];
+    var hasHttpsCert = !string.IsNullOrWhiteSpace(httpsCertPath) && File.Exists(httpsCertPath);
+    var httpsEnabled = httpsPort > 0 && (hasHttpsCert || builder.Environment.IsDevelopment());
+    if (httpsEnabled)
+    {
+        builder.WebHost.ConfigureKestrel(kestrel =>
+        {
+            kestrel.ListenAnyIP(httpsPort, listen =>
+            {
+                if (hasHttpsCert)
+                    listen.UseHttps(httpsCertPath!, httpsCertPassword);
+                else
+                    listen.UseHttps(); // 开发证书
+            });
+        });
+    }
+    else if (httpsPort > 0)
+    {
+        Log.Warning("未找到 HTTPS 证书（Https:Certificate:Path={CertPath}），HTTPS 端口 {Port} 不启用，仅监听 HTTP",
+            httpsCertPath ?? "(未配置)", httpsPort);
+    }
+
     builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("Database"));
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
     builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
@@ -205,6 +232,17 @@ try
     app.UseMiddleware<AuditEnrichmentMiddleware>();
     // 异常 → 响应 + 写错误日志
     app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    // 生产环境启用 HSTS（浏览器强制走 HTTPS）
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHsts();
+    }
+    // HTTP → HTTPS 重定向（仅在 HTTPS 端口启用时生效）
+    if (httpsEnabled)
+    {
+        app.UseHttpsRedirection();
+    }
 
     // CORS 必须放在 UseStaticFiles 之前，否则 /uploads 静态资源被短路、缺少跨域响应头（Flutter Web 图片以 XHR 加载会报错）
     app.UseCors("frontend");
