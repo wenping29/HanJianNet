@@ -62,7 +62,8 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     /// <summary>公开列表的过滤条件（Offset 与 Cursor 两种分页共用）。</summary>
     private IQueryable<Entities.Traitor> ApplyListFilters(string? name, int? yearFrom, int? yearTo, string? @event, string? period, string? province)
     {
-        var q = db.Traitors.AsQueryable();
+        // 只读列表：不进入 ChangeTracker，降低每请求内存占用
+        var q = db.Traitors.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(name))
         {
@@ -251,13 +252,14 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     private async Task<TraitorDto?> GetCoreAsync(string id)
     {
-        var t = await WithIncludes().FirstOrDefaultAsync(t => t.Id == id);
+        var t = await WithIncludes().AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
         return t?.ToDto();
     }
 
     public async Task<List<RevisionDto>> GetRevisionsAsync(string traitorId)
     {
         var items = await db.Revisions
+            .AsNoTracking()
             .Where(r => r.TraitorId == traitorId)
             .Include(r => r.Submitter)
             .Include(r => r.Reviewer)
@@ -397,7 +399,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         db.Traitors.Add(traitor);
         await db.SaveChangesAsync();
         await cache.InvalidateAsync(CacheGroup);
-        var loaded = await WithIncludes().FirstAsync(t => t.Id == traitor.Id);
+        var loaded = await WithIncludes().AsNoTracking().FirstAsync(t => t.Id == traitor.Id);
         return loaded.ToDto();
     }
 
@@ -417,7 +419,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;
         if (pageSize > 1000) pageSize = 1000;
-        var q = db.Traitors.AsQueryable();
+        var q = db.Traitors.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(name))
         {
             var n = name!;
@@ -612,7 +614,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     public async Task<List<TraitorSummaryDto>> AdminExportAsync(IReadOnlyCollection<string> ids)
     {
         var idSet = (ids ?? []).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToHashSet();
-        var q = db.Traitors.AsQueryable();
+        var q = db.Traitors.AsNoTracking();
         if (idSet.Count > 0)
             q = q.Where(t => idSet.Contains(t.Id));
         var rows = await q
@@ -645,7 +647,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     /// </summary>
     public async Task<List<DuplicateGroupDto>> FindDuplicatesAsync(string? name, string? nativePlace)
     {
-        var q = db.Traitors.AsQueryable();
+        var q = db.Traitors.AsNoTracking();
         q = q.Where(t => t.MergedIntoId == null);
         if (!string.IsNullOrWhiteSpace(name))
         {

@@ -21,7 +21,7 @@ public class AtrocityCaseService(AppDbContext db, CacheService cache)
 
     private async Task<List<AtrocityEventDto>> ListCoreAsync(string? era)
     {
-        var q = db.AtrocityCases.AsQueryable();
+        var q = db.AtrocityCases.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(era))
         {
             var e = era!;
@@ -46,6 +46,7 @@ public class AtrocityCaseService(AppDbContext db, CacheService cache)
     private async Task<AtrocityEventDetailDto?> GetCoreAsync(string id)
     {
         var item = await db.AtrocityCases
+            .AsNoTracking()
             .Include(c => c.Persons)
             .FirstOrDefaultAsync(c => c.Id == id);
         return item?.ToDetailDto();
