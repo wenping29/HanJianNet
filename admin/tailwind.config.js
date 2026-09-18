@@ -18,8 +18,8 @@ export default {
         bamboolight: '#6E8F7E',
       },
       fontFamily: {
-        song: ['"Noto Serif SC"', '"Source Han Serif SC"', 'STSong', 'SimSun', 'serif'],
-        garamond: ['"EB Garamond"', 'Georgia', 'serif'],
+        song: ['"Noto Serif SC Variable"', '"Noto Serif SC"', '"Source Han Serif SC"', 'STSong', 'SimSun', 'serif'],
+        garamond: ['"EB Garamond Variable"', '"EB Garamond"', 'Georgia', 'serif'],
       },
       boxShadow: {
         card: '0 2px 14px rgba(0,0,0,0.45)',

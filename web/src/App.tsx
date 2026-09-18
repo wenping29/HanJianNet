@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import About from './pages/About'
+import Contact from './pages/Contact'
 import EventTimeline from './pages/EventTimeline'
 import HistoryEventDetail from './pages/HistoryEventDetail'
 import HistoryEventForm from './pages/HistoryEventForm'
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/traitor/:id" element={<TraitorDetail />} />
         <Route path="/traitor/:id/history" element={<TraitorHistory />} />
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/timeline" element={<EventTimeline />} />
         <Route path="/roster" element={<Roster />} />
         <Route path="/lookup" element={<Lookup />} />

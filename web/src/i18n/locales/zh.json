@@ -53,6 +53,7 @@
     "roster": "名录",
     "events": "事件",
     "about": "关于",
+    "contact": "联系我",
     "logoSeal1": "汉奸",
     "logoSeal2": "档案",
     "brand": "汉奸档案",
@@ -165,6 +166,23 @@
     "closing": "愿以此册，铭刻国耻，",
     "closing2": "警醒后人。",
     "returnHome": "返回首页"
+  },
+  "contact": {
+    "title": "联系我",
+    "intro": "对本馆的内容有任何指正、史料补充或其他交流，欢迎填写下列留言表单。提交后将在后台由站务查阅处理。",
+    "name": "姓名 *",
+    "namePlaceholder": "如 张某人",
+    "contactMethod": "联系方式 *",
+    "contactPlaceholder": "邮箱 / 手机 / 微信等，以便我们回复",
+    "subject": "标题 *",
+    "subjectPlaceholder": "一句话说明来意",
+    "content": "内容 *",
+    "contentPlaceholder": "请尽量详细描述，注明出处更佳",
+    "submit": "提交留言",
+    "submitting": "提交中…",
+    "success": "留言已送达，感谢您的来信。我们会尽快查看处理。",
+    "failed": "提交失败，请稍后再试。",
+    "privacyNote": "您的姓名与联系方式仅用于答复，不会公开展示。"
   },
   "map": {
     "title": "汉奸地图",

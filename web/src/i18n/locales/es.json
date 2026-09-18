@@ -53,6 +53,7 @@
     "roster": "Lista",
     "events": "Eventos",
     "about": "Acerca de",
+    "contact": "Contacto",
     "logoSeal1": "Traidor",
     "logoSeal2": "Archivo",
     "brand": "Archivo de Traidores",
@@ -165,6 +166,23 @@
     "closing": "Que estos registros graben la vergüenza nacional",
     "closing2": "y sirvan de advertencia a las generaciones futuras.",
     "returnHome": "Volver al inicio"
+  },
+  "contact": {
+    "title": "Contacto",
+    "intro": "Si tiene correcciones, material histórico adicional u otros comentarios, utilice el siguiente formulario. Los envíos serán revisados por el equipo.",
+    "name": "Nombre *",
+    "namePlaceholder": "p. ej. Juan Pérez",
+    "contactMethod": "Contacto *",
+    "contactPlaceholder": "Correo / teléfono / WeChat, etc. para responderle",
+    "subject": "Asunto *",
+    "subjectPlaceholder": "Breve resumen de su mensaje",
+    "content": "Mensaje *",
+    "contentPlaceholder": "Describa con detalle; es bienvenido citar fuentes",
+    "submit": "Enviar mensaje",
+    "submitting": "Enviando…",
+    "success": "Su mensaje ha sido entregado. Gracias por escribirnos.",
+    "failed": "Fallo al enviar. Inténtelo de nuevo más tarde.",
+    "privacyNote": "Su nombre y contacto solo se usan para responder y nunca se muestran públicamente."
   },
   "map": {
     "title": "Mapa de traidores",

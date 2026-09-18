@@ -22,6 +22,7 @@ import TraitorsList from './pages/Traitors'
 import MergeTraitors from './pages/MergeTraitors'
 import Users from './pages/Users'
 import WebMenus from './pages/WebMenus'
+import ContactMessages from './pages/ContactMessages'
 import { canManageUsers, defaultLandingPath } from './lib/roles'
 import { useAuth } from './stores/auth'
 
@@ -66,6 +67,7 @@ export default function App() {
             <Route path="/traitors/basic-edit" element={<TraitorBasicEdit />} />
             <Route path="/traitors/basic-edit/:id" element={<TraitorBasicEdit />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/contact-messages" element={<ContactMessages />} />
           </Route>
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/reviews/:rid" element={<ReviewDetail />} />

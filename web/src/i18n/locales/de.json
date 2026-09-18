@@ -53,6 +53,7 @@
     "roster": "Namensliste",
     "events": "Ereignisse",
     "about": "Über uns",
+    "contact": "Kontakt",
     "logoSeal1": "Verräter",
     "logoSeal2": "Archiv",
     "brand": "Verräterarchiv",
@@ -165,6 +166,23 @@
     "closing": "Möge dieses Werk die nationale Schande einprägen",
     "closing2": "und künftige Generationen warnen.",
     "returnHome": "Zurück zur Startseite"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "intro": "Sollten Sie Korrekturen, zusätzliches historisches Material oder anderes Feedback haben, nutzen Sie bitte das folgende Formular. Eingaben werden von der Redaktion geprüft.",
+    "name": "Name *",
+    "namePlaceholder": "z. B. Max Mustermann",
+    "contactMethod": "Kontakt *",
+    "contactPlaceholder": "E-Mail / Telefon / WeChat usw. für die Antwort",
+    "subject": "Betreff *",
+    "subjectPlaceholder": "Kurze Zusammenfassung Ihrer Nachricht",
+    "content": "Nachricht *",
+    "contentPlaceholder": "Bitte beschreiben Sie ausführlich; Quellenangaben sind willkommen",
+    "submit": "Nachricht senden",
+    "submitting": "Wird gesendet…",
+    "success": "Ihre Nachricht wurde übermittelt. Vielen Dank für Ihre Kontaktaufnahme.",
+    "failed": "Senden fehlgeschlagen. Bitte versuchen Sie es später erneut.",
+    "privacyNote": "Name und Kontaktdaten werden nur für Antworten verwendet und nie öffentlich angezeigt."
   },
   "map": {
     "title": "Verräterkarte",

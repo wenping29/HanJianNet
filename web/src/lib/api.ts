@@ -113,6 +113,8 @@ export interface PagedTraitorResponse {
   page: number
   pageSize: number
   totalPages: number
+  /** Keyset 游标：本页末行位置，可用于"页码跳转后转游标续翻"；无下一页时为 null */
+  nextCursor?: string | null
 }
 
 /** 分省统计项（省份归类在后端完成） */
@@ -174,6 +176,12 @@ export const api = {
     request<{ item: AtrocityEvent }>('/atrocity-events', { method: 'POST', body: JSON.stringify(input) }),
 
   listWebMenus: () => request<{ items: WebMenu[] }>('/web-menus'),
+
+  submitContact: (body: { name: string; contact: string; title: string; content: string }) =>
+    request<{ ok: boolean; id: string }>('/contact-messages', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
 
   trackVisit: (token: string, path: string) =>
     request<{ ok: boolean }>('/visits/track', { method: 'POST', body: JSON.stringify({ token, path }) }),

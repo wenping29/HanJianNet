@@ -53,6 +53,7 @@
     "roster": "名鑑",
     "events": "イベント",
     "about": "概要",
+    "contact": "お問い合わせ",
     "logoSeal1": "漢奸",
     "logoSeal2": "档案",
     "brand": "漢奸档案",
@@ -165,6 +166,23 @@
     "closing": "本書をもって国恥を刻み",
     "closing2": "後世に警告とする。",
     "returnHome": "トップに戻る"
+  },
+  "contact": {
+    "title": "お問い合わせ",
+    "intro": "本館の内容について訂正・史料補足・その他のご意見がございましたら、下記フォームよりお寄せください。送信内容は事務局が確認します。",
+    "name": "お名前 *",
+    "namePlaceholder": "例：山田太郎",
+    "contactMethod": "連絡先 *",
+    "contactPlaceholder": "メール・電話・WeChat など（ご返信先）",
+    "subject": "件名 *",
+    "subjectPlaceholder": "用件を一言で",
+    "content": "本文 *",
+    "contentPlaceholder": "詳しくお書きください。出典の記載があると助かります",
+    "submit": "送信する",
+    "submitting": "送信中…",
+    "success": "メッセージを受け付けました。お問い合わせありがとうございます。",
+    "failed": "送信に失敗しました。しばらくしてから再度お試しください。",
+    "privacyNote": "お名前と連絡先は返信のみに使用し、公開されることはありません。"
   },
   "map": {
     "title": "漢奸地図",

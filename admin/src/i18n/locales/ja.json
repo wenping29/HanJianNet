@@ -7,6 +7,7 @@
     "merge-traitors": "データ統合",
     "reviews": "審査待ち",
     "events": "事件管理",
+    "contact-messages": "お問い合わせ",
     "system": "システム管理",
     "system-logs": "システムログ",
     "users": "ユーザー管理",
@@ -98,6 +99,36 @@
     "uploadFailed": "アップロードに失敗しました",
     "select": "「{{name}}」を選択",
     "view": "表示"
+  },
+  "contactMessages": {
+    "title": "お問い合わせ",
+    "subtitle": "「お問い合わせ」ページで受け取ったメッセージ",
+    "searchPlaceholder": "名前 / 件名 / 内容 / 連絡先を検索…",
+    "filterAll": "すべてのステータス",
+    "filterPending": "未対応",
+    "filterHandled": "対応済み",
+    "handled": "対応済み",
+    "pending": "未対応",
+    "markHandled": "対応済みにする",
+    "restore": "未対応に戻す",
+    "deleted": "削除しました",
+    "markedHandled": "対応済みにしました",
+    "markedPending": "未対応に戻しました",
+    "confirmDelete": "このメッセージを削除しますか？この操作は取り消せません。",
+    "noMessages": "メッセージはありません",
+    "col": {
+      "status": "ステータス",
+      "title": "件名",
+      "sender": "送信者",
+      "time": "送信日時",
+      "operation": "操作"
+    },
+    "detail": {
+      "contact": "連絡先",
+      "ip": "IP アドレス",
+      "handledAt": "対応日時",
+      "content": "本文"
+    }
   },
   "sidebar": {
     "archives": "人物檔案",

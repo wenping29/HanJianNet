@@ -7,6 +7,7 @@
     "merge-traitors": "数据合并",
     "reviews": "待审队列",
     "events": "事件管理",
+    "contact-messages": "联系留言",
     "system": "系统管理",
     "system-logs": "系统日志",
     "users": "用户管理",
@@ -98,6 +99,36 @@
     "uploadFailed": "上传失败",
     "select": "选择「{{name}}」",
     "view": "查看"
+  },
+  "contactMessages": {
+    "title": "联系留言",
+    "subtitle": "前台「联系我」页面收到的留言",
+    "searchPlaceholder": "搜索姓名 / 标题 / 内容 / 联系方式…",
+    "filterAll": "全部状态",
+    "filterPending": "待处理",
+    "filterHandled": "已处理",
+    "handled": "已处理",
+    "pending": "待处理",
+    "markHandled": "标记已处理",
+    "restore": "恢复待处理",
+    "deleted": "已删除",
+    "markedHandled": "已标记为已处理",
+    "markedPending": "已恢复为待处理",
+    "confirmDelete": "确定删除这条留言吗？删除后不可恢复。",
+    "noMessages": "暂无留言",
+    "col": {
+      "status": "状态",
+      "title": "标题",
+      "sender": "留言人",
+      "time": "提交时间",
+      "operation": "操作"
+    },
+    "detail": {
+      "contact": "联系方式",
+      "ip": "IP 地址",
+      "handledAt": "处理时间",
+      "content": "留言内容"
+    }
   },
   "sidebar": {
     "archives": "史册",
@@ -197,7 +228,18 @@
     "deletePhotosConfirm": "确定删除汉奸「{{name}}」的全部照片？该操作不可恢复，将同时清除本地上传的图片文件。",
     "deletePhotosSuccess": "照片已删除",
     "deletePhotosFailed": "照片删除失败",
-    "totalRecords": "共 {{total}} 条档案 · 第 {{page}} / {{totalPages}} 页"
+    "totalRecords": "共 {{total}} 条档案 · 第 {{page}} / {{totalPages}} 页",
+    "takeDown": "下架",
+    "restore": "恢复",
+    "hiddenBadge": "已下架",
+    "takeDownConfirm": "确定下架汉奸「{{name}}」？下架后该档案将不在前台公开展示。",
+    "restoreConfirm": "确定恢复汉奸「{{name}}」？恢复后该档案将重新在前台公开展示。",
+    "takeDownReason": "下架原因",
+    "takeDownReasonPlaceholder": "选填，如：内容投诉、信息待核实等",
+    "takeDownSuccess": "档案已下架",
+    "restoreSuccess": "档案已恢复",
+    "takeDownFailed": "下架失败",
+    "restoreFailed": "恢复失败"
   },
   "merge": {
     "title": "数据合并",

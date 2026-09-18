@@ -60,6 +60,9 @@ public static class Mappings
         Title = t.Title,
         CrimeRecordCount = crimeRecordCount,
         PhotoUrl = t.Attachments.FirstOrDefault(a => a.Kind == "photo")?.Url,
+        IsHidden = t.IsHidden,
+        HiddenReason = t.HiddenReason,
+        HiddenAt = t.HiddenAt,
     };
 
     public static TraitorSummaryDto ToSummary(this Traitor t, int crimeRecordCount, List<string> crimeRecordTitles)
@@ -89,6 +92,9 @@ public static class Mappings
         Summary = t.Summary,
         HarmLevel = t.HarmLevel,
         Title = t.Title,
+        IsHidden = t.IsHidden,
+        HiddenReason = t.HiddenReason,
+        HiddenAt = t.HiddenAt,
         Spouses = t.Spouses.Select(s => new SpouseInputDto
         {
             Name = s.Name,

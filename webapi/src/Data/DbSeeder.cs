@@ -73,7 +73,8 @@ public static class DbSeeder
             ("reviews", "/reviews", "待审队列", 2, null, ["manager", "admin", "superadmin"]),
             ("system", "/system", "系统管理", 3, null, ["manager", "admin", "superadmin"]),
             ("events", "/events", "事件管理", 4, null, ["admin", "superadmin"]),
-            ("system-logs", "/system-logs", "系统日志", 5, null, ["admin", "superadmin"]),
+            ("contact-messages", "/contact-messages", "联系留言", 5, null, ["admin", "superadmin"]),
+            ("system-logs", "/system-logs", "系统日志", 6, null, ["admin", "superadmin"]),
             ("users", "/users", "用户管理", 1, "system", ["admin", "superadmin"]),
             ("roles", "/roles", "角色管理", 2, "system", ["admin", "superadmin"]),
             ("menus", "/menus", "菜单管理", 3, "system", ["admin", "superadmin"]),
@@ -201,6 +202,7 @@ public static class DbSeeder
             new WebMenu { Key = "roster",   Path = "/roster",    Label = "名录",     Sort = 5, IsEnabled = true },
             new WebMenu { Key = "events",   Path = "/events",    Label = "事件",     Sort = 6, IsEnabled = true },
             new WebMenu { Key = "about",    Path = "/about",     Label = "关于",     Sort = 7, IsEnabled = true },
+            new WebMenu { Key = "contact",  Path = "/contact",   Label = "联系我",   Sort = 8, IsEnabled = true },
         };
 
         foreach (var menu in defaults)

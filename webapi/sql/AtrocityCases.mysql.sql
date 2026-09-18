@@ -1,35 +1,34 @@
 CREATE TABLE IF NOT EXISTS `atrocitycases` (
-    `Id` varchar(255) NOT NULL,
-    `Name` varchar(500) NOT NULL,
-    `Alias` varchar(500) NULL,
-    `EventType` varchar(50) NULL,
-    `Era` varchar(50) NULL,
-    `Year` int NULL,
-    `Province` varchar(100) NULL,
-    `City` varchar(100) NULL,
-    `Location` varchar(500) NULL,
-    `IsGeneral` tinyint(1) NOT NULL DEFAULT 0,
-    `PersonCount` int NOT NULL DEFAULT 0,
-    `Summary` longtext NULL,
-    `Keywords` longtext NULL,
-    `CreatedAt` datetime(6) NOT NULL,
-    `UpdatedAt` datetime(6) NOT NULL,
-    PRIMARY KEY (`Id`),
-    KEY `IX_AtrocityCases_Name` (`Name`(191)),
-    KEY `IX_AtrocityCases_Province` (`Province`(100)),
-    KEY `IX_AtrocityCases_Era` (`Era`(50))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `Id` VARCHAR(64) NOT NULL,
+  `Name` VARCHAR(255) NOT NULL,
+  `Alias` VARCHAR(255) NOT NULL,
+  `EventType` VARCHAR(128) NOT NULL,
+  `Era` VARCHAR(128) NOT NULL,
+  `Year` INT NULL,
+  `Province` VARCHAR(64) NOT NULL,
+  `City` VARCHAR(128) NOT NULL,
+  `Location` VARCHAR(255) NOT NULL,
+  `IsGeneral` TINYINT(1) NOT NULL,
+  `PersonCount` INT NOT NULL,
+  `Summary` TEXT NOT NULL,
+  `Keywords` TEXT NOT NULL,
+  `CreatedAt` DATETIME(6) NOT NULL,
+  `UpdatedAt` DATETIME(6) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `IX_atrocitycases_Name` (`Name`),
+  KEY `IX_atrocitycases_Province` (`Province`),
+  KEY `IX_atrocitycases_Era` (`Era`)
+);
 
 CREATE TABLE IF NOT EXISTS `atrocitycasepersons` (
-    `Id` varchar(255) NOT NULL,
-    `AtrocityCaseId` varchar(255) NOT NULL,
-    `Name` varchar(255) NOT NULL,
-    `Location` varchar(255) NULL,
-    `IdentityTags` longtext NULL,
-    `Sort` int NOT NULL DEFAULT 0,
-    `CreatedAt` datetime(6) NOT NULL,
-    PRIMARY KEY (`Id`),
-    KEY `IX_AtrocityCasePersons_AtrocityCaseId` (`AtrocityCaseId`),
-    CONSTRAINT `FK_AtrocityCasePersons_AtrocityCases_AtrocityCaseId`
-        FOREIGN KEY (`AtrocityCaseId`) REFERENCES `atrocitycases` (`Id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `Id` VARCHAR(64) NOT NULL,
+  `AtrocityCaseId` VARCHAR(64) NOT NULL,
+  `Name` VARCHAR(128) NOT NULL,
+  `Location` VARCHAR(255) NOT NULL,
+  `IdentityTags` VARCHAR(255) NOT NULL,
+  `Sort` INT NOT NULL,
+  `CreatedAt` DATETIME(6) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `IX_atrocitycasepersons_AtrocityCaseId` (`AtrocityCaseId`),
+  CONSTRAINT `FK_atrocitycasepersons_atrocitycases_AtrocityCaseId` FOREIGN KEY (`AtrocityCaseId`) REFERENCES `atrocitycases` (`Id`) ON DELETE CASCADE
+);

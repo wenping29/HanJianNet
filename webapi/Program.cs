@@ -1,4 +1,5 @@
 using System.Text;
+using AspNetCoreRateLimit;
 using HanJianNet.WebApi.Data;
 using HanJianNet.WebApi.Filters;
 using HanJianNet.WebApi.Middleware;
@@ -22,6 +23,33 @@ try
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext());
+
+    // --- HTTPS ---
+    // 开发环境：使用 ASP.NET Core 开发证书（首次运行执行 dotnet dev-certs https --trust）
+    // 生产环境：在 Https:Certificate 中配置证书文件路径与密码；未配置证书时只监听 HTTP，避免启动崩溃
+    var httpsPort = builder.Configuration.GetValue("Https:Port", 3001);
+    var httpsCertPath = builder.Configuration["Https:Certificate:Path"];
+    var httpsCertPassword = builder.Configuration["Https:Certificate:Password"];
+    var hasHttpsCert = !string.IsNullOrWhiteSpace(httpsCertPath) && File.Exists(httpsCertPath);
+    var httpsEnabled = httpsPort > 0 && (hasHttpsCert || builder.Environment.IsDevelopment());
+    if (httpsEnabled)
+    {
+        builder.WebHost.ConfigureKestrel(kestrel =>
+        {
+            kestrel.ListenAnyIP(httpsPort, listen =>
+            {
+                if (hasHttpsCert)
+                    listen.UseHttps(httpsCertPath!, httpsCertPassword);
+                else
+                    listen.UseHttps(); // 开发证书
+            });
+        });
+    }
+    else if (httpsPort > 0)
+    {
+        Log.Warning("未找到 HTTPS 证书（Https:Certificate:Path={CertPath}），HTTPS 端口 {Port} 不启用，仅监听 HTTP",
+            httpsCertPath ?? "(未配置)", httpsPort);
+    }
 
     builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("Database"));
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
@@ -75,17 +103,27 @@ try
     // --- Redis 缓存（Redis:Enabled 开启；关闭时退化为内存缓存占位，CacheService 内部直接跳过） ---
     var redisOptions = builder.Configuration.GetSection("Redis").Get<RedisOptions>() ?? new RedisOptions();
     Console.WriteLine($"Redis:Enabled={redisOptions.Enabled}");
-    Console.WriteLine($"Redis:ConnectionString={redisOptions.ConnectionString}");
     Console.WriteLine($"Redis:InstanceName={redisOptions.InstanceName}");
     Console.WriteLine($"Redis:DefaultExpireMinutes={redisOptions.DefaultExpireMinutes}");
     if (redisOptions.Enabled)
     {
         builder.Services.AddStackExchangeRedisCache(options =>
         {
-            options.Configuration = redisOptions.ConnectionString;
+            // 单次故障 2s 内可判定，配合熔断器快速降级；AbortOnConnectFail=false 保证 Redis 宕机不影响应用启动
+            var config = StackExchange.Redis.ConfigurationOptions.Parse(redisOptions.ConnectionString);
+            config.ConnectTimeout = 2000;
+            config.SyncTimeout = 2000;
+            config.AsyncTimeout = 2000;
+            config.ConnectRetry = 2;
+            config.AbortOnConnectFail = false;
+            options.ConfigurationOptions = config;
             options.InstanceName = redisOptions.InstanceName ?? "";
+            // 连接串脱敏（ConfigurationOptions.ToString() 不会掩码密码，需手动处理）
+            var masked = System.Text.RegularExpressions.Regex.Replace(
+                redisOptions.ConnectionString, @"password=[^,]*", "password=***",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            Log.Information("Redis 缓存已启用：{ConnectionString}", masked);
         });
-        Log.Information("Redis 缓存已启用：{ConnectionString}", redisOptions.ConnectionString);
     }
     else
     {
@@ -116,6 +154,8 @@ try
     builder.Services.AddScoped<UploadService>();
     // 历史事件（惨案/宏观事件）
     builder.Services.AddScoped<AtrocityCaseService>();
+    // Redis 熔断器（单例，状态跨请求共享；熔断时缓存层自动降级直连 MySQL）
+    builder.Services.AddSingleton<RedisCircuitBreaker>();
     // 分布式缓存服务
     builder.Services.AddScoped<CacheService>();
     // 前台访客统计
@@ -139,6 +179,21 @@ try
     builder.Services.AddScoped<AiService>();
     // 通讯加密服务（AES-GCM/AES-CBC，密钥来自 Security:EncryptionKey）
     builder.Services.AddSingleton<CryptoService>();
+
+    // --- IP 限流（AspNetCoreRateLimit，内存计数器；配合 Nginx 限流做 API 层二次防护） ---
+    builder.Services.AddMemoryCache();
+    builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+    // 超限响应统一为中文 JSON，与全局异常响应格式一致
+    builder.Services.PostConfigure<IpRateLimitOptions>(o =>
+        o.QuotaExceededResponse = new QuotaExceededResponse
+        {
+            StatusCode = StatusCodes.Status429TooManyRequests,
+            ContentType = "application/json; charset=utf-8",
+            // 注意：Content 会被 string.Format 处理，JSON 花括号必须写成 {{ }} 转义
+            Content = """{{"message":"请求过于频繁，请稍后再试"}}""",
+        });
+    builder.Services.AddInMemoryRateLimiting();
+    builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
     builder.Services.AddControllers(options =>
     {
@@ -197,14 +252,27 @@ try
         };
     });
 
+    // 异常 → 响应 + 写错误日志；置于最前，保证其后所有中间件（含 Crypto）的异常都被统一兜底
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
+    // IP 限流：超限直接 429 短路，放在缓冲/解密之前避免无效请求消耗资源
+    app.UseIpRateLimiting();
     // 先启用请求体缓冲（允许审计过滤器和错误中间件重读 body）
     app.UseMiddleware<RequestBodyBufferingMiddleware>();
     // 通讯加密：按 X-Encrypted 头解密请求体、加密 JSON 响应体
     app.UseMiddleware<CryptoMiddleware>();
     // 提取请求级审计上下文（IP/UA/用户信息 + 计时器）
     app.UseMiddleware<AuditEnrichmentMiddleware>();
-    // 异常 → 响应 + 写错误日志
-    app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    // 生产环境启用 HSTS（浏览器强制走 HTTPS）
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHsts();
+    }
+    // HTTP → HTTPS 重定向（仅在 HTTPS 端口启用时生效）
+    if (httpsEnabled)
+    {
+        app.UseHttpsRedirection();
+    }
 
     // CORS 必须放在 UseStaticFiles 之前，否则 /uploads 静态资源被短路、缺少跨域响应头（Flutter Web 图片以 XHR 加载会报错）
     app.UseCors("frontend");
@@ -217,8 +285,12 @@ try
         RequestPath = "/uploads",
     });
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Swagger 仅在开发环境暴露，生产环境关闭，避免泄露接口结构与 DTO schema
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
     app.UseAuthentication();
     app.UseAuthorization();
@@ -275,6 +347,24 @@ static class DbInitHelpers
                 ? "ALTER TABLE Traitors ADD COLUMN BirthPlace TEXT NOT NULL DEFAULT '';"
                 : "ALTER TABLE Traitors ADD COLUMN BirthPlace VARCHAR(255) NOT NULL DEFAULT '';");
 
+        // 补齐 Traitors 表的新增列（IsHidden / HiddenReason / HiddenAt / HiddenBy：档案快速下架，应对内容投诉）
+        await EnsureColumnAsync(db, "Traitors", "IsHidden",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN IsHidden INTEGER NOT NULL DEFAULT 0;"
+                : "ALTER TABLE Traitors ADD COLUMN IsHidden TINYINT(1) NOT NULL DEFAULT 0;");
+        await EnsureColumnAsync(db, "Traitors", "HiddenReason",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN HiddenReason TEXT;"
+                : "ALTER TABLE Traitors ADD COLUMN HiddenReason VARCHAR(512) NULL;");
+        await EnsureColumnAsync(db, "Traitors", "HiddenAt",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN HiddenAt TEXT;"
+                : "ALTER TABLE Traitors ADD COLUMN HiddenAt DATETIME NULL;");
+        await EnsureColumnAsync(db, "Traitors", "HiddenBy",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN HiddenBy TEXT;"
+                : "ALTER TABLE Traitors ADD COLUMN HiddenBy VARCHAR(64) NULL;");
+
         // 补齐 Users 表的新增列（AvatarUrl：用户头像）
         await EnsureColumnAsync(db, "Users", "AvatarUrl",
             db.Database.IsSqlite()
@@ -322,26 +412,41 @@ static class DbInitHelpers
             db.Database.IsSqlite()
                 ? """CREATE TABLE IF NOT EXISTS "SystemConfigs" ("Id" TEXT NOT NULL PRIMARY KEY, "Key" TEXT NOT NULL, "Value" TEXT NOT NULL DEFAULT '', "Category" TEXT NOT NULL DEFAULT '', "Description" TEXT, "CreatedAt" TEXT NOT NULL, "UpdatedAt" TEXT); CREATE UNIQUE INDEX IF NOT EXISTS "IX_SystemConfigs_Key" ON "SystemConfigs" ("Key"); CREATE INDEX IF NOT EXISTS "IX_SystemConfigs_Category" ON "SystemConfigs" ("Category");"""
                 : "CREATE TABLE IF NOT EXISTS `SystemConfigs` (`Id` VARCHAR(64) NOT NULL PRIMARY KEY, `Key` VARCHAR(128) NOT NULL, `Value` TEXT NOT NULL, `Category` VARCHAR(64) NOT NULL, `Description` TEXT, `CreatedAt` DATETIME NOT NULL, `UpdatedAt` DATETIME NULL, UNIQUE INDEX `IX_SystemConfigs_Key` (`Key`), INDEX `IX_SystemConfigs_Category` (`Category`));");
+
+        // 档案列表排序索引：公开列表按 (HarmLevel asc, CreatedAt desc, Id) 排序并支持 Keyset 游标分页，
+        // InnoDB 二级索引叶子自带主键 Id，该复合索引等效覆盖全部三个排序列
+        await EnsureIndexAsync(db, "Traitors", "IX_Traitors_HarmLevel_CreatedAt",
+            db.Database.IsSqlite()
+                ? """CREATE INDEX "IX_Traitors_HarmLevel_CreatedAt" ON "Traitors" ("HarmLevel", "CreatedAt");"""
+                : "CREATE INDEX `IX_Traitors_HarmLevel_CreatedAt` ON `Traitors` (`HarmLevel`, `CreatedAt`);");
+
+        // 前台联系留言表（EnsureCreated 会为新库自动建表，此处兼容旧库）
+        await db.Database.ExecuteSqlRawAsync(
+            db.Database.IsSqlite()
+                ? """CREATE TABLE IF NOT EXISTS "ContactMessages" ("Id" TEXT NOT NULL PRIMARY KEY, "Title" TEXT NOT NULL, "Content" TEXT NOT NULL, "Name" TEXT NOT NULL, "Contact" TEXT NOT NULL, "Ip" TEXT, "IsHandled" INTEGER NOT NULL DEFAULT 0, "CreatedAt" TEXT NOT NULL, "HandledAt" TEXT); CREATE INDEX IF NOT EXISTS "IX_ContactMessages_CreatedAt" ON "ContactMessages" ("CreatedAt"); CREATE INDEX IF NOT EXISTS "IX_ContactMessages_IsHandled" ON "ContactMessages" ("IsHandled");"""
+                : "CREATE TABLE IF NOT EXISTS `ContactMessages` (`Id` VARCHAR(64) NOT NULL PRIMARY KEY, `Title` VARCHAR(200) NOT NULL, `Content` TEXT NOT NULL, `Name` VARCHAR(64) NOT NULL, `Contact` VARCHAR(200) NOT NULL, `Ip` VARCHAR(64) NULL, `IsHandled` TINYINT(1) NOT NULL DEFAULT 0, `CreatedAt` DATETIME NOT NULL, `HandledAt` DATETIME NULL, INDEX `IX_ContactMessages_CreatedAt` (`CreatedAt`), INDEX `IX_ContactMessages_IsHandled` (`IsHandled`));");
     }
 
     /// <summary>检查表是否存在，不存在则执行对应方言的 DDL 文件建表。</summary>
     private static async Task EnsureTableAsync(AppDbContext db, string table, string sqliteDdl, string mysqlDdl)
     {
-        bool exists;
+        // 注意：COUNT(*) 恒返回一行，必须取值判断，不能用 AnyAsync（恒为 true）；
+        // 且 EF 标量 SqlQuery 要求列别名为 Value
+        int count;
         if (db.Database.IsSqlite())
         {
-            exists = await db.Database
-                .SqlQueryRaw<int>("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name={0}", table)
-                .AnyAsync();
+            count = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM sqlite_master WHERE type='table' AND name={0}", table)
+                .FirstAsync();
         }
         else
         {
-            exists = await db.Database
-                .SqlQueryRaw<int>("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name={0}", table)
-                .AnyAsync();
+            count = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name={0}", table)
+                .FirstAsync();
         }
 
-        if (!exists)
+        if (count == 0)
         {
             Log.Information("数据库缺少 {Table} 表，执行增量建表", table);
             var ddlFile = db.Database.IsSqlite() ? sqliteDdl : mysqlDdl;
@@ -396,6 +501,30 @@ static class DbInitHelpers
         {
             Log.Information("数据库表 {Table} 缺少列 {Column}，执行 ALTER TABLE", table, column);
             await db.Database.ExecuteSqlRawAsync(alterSql);
+        }
+    }
+
+    /// <summary>检查索引是否存在，不存在则执行 CREATE INDEX（MySQL 不支持 CREATE INDEX IF NOT EXISTS，需先查元数据）。</summary>
+    private static async Task EnsureIndexAsync(AppDbContext db, string table, string index, string createSql)
+    {
+        int count;
+        if (db.Database.IsSqlite())
+        {
+            count = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM sqlite_master WHERE type='index' AND name={0}", index)
+                .FirstAsync();
+        }
+        else
+        {
+            count = await db.Database
+                .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = {0} AND index_name = {1}", table, index)
+                .FirstAsync();
+        }
+
+        if (count == 0)
+        {
+            Log.Information("数据库表 {Table} 缺少索引 {Index}，执行 CREATE INDEX", table, index);
+            await db.Database.ExecuteSqlRawAsync(createSql);
         }
     }
 }

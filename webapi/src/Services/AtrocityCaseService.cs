@@ -15,13 +15,13 @@ public class AtrocityCaseService(AppDbContext db, CacheService cache)
     public async Task<List<AtrocityEventDto>> ListAsync(string? era = null)
     {
         var key = $"list:{era ?? ""}";
-        return await cache.GetOrCreateAsync(CacheGroup, key, () => ListCoreAsync(era))
+        return await cache.GetOrCreateAsync(CacheGroup, key, () => ListCoreAsync(era), cache.ListExpiry)
             ?? [];
     }
 
     private async Task<List<AtrocityEventDto>> ListCoreAsync(string? era)
     {
-        var q = db.AtrocityCases.AsQueryable();
+        var q = db.AtrocityCases.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(era))
         {
             var e = era!;
@@ -39,13 +39,14 @@ public class AtrocityCaseService(AppDbContext db, CacheService cache)
     /// <summary>事件详情（含涉案人员）。</summary>
     public async Task<AtrocityEventDetailDto> GetAsync(string id)
     {
-        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id));
+        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id), cache.DetailExpiry);
         return cached ?? throw new ApiException(404, "事件不存在");
     }
 
     private async Task<AtrocityEventDetailDto?> GetCoreAsync(string id)
     {
         var item = await db.AtrocityCases
+            .AsNoTracking()
             .Include(c => c.Persons)
             .FirstOrDefaultAsync(c => c.Id == id);
         return item?.ToDetailDto();

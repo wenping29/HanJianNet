@@ -53,6 +53,7 @@
     "roster": "명부",
     "events": "사건",
     "about": "소개",
+    "contact": "연락처",
     "logoSeal1": "매국노",
     "logoSeal2": "기록",
     "brand": "매국노 기록관",
@@ -165,6 +166,23 @@
     "closing": "이 기록으로 국치를 새기고",
     "closing2": "후세를 경고하리라.",
     "returnHome": "홈으로 돌아가기"
+  },
+  "contact": {
+    "title": "연락처",
+    "intro": "본관의 내용에 대한 정정, 사료 보충 또는 기타 의견이 있으시면 아래 양식을 작성해 주세요. 제출 내용은 운영진이 확인합니다.",
+    "name": "이름 *",
+    "namePlaceholder": "예: 홍길동",
+    "contactMethod": "연락처 *",
+    "contactPlaceholder": "이메일 / 전화 / WeChat 등 회신 수단",
+    "subject": "제목 *",
+    "subjectPlaceholder": "용건을 한 줄로",
+    "content": "내용 *",
+    "contentPlaceholder": "자세히 적어 주세요. 출처 표기가 있으면 좋습니다",
+    "submit": "보내기",
+    "submitting": "제출 중…",
+    "success": "메시지가 전송되었습니다. 문의해 주셔서 감사합니다.",
+    "failed": "제출에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+    "privacyNote": "이름과 연락처는 답변에만 사용되며 공개되지 않습니다."
   },
   "map": {
     "title": "매국노 지도",

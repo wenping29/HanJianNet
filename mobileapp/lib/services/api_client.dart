@@ -174,6 +174,8 @@ class ApiClient {
 
   // ---- 档案（公开） ----
 
+  /// 档案列表。传 [cursor] 时走 Keyset 游标分页（深翻页性能恒定，推荐无限滚动使用），
+  /// 空串 = 第一页，之后传响应里的 nextCursor；否则走传统页码模式（兼容旧逻辑）。
   Future<PaginatedTraitors> listTraitors({
     String? name,
     int? yearFrom,
@@ -184,6 +186,7 @@ class ApiClient {
     String? province,
     int page = 1,
     int pageSize = 20,
+    String? cursor,
   }) async {
     final q = <String, String>{
       if (name != null && name.isNotEmpty) 'name': name,
@@ -193,7 +196,7 @@ class ApiClient {
       if (period != null && period.isNotEmpty) 'period': period,
       if (nativePlace != null && nativePlace.isNotEmpty) 'nativePlace': nativePlace,
       if (province != null && province.isNotEmpty) 'province': province,
-      'page': '$page',
+      if (cursor != null) 'cursor': cursor else 'page': '$page',
       'pageSize': '$pageSize',
     };
     final uri = Uri.parse('$_baseUrl/api/traitors').replace(queryParameters: q);
