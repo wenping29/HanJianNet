@@ -88,4 +88,14 @@ public class RedisOptions
     /// 默认缓存过期时间（分钟）。
     /// </summary>
     public int DefaultExpireMinutes { get; set; } = 10;
+
+    /// <summary>
+    /// 熔断器连续失败阈值：Redis 操作连续失败达到该次数后打开熔断，跳过 Redis 直连数据库。
+    /// </summary>
+    public int CircuitBreakerFailureThreshold { get; set; } = 3;
+
+    /// <summary>
+    /// 熔断时长（秒）：熔断打开后经过该时长进入半开状态，放行一个探测请求尝试恢复。
+    /// </summary>
+    public int CircuitBreakerOpenSeconds { get; set; } = 30;
 }

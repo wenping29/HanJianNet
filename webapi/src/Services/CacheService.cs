@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using HanJianNet.WebApi.Common;
@@ -12,57 +13,40 @@ namespace HanJianNet.WebApi.Services;
 /// 通过 "Redis:Enabled" 控制开关：关闭时所有读写操作直接跳过，不影响业务。
 /// 采用"版本号+组"策略实现缓存失效：同一组的键都带当前版本号，
 /// 调用 InvalidateAsync 后版本号 +1，旧键自然过期，无需逐个删除。
-/// Redis 不可用时自动降级为进程内内存缓存，保证业务不中断。
+///
+/// 熔断降级：Redis 连续失败达到阈值后 <see cref="RedisCircuitBreaker"/>（单例）打开熔断，
+/// 期间所有缓存读写快速跳过，读请求直接回源 MySQL，避免每个请求都等连接超时；
+/// 恢复后自动补做熔断期间丢失的缓存失效，防止读到脏数据。
+/// 防击穿/雪崩：缓存未命中按 key 加 single-flight 锁，同一 key 并发回源只查一次库；
+/// 过期时间加 ±10% 随机抖动，避免大量键同时过期。
 /// </summary>
 public class CacheService
 {
     private const string VersionKeySuffix = "ver";
     private readonly IDistributedCache? _cache;
     private readonly RedisOptions _options;
-    private readonly SemaphoreSlim _lock = new(1, 1);
+    private readonly RedisCircuitBreaker _breaker;
+    private readonly ILogger<CacheService> _logger;
 
-    /// <summary>Redis 降级标记：连续失败后切换为内存模式，避免每次请求都等超时。</summary>
-    private int _fallbackCount;
-    private const int MaxFallbackBeforeDegraded = 2;
-    private volatile bool _degraded;
-    private DateTime _degradedUntil = DateTime.MinValue;
-    private readonly Dictionary<string, (byte[] data, DateTime expire)> _memCache = new();
-    private readonly Dictionary<string, int> _memVersions = new();
+    /// <summary>
+    /// single-flight 锁（进程级共享）：防止同一 key 缓存未命中时并发请求同时打到数据库。
+    /// </summary>
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> KeyLocks = new(StringComparer.Ordinal);
 
-    public CacheService(IDistributedCache? cache, IOptions<RedisOptions> options)
+    public CacheService(
+        IDistributedCache? cache,
+        IOptions<RedisOptions> options,
+        RedisCircuitBreaker breaker,
+        ILogger<CacheService> logger)
     {
         _cache = cache;
         _options = options.Value;
+        _breaker = breaker;
+        _logger = logger;
     }
 
-    /// <summary>是否实际上启用缓存（配置开启且已注册分布式缓存且未降级）。</summary>
+    /// <summary>是否实际上启用缓存（配置开启且已注册分布式缓存）。</summary>
     public bool Enabled => _options.Enabled && _cache is not null;
-
-    /// <summary>是否处于 Redis 降级模式。</summary>
-    private bool IsDegraded
-    {
-        get
-        {
-            if (!_degraded) return false;
-            // 30 秒后尝试恢复
-            if (DateTime.UtcNow >= _degradedUntil)
-            {
-                _degraded = false;
-                _fallbackCount = 0;
-                return false;
-            }
-            return true;
-        }
-    }
-
-    /// <summary>标记 Redis 不可用，切换为降级模式。</summary>
-    private void MarkDegraded()
-    {
-        _degraded = true;
-        _degradedUntil = DateTime.UtcNow.AddSeconds(30);
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Testing")
-            Console.WriteLine("[CacheService] Redis 不可用，降级为内存缓存（30s 后重试连接）");
-    }
 
     /// <summary>默认缓存过期时长。</summary>
     public TimeSpan DefaultExpiry => TimeSpan.FromMinutes(Math.Max(1, _options.DefaultExpireMinutes));
@@ -70,12 +54,14 @@ public class CacheService
     public async Task<T?> GetAsync<T>(string group, string key)
     {
         if (!Enabled) return default;
-        if (IsDegraded) return GetMem<T>(group, key);
+        if (!_breaker.AllowRequest()) return default;
 
         try
         {
+            await InvalidateDirtyGroupsIfNeededAsync().ConfigureAwait(false);
             var version = await GetVersionAsync(group).ConfigureAwait(false);
             var bytes = await _cache!.GetAsync(DataKey(group, key, version)).ConfigureAwait(false);
+            _breaker.OnSuccess();
             if (bytes is null) return default;
             try
             {
@@ -86,11 +72,11 @@ public class CacheService
                 return default;
             }
         }
-        catch
+        catch (Exception ex)
         {
-            Interlocked.Increment(ref _fallbackCount);
-            if (_fallbackCount >= MaxFallbackBeforeDegraded) MarkDegraded();
-            return GetMem<T>(group, key);
+            _breaker.OnFailure();
+            _logger.LogDebug(ex, "Redis 读取失败，已降级直连数据库（group={Group}, key={Key}）", group, key);
+            return default;
         }
     }
 
@@ -100,71 +86,115 @@ public class CacheService
     public async Task SetAsync<T>(string group, string key, T value, TimeSpan expiry)
     {
         if (!Enabled || value is null) return;
-        if (IsDegraded) { SetMem(group, key, value, expiry); return; }
+        if (!_breaker.AllowRequest()) return;
 
         try
         {
+            await InvalidateDirtyGroupsIfNeededAsync().ConfigureAwait(false);
             var version = await GetVersionAsync(group).ConfigureAwait(false);
             await _cache!.SetAsync(
                 DataKey(group, key, version),
                 JsonSerializer.SerializeToUtf8Bytes(value, JsonOpts.Default),
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = expiry })
+                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = WithJitter(expiry) })
                 .ConfigureAwait(false);
+            _breaker.OnSuccess();
         }
-        catch
+        catch (Exception ex)
         {
-            Interlocked.Increment(ref _fallbackCount);
-            if (_fallbackCount >= MaxFallbackBeforeDegraded) MarkDegraded();
-            SetMem(group, key, value, expiry);
+            _breaker.OnFailure();
+            // 缓存写入失败不影响业务，下次读取会回源重建
+            _logger.LogDebug(ex, "Redis 写入失败，已跳过（group={Group}, key={Key}）", group, key);
         }
     }
 
     /// <summary>
     /// 命中缓存直接返回；未命中则执行 factory 生成结果并写入缓存。
-    /// 缓存关闭时始终执行 factory。
+    /// 缓存关闭或熔断期间始终执行 factory（直连 MySQL）。
+    /// 同一 key 并发未命中时通过 single-flight 锁保证只有一个请求回源，防止缓存击穿。
     /// </summary>
     public async Task<T?> GetOrCreateAsync<T>(string group, string key, Func<Task<T>> factory, TimeSpan? expiry = null)
     {
         if (!Enabled) return await factory().ConfigureAwait(false);
         var cached = await GetAsync<T>(group, key).ConfigureAwait(false);
         if (cached is not null) return cached;
-        var value = await factory().ConfigureAwait(false);
-        await SetAsync(group, key, value, expiry ?? DefaultExpiry).ConfigureAwait(false);
-        return value;
+
+        var lockKey = $"{group}:{key}";
+        var keyLock = KeyLocks.GetOrAdd(lockKey, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            // double-check：等待锁期间可能已有其他请求回源并写入缓存
+            cached = await GetAsync<T>(group, key).ConfigureAwait(false);
+            if (cached is not null) return cached;
+
+            var value = await factory().ConfigureAwait(false);
+            await SetAsync(group, key, value, expiry ?? DefaultExpiry).ConfigureAwait(false);
+            return value;
+        }
+        finally
+        {
+            keyLock.Release();
+            // 锁空闲后移除，避免字典无限增长；仍有等待者时 TryRemove 不影响其持锁
+            if (keyLock.CurrentCount == 1)
+                KeyLocks.TryRemove(new KeyValuePair<string, SemaphoreSlim>(lockKey, keyLock));
+        }
     }
 
     /// <summary>
     /// 使某个组（如 traitors）的所有缓存失效：版本号 +1，旧键自然过期。
+    /// 熔断期间无法写入 Redis，记录为脏组，熔断恢复后由读/写路径补做失效。
     /// </summary>
     public async Task InvalidateAsync(string group)
     {
         if (!Enabled) return;
-        if (IsDegraded)
+        if (!_breaker.AllowRequest())
         {
-            _memVersions[group] = (_memVersions.GetValueOrDefault(group) + 1);
-            // 清理过期的内存缓存项
-            var now = DateTime.UtcNow;
-            var expiredKeys = _memCache.Keys
-                .Where(k => k.StartsWith($"{RootKeyPrefix}{group}:") && _memCache[k].expire <= now)
-                .ToList();
-            foreach (var k in expiredKeys) _memCache.Remove(k);
+            _breaker.MarkGroupDirty(group);
             return;
         }
 
         try
         {
-            var version = await GetVersionAsync(group).ConfigureAwait(false);
-            await _cache!.SetAsync(
-                VersionKey(group),
-                Encoding.UTF8.GetBytes((version + 1).ToString()),
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) })
-                .ConfigureAwait(false);
+            await BumpVersionAsync(group).ConfigureAwait(false);
+            _breaker.OnSuccess();
         }
-        catch
+        catch (Exception ex)
         {
-            MarkDegraded();
-            _memVersions[group] = (_memVersions.GetValueOrDefault(group) + 1);
+            _breaker.OnFailure();
+            _breaker.MarkGroupDirty(group);
+            _logger.LogWarning(ex, "Redis 缓存失效失败，已记录待恢复后补做（group={Group}）", group);
         }
+    }
+
+    /// <summary>熔断恢复后补做熔断期间丢失的整组失效，防止读到脏数据。</summary>
+    private async Task InvalidateDirtyGroupsIfNeededAsync()
+    {
+        if (!_breaker.TryDrainDirtyGroups(out var groups)) return;
+        foreach (var group in groups)
+        {
+            try
+            {
+                await BumpVersionAsync(group).ConfigureAwait(false);
+                _logger.LogInformation("已补做熔断期间的缓存失效（group={Group}）", group);
+            }
+            catch (Exception ex)
+            {
+                // 补做失败重新记录，下次再试
+                _breaker.MarkGroupDirty(group);
+                _logger.LogWarning(ex, "补做缓存失效失败，已重新记录（group={Group}）", group);
+                throw; // 让外层走 OnFailure 降级路径
+            }
+        }
+    }
+
+    private async Task BumpVersionAsync(string group)
+    {
+        var version = await GetVersionAsync(group).ConfigureAwait(false);
+        await _cache!.SetAsync(
+            VersionKey(group),
+            Encoding.UTF8.GetBytes((version + 1).ToString()),
+            new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) })
+            .ConfigureAwait(false);
     }
 
     private Task<int> GetVersionAsync(string group) => _cache == null
@@ -178,33 +208,11 @@ public class CacheService
         return int.TryParse(Encoding.UTF8.GetString(bytes), out var v) ? v : 0;
     }
 
-    // ---- 内存缓存降级实现 ----
-
-    private T? GetMem<T>(string group, string key)
+    /// <summary>过期时间加 ±10% 随机抖动，防止大量键同时过期引发缓存雪崩。</summary>
+    private static TimeSpan WithJitter(TimeSpan expiry)
     {
-        var version = _memVersions.GetValueOrDefault(group);
-        var mk = DataKey(group, key, version);
-        if (!_memCache.TryGetValue(mk, out var entry)) return default;
-        if (entry.expire <= DateTime.UtcNow)
-        {
-            _memCache.Remove(mk);
-            return default;
-        }
-        try
-        {
-            return JsonSerializer.Deserialize<T>(entry.data, JsonOpts.Default);
-        }
-        catch
-        {
-            return default;
-        }
-    }
-
-    private void SetMem<T>(string group, string key, T value, TimeSpan expiry)
-    {
-        var version = _memVersions.GetValueOrDefault(group);
-        var mk = DataKey(group, key, version);
-        _memCache[mk] = (JsonSerializer.SerializeToUtf8Bytes(value, JsonOpts.Default), DateTime.UtcNow.Add(expiry));
+        var jitter = 0.9 + Random.Shared.NextDouble() * 0.2;
+        return TimeSpan.FromTicks((long)(expiry.Ticks * jitter));
     }
 
     private string VersionKey(string group) => $"{RootKeyPrefix}{VersionKeySuffix}:{group}";

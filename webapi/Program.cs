@@ -75,17 +75,27 @@ try
     // --- Redis 缓存（Redis:Enabled 开启；关闭时退化为内存缓存占位，CacheService 内部直接跳过） ---
     var redisOptions = builder.Configuration.GetSection("Redis").Get<RedisOptions>() ?? new RedisOptions();
     Console.WriteLine($"Redis:Enabled={redisOptions.Enabled}");
-    Console.WriteLine($"Redis:ConnectionString={redisOptions.ConnectionString}");
     Console.WriteLine($"Redis:InstanceName={redisOptions.InstanceName}");
     Console.WriteLine($"Redis:DefaultExpireMinutes={redisOptions.DefaultExpireMinutes}");
     if (redisOptions.Enabled)
     {
         builder.Services.AddStackExchangeRedisCache(options =>
         {
-            options.Configuration = redisOptions.ConnectionString;
+            // 单次故障 2s 内可判定，配合熔断器快速降级；AbortOnConnectFail=false 保证 Redis 宕机不影响应用启动
+            var config = StackExchange.Redis.ConfigurationOptions.Parse(redisOptions.ConnectionString);
+            config.ConnectTimeout = 2000;
+            config.SyncTimeout = 2000;
+            config.AsyncTimeout = 2000;
+            config.ConnectRetry = 2;
+            config.AbortOnConnectFail = false;
+            options.ConfigurationOptions = config;
             options.InstanceName = redisOptions.InstanceName ?? "";
+            // 连接串脱敏（ConfigurationOptions.ToString() 不会掩码密码，需手动处理）
+            var masked = System.Text.RegularExpressions.Regex.Replace(
+                redisOptions.ConnectionString, @"password=[^,]*", "password=***",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            Log.Information("Redis 缓存已启用：{ConnectionString}", masked);
         });
-        Log.Information("Redis 缓存已启用：{ConnectionString}", redisOptions.ConnectionString);
     }
     else
     {
@@ -116,6 +126,8 @@ try
     builder.Services.AddScoped<UploadService>();
     // 历史事件（惨案/宏观事件）
     builder.Services.AddScoped<AtrocityCaseService>();
+    // Redis 熔断器（单例，状态跨请求共享；熔断时缓存层自动降级直连 MySQL）
+    builder.Services.AddSingleton<RedisCircuitBreaker>();
     // 分布式缓存服务
     builder.Services.AddScoped<CacheService>();
     // 前台访客统计
