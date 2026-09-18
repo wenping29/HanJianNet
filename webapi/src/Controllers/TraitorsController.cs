@@ -135,6 +135,16 @@ public class TraitorsController(TraitorService traitors, AiService ai) : Control
         return Ok(new { message = "危害等级已更新" });
     }
 
+    /// <summary>快速下架/恢复单条档案：应对内容投诉等场景，下架后前台不再展示。</summary>
+    [Authorize(Roles = "admin,superadmin")]
+    [HttpPatch("api/admin/traitors/{id}/status")]
+    public async Task<IActionResult> AdminSetStatus(string id, [FromBody] SetTraitorStatusRequest req)
+    {
+        var username = CurrentUser.GetTriple(User).Username ?? "";
+        var traitor = await traitors.AdminSetHiddenAsync(id, req.Hidden, req.Reason, username);
+        return Ok(new { traitor, message = req.Hidden ? "档案已下架" : "档案已恢复" });
+    }
+
     [Authorize(Roles = "admin,superadmin")]
     [HttpPost("api/admin/traitors/batch-delete-photos")]
     public async Task<IActionResult> AdminBatchDeletePhotos([FromBody] BatchIdsRequest req)
@@ -177,4 +187,13 @@ public class UpdateHarmLevelRequest
 {
     /// <summary>危害度分级：1=特级 … 7=己级；null=未分级</summary>
     public int? HarmLevel { get; set; }
+}
+
+/// <summary>下架/恢复档案状态请求。</summary>
+public class SetTraitorStatusRequest
+{
+    /// <summary>true=下架（屏蔽公开展示）；false=恢复上架。</summary>
+    public bool Hidden { get; set; }
+    /// <summary>下架原因（如内容投诉），恢复时忽略。</summary>
+    public string? Reason { get; set; }
 }

@@ -286,12 +286,18 @@ export interface TraitorSummary {
   harmLevel?: number | null
   photoUrl?: string | null
   crimeRecordTitles?: string[]
+  isHidden?: boolean
+  hiddenReason?: string | null
+  hiddenAt?: string | null
 }
 
 export interface TraitorDetail extends TraitorSnapshot {
   id: string
   harmLevel: number | null
   title: string | null
+  isHidden?: boolean
+  hiddenReason?: string | null
+  hiddenAt?: string | null
 }
 
 export interface TraitorInput {

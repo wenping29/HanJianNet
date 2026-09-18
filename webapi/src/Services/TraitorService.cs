@@ -65,6 +65,9 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         // 只读列表：不进入 ChangeTracker，降低每请求内存占用
         var q = db.Traitors.AsNoTracking();
 
+        // 已下架档案不在前台公开展示（应对内容投诉）
+        q = q.Where(t => !t.IsHidden);
+
         if (!string.IsNullOrWhiteSpace(name))
         {
             var n = name!;
@@ -246,18 +249,25 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     public async Task<TraitorDto> GetAsync(string id)
     {
-        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id), cache.DetailExpiry);
+        var cached = await cache.GetOrCreateAsync(CacheGroup, $"get:{id}", () => GetCoreAsync(id, includeHidden: false), cache.DetailExpiry);
         return cached ?? throw new ApiException(404, "档案不存在");
     }
 
-    private async Task<TraitorDto?> GetCoreAsync(string id)
+    private async Task<TraitorDto?> GetCoreAsync(string id, bool includeHidden)
     {
-        var t = await WithIncludes().AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
+        var q = WithIncludes().AsNoTracking();
+        // 前台详情：已下架档案不可见（返回 404）
+        if (!includeHidden) q = q.Where(t => !t.IsHidden);
+        var t = await q.FirstOrDefaultAsync(t => t.Id == id);
         return t?.ToDto();
     }
 
     public async Task<List<RevisionDto>> GetRevisionsAsync(string traitorId)
     {
+        // 已下架 / 不存在档案不公开其修订历史
+        var visible = await db.Traitors.AsNoTracking().AnyAsync(t => t.Id == traitorId && !t.IsHidden);
+        if (!visible) return [];
+
         var items = await db.Revisions
             .AsNoTracking()
             .Where(r => r.TraitorId == traitorId)
@@ -277,6 +287,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     private async Task<TraitorStatsDto> StatsCoreAsync()
     {
         var rows = await db.Traitors
+            .Where(t => !t.IsHidden)
             .Select(t => new { t.Period, t.BirthYear, t.DeathYear })
             .ToListAsync();
         var total = rows.Count;
@@ -292,9 +303,9 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         int? latestYear = years.Count > 0 ? years.Max() : null;
 
         // 被判刑人数：有犯罪记录的档案数
-        var sentenced = await db.Traitors.CountAsync(t => t.CrimeRecords.Any());
+        var sentenced = await db.Traitors.CountAsync(t => !t.IsHidden && t.CrimeRecords.Any());
         // 子女信息数：有子女记录的档案数
-        var childrenInfo = await db.Traitors.CountAsync(t => t.Children.Any());
+        var childrenInfo = await db.Traitors.CountAsync(t => !t.IsHidden && t.Children.Any());
         // 后代现状数：子女去向（Whereabouts）不为空的记录数
         var descendantsStatus = await db.Children.CountAsync(c => c.Whereabouts != null && c.Whereabouts.Trim() != "");
 
@@ -322,7 +333,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
 
     private async Task<ProvinceStatsDto> ProvinceStatsCoreAsync()
     {
-        var provinces = await db.Traitors.Select(t => t.Province ?? "").ToListAsync();
+        var provinces = await db.Traitors.Where(t => !t.IsHidden).Select(t => t.Province ?? "").ToListAsync();
         var counts = new Dictionary<string, int>();
         var matched = 0;
         foreach (var prov in provinces)
@@ -348,7 +359,7 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
     {
         var items = await db.LifeEvents
             .Include(e => e.Traitor)
-            .Where(e => e.Year != null)
+            .Where(e => e.Year != null && !e.Traitor.IsHidden)
             .OrderBy(e => e.Year)
             .ToListAsync();
         return items.Select(e => new TimelineItemDto
@@ -466,7 +477,12 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
             PageSize: pageSize);
     }
 
-    public async Task<TraitorDto> AdminGetAsync(string id) => await GetAsync(id);
+    public async Task<TraitorDto> AdminGetAsync(string id)
+    {
+        // 管理员读取详情：不排除已下架档案，便于查看/恢复
+        var t = await GetCoreAsync(id, includeHidden: true);
+        return t ?? throw new ApiException(404, "档案不存在");
+    }
 
     /// <summary>
     /// 删除汉奸档案：其全部子记录（罪行/配偶/子女/住所/生平/附件/来源）由数据库级联删除。
@@ -534,6 +550,33 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
         traitor.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
         await cache.InvalidateAsync(CacheGroup);
+    }
+
+    /// <summary>
+    /// 下架/恢复档案：下架后档案不在前台公开展示（应对内容投诉），恢复即重新上架。
+    /// 记录下架原因/时间/操作人，便于留痕追溯。
+    /// </summary>
+    public async Task<TraitorDto> AdminSetHiddenAsync(string id, bool hidden, string? reason, string operatorUsername)
+    {
+        var traitor = await WithIncludes().FirstOrDefaultAsync(t => t.Id == id)
+                      ?? throw new ApiException(404, "档案不存在");
+        traitor.IsHidden = hidden;
+        if (hidden)
+        {
+            traitor.HiddenReason = string.IsNullOrWhiteSpace(reason) ? null : reason.Trim();
+            traitor.HiddenAt = DateTime.UtcNow;
+            traitor.HiddenBy = string.IsNullOrWhiteSpace(operatorUsername) ? null : operatorUsername;
+        }
+        else
+        {
+            traitor.HiddenReason = null;
+            traitor.HiddenAt = null;
+            traitor.HiddenBy = null;
+        }
+        traitor.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        await cache.InvalidateAsync(CacheGroup);
+        return traitor.ToDto();
     }
 
     /// <summary>

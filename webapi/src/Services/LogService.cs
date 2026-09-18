@@ -1,3 +1,4 @@
+using System.Text.Json;
 using HanJianNet.WebApi.Common;
 using HanJianNet.WebApi.Data;
 using HanJianNet.WebApi.Entities;
@@ -186,6 +187,33 @@ public class LogService(AppDbContext db)
         {
             Console.WriteLine($"[LOG FAIL] WriteErrorAsync: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// 解析档案操作日志的「对象描述」：优先从请求体 JSON 的 name 字段取（新增/修改），
+    /// 否则按 Id 查库（删除/下架等无 body 场景）。仅用于档案模块，无法解析返回 null。
+    /// </summary>
+    public async Task<string?> ResolveTraitorLabelAsync(string? targetId, string? requestBody)
+    {
+        if (!string.IsNullOrWhiteSpace(requestBody))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(requestBody);
+                if (doc.RootElement.ValueKind == JsonValueKind.Object &&
+                    doc.RootElement.TryGetProperty("name", out var n) && n.ValueKind == JsonValueKind.String)
+                    return n.GetString();
+            }
+            catch
+            {
+                // body 非法时退回按 Id 查询
+            }
+        }
+        if (string.IsNullOrWhiteSpace(targetId)) return null;
+        return await db.Traitors.AsNoTracking()
+            .Where(t => t.Id == targetId)
+            .Select(t => t.Name)
+            .FirstOrDefaultAsync();
     }
 
     // ---------- 管理员分页查询（通用）----------

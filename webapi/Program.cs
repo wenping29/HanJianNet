@@ -309,6 +309,24 @@ static class DbInitHelpers
                 ? "ALTER TABLE Traitors ADD COLUMN BirthPlace TEXT NOT NULL DEFAULT '';"
                 : "ALTER TABLE Traitors ADD COLUMN BirthPlace VARCHAR(255) NOT NULL DEFAULT '';");
 
+        // 补齐 Traitors 表的新增列（IsHidden / HiddenReason / HiddenAt / HiddenBy：档案快速下架，应对内容投诉）
+        await EnsureColumnAsync(db, "Traitors", "IsHidden",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN IsHidden INTEGER NOT NULL DEFAULT 0;"
+                : "ALTER TABLE Traitors ADD COLUMN IsHidden TINYINT(1) NOT NULL DEFAULT 0;");
+        await EnsureColumnAsync(db, "Traitors", "HiddenReason",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN HiddenReason TEXT;"
+                : "ALTER TABLE Traitors ADD COLUMN HiddenReason VARCHAR(512) NULL;");
+        await EnsureColumnAsync(db, "Traitors", "HiddenAt",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN HiddenAt TEXT;"
+                : "ALTER TABLE Traitors ADD COLUMN HiddenAt DATETIME NULL;");
+        await EnsureColumnAsync(db, "Traitors", "HiddenBy",
+            db.Database.IsSqlite()
+                ? "ALTER TABLE Traitors ADD COLUMN HiddenBy TEXT;"
+                : "ALTER TABLE Traitors ADD COLUMN HiddenBy VARCHAR(64) NULL;");
+
         // 补齐 Users 表的新增列（AvatarUrl：用户头像）
         await EnsureColumnAsync(db, "Users", "AvatarUrl",
             db.Database.IsSqlite()

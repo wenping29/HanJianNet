@@ -75,6 +75,12 @@ public class TraitorSummaryDto
     /// <summary>犯罪记录标题列表（列表用，至多 10 条）</summary>
     public List<string> CrimeRecordTitles { get; set; } = [];
     public string? PhotoUrl { get; set; }
+    /// <summary>是否已下架（屏蔽公开展示）。</summary>
+    public bool IsHidden { get; set; }
+    /// <summary>下架原因。</summary>
+    public string? HiddenReason { get; set; }
+    /// <summary>下架时间（UTC）。</summary>
+    public DateTime? HiddenAt { get; set; }
 }
 
 public class TraitorSnapshotDto
@@ -111,6 +117,12 @@ public class TraitorDto : TraitorSnapshotDto
     public string Id { get; set; } = "";
     public int? HarmLevel { get; set; }
     public string? Title { get; set; }
+    /// <summary>是否已下架（屏蔽公开展示）。</summary>
+    public bool IsHidden { get; set; }
+    /// <summary>下架原因。</summary>
+    public string? HiddenReason { get; set; }
+    /// <summary>下架时间（UTC）。</summary>
+    public DateTime? HiddenAt { get; set; }
 }
 
 public class TraitorInputDto : TraitorSnapshotDto

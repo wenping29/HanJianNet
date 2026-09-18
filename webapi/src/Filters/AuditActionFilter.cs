@@ -132,6 +132,11 @@ public class AuditActionFilter(LogService logService) : IAsyncActionFilter
             var targetId = ExtractTargetId(context.RouteData.Values);
             var (ok, statusStr, message) = DescribeResult(status, executed);
             var (actionName, moduleOverride) = InferAction(context);
+            var module = moduleOverride ?? audit.Module;
+            // 档案模块的写操作（新增/修改/删除/下架等）补全「对象描述」，让日志直接可读（如 汪精卫）
+            string? targetLabel = null;
+            if (string.Equals(module, "traitors", StringComparison.OrdinalIgnoreCase))
+                targetLabel = await logService.ResolveTraitorLabelAsync(targetId, reqBody);
             await logService.WriteOperationAsync(new OperationWriteContext
             {
                 Audit = audit,
@@ -139,9 +144,10 @@ public class AuditActionFilter(LogService logService) : IAsyncActionFilter
                 Status = ok ? "success" : "fail",
                 Message = message,
                 ElapsedMs = elapsed,
-                Module = moduleOverride ?? audit.Module,
+                Module = module,
                 Action = actionName,
                 TargetId = targetId,
+                TargetLabel = targetLabel,
                 RequestBody = reqBody,
             });
         }
@@ -154,6 +160,7 @@ public class AuditActionFilter(LogService logService) : IAsyncActionFilter
         var action = cd.ActionName.ToLowerInvariant();
         if (action == "review") return ("review", "revisions");
         if (action.EndsWith("review")) return (action, "revisions");
+        if (action == "adminsetstatus") return ("set-status", "traitors");
         if (action == "login" || action == "logout" || action == "register") return (action, "auth");
         if (action == "create" || action == "post") return ("create", null);
         if (action == "update" || action == "put") return ("update", null);
