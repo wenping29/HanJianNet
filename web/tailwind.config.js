@@ -20,8 +20,8 @@ export default {
         bamboolight: 'rgb(var(--c-bamboolight) / <alpha-value>)',
       },
       fontFamily: {
-        song: ['"Noto Serif SC"', '"Source Han Serif SC"', 'STSong', 'SimSun', 'serif'],
-        garamond: ['"EB Garamond"', 'Georgia', 'serif'],
+        song: ['"Noto Serif SC Variable"', '"Noto Serif SC"', '"Source Han Serif SC"', 'STSong', 'SimSun', 'serif'],
+        garamond: ['"EB Garamond Variable"', '"EB Garamond"', 'Georgia', 'serif'],
       },
       boxShadow: {
         card: 'var(--shadow-card)',
