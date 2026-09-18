@@ -16,6 +16,9 @@
 #   - .NET 8 SDK (用于 webapi 发布)
 #   - Node.js + npm (admin/web 已 install 过 node_modules)
 #   - 产物输出到 ./deploy/dist/ 目录, 文件名带时间戳
+#
+# 服务器托管: webapi 由 systemd 托管，单元模板见 ./hanjian-webapi.service
+#   （含 ASPNETCORE_ENVIRONMENT=Production 与崩溃自动重启配置）
 # ============================================================
 
 [CmdletBinding()]

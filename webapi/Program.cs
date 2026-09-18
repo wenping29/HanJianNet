@@ -209,14 +209,14 @@ try
         };
     });
 
+    // 异常 → 响应 + 写错误日志；置于最前，保证其后所有中间件（含 Crypto）的异常都被统一兜底
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
     // 先启用请求体缓冲（允许审计过滤器和错误中间件重读 body）
     app.UseMiddleware<RequestBodyBufferingMiddleware>();
     // 通讯加密：按 X-Encrypted 头解密请求体、加密 JSON 响应体
     app.UseMiddleware<CryptoMiddleware>();
     // 提取请求级审计上下文（IP/UA/用户信息 + 计时器）
     app.UseMiddleware<AuditEnrichmentMiddleware>();
-    // 异常 → 响应 + 写错误日志
-    app.UseMiddleware<ExceptionHandlingMiddleware>();
 
     // CORS 必须放在 UseStaticFiles 之前，否则 /uploads 静态资源被短路、缺少跨域响应头（Flutter Web 图片以 XHR 加载会报错）
     app.UseCors("frontend");
@@ -229,8 +229,12 @@ try
         RequestPath = "/uploads",
     });
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Swagger 仅在开发环境暴露，生产环境关闭，避免泄露接口结构与 DTO schema
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
     app.UseAuthentication();
     app.UseAuthorization();

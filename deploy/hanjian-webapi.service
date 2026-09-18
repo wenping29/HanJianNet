@@ -1,0 +1,40 @@
+# ============================================================
+# HanJianNet WebApi systemd 单元模板
+#
+# 部署方法（服务器上执行）：
+#   1. 按实际路径修改 WorkingDirectory / ExecStart（指向发布包解压目录）
+#   2. sudo cp hanjian-webapi.service /etc/systemd/system/
+#   3. sudo systemctl daemon-reload
+#   4. sudo systemctl enable --now hanjian-webapi
+#   5. 查看状态/日志：systemctl status hanjian-webapi
+#                      journalctl -u hanjian-webapi -f
+#
+# 关键点：Environment=ASPNETCORE_ENVIRONMENT=Production
+#   - 关闭开发环境才有的详细错误页/Swagger 等内部信息暴露；
+#   - 缺少该设置时 .NET 默认即 Production，这里显式声明以防误改。
+# ============================================================
+
+[Unit]
+Description=HanJianNet WebApi
+After=network.target
+
+[Service]
+# 生产环境标识（本任务核心要求）
+Environment=ASPNETCORE_ENVIRONMENT=Production
+
+# TODO: 按服务器实际发布目录调整以下两行
+WorkingDirectory=/opt/hanjian/webapi
+ExecStart=/usr/bin/dotnet /opt/hanjian/webapi/HanJianNet.WebApi.dll
+
+# 崩溃自动拉起（systemd 自动重启的基础要求；内存限额等见运维优化专项）
+Restart=always
+RestartSec=5
+
+# 运行账号（建议非 root；按需创建并授权发布目录）
+# User=hanjian
+# Group=hanjian
+
+SyslogIdentifier=hanjian-webapi
+
+[Install]
+WantedBy=multi-user.target
