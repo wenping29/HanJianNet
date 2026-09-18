@@ -29,6 +29,7 @@ webapi/hanjian.db-wal
 
 ## .NET 编译输出
  
+webapi/uploads/
 
 ## .NET 隐藏文件夹
 .vs/
