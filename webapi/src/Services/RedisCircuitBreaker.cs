@@ -40,6 +40,9 @@ public class RedisCircuitBreaker
         _openDuration = TimeSpan.FromSeconds(Math.Max(5, opts.CircuitBreakerOpenSeconds));
     }
 
+    /// <summary>当前熔断器状态（closed/open/halfopen），供健康检查等观测使用。</summary>
+    public string CurrentState => ((State)Volatile.Read(ref _state)).ToString().ToLowerInvariant();
+
     /// <summary>当前是否允许发起 Redis 操作。熔断期间直接返回 false，调用方应走降级路径。</summary>
     public bool AllowRequest()
     {
