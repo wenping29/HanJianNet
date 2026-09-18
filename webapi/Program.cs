@@ -419,6 +419,12 @@ static class DbInitHelpers
             db.Database.IsSqlite()
                 ? """CREATE INDEX "IX_Traitors_HarmLevel_CreatedAt" ON "Traitors" ("HarmLevel", "CreatedAt");"""
                 : "CREATE INDEX `IX_Traitors_HarmLevel_CreatedAt` ON `Traitors` (`HarmLevel`, `CreatedAt`);");
+
+        // 前台联系留言表（EnsureCreated 会为新库自动建表，此处兼容旧库）
+        await db.Database.ExecuteSqlRawAsync(
+            db.Database.IsSqlite()
+                ? """CREATE TABLE IF NOT EXISTS "ContactMessages" ("Id" TEXT NOT NULL PRIMARY KEY, "Title" TEXT NOT NULL, "Content" TEXT NOT NULL, "Name" TEXT NOT NULL, "Contact" TEXT NOT NULL, "Ip" TEXT, "IsHandled" INTEGER NOT NULL DEFAULT 0, "CreatedAt" TEXT NOT NULL, "HandledAt" TEXT); CREATE INDEX IF NOT EXISTS "IX_ContactMessages_CreatedAt" ON "ContactMessages" ("CreatedAt"); CREATE INDEX IF NOT EXISTS "IX_ContactMessages_IsHandled" ON "ContactMessages" ("IsHandled");"""
+                : "CREATE TABLE IF NOT EXISTS `ContactMessages` (`Id` VARCHAR(64) NOT NULL PRIMARY KEY, `Title` VARCHAR(200) NOT NULL, `Content` TEXT NOT NULL, `Name` VARCHAR(64) NOT NULL, `Contact` VARCHAR(200) NOT NULL, `Ip` VARCHAR(64) NULL, `IsHandled` TINYINT(1) NOT NULL DEFAULT 0, `CreatedAt` DATETIME NOT NULL, `HandledAt` DATETIME NULL, INDEX `IX_ContactMessages_CreatedAt` (`CreatedAt`), INDEX `IX_ContactMessages_IsHandled` (`IsHandled`));");
     }
 
     /// <summary>检查表是否存在，不存在则执行对应方言的 DDL 文件建表。</summary>

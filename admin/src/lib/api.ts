@@ -10,6 +10,7 @@ import type {
   Attachment,
   AttachmentKind,
   AuthPayload,
+  ContactMessage,
   DashboardOverview,
   DuplicateGroup,
   ErrorLogItem,
@@ -431,4 +432,28 @@ export const api = {
 
   loginTrend: (days: number) =>
     request<{ items: LoginTrendPoint[] }>(`/admin/dashboard/login-trend?days=${days}`),
+
+  // ---- 前台联系留言 ----
+  contactMessages: (q: {
+    keyword?: string
+    handled?: boolean
+    page?: number
+    pageSize?: number
+  }) => {
+    const params = new URLSearchParams()
+    if (q.keyword) params.set('keyword', q.keyword)
+    if (q.handled != null) params.set('handled', String(q.handled))
+    params.set('page', String(q.page ?? 1))
+    params.set('pageSize', String(q.pageSize ?? 20))
+    return request<Paginated<ContactMessage>>(`/admin/contact-messages?${params.toString()}`)
+  },
+
+  setContactMessageHandled: (id: string, handled: boolean) =>
+    request<{ message: string }>(`/admin/contact-messages/${id}/handled`, {
+      method: 'PATCH',
+      body: JSON.stringify({ handled }),
+    }),
+
+  deleteContactMessage: (id: string) =>
+    request<{ message: string }>(`/admin/contact-messages/${id}`, { method: 'DELETE' }),
 }

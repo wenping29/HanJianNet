@@ -7,6 +7,7 @@
     "merge-traitors": "Data Merge",
     "reviews": "Review Queue",
     "events": "Event Management",
+    "contact-messages": "Contact Messages",
     "system": "System Management",
     "system-logs": "System Logs",
     "users": "User Management",
@@ -98,6 +99,36 @@
     "uploadFailed": "Upload failed",
     "select": "Select \"{{name}}\"",
     "view": "View"
+  },
+  "contactMessages": {
+    "title": "Contact Messages",
+    "subtitle": "Messages received from the Contact page",
+    "searchPlaceholder": "Search name / subject / content / contact…",
+    "filterAll": "All statuses",
+    "filterPending": "Pending",
+    "filterHandled": "Handled",
+    "handled": "Handled",
+    "pending": "Pending",
+    "markHandled": "Mark handled",
+    "restore": "Restore pending",
+    "deleted": "Deleted",
+    "markedHandled": "Marked as handled",
+    "markedPending": "Restored to pending",
+    "confirmDelete": "Delete this message? This cannot be undone.",
+    "noMessages": "No messages",
+    "col": {
+      "status": "Status",
+      "title": "Subject",
+      "sender": "Sender",
+      "time": "Submitted",
+      "operation": "Action"
+    },
+    "detail": {
+      "contact": "Contact",
+      "ip": "IP address",
+      "handledAt": "Handled at",
+      "content": "Message"
+    }
   },
   "sidebar": {
     "archives": "Archives",

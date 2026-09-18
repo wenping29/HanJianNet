@@ -7,6 +7,7 @@
     "merge-traitors": "Fusión de datos",
     "reviews": "Cola de revisión",
     "events": "Gestión de eventos",
+    "contact-messages": "Mensajes de contacto",
     "system": "Gestión del sistema",
     "system-logs": "Registros del sistema",
     "users": "Gestión de usuarios",
@@ -98,6 +99,36 @@
     "uploadFailed": "Error al subir",
     "select": "Seleccionar «{{name}}»",
     "view": "Ver"
+  },
+  "contactMessages": {
+    "title": "Mensajes de contacto",
+    "subtitle": "Mensajes recibidos desde la página de contacto",
+    "searchPlaceholder": "Buscar nombre / asunto / contenido / contacto…",
+    "filterAll": "Todos los estados",
+    "filterPending": "Pendientes",
+    "filterHandled": "Atendidos",
+    "handled": "Atendido",
+    "pending": "Pendiente",
+    "markHandled": "Marcar atendido",
+    "restore": "Volver a pendiente",
+    "deleted": "Eliminado",
+    "markedHandled": "Marcado como atendido",
+    "markedPending": "Vuelto a pendiente",
+    "confirmDelete": "¿Eliminar este mensaje? Esta acción no se puede deshacer.",
+    "noMessages": "Sin mensajes",
+    "col": {
+      "status": "Estado",
+      "title": "Asunto",
+      "sender": "Remitente",
+      "time": "Enviado",
+      "operation": "Acción"
+    },
+    "detail": {
+      "contact": "Contacto",
+      "ip": "Dirección IP",
+      "handledAt": "Atendido el",
+      "content": "Mensaje"
+    }
   },
   "sidebar": {
     "archives": "Archivos",

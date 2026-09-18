@@ -7,6 +7,7 @@
     "merge-traitors": "Fusion de données",
     "reviews": "File de révision",
     "events": "Gestion des événements",
+    "contact-messages": "Messages de contact",
     "system": "Gestion du système",
     "system-logs": "Journaux système",
     "users": "Gestion des utilisateurs",
@@ -98,6 +99,36 @@
     "uploadFailed": "Échec de l'envoi",
     "select": "Sélectionner « {{name}} »",
     "view": "Voir"
+  },
+  "contactMessages": {
+    "title": "Messages de contact",
+    "subtitle": "Messages reçus depuis la page de contact",
+    "searchPlaceholder": "Rechercher nom / objet / contenu / contact…",
+    "filterAll": "Tous les statuts",
+    "filterPending": "En attente",
+    "filterHandled": "Traité",
+    "handled": "Traité",
+    "pending": "En attente",
+    "markHandled": "Marquer traité",
+    "restore": "Repasser en attente",
+    "deleted": "Supprimé",
+    "markedHandled": "Marqué comme traité",
+    "markedPending": "Repassé en attente",
+    "confirmDelete": "Supprimer ce message ? Cette action est irréversible.",
+    "noMessages": "Aucun message",
+    "col": {
+      "status": "Statut",
+      "title": "Objet",
+      "sender": "Expéditeur",
+      "time": "Envoyé le",
+      "operation": "Action"
+    },
+    "detail": {
+      "contact": "Contact",
+      "ip": "Adresse IP",
+      "handledAt": "Traité le",
+      "content": "Message"
+    }
   },
   "sidebar": {
     "archives": "Archives",

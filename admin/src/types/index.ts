@@ -44,6 +44,19 @@ export interface RoleMenuConfig {
   menuKeys: string[]
 }
 
+/** 前台联系留言（对应后端 ContactMessage） */
+export interface ContactMessage {
+  id: string
+  title: string
+  content: string
+  name: string
+  contact: string
+  ip: string | null
+  isHandled: boolean
+  createdAt: string
+  handledAt: string | null
+}
+
 /** 前台导航菜单（WebMenus 表） */
 export interface WebMenu {
   id: string

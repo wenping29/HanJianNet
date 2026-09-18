@@ -7,6 +7,7 @@
     "merge-traitors": "데이터 병합",
     "reviews": "심사 대기",
     "events": "사건 관리",
+    "contact-messages": "연락 메시지",
     "system": "시스템 관리",
     "system-logs": "시스템 로그",
     "users": "사용자 관리",
@@ -98,6 +99,36 @@
     "uploadFailed": "업로드 실패",
     "select": "「{{name}}」 선택",
     "view": "보기"
+  },
+  "contactMessages": {
+    "title": "연락 메시지",
+    "subtitle": "「연락처」페이지에서 받은 메시지",
+    "searchPlaceholder": "이름 / 제목 / 내용 / 연락처 검색…",
+    "filterAll": "모든 상태",
+    "filterPending": "미처리",
+    "filterHandled": "처리됨",
+    "handled": "처리됨",
+    "pending": "미처리",
+    "markHandled": "처리 완료로 표시",
+    "restore": "미처리로 되돌리기",
+    "deleted": "삭제됨",
+    "markedHandled": "처리 완료로 표시함",
+    "markedPending": "미처리로 되돌림",
+    "confirmDelete": "이 메시지를 삭제하시겠습니까? 되돌릴 수 없습니다.",
+    "noMessages": "메시지가 없습니다",
+    "col": {
+      "status": "상태",
+      "title": "제목",
+      "sender": "보낸 사람",
+      "time": "제출 시간",
+      "operation": "작업"
+    },
+    "detail": {
+      "contact": "연락처",
+      "ip": "IP 주소",
+      "handledAt": "처리 시간",
+      "content": "내용"
+    }
   },
   "sidebar": {
     "archives": "아카이브",

@@ -53,6 +53,7 @@
     "roster": "Roster",
     "events": "Events",
     "about": "About",
+    "contact": "Contact",
     "logoSeal1": "Traitor",
     "logoSeal2": "Archive",
     "brand": "Traitor Archive",
@@ -165,6 +166,23 @@
     "closing": "May this record engrave the national shame,",
     "closing2": "and serve as a warning to future generations.",
     "returnHome": "Return to Home"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "intro": "If you have any corrections, additional historical material, or other feedback about this archive, please fill in the form below. Submissions will be reviewed by the editorial staff.",
+    "name": "Name *",
+    "namePlaceholder": "e.g. John Doe",
+    "contactMethod": "Contact *",
+    "contactPlaceholder": "Email / phone / WeChat etc. so we can reply",
+    "subject": "Subject *",
+    "subjectPlaceholder": "A short summary of your message",
+    "content": "Message *",
+    "contentPlaceholder": "Please describe in detail; citing sources is appreciated",
+    "submit": "Submit Message",
+    "submitting": "Submitting…",
+    "success": "Your message has been delivered. Thank you for contacting us.",
+    "failed": "Submission failed. Please try again later.",
+    "privacyNote": "Your name and contact details are only used for replies and are never displayed publicly."
   },
   "map": {
     "title": "Traitor Map",

@@ -177,6 +177,12 @@ export const api = {
 
   listWebMenus: () => request<{ items: WebMenu[] }>('/web-menus'),
 
+  submitContact: (body: { name: string; contact: string; title: string; content: string }) =>
+    request<{ ok: boolean; id: string }>('/contact-messages', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+
   trackVisit: (token: string, path: string) =>
     request<{ ok: boolean }>('/visits/track', { method: 'POST', body: JSON.stringify({ token, path }) }),
 

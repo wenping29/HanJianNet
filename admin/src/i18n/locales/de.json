@@ -7,6 +7,7 @@
     "merge-traitors": "Datenzusammenführung",
     "reviews": "Prüfwarteschlange",
     "events": "Ereignisverwaltung",
+    "contact-messages": "Kontaktnachrichten",
     "system": "Systemverwaltung",
     "system-logs": "Systemprotokolle",
     "users": "Benutzerverwaltung",
@@ -98,6 +99,36 @@
     "uploadFailed": "Upload fehlgeschlagen",
     "select": "\"{{name}}\" auswählen",
     "view": "Ansehen"
+  },
+  "contactMessages": {
+    "title": "Kontaktnachrichten",
+    "subtitle": "Nachrichten von der Kontaktseite",
+    "searchPlaceholder": "Name / Betreff / Inhalt / Kontakt suchen…",
+    "filterAll": "Alle Status",
+    "filterPending": "Offen",
+    "filterHandled": "Erledigt",
+    "handled": "Erledigt",
+    "pending": "Offen",
+    "markHandled": "Als erledigt markieren",
+    "restore": "Wieder öffnen",
+    "deleted": "Gelöscht",
+    "markedHandled": "Als erledigt markiert",
+    "markedPending": "Als offen markiert",
+    "confirmDelete": "Diese Nachricht löschen? Dies kann nicht rückgängig gemacht werden.",
+    "noMessages": "Keine Nachrichten",
+    "col": {
+      "status": "Status",
+      "title": "Betreff",
+      "sender": "Absender",
+      "time": "Gesendet",
+      "operation": "Aktion"
+    },
+    "detail": {
+      "contact": "Kontakt",
+      "ip": "IP-Adresse",
+      "handledAt": "Erledigt am",
+      "content": "Nachricht"
+    }
   },
   "sidebar": {
     "archives": "Archiv",

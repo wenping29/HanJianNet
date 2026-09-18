@@ -29,6 +29,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<AtrocityCasePerson> AtrocityCasePersons => Set<AtrocityCasePerson>();
     public DbSet<SystemConfig> SystemConfigs => Set<SystemConfig>();
     public DbSet<AppNotification> Notifications => Set<AppNotification>();
+    public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -191,6 +192,18 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasIndex(c => c.Key).IsUnique();
             e.HasIndex(c => c.Category);
+        });
+
+        // ---------- 前台联系留言 ----------
+        modelBuilder.Entity<ContactMessage>(e =>
+        {
+            e.Property(m => m.Title).HasMaxLength(200);
+            e.Property(m => m.Content).HasMaxLength(5000);
+            e.Property(m => m.Name).HasMaxLength(64);
+            e.Property(m => m.Contact).HasMaxLength(200);
+            e.Property(m => m.Ip).HasMaxLength(64);
+            e.HasIndex(m => m.CreatedAt);
+            e.HasIndex(m => m.IsHandled);
         });
     }
 }

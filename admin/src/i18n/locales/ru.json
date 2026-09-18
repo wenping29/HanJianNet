@@ -7,6 +7,7 @@
     "merge-traitors": "Объединение данных",
     "reviews": "Очередь проверки",
     "events": "Управление событиями",
+    "contact-messages": "Сообщения обращений",
     "system": "Управление системой",
     "system-logs": "Системные журналы",
     "users": "Управление пользователями",
@@ -98,6 +99,36 @@
     "uploadFailed": "Ошибка загрузки",
     "select": "Выбрать «{{name}}»",
     "view": "Просмотр"
+  },
+  "contactMessages": {
+    "title": "Сообщения обращений",
+    "subtitle": "Сообщения со страницы «Контакты»",
+    "searchPlaceholder": "Поиск по имени / теме / тексту / контакту…",
+    "filterAll": "Все статусы",
+    "filterPending": "Новые",
+    "filterHandled": "Обработано",
+    "handled": "Обработано",
+    "pending": "Новое",
+    "markHandled": "Отметить обработанным",
+    "restore": "Вернуть в новые",
+    "deleted": "Удалено",
+    "markedHandled": "Отмечено как обработанное",
+    "markedPending": "Возвращено в новые",
+    "confirmDelete": "Удалить это сообщение? Действие необратимо.",
+    "noMessages": "Нет сообщений",
+    "col": {
+      "status": "Статус",
+      "title": "Тема",
+      "sender": "Отправитель",
+      "time": "Отправлено",
+      "operation": "Действие"
+    },
+    "detail": {
+      "contact": "Контакт",
+      "ip": "IP-адрес",
+      "handledAt": "Обработано",
+      "content": "Сообщение"
+    }
   },
   "sidebar": {
     "archives": "Архивы",

@@ -17,6 +17,7 @@ const FALLBACK_MENUS: WebMenu[] = [
   { id: 'fb5', key: 'roster', path: '/roster', label: '名录', sort: 5, isEnabled: true },
   { id: 'fb6', key: 'events', path: '/events', label: '事件', sort: 6, isEnabled: true },
   { id: 'fb7', key: 'about', path: '/about', label: '关于', sort: 7, isEnabled: true },
+  { id: 'fb8', key: 'contact', path: '/contact', label: '联系我', sort: 8, isEnabled: true },
 ]
 
 function SealLogo() {

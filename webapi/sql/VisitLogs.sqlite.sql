@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS "VisitLogs" (
+  "Id" INTEGER NOT NULL CONSTRAINT "PK_VisitLogs" PRIMARY KEY AUTOINCREMENT,
+  "VisitorToken" TEXT NOT NULL,
+  "Path" TEXT NOT NULL DEFAULT '',
+  "CreatedAt" TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS "IX_VisitLogs_VisitorToken" ON "VisitLogs" ("VisitorToken");
+CREATE INDEX IF NOT EXISTS "IX_VisitLogs_CreatedAt" ON "VisitLogs" ("CreatedAt");
