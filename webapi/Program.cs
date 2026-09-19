@@ -254,6 +254,12 @@ try
 
     // 异常 → 响应 + 写错误日志；置于最前，保证其后所有中间件（含 Crypto）的异常都被统一兜底
     app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    // CORS 必须尽早启用：放在 HTTPS 重定向、限流、加密等所有可能短路/重定向的中间件之前，
+    // 确保预检 OPTIONS 请求的响应（包括 302 重定向、429 限流等）都带有 CORS 头，
+    // 否则浏览器会报 "Redirect is not allowed for a preflight request" 错误。
+    app.UseCors("frontend");
+
     // IP 限流：超限直接 429 短路，放在缓冲/解密之前避免无效请求消耗资源
     app.UseIpRateLimiting();
     // 先启用请求体缓冲（允许审计过滤器和错误中间件重读 body）
@@ -263,19 +269,16 @@ try
     // 提取请求级审计上下文（IP/UA/用户信息 + 计时器）
     app.UseMiddleware<AuditEnrichmentMiddleware>();
 
-    // 生产环境启用 HSTS（浏览器强制走 HTTPS）
+    // 生产环境启用 HSTS（浏览器强制走 HTTPS）和 HTTP→HTTPS 重定向
+    // 开发环境不启用重定向，避免跨域预检请求被 302 重定向导致 CORS 失败
     if (!app.Environment.IsDevelopment())
     {
         app.UseHsts();
+        if (httpsEnabled)
+        {
+            app.UseHttpsRedirection();
+        }
     }
-    // HTTP → HTTPS 重定向（仅在 HTTPS 端口启用时生效）
-    if (httpsEnabled)
-    {
-        app.UseHttpsRedirection();
-    }
-
-    // CORS 必须放在 UseStaticFiles 之前，否则 /uploads 静态资源被短路、缺少跨域响应头（Flutter Web 图片以 XHR 加载会报错）
-    app.UseCors("frontend");
 
     Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "uploads"));
     app.UseStaticFiles(new StaticFileOptions
