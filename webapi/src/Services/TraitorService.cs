@@ -458,17 +458,14 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
             {
                 T = t,
                 PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
-                Titles = t.CrimeRecords
-                    .Where(c => !string.IsNullOrWhiteSpace(c.Title))
-                    .Select(c => c.Title)
-                    .Take(10)
-                    .ToList(),
             })
             .ToListAsync();
+        var titlesByTraitor = await LoadTitlesAsync(rows.Select(r => r.T.Id).ToList());
         return new PagedResult<TraitorSummaryDto>(
             Items: rows.Select(r =>
             {
-                var dto = r.T.ToSummary(r.Titles.Count, r.Titles);
+                var titles = titlesByTraitor.TryGetValue(r.T.Id, out var list) ? list : [];
+                var dto = r.T.ToSummary(titles.Count, titles);
                 dto.PhotoUrl = r.PhotoUrl;
                 return dto;
             }).ToList(),
@@ -669,19 +666,35 @@ public class TraitorService(IWebHostEnvironment env, AppDbContext db, CacheServi
             {
                 T = t,
                 PhotoUrl = t.Attachments.Where(a => a.Kind == "photo").Select(a => a.Url).FirstOrDefault(),
-                Titles = t.CrimeRecords
-                    .Where(c => !string.IsNullOrWhiteSpace(c.Title))
-                    .Select(c => c.Title)
-                    .Take(10)
-                    .ToList(),
             })
             .ToListAsync();
+        var titlesByTraitor = await LoadTitlesAsync(rows.Select(r => r.T.Id).ToList());
         return rows.Select(r =>
         {
-            var dto = r.T.ToSummary(r.Titles.Count, r.Titles);
+            var titles = titlesByTraitor.TryGetValue(r.T.Id, out var list) ? list : [];
+            var dto = r.T.ToSummary(titles.Count, titles);
             dto.PhotoUrl = r.PhotoUrl;
             return dto;
         }).ToList();
+    }
+
+    /// <summary>
+    /// 拉取指定档案的罪名标题（每档案最多 10 条）。
+    /// 说明：目标 MySQL 版本不支持窗口函数（ROW_NUMBER），EF 无法把投影里的 Take(10) 翻译成 SQL，
+    /// 因此改为二次查询后在内存中分组截取。
+    /// </summary>
+    private async Task<Dictionary<string, List<string>>> LoadTitlesAsync(IReadOnlyCollection<string> traitorIds)
+    {
+        if (traitorIds.Count == 0)
+            return [];
+        var rows = await db.CrimeRecords.AsNoTracking()
+            .Where(c => traitorIds.Contains(c.TraitorId) && c.Title != null && c.Title != "")
+            .Select(c => new { c.TraitorId, c.Title })
+            .ToListAsync();
+        return rows
+            .Where(x => !string.IsNullOrWhiteSpace(x.Title))
+            .GroupBy(x => x.TraitorId)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Title!).Take(10).ToList());
     }
 
     /// <summary>
