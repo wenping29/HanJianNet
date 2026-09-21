@@ -440,13 +440,13 @@ static class DbInitHelpers
         {
             count = await db.Database
                 .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM sqlite_master WHERE type='table' AND name={0}", table)
-                .FirstAsync();
+                .SingleAsync();
         }
         else
         {
             count = await db.Database
                 .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name={0}", table)
-                .FirstAsync();
+                .SingleAsync();
         }
 
         if (count == 0)
@@ -515,13 +515,13 @@ static class DbInitHelpers
         {
             count = await db.Database
                 .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM sqlite_master WHERE type='index' AND name={0}", index)
-                .FirstAsync();
+                .SingleAsync();
         }
         else
         {
             count = await db.Database
                 .SqlQueryRaw<int>("SELECT COUNT(*) AS Value FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = {0} AND index_name = {1}", table, index)
-                .FirstAsync();
+                .SingleAsync();
         }
 
         if (count == 0)
