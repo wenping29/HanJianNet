@@ -302,10 +302,13 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await StartupValidator.ValidateDatabaseAsync(db);
         db.Database.EnsureCreated();
         await DbInitHelpers.EnsureMissingTablesAsync(db);
         await DbSeeder.SeedAsync(db, builder.Configuration);
     }
+
+    await StartupValidator.ValidateRedisAsync(redisOptions);
 
     Log.Information("HanJianNet WebApi 启动完成，环境：{Environment}", app.Environment.EnvironmentName);
     app.Run();
@@ -317,6 +320,127 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
+}
+
+static class StartupValidator
+{
+    /// <summary>
+    /// 启动时验证数据库可达且目标库存在（仅 MySQL；SQLite 为本地文件无需校验）。
+    /// 目标库（如 hanjian）不存在时用服务器级连接自动创建；连接失败或无权限时抛出带排查指引的
+    /// 异常快速失败，避免应用启动后业务请求才以 "Unknown database 'hanjian'" 之类的错误批量失败
+    /// （缓存降级回源时尤其明显——每次缓存未命中都会触发数据库异常）。
+    /// </summary>
+    public static async Task ValidateDatabaseAsync(AppDbContext db)
+    {
+        if (db.Database.IsSqlite()) return;
+
+        var csb = new System.Data.Common.DbConnectionStringBuilder
+        {
+            ConnectionString = db.Database.GetConnectionString() ?? ""
+        };
+        if (!csb.TryGetValue("Database", out var nameObj) || string.IsNullOrWhiteSpace(nameObj?.ToString()))
+        {
+            throw new InvalidOperationException(
+                "MySQL 连接串未指定 Database（如 hanjian），请检查配置 Database:Mysql:ConnectionString。");
+        }
+        var database = nameObj.ToString()!;
+
+        // 库不存在时带库名的连接会直接失败，故用不带 Database 的服务器级连接检查/建库
+        csb.Remove("Database");
+        try
+        {
+            var template = db.Database.GetDbConnection();
+            await using var conn = (System.Data.Common.DbConnection)Activator.CreateInstance(template.GetType())!;
+            conn.ConnectionString = csb.ConnectionString;
+            await conn.OpenAsync();
+            await using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"CREATE DATABASE IF NOT EXISTS `{database}` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;";
+            await cmd.ExecuteNonQueryAsync();
+            Log.Information("数据库连接验证通过，库 {Database} 已确认存在", database);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException(
+                $"无法连接 MySQL 服务器或确认/创建数据库 `{database}`。请检查：1) 服务器地址与端口可达；" +
+                $"2) 连接账号有权限访问该库；3) 无建库权限时请手动执行 CREATE DATABASE `{database}`;。" +
+                $"原始错误：{ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// 启动时验证 Redis：Enabled=true 时做一次真实 PING（短超时、快速失败）。
+    /// 失败不阻断启动——运行期由熔断器降级直连数据库——但在启动日志中给出明确告警与排查方向，
+    /// 避免只在运行期反复刷“熔断器打开（半开探测失败）”而难以定位根因。
+    /// </summary>
+    public static async Task ValidateRedisAsync(RedisOptions options)
+    {
+        if (!options.Enabled) return;
+
+        // 连接串脱敏（ConfigurationOptions.ToString() 不会掩码密码，需手动处理）
+        var masked = System.Text.RegularExpressions.Regex.Replace(
+            options.ConnectionString, @"password=[^,]*", "password=***",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        // 常见配置错误：把 Redis 指向了 MySQL 端口（3306），协议不通必然导致熔断
+        if (options.ConnectionString.Contains(":3306", StringComparison.Ordinal))
+        {
+            Log.Warning("Redis 连接串（{ConnectionString}）包含 3306 端口（MySQL 默认端口，Redis 通常为 6379），请确认配置指向的是 Redis 服务", masked);
+        }
+
+        try
+        {
+            var config = StackExchange.Redis.ConfigurationOptions.Parse(options.ConnectionString);
+            config.ConnectTimeout = 3000;
+            config.SyncTimeout = 3000;
+            config.AsyncTimeout = 3000;
+            config.ConnectRetry = 1;
+            config.AbortOnConnectFail = true; // 自检要求快速失败，不做后台重连
+            using var muxer = await StackExchange.Redis.ConnectionMultiplexer.ConnectAsync(config);
+            var rtt = await muxer.GetDatabase().PingAsync();
+            Log.Information("Redis 连接验证通过：{ConnectionString}（PING {ElapsedMs}ms）", masked, (int)rtt.TotalMilliseconds);
+
+            // 逻辑库索引检查：Redis 的库是数字索引（无命名库），数量受服务器 databases 配置限制；
+            // defaultDatabase 超出范围时 SELECT 失败（ERR DB index is out of range），表现为“库不存在”
+            var dbIndex = config.DefaultDatabase ?? 0;
+            try
+            {
+                var databases = await muxer.GetServers()[0].ConfigGetAsync("databases");
+                if (databases.Length > 0 && int.TryParse(databases[0].Value, out var maxDbs) && dbIndex >= maxDbs)
+                {
+                    Log.Warning("Redis 逻辑库索引 defaultDatabase={DbIndex} 超出服务器 databases={MaxDbs} 配置范围，所有缓存操作将失败；请改用 0~{MaxIndex} 之间的库索引",
+                        dbIndex, maxDbs, maxDbs - 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                // 部分托管 Redis 禁用 CONFIG 命令，跳过该项检查
+                Log.Debug(ex, "Redis CONFIG GET databases 不可用，跳过逻辑库索引范围检查");
+            }
+
+            // 读写探针：以应用实际使用的键前缀（InstanceName）写入并读回，验证键空间真实可读写
+            // （hanjian 是键前缀而非 Redis 库名，数据存于 db{DbIndex} 下前缀为 hanjian: 的键）
+            var probeKey = $"{options.InstanceName}__startup_probe__";
+            var db = muxer.GetDatabase();
+            await db.StringSetAsync(probeKey, "1", TimeSpan.FromSeconds(30));
+            var probe = await db.StringGetAsync(probeKey);
+            await db.KeyDeleteAsync(probeKey);
+            if (probe != "1")
+            {
+                Log.Warning("Redis 读写探针验证失败（key={ProbeKey}）：写入后读回的值不符，请检查 Redis 是否为只读副本或主从复制异常", probeKey);
+            }
+            else
+            {
+                Log.Information("Redis 读写探针验证通过（逻辑库 db{DbIndex}，键前缀 {InstanceName}）", dbIndex, options.InstanceName);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex,
+                "Redis 启动自检失败（{ConnectionString}）：{Reason}。应用将继续启动，缓存读写会由熔断器自动降级为直连数据库。" +
+                "排查方向：1) 地址/端口/密码/白名单；2) 若错误含 \"DB index is out of range\"，说明 defaultDatabase 库索引超出服务器 databases 范围，改用 db0 或调大服务器 databases 配置",
+                masked, ex.Message);
+        }
+    }
 }
 
 static class DbInitHelpers

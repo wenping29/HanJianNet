@@ -439,7 +439,7 @@ export default function Traitors() {
       ) : (
         <>
           <div className="card animate-fade-up mt-6 overflow-x-auto">
-            <table className="w-full min-w-[760px] text-left text-sm">
+            <table className="w-full min-w-[800px] text-left text-sm">
               <thead>
                 <tr className="border-b border-paperedge/20 text-xs uppercase tracking-widest text-paperdim/70">
                   <th className="px-5 py-3 font-medium">
@@ -452,10 +452,10 @@ export default function Traitors() {
                       aria-label={t('traitors.selectAll')}
                     />
                   </th>
-                  <th className="px-5 py-3 font-medium w-[200px]">{t('common.name')}</th>
+                  <th className="px-5 py-3 font-medium w-[100px]">{t('common.name')}</th>
                   <th className="px-5 py-3 font-medium  w-[150px]">{t('common.period')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.faction')}</th>
-                  <th className="px-5 py-3 font-medium">{t('common.lifespan')}</th>
+                  <th className="px-5 py-3 font-medium  w-[150px]" >{t('common.lifespan')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.identityTags')}</th>
                   <th className="px-5 py-3 font-medium">{t('common.colHarmLevel')}</th>
                   <th className="px-5 py-3 text-right font-medium">{t('common.operation')}</th>
@@ -546,7 +546,7 @@ export default function Traitors() {
                         {canManageUsers(me.role) && (
                           <button
                             type="button"
-                            className="btn-bronze !px-5 !py-2 text-sm !w-20"
+                            className="btn-bronze h-[32px] !px-5 !py-2 text-sm !w-20"
                             onClick={() => {
                               window.open(`${window.location.href.split('#')[0]}#/traitors/${tr.id}/edit`, '_blank', 'noopener')
                             }}
@@ -557,7 +557,7 @@ export default function Traitors() {
                         {canManageUsers(me.role) && (
                           <button
                             type="button"
-                            className={`btn-ghost !px-3 !py-1.5 text-xs ${
+                            className={`btn-ghost !px-3 !py-1.5  w-[60px] text-xs ${
                               tr.isHidden ? '!text-paperdim hover:!text-emerald-300' : 'hover:!text-cinnabarlight'
                             }`}
                             disabled={statusUpdatingId === tr.id}
