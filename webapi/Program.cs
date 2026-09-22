@@ -24,33 +24,6 @@ try
         .ReadFrom.Services(services)
         .Enrich.FromLogContext());
 
-    // --- HTTPS ---
-    // 开发环境：使用 ASP.NET Core 开发证书（首次运行执行 dotnet dev-certs https --trust）
-    // 生产环境：在 Https:Certificate 中配置证书文件路径与密码；未配置证书时只监听 HTTP，避免启动崩溃
-    var httpsPort = builder.Configuration.GetValue("Https:Port", 3001);
-    var httpsCertPath = builder.Configuration["Https:Certificate:Path"];
-    var httpsCertPassword = builder.Configuration["Https:Certificate:Password"];
-    var hasHttpsCert = !string.IsNullOrWhiteSpace(httpsCertPath) && File.Exists(httpsCertPath);
-    var httpsEnabled = httpsPort > 0 && (hasHttpsCert || builder.Environment.IsDevelopment());
-    if (httpsEnabled)
-    {
-        builder.WebHost.ConfigureKestrel(kestrel =>
-        {
-            kestrel.ListenAnyIP(httpsPort, listen =>
-            {
-                if (hasHttpsCert)
-                    listen.UseHttps(httpsCertPath!, httpsCertPassword);
-                else
-                    listen.UseHttps(); // 开发证书
-            });
-        });
-    }
-    else if (httpsPort > 0)
-    {
-        Log.Warning("未找到 HTTPS 证书（Https:Certificate:Path={CertPath}），HTTPS 端口 {Port} 不启用，仅监听 HTTP",
-            httpsCertPath ?? "(未配置)", httpsPort);
-    }
-
     builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("Database"));
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
     builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Uploads"));
@@ -255,9 +228,8 @@ try
     // 异常 → 响应 + 写错误日志；置于最前，保证其后所有中间件（含 Crypto）的异常都被统一兜底
     app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-    // CORS 必须尽早启用：放在 HTTPS 重定向、限流、加密等所有可能短路/重定向的中间件之前，
-    // 确保预检 OPTIONS 请求的响应（包括 302 重定向、429 限流等）都带有 CORS 头，
-    // 否则浏览器会报 "Redirect is not allowed for a preflight request" 错误。
+    // CORS 必须尽早启用：放在限流、加密等所有可能短路的中间件之前，
+    // 确保预检 OPTIONS 请求的响应（包括 429 限流等）都带有 CORS 头。
     app.UseCors("frontend");
 
     // IP 限流：超限直接 429 短路，放在缓冲/解密之前避免无效请求消耗资源
@@ -268,17 +240,6 @@ try
     app.UseMiddleware<CryptoMiddleware>();
     // 提取请求级审计上下文（IP/UA/用户信息 + 计时器）
     app.UseMiddleware<AuditEnrichmentMiddleware>();
-
-    // 生产环境启用 HSTS（浏览器强制走 HTTPS）和 HTTP→HTTPS 重定向
-    // 开发环境不启用重定向，避免跨域预检请求被 302 重定向导致 CORS 失败
-    if (!app.Environment.IsDevelopment())
-    {
-        app.UseHsts();
-        if (httpsEnabled)
-        {
-            app.UseHttpsRedirection();
-        }
-    }
 
     Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "uploads"));
     app.UseStaticFiles(new StaticFileOptions
