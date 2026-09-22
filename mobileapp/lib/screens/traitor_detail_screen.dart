@@ -66,7 +66,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         color: AppTheme.bronzeLight,
         onRefresh: _load,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           children: [
             _header(_traitor!),
             _summary(_traitor!),
@@ -95,7 +95,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
     final photo = t.photoUrl;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -110,7 +110,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
                     : _initial(t.name),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +195,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         SectionHeader(title: l10n.summaryTitle, en: 'SUMMARY'),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             child: Text(t.summary.isEmpty ? l10n.noSummary : t.summary,
                 style: TextStyle(height: 1.7, fontSize: 13.5, color: AppTheme.paper.withValues(alpha: 0.9))),
           ),
@@ -213,7 +213,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         SectionHeader(title: l10n.timeline, en: 'CHRONOLOGY'),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             child: Column(
               children: [
                 for (final (i, ev) in events.indexed)
@@ -282,9 +282,9 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         SectionHeader(title: l10n.criminalRecords, en: 'CRIMINAL RECORDS'),
         for (final c in t.crimeRecords)
           Card(
-            margin: const EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(bottom: 8),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -335,9 +335,9 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         SectionHeader(title: l10n.familyAndResidence, en: 'FAMILY'),
         if (t.spouses.isNotEmpty)
           Card(
-            margin: const EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(bottom: 8),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -357,9 +357,9 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
           ),
         if (t.children.isNotEmpty)
           Card(
-            margin: const EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(bottom: 8),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -389,7 +389,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         if (t.residences.isNotEmpty)
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -554,7 +554,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         SectionHeader(title: l10n.sources, en: 'REFERENCES'),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             child: Column(
               children: [
                 for (final (i, s) in t.sources.indexed)
@@ -590,7 +590,7 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         SectionHeader(title: l10n.revisionHistory, en: 'REVISIONS'),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             child: Column(
               children: [
                 for (final r in revs.take(20))
@@ -635,10 +635,10 @@ class _TraitorDetailScreenState extends State<TraitorDetailScreen> {
         border: Border(top: BorderSide(color: AppTheme.paperDim.withValues(alpha: 0.15))),
       ),
       padding: EdgeInsets.fromLTRB(
-        16,
         12,
-        16,
-        MediaQuery.of(context).padding.bottom + 12,
+        10,
+        12,
+        MediaQuery.of(context).padding.bottom + 10,
       ),
       child: SizedBox(
         width: double.infinity,

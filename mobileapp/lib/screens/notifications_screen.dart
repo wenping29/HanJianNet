@@ -101,7 +101,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       color: AppTheme.bronzeLight,
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         children: [
           for (final n in items) _noticeCard(l10n, n),
         ],
@@ -113,11 +113,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final isApproved = n.type == 'revision_approved';
     final iconColor = isApproved ? AppTheme.bambooLight : AppTheme.cinnabarLight;
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         onTap: () => _markRead(n),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

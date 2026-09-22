@@ -271,7 +271,7 @@ class _TraitorFormScreenState extends State<TraitorFormScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           children: [
             _basicInfo(l10n),
             _lifeEventsSection(l10n),
@@ -309,7 +309,7 @@ class _TraitorFormScreenState extends State<TraitorFormScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          padding: const EdgeInsets.only(bottom: 4),
           child: SectionHeader(title: title, en: en),
         ),
         Card(

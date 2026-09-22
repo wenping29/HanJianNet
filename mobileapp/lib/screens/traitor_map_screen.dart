@@ -82,7 +82,7 @@ class _TraitorMapScreenState extends State<TraitorMapScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
           child: Card(
             clipBehavior: Clip.antiAlias,
             child: SizedBox(
@@ -103,7 +103,7 @@ class _TraitorMapScreenState extends State<TraitorMapScreen> {
         ),
         if (selected != null)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
             child: Card(
               child: ListTile(
                 title: Text(selected.fullName,
@@ -127,16 +127,16 @@ class _TraitorMapScreenState extends State<TraitorMapScreen> {
         const SizedBox(height: 8),
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             itemCount: stats.items.length,
             itemBuilder: (_, i) {
               final s = stats.items[i];
               return Card(
-                margin: const EdgeInsets.only(bottom: 8),
+                margin: const EdgeInsets.only(bottom: 6),
                 child: InkWell(
                   onTap: () => _openProvince(s.province),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     child: Row(
                       children: [
                         SizedBox(

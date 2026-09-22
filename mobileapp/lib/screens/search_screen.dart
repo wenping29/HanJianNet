@@ -168,9 +168,9 @@ class _SearchScreenState extends State<SearchScreen> {
       l10n.other,
     ];
     return Card(
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             TextField(
@@ -284,7 +284,7 @@ class _SearchScreenState extends State<SearchScreen> {
       onRefresh: _search,
       child: ListView.builder(
         controller: _scrollCtrl,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         itemCount: _results.length + (_loadingMore ? 1 : 0),
         itemBuilder: (_, i) {
           if (i >= _results.length) {
@@ -294,7 +294,7 @@ class _SearchScreenState extends State<SearchScreen> {
             );
           }
           return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: 8),
             child: TraitorCard(
               traitor: _results[i],
               onTap: () => Navigator.of(context).push(MaterialPageRoute(

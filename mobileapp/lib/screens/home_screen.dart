@@ -110,20 +110,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: CustomScrollView(
                     controller: _scrollCtrl,
                     slivers: [
-                      SliverToBoxAdapter(child: _statsBoard()),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 12),
+                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                          child: _statsBoard(),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: SectionHeader(title: l10n.figures, en: 'FIGURES'),
                         ),
                       ),
                       SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                         sliver: SliverGrid(
                           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                             maxCrossAxisExtent: 220,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 8,
                             childAspectRatio: 0.72,
                           ),
                           delegate: SliverChildBuilderDelegate(
@@ -175,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         child: Row(
           children: [
             for (final (i, (label, value, period)) in cells.indexed) ...[

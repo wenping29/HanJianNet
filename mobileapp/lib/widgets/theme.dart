@@ -121,6 +121,11 @@ class AppTheme {
           margin: EdgeInsets.zero,
         ),
         dividerColor: fgDim.withValues(alpha: 0.15),
+        listTileTheme: const ListTileThemeData(
+          contentPadding: EdgeInsets.symmetric(horizontal: 12),
+          horizontalTitleGap: 12,
+          minLeadingWidth: 24,
+        ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: scaffold,

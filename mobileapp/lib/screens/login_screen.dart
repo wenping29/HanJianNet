@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         children: [
           const SizedBox(height: 24),
           Center(

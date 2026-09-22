@@ -58,7 +58,7 @@ class _MySubmissionsScreenState extends State<MySubmissionsScreen> {
       color: AppTheme.bronzeLight,
       onRefresh: _load,
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         children: [
           for (final r in items) _submissionCard(l10n, r),
         ],
@@ -68,9 +68,9 @@ class _MySubmissionsScreenState extends State<MySubmissionsScreen> {
 
   Widget _submissionCard(AppLocalizations l10n, Revision r) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
