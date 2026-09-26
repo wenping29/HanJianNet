@@ -371,11 +371,11 @@ export default function Layout() {
         <div style={footerContainerPageStyle} className="container-page flex flex-col items-center justify-between gap-2 py-6 text-xs tracking-wider text-paperdim/70 sm:flex-row">
           <span>{t('nav.brand')} · HanJianNet — {t('home.heroTitle')}</span>
           <span className="font-garamond italic">Editorial Archive · Est. 2026</span>
-          {visitStats && (
-            <span>{t('layout.totalVisits')} <span className="font-garamond text-bronzelight">{visitStats.totalVisits.toLocaleString()}</span></span> )}
+          {/* {visitStats && (
+            <span>{t('layout?.totalVisits')} <span className="font-garamond text-bronzelight">{visitStats.totalVisits.toLocaleString()}</span></span> )}
           {visitStats && (
             <span>{t('layout.visitorCount')} <span className="font-garamond text-bronzelight">{visitStats.totalVisitors.toLocaleString()}</span></span>)}
-          
+           */}
         </div>
         
       </footer>

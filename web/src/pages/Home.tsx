@@ -87,9 +87,9 @@ export default function Home() {
     setError('')
     try {
       const data = await api.listTraitors({ ...f, page: p, pageSize })
-      setItems(data.items)
-      setTotal(data.total)
-      setPage(data.page)
+      setItems(data.items ?? [])
+      setTotal(data.total ?? 0)
+      setPage(data.page ?? 1)
     } catch (e) {
       setError(e instanceof Error ? e.message : t('common.loadFailed'))
       setItems([])
